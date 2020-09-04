@@ -1,7 +1,6 @@
 import {
   LayoutAuth,
   LayoutDefault,
-  LayoutChat,
   RouteWrapper
 } from '@/component/layout'
 
@@ -70,27 +69,34 @@ export const protectedRoute = [
         },
         component: () => import('@/view/Dashboard.vue')
       },
-      // {
-      //   path: '/cms',
-      //   component: RouteWrapper,
-      //   redirect: '/cms/table',
-      //   meta: {
-      //     title: 'CMS',
-      //     icon: 'view_compact',
-      //     group: 'cms'
-      //   },
-      //   children: [
-      //     {
-      //       path: '/cms/table',
-      //       name: 'ListTable',
-      //       meta: {
-      //         title: 'CMS Table',
-      //         icon: 'mdi-database'
-      //       },
-      //       component: () => import('@/view/list/Table.vue')
-      //     }
-      //   ]
-      // },
+      {
+        path: '/finding',
+        component: RouteWrapper,
+        redirect: '/finding/resource',
+        meta: {
+          title: 'Finding',
+          icon: 'mdi-file-find-outline',
+          group: 'finding'
+        },
+        children: [
+          {
+            path: '/finding/resource',
+            name: 'Resource',
+            meta: {
+              title: 'Resource'
+            },
+            component: () => import('@/view/finding/Resource.vue')
+          },
+          {
+            path: '/finding/finding',
+            name: 'Finding',
+            meta: {
+              title: 'Finding'
+            },
+            component: () => import('@/view/finding/Finding.vue')
+          }
+        ]
+      },
       {
         path: '/403',
         name: 'Forbidden',

@@ -29,7 +29,7 @@
             <template v-slot:activator="{ on: menu }">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on: tooltip }">
-                  <v-btn icon v-on="{ ...menu }">
+                  <v-btn icon v-on="{ ...menu, tooltip }">
                     <v-icon>mdi-dots-vertical</v-icon></v-btn
                   >
                 </template>

@@ -48,7 +48,7 @@
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
+                        <template>
                           <v-btn icon v-on="{ ...menu }">
                             <v-icon>mdi-dots-vertical</v-icon>
                           </v-btn>
@@ -274,7 +274,8 @@ export default {
     },
     handleViewItem() {},
     handleEditItem() {},
-    handleDeleteItem() {}
+    handleDeleteItem() {},
+    handleSubmit() {}
   }
 }
 </script>

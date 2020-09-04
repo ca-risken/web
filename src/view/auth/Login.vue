@@ -83,17 +83,21 @@ export default {
     }
   },
   methods: {
-    login() {
-      if (this.$refs.form.validate()) {
-        this.loading = true
-        setTimeout(() => {
-          this.$router.push('/dashboard')
-        }, 1000)
+    async login() {
+      if (!this.$refs.form.validate()) {
+        return false
       }
-    },
-    handleSocialLogin() {}
+      this.loading = true
+      await this.$axios.get('/signin/').catch((err) =>  {
+        return Promise.reject(err)
+      })
+      setTimeout(() => {
+        this.$router.push('/dashboard')
+      }, 1000)
+    }
+  },
+  handleSocialLogin() {}
   }
-}
 </script>
 
 <style lang="sass" scoped>

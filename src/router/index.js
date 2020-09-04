@@ -14,7 +14,6 @@ const router = new Router({
 // router gards
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  //auth route is authenticated
   next()
 })
 
