@@ -122,7 +122,7 @@ export default {
       Util.toggleFullScreen()
     },
     handleLogut() {
-      this.$router.push('/auth/login')
+      this.$router.push('/auth/signin')
     },
     handleSetting() {},
     handleProfile() {},

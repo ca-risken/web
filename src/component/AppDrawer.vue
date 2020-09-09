@@ -111,7 +111,7 @@
   </v-navigation-drawer>
 </template>
 <script>
-import { protectedRoute as routes } from '@/router/config'
+import { appRoute as routes } from '@/router/config'
 export default {
   name: 'AppDrawer',
   components: {},

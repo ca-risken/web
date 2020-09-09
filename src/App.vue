@@ -40,15 +40,7 @@ export default {
     }
   },
   mounted() {},
-  created() {
-    // add app events
-  },
-  methods: {
-    openThemeSettings() {
-      this.$vuetify.goTo(0)
-      this.rightDrawer = !this.rightDrawer
-    }
-  }
+  created() {},
 }
 </script>
 

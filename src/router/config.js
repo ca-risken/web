@@ -4,7 +4,7 @@ import {
   RouteWrapper
 } from '@/component/layout'
 
-export const publicRoute = [
+export const commonRoute = [
   {
     path: '*',
     component: () => import('@/view/error/NotFound.vue')
@@ -13,18 +13,18 @@ export const publicRoute = [
     path: '/auth',
     component: LayoutAuth,
     meta: {
-      title: 'Login'
+      title: 'Signin'
     },
-    redirect: '/auth/login',
+    redirect: '/auth/signin',
     hidden: true,
     children: [
       {
-        path: 'login',
-        name: 'login',
+        path: 'signin',
+        name: 'signin',
         meta: {
-          title: 'Login'
+          title: 'Signin'
         },
-        component: () => import('@/view/auth/Login.vue')
+        component: () => import('@/view/auth/Signin.vue')
       }
     ]
   },
@@ -45,20 +45,28 @@ export const publicRoute = [
       title: 'Server Error'
     },
     component: () => import('@/view/error/Error.vue')
-  }
+  },
 ]
 
-export const protectedRoute = [
+export const appRoute = [
   {
     path: '/',
     component: LayoutDefault,
     meta: {
       title: 'Home',
       group: 'apps',
-      icon: ''
     },
-    redirect: '/dashboard',
     children: [
+      {
+        path: '/',
+        name: 'Home',
+        meta: {
+          title: 'Home',
+          group: 'apps',
+          icon: 'mdi-home'
+        },
+        component: () => import('@/view/Home.vue')
+      },
       {
         path: '/dashboard',
         name: 'Dashboard',

@@ -1,14 +1,13 @@
 import Axios from 'axios'
 import router from '../router'
 
-const axios = Axios.create()
+const axios = Axios.create({
+  baseURL: '/api/v1',
+})
 axios.interceptors.request.use(
   config => {
-    // let id = localStorage.getItem('x-amzn-oidc-identity')
-    // if (id) {
-    //   config.headers.common['x-amzn-oidc-identity'] = id
-    // }
-    config.headers.common['x-amzn-oidc-identity'] = 'alice'
+    // for local
+    // config.headers.common['x-amzn-oidc-identity'] = 'alice'
     return config
   },
   error => Promise.reject(error)
@@ -18,12 +17,17 @@ axios.interceptors.response.use(
   response => response,
   error => {
     const status = error.response.status
-    if (status === 401) {
+    if (status === 303) {
+      console.log('303')
+      router.push({path: '/'})
+    } else if (status === 401) {
       console.log('401認証エラー')
-      router.push({path: '/auth/login', query: { url: router.currentRoute.fullPath }})
+      router.push({path: '/auth/signin', query: { url: router.currentRoute.fullPath }})
     } else if (status === 403) {
       console.log('403認可エラー')
       router.push({path: '/403', query: { url: router.currentRoute.fullPath }})
+    } else if (status === 404) {
+      router.push({path: '/404', query: { url: router.currentRoute.fullPath }})
     } else if (status >= 500) {
       console.log('500エラー')
       router.push({path: '/500'})
