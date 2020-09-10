@@ -1,0 +1,45 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE: "gateway/web"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+
+  pre_build:
+    commands:
+      - echo "Setting environment variables"
+      - BUILD_OPT="--no-cache --pull"
+      - TAG=v0.0.${CODEBUILD_BUILD_NUMBER}
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+      - REGISTORY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+
+      - echo "Check linter"
+      - cd ${CODEBUILD_SRC_DIR} && yarn install && yarn lint
+
+  build:
+    commands:
+      - echo "Build web started on `date`"
+      - cd ${CODEBUILD_SRC_DIR} && docker build ${BUILD_OPT} -t ${IMAGE}:${TAG} .
+
+      - echo "Logging in to Amazon ECR..."
+      - $(aws ecr get-login --no-include-email --region ${AWS_DEFAULT_REGION})
+
+      - echo "Tagging the images..."
+      # tag the specific version
+      - docker tag ${IMAGE}:${TAG} ${REGISTORY}/${IMAGE}:${TAG}
+      # update latest version 
+      - docker tag ${IMAGE}:${TAG} ${REGISTORY}/${IMAGE}:latest
+
+  post_build:
+    commands:
+      - echo "Pushing the Docker image..."
+      # specific version
+      - docker push ${REGISTORY}/${IMAGE_GATEWAY}:${TAG}
+      # latest version
+      - docker push ${REGISTORY}/${IMAGE_GATEWAY}:latest
+
+      - echo "Build completed on `date`"
