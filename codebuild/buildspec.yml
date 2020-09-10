@@ -38,8 +38,8 @@ phases:
     commands:
       - echo "Pushing the Docker image..."
       # specific version
-      - docker push ${REGISTORY}/${IMAGE_GATEWAY}:${TAG}
+      - docker push ${REGISTORY}/${IMAGE}:${TAG}
       # latest version
-      - docker push ${REGISTORY}/${IMAGE_GATEWAY}:latest
+      - docker push ${REGISTORY}/${IMAGE}:latest
 
       - echo "Build completed on `date`"
