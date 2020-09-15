@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package*.json yarn.lock *.config.js ./
 RUN yarn install
 COPY src ./src
+COPY public ./public
 RUN yarn run build
 
 FROM nginx:stable-alpine as production-stage
