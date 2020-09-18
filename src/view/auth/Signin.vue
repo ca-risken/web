@@ -33,13 +33,10 @@ export default {
     }
   },
   methods: {
-    async signin() {
+    signin() {
       this.loading = true
-      await this.$axios.get('/signin/').catch((err) =>  {
-        return Promise.reject(err)
-      })
       setTimeout(() => {
-        this.$router.push('/dashboard')
+        this.$router.push('/')
       }, 1000)
     }
   },

@@ -186,11 +186,11 @@ export default {
     async refleshList() {
       this.table.total = 0
       this.findings = []
-      const res = await this.$axios.get('/finding/list-finding/?project_id=1001').catch((err) =>  {
+      const res = await this.$axios.get('/finding/list-finding/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
         return Promise.reject(err)
       })
       const list = res.data
-      if (!list ) {
+      if ( !list || !list.data || !list.data.finding_id ) {
         return false
       }
       this.table.total = list.data.finding_id.length
@@ -204,11 +204,10 @@ export default {
       const to = from + this.table.options.itemsPerPage
       const ids = this.findings.slice(from, to)
       ids.forEach( async id => {
-        const res = await this.$axios.get('/finding/get-finding/?project_id=1001&finding_id=' + id).catch((err) =>  {
+        const res = await this.$axios.get('/finding/get-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
           return Promise.reject(err)
         })
         this.table.items.push(res.data.data.finding)
-// console.log(res.data.data.finding)
       })
       this.table.loading = false
     },

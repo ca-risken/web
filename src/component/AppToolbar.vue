@@ -1,11 +1,7 @@
 <template>
   <v-app-bar color="primary" dark app>
     <v-app-bar-nav-icon @click="handleDrawerToggle" />
-    <v-spacer />
     <v-toolbar-items>
-      <v-btn icon @click="handleFullScreen()">
-        <v-icon>fullscreen</v-icon>
-      </v-btn>
       <v-menu
         offset-y
         origin="center center"
@@ -13,15 +9,18 @@
         transition="scale-transition"
       >
         <template v-slot:activator="{ on }">
-          <v-btn icon text slot="activator" v-on="on">
-            <v-badge color="red" overlap>
-              <span slot="badge">3</span>
-              <v-icon medium>notifications</v-icon>
-            </v-badge>
+          <v-btn text dark slot="activator" v-on="on">
+            <v-icon left>mdi-alpha-p-circle-outline</v-icon>{{ projectName }}
           </v-btn>
         </template>
-        <notification-list></notification-list>
+        <project-list></project-list>
       </v-menu>
+    </v-toolbar-items>
+    <v-spacer />
+    <v-toolbar-items>
+      <v-btn icon @click="handleFullScreen()">
+        <v-icon>fullscreen</v-icon>
+      </v-btn>
       <v-menu offset-y origin="center center" transition="scale-transition">
         <template v-slot:activator="{ on }">
           <v-btn icon large text slot="activator" v-on="on">
@@ -63,26 +62,21 @@
   </v-app-bar>
 </template>
 <script>
-import NotificationList from '@/component/widget/list/NotificationList'
+import ProjectList from '@/component/widget/list/Project'
 import Util from '@/util'
+import store from '@/store'
 export default {
   name: 'AppToolbar',
   components: {
-    NotificationList
+    ProjectList
   },
   data() {
     return {
       profileMenus: [
         {
-          icon: 'account_circle',
-          href: '#',
-          title: 'Profile',
-          click: this.handleProfile
-        },
-        {
           icon: 'settings',
           href: '#',
-          title: 'Settings',
+          title: 'Profile',
           click: this.handleSetting
         },
         {
@@ -112,7 +106,10 @@ export default {
           disabled: false
         }
       })
-    }
+    },
+    projectName: () => {
+      return store.state.project.name
+    },
   },
   methods: {
     handleDrawerToggle() {
@@ -124,8 +121,9 @@ export default {
     handleLogut() {
       this.$router.push('/auth/signin')
     },
-    handleSetting() {},
-    handleProfile() {},
+    handleSetting() {
+      this.$router.push('/profile')
+    },
     handleGoBack() {
       this.$router.go(-1)
     }
