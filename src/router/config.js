@@ -106,6 +106,15 @@ export const appRoute = [
         ]
       },
       {
+        path: '/profile',
+        name: 'profile',
+        meta: {
+          title: 'Profile',
+          hiddenInMenu: true,
+        },
+        component: () => import('@/view/iam/Profile.vue')
+      },
+      {
         path: '/403',
         name: 'Forbidden',
         meta: {
@@ -113,7 +122,7 @@ export const appRoute = [
           hiddenInMenu: true
         },
         component: () => import('@/view/error/Deny.vue')
-      }
+      },
     ]
   }
 ]
