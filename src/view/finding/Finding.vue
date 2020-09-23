@@ -1,24 +1,57 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row>
+      <v-row style="height: 60px;">
         <v-col cols="12">
           <v-subheader>Finding</v-subheader>
         </v-col>
+      </v-row>
+      <v-form ref="searchForm">
+        <v-row  style="height: 60px;">
+          <v-col cols="12" sm="4" md="4">
+            <v-combobox
+              outlined
+              multiple
+              :label="searchForm.dataSource.label"
+              :placeholder="searchForm.dataSource.placeholder"
+              :items="searchForm.dataSource.list"
+              v-model="searchModel.dataSource"
+            />
+          </v-col>
+          <v-col cols="12" sm="3" md="3">
+            <v-text-field
+              outlined
+              :label="searchForm.resourceName.label"
+              :placeholder="searchForm.resourceName.placeholder"
+              v-model="searchModel.resourceName"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="3" md="3">
+            <v-range-slider
+              outlined
+              dense
+              thumb-label
+              min="0.0"
+              max="1.0"
+              step="0.01"
+              :label="searchForm.score.label"
+              :messages="searchForm.score.placeholder"
+              v-model="searchModel.score"
+            ></v-range-slider>
+          </v-col>
+          <v-spacer />
+          <v-btn
+            fab
+            class="mt-3 mr-4"
+            @click="handleSearch"
+          >
+            <v-icon>search</v-icon>
+          </v-btn>
+        </v-row>
+      </v-form>
+      <v-row class="mt-3">
         <v-col cols="12">
           <v-card>
-            <v-toolbar color="white">
-              <v-text-field text solo flat
-                prepend-icon="filter_list"
-                placeholder="Not working this filter yet..."
-                v-model="search"
-                hide-details
-                class="hidden-sm-and-down"
-              ></v-text-field>
-              <v-btn fab>
-                <v-icon>search</v-icon>
-              </v-btn>
-            </v-toolbar>
             <v-divider></v-divider>
             <v-card-text class="pa-0">
               <v-data-table
@@ -36,6 +69,14 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
+                <template v-slot:item.score="{ item }">
+                  <v-progress-linear
+                    :value="item.score * 100"
+                    height="5"
+                    :color="item.score | colorByScore"
+                  />
+                </template>
+
                 <template v-slot:item.action="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
@@ -69,7 +110,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="viewDialog" max-width="60vh">
+    <v-dialog v-model="viewDialog" max-width="80vh">
       <v-card>
         <v-toolbar>Finding Detail</v-toolbar>
         <v-list two-line>
@@ -81,6 +122,13 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-shape-outline</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="findingModel.data_source"></v-list-item-title>
+              <v-list-item-subtitle>Data Source</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
             <v-list-item-avatar><v-icon>mdi-file-find-outline</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.resource_name"></v-list-item-title>
@@ -88,28 +136,28 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-alpha-d-circle-outline</v-icon></v-list-item-avatar>
+            <v-list-item-avatar><v-icon>mdi-image-text</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.description"></v-list-item-title>
               <v-list-item-subtitle>Description</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-scoreboard</v-icon></v-list-item-avatar>
+            <v-list-item-avatar><v-icon>mdi-scoreboard-outline</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.original_score"></v-list-item-title>
               <v-list-item-subtitle>Original Score</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-scoreboard-outline</v-icon></v-list-item-avatar>
+            <v-list-item-avatar><v-icon>mdi-scoreboard</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.score"></v-list-item-title>
               <v-list-item-subtitle>Score</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-card-account-details-outline</v-icon></v-list-item-avatar>
+            <v-list-item-avatar><v-icon>mdi-code-json</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-model="findingModel.data"></v-list-item-title>
               <pre>{{ findingModel.data | pretty }}</pre>
@@ -136,6 +184,22 @@ import Util from '@/util'
 export default {
   data() {
     return {
+      searchModel: {
+        dataSource: null,
+        resourceName: null,
+        score: [0.00, 1.00],
+      },
+      searchForm: {
+        dataSource: { label: 'Data Source', placeholder: 'Filter for data_sources', list: [
+            'aws:guard-duty',
+            'aws:access-analyzer',
+            'aws:iam-checker',
+            'diagnosis:jira',
+          ],
+        },
+        resourceName: { label: 'Resource Name', placeholder: 'Filter for resource name' },
+        score: { label: 'Score', placeholder: 'Filter for score( from - to )' },
+      },
       findingModel: { finding_id:'', data_source:'', resource_name:'', description:'', original_score:'', score:'', updated_at:'' },
       viewDialog: false,
       search: '',
@@ -145,14 +209,13 @@ export default {
           { text: 'ID',  align: 'center', sortable: false, value: 'finding_id' },
           { text: 'DataSource', align: 'start', sortable: false, value: 'data_source' },
           { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
-          { text: 'Score', align: 'start', sortable: false, value: 'score' },
+          { text: 'Serverity', align: 'start', sortable: false, value: 'score' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: {
           page: 1,
           itemsPerPage: 20,
           sortBy: ['id'],
-
         },
         loading: false,
         actions: [
@@ -177,16 +240,27 @@ export default {
     },
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    }
+    },
+    colorByScore: (score) => {
+      if ( score < 0.5 ) {
+        return 'success'
+      } else if ( 0.75 < score ) {
+        return 'red'
+      } else {
+        return 'yellow'
+      }
+    },
   },
   mounted() {
-    this.refleshList()
+    this.refleshList('')
   },
   methods: {
-    async refleshList() {
+    async refleshList(searchCond) {
       this.table.total = 0
       this.findings = []
-      const res = await this.$axios.get('/finding/list-finding/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
+      const res = await this.$axios.get(
+        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond
+      ).catch((err) =>  {
         return Promise.reject(err)
       })
       const list = res.data
@@ -215,6 +289,22 @@ export default {
       this.findingModel = Object.assign(this.findingModel, row)
       this.viewDialog = true
     },
+    handleSearch() {
+      var searchCond = ''
+      if (this.searchModel.dataSource) {
+        searchCond += '&data_source=' + this.searchModel.dataSource
+      }
+      if (this.searchModel.resourceName) {
+        searchCond += '&resource_name=' + this.searchModel.resourceName
+      }
+      if (this.searchModel.score[0]) {
+        searchCond += '&from_score=' + this.searchModel.score[0]
+      }
+      if (this.searchModel.score[1]) {
+        searchCond += '&to_score=' + this.searchModel.score[1]
+      }
+      this.refleshList(searchCond)
+    }
   }
 }
 </script>
