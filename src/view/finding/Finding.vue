@@ -1,12 +1,13 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row style="height: 40px;">
+      <v-row>
         <v-col cols="12">
-          <v-header>
-            <v-icon>mdi-file-find-outline</v-icon>
-            Finding
-          </v-header>
+          <v-toolbar color="white" flat>
+            <v-toolbar-title class="grey--text text--darken-4">
+              <v-icon class="pr-2">mdi-file-find-outline</v-icon>Finding
+            </v-toolbar-title>
+          </v-toolbar>
         </v-col>
       </v-row>
       <v-form ref="searchForm">
@@ -69,6 +70,7 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="id"
+                @click:row="handleViewItem"
                 @update:page="loadList"
                 v-model="table.selected"
               >
