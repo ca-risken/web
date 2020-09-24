@@ -53,31 +53,18 @@
         </v-card-actions>
       </v-form>
     </v-card-text>
-    <v-snackbar
-      v-model="snackbar.show"
-      :bottom="true"
-      :color="snackbar.color"
-      :timeout="snackbar.timeout"
-    >
-      {{ snackbar.text }}
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          dark
-          text
-          v-bind="attrs"
-          @click="snackbar.show = false"
-        >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <bottom-snack-bar ref="snackbar" />
   </v-card>
 </template>
 
 <script>
 import store from '@/store'
 import Util from '@/util'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  components: {
+    BottomSnackBar,
+  },
   data() {
     return {
       userForm: {
@@ -94,12 +81,6 @@ export default {
           name: '',
           updated_at: '0',
         },
-      },
-      snackbar: {
-        show: false,
-        color: '',
-        timeout: 3000,
-        text: '',
       },
     }
   },
@@ -140,22 +121,12 @@ export default {
       })
       store.commit('storeUser', res.data.data.user)
       this.getUser()
-      this.notifySuccess('Success: Your profile updated.')
+      this.$refs.snackbar.notifySuccess('Success: Your profile updated.')
     },
     handleSubmit() {
       if (this.$refs.form.validate()) {
         this.putUser()
       }
-    },
-    notifySuccess(text) {
-      this.snackbar.color = 'success'
-      this.snackbar.text = text
-      this.snackbar.show = true
-    },
-    notifyError(text) {
-      this.snackbar.color = 'error'
-      this.snackbar.text = text
-      this.snackbar.show = true
     },
   }
 }

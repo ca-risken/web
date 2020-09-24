@@ -1,12 +1,13 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row style="height: 40px;">
+      <v-row>
         <v-col cols="12">
-          <v-header>
-            <v-icon>mdi-file-find-outline</v-icon>
-            Finding
-          </v-header>
+          <v-toolbar color="white" flat>
+            <v-toolbar-title class="grey--text text--darken-4">
+              <v-icon class="pr-2">mdi-file-find-outline</v-icon>Finding
+            </v-toolbar-title>
+          </v-toolbar>
         </v-col>
       </v-row>
       <v-form ref="searchForm">
@@ -69,6 +70,7 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="id"
+                @click:row="handleViewItem"
                 @update:page="loadList"
                 v-model="table.selected"
               >
@@ -121,7 +123,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="viewDialog" max-width="80vh">
+    <v-dialog v-model="viewDialog" max-width="70%">
       <v-card>
         <v-toolbar>Finding Detail</v-toolbar>
         <v-list two-line>
@@ -133,7 +135,12 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-shape-outline</v-icon></v-list-item-avatar>
+            <v-list-item-avatar>
+              <v-icon 
+                v-text="getDataSourceIcon(findingModel.data_source)"
+                :color="getDataSourceIconColor(findingModel.data_source)"
+              />
+            </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.data_source"></v-list-item-title>
               <v-list-item-subtitle>Data Source</v-list-item-subtitle>
@@ -154,14 +161,18 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-scoreboard-outline</v-icon></v-list-item-avatar>
+            <v-list-item-avatar>
+              <v-icon :color="getServerityColorByScore(findingModel.score)">mdi-scoreboard-outline</v-icon>
+            </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.original_score"></v-list-item-title>
               <v-list-item-subtitle>Original Score</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-scoreboard</v-icon></v-list-item-avatar>
+            <v-list-item-avatar>
+              <v-icon :color="getServerityColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
+            </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.score"></v-list-item-title>
               <v-list-item-subtitle>Score</v-list-item-subtitle>
@@ -198,8 +209,8 @@ export default {
   data() {
     return {
       searchModel: {
-        dataSource: null,
-        resourceName: null,
+        dataSource: [],
+        resourceName: [],
         score: [0.00, 1.00],
       },
       searchForm: {
@@ -210,13 +221,12 @@ export default {
       resourceNameList: [],
       findingModel: { finding_id:'', data_source:'', resource_name:'', description:'', original_score:'', score:'', updated_at:'' },
       viewDialog: false,
-      search: '',
       table: {
         selected: [],
         headers: [
           { text: 'ID',  align: 'center', sortable: false, value: 'finding_id' },
-          { text: 'Serverity', align: 'start', sortable: false, value: 'score' },
-          { text: 'Data Source', align: 'start', sortable: false, value: 'data_source' },
+          { text: 'Serverity', align: 'center', sortable: false, value: 'score' },
+          { text: 'Data Source', align: 'center', sortable: false, value: 'data_source' },
           { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
           { text: 'Description', align: 'start', sortable: false, value: 'description' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
@@ -252,6 +262,11 @@ export default {
     },
   },
   mounted() {
+    if ( this.$route.query.resource_name ) {
+      this.searchModel.resourceName[0] = this.$route.query.resource_name
+      this.handleSearch()
+      return false
+    }
     this.refleshList('')
   },
   methods: {
