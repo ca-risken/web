@@ -1,30 +1,33 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row style="height: 60px;">
+      <v-row style="height: 40px;">
         <v-col cols="12">
-          <v-subheader>Finding</v-subheader>
+          <v-header>
+            <v-icon>mdi-file-find-outline</v-icon>
+            Finding
+          </v-header>
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row  style="height: 60px;">
+        <v-row>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
-              outlined
-              multiple
+              multiple outlined dense clearable small-chips deletable-chips
               :label="searchForm.dataSource.label"
               :placeholder="searchForm.dataSource.placeholder"
-              :items="searchForm.dataSource.list"
+              :items="dataSourceList"
               v-model="searchModel.dataSource"
             />
           </v-col>
-          <v-col cols="12" sm="3" md="3">
-            <v-text-field
-              outlined
+          <v-col cols="12" sm="4" md="4">
+            <v-combobox
+              multiple outlined dense clearable small-chips deletable-chips
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
+              :items="resourceNameList"
               v-model="searchModel.resourceName"
-            ></v-text-field>
+            />
           </v-col>
           <v-col cols="12" sm="3" md="3">
             <v-range-slider
@@ -49,7 +52,7 @@
           </v-btn>
         </v-row>
       </v-form>
-      <v-row class="mt-3">
+      <v-row>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -69,11 +72,19 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
+                <template v-slot:item.data_source="{ item }">
+                  <v-layout justify-center>
+                    <v-icon 
+                      v-text="getDataSourceIcon(item.data_source)"
+                      :color="getDataSourceIconColor(item.data_source)"
+                    />
+                  </v-layout>
+                </template>
                 <template v-slot:item.score="{ item }">
                   <v-progress-linear
                     :value="item.score * 100"
                     height="5"
-                    :color="item.score | colorByScore"
+                    :color="getServerityColorByScore(item.score)"
                   />
                 </template>
 
@@ -181,7 +192,9 @@
 
 <script>
 import Util from '@/util'
+import mixin from '@/mixin'
 export default {
+  mixins: [mixin],
   data() {
     return {
       searchModel: {
@@ -190,16 +203,11 @@ export default {
         score: [0.00, 1.00],
       },
       searchForm: {
-        dataSource: { label: 'Data Source', placeholder: 'Filter for data_sources', list: [
-            'aws:guard-duty',
-            'aws:access-analyzer',
-            'aws:iam-checker',
-            'diagnosis:jira',
-          ],
-        },
+        dataSource: { label: 'Data Source', placeholder: 'Filter for data_sources' },
         resourceName: { label: 'Resource Name', placeholder: 'Filter for resource name' },
         score: { label: 'Score', placeholder: 'Filter for score( from - to )' },
       },
+      resourceNameList: [],
       findingModel: { finding_id:'', data_source:'', resource_name:'', description:'', original_score:'', score:'', updated_at:'' },
       viewDialog: false,
       search: '',
@@ -207,9 +215,10 @@ export default {
         selected: [],
         headers: [
           { text: 'ID',  align: 'center', sortable: false, value: 'finding_id' },
-          { text: 'DataSource', align: 'start', sortable: false, value: 'data_source' },
-          { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
           { text: 'Serverity', align: 'start', sortable: false, value: 'score' },
+          { text: 'Data Source', align: 'start', sortable: false, value: 'data_source' },
+          { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
+          { text: 'Description', align: 'start', sortable: false, value: 'description' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: {
@@ -241,30 +250,21 @@ export default {
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
-    colorByScore: (score) => {
-      if ( score < 0.5 ) {
-        return 'success'
-      } else if ( 0.75 < score ) {
-        return 'red'
-      } else {
-        return 'yellow'
-      }
-    },
   },
   mounted() {
     this.refleshList('')
   },
   methods: {
     async refleshList(searchCond) {
-      this.table.total = 0
-      this.findings = []
       const res = await this.$axios.get(
         '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond
       ).catch((err) =>  {
+        this.clearList()
         return Promise.reject(err)
       })
       const list = res.data
       if ( !list || !list.data || !list.data.finding_id ) {
+        this.clearList()
         return false
       }
       this.table.total = list.data.finding_id.length
@@ -273,17 +273,28 @@ export default {
     },
     async loadList() {
       this.table.loading = true
-      this.table.items = []
+      var items = []
+      var resources = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.findings.slice(from, to)
       ids.forEach( async id => {
         const res = await this.$axios.get('/finding/get-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+          this.clearList()
           return Promise.reject(err)
         })
-        this.table.items.push(res.data.data.finding)
+        items.push(res.data.data.finding)
+        resources.push(res.data.data.finding.resource_name)
       })
+      this.table.items = items
+      this.resourceNameList = resources
       this.table.loading = false
+    },
+    clearList() {
+      this.findings = []
+      this.table.total = 0
+      this.table.items = []
+      this.resourceNameList = []
     },
     handleViewItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
@@ -304,7 +315,7 @@ export default {
         searchCond += '&to_score=' + this.searchModel.score[1]
       }
       this.refleshList(searchCond)
-    }
+    },
   }
 }
 </script>
