@@ -102,7 +102,43 @@ export const appRoute = [
               title: 'Finding'
             },
             component: () => import('@/view/finding/Finding.vue')
-          }
+          },
+        ]
+      },
+      {
+        path: '/iam',
+        component: RouteWrapper,
+        redirect: '/iam/user',
+        meta: {
+          title: 'IAM',
+          icon: 'mdi-account-multiple',
+          group: 'iam'
+        },
+        children: [
+          {
+            path: '/iam/user',
+            name: 'User',
+            meta: {
+              title: 'User',
+            },
+            component: () => import('@/view/iam/User.vue')
+          },
+          {
+            path: '/iam/role',
+            name: 'Role',
+            meta: {
+              title: 'Role'
+            },
+            component: () => import('@/view/iam/Role.vue')
+          },
+          {
+            path: '/iam/policy',
+            name: 'Policy',
+            meta: {
+              title: 'Policy'
+            },
+            component: () => import('@/view/iam/Policy.vue')
+          },
         ]
       },
       {

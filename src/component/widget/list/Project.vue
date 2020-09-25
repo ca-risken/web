@@ -1,6 +1,6 @@
 <template>
   <v-card tile>
-    <v-card-title>select project</v-card-title>
+    <v-card-title>Select your project</v-card-title>
     <v-divider></v-divider>
     <v-card-text class="pa-0">
       <v-list rounded class="pa-0">

@@ -9,8 +9,16 @@
         transition="scale-transition"
       >
         <template v-slot:activator="{ on }">
-          <v-btn text dark slot="activator" v-on="on">
-            <v-icon left>mdi-alpha-p-circle-outline</v-icon>{{ projectName }}
+          <v-btn text dark slot="activator" v-on="on" style="text-transform: none">
+            <v-avatar color="purple darken-4" size="42">
+              <span class="white--text headline">PJ</span>
+            </v-avatar>
+            <v-layout align-center justify-center
+              class="text-h6 mx-4 font-weight-black"
+              style="text-decoration: underline;"
+            >
+              {{ projectName }}
+            </v-layout>
           </v-btn>
         </template>
         <project-list></project-list>
@@ -80,7 +88,7 @@ export default {
           click: this.handleSetting
         },
         {
-          icon: 'fullscreen_exit',
+          icon: 'mdi-logout',
           href: '#',
           title: 'Logout',
           click: this.handleLogut
