@@ -9,8 +9,14 @@
         transition="scale-transition"
       >
         <template v-slot:activator="{ on }">
-          <v-btn text dark slot="activator" v-on="on">
-            <v-icon left>mdi-alpha-p-circle-outline</v-icon>{{ projectName }}
+          <v-btn text dark slot="activator" v-on="on" style="text-transform: none">
+            <v-icon left class="ml-2">mdi-alpha-p-circle-outline</v-icon>
+            <v-layout align-center justify-center
+              class="text-h6 mx-2 font-weight-black"
+              style="text-decoration: underline;"
+            >
+              {{ projectName }}
+            </v-layout>
           </v-btn>
         </template>
         <project-list></project-list>
