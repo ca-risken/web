@@ -50,7 +50,7 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="id"
-                @click:row="handleViewItem"
+                @click:row="handleEditItem"
                 @update:page="loadList"
                 v-model="table.selected"
               >
@@ -118,14 +118,63 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">削除しますか?</v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="policyModel.policy_id"></v-list-item-title>
+              <v-list-item-subtitle>Policy ID</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-certificate-outline</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="policyModel.name"></v-list-item-title>
+              <v-list-item-subtitle>Policy Name</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text
+            color="green darken-1"
+            @click="deleteDialog = false"
+          >
+            NO
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="deleteItem(policyModel.policy_id)"
+          >
+            YES
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+
 export default {
   mixins: [mixin],
+  components: {
+    BottomSnackBar,
+  },
   data() {
     return {
       searchModel: {
@@ -135,7 +184,7 @@ export default {
         policyName: { label: 'Policy Name', placeholder: 'Filter for policy name' },
       },
       policyNameList: [],
-      policyModel: { policy_id:'', name:'', updated_at:'' },
+      policyModel: { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' },
       search: '',
       table: {
         selected: [],
@@ -155,7 +204,8 @@ export default {
         },
         loading: false,
         actions: [
-          { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
+          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
@@ -167,6 +217,7 @@ export default {
         items: []
       },
       policies: [],
+      deleteDialog: false,
     }
   },
   filters: {
@@ -221,8 +272,26 @@ export default {
       this.table.items = []
       this.policyNameList = []
     },
-    handleViewItem(item) {
+    async deleteItem(policyID) {
+      const param = {
+          project_id: this.$store.state.project.project_id,
+          policy_id: policyID,
+      }
+      await this.$axios.post('/iam/delete-policy/', param).catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.$refs.snackbar.notifySuccess('Success: Your profile updated.')
+
+      this.deleteDialog  = false
+      this.handleSearch()
+    },
+    handleEditItem(item) {
 console.log(item)
+    },
+    handleDeleteItem(item) {
+      this.policyModel = Object.assign(this.policyModel, item)
+      this.deleteDialog  = true
     },
     handleSearch() {
       var searchCond = ''

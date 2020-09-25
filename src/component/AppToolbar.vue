@@ -10,15 +10,19 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn text dark slot="activator" v-on="on" style="text-transform: none">
-            <v-avatar color="purple darken-4" size="42">
-              <span class="white--text headline">PJ</span>
-            </v-avatar>
-            <v-layout align-center justify-center
-              class="text-h6 mx-4 font-weight-black"
-              style="text-decoration: underline;"
-            >
-              {{ projectName }}
-            </v-layout>
+            <v-card rounded color="primary darken-1">
+              <v-card-title>
+                <v-avatar  color="primary darken-3" size="42">
+                  <span class="whie--text text-h6 font-weight-black">PJ</span>
+                </v-avatar>
+                <v-layout align-center justify-center
+                  class="text-h6 mx-4 font-weight-black"
+                  style="text-decoration: underline;"
+                >
+                  {{ projectName }}
+                </v-layout>
+              </v-card-title>
+            </v-card>
           </v-btn>
         </template>
         <project-list></project-list>

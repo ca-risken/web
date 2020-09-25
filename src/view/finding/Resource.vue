@@ -157,7 +157,6 @@ export default {
         score: { label: 'Sum Score', placeholder: 'Filter for score( from - to )' },
       },
       resourceNameList: [],
-      resourceModel: { resource_id:'', resource_name:'', score:'', updated_at:'' },
       search: '',
       table: {
         selected: [],

@@ -116,7 +116,7 @@ export default {
         activated: true,
       }}
       const res = await this.$axios.post('/iam/put-user/', param).catch((err) =>  {
-        this.notifyError(err.response.data)
+        this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
       store.commit('storeUser', res.data.data.user)
