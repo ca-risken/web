@@ -10,9 +10,11 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn text dark slot="activator" v-on="on" style="text-transform: none">
-            <v-icon left class="ml-2">mdi-alpha-p-circle-outline</v-icon>
+            <v-avatar color="purple darken-4" size="42">
+              <span class="white--text headline">PJ</span>
+            </v-avatar>
             <v-layout align-center justify-center
-              class="text-h6 mx-2 font-weight-black"
+              class="text-h6 mx-4 font-weight-black"
               style="text-decoration: underline;"
             >
               {{ projectName }}

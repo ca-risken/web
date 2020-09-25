@@ -5,7 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon class="pr-2">mdi-file-find-outline</v-icon>Resource
+              <v-icon class="pr-2">mdi-account-multiple</v-icon>
+              User
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -14,57 +15,12 @@
         <v-row>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
-              multiple outlined dense clearable small-chips deletable-chips
-              :label="searchForm.resourceName.label"
-              :placeholder="searchForm.resourceName.placeholder"
-              :items="resourceNameList"
-              v-model="searchModel.resourceName"
+              outlined dense clearable
+              :label="searchForm.userName.label"
+              :placeholder="searchForm.userName.placeholder"
+              :items="userNameList"
+              v-model="searchModel.userName"
             />
-          </v-col>
-          <v-col cols="12" sm="4" md="4">
-            <v-menu
-              ref="menu"
-              v-model="searchForm.menu"
-              :close-on-content-click="false"
-              :return-value.sync="searchModel.dates"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  outlined dense readonly
-                  v-model="dateRangeText"
-                  :label="searchForm.dates.label"
-                  prepend-icon="event"
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                range no-title scrollable
-                v-model="searchModel.dates"
-              >
-                <v-btn text color="accent" @click="searchModel.dates = ['', '']">Clear</v-btn>
-                <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="searchForm.menu = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.menu.save(searchModel.dates)">OK</v-btn>
-              </v-date-picker>
-            </v-menu>
-          </v-col>
-
-          <v-col cols="12" sm="3" md="3">
-            <v-range-slider
-              outlined
-              dense
-              thumb-label
-              min="0.0"
-              max="100.0"
-              step="0.1"
-              :label="searchForm.score.label"
-              :messages="searchForm.score.placeholder"
-              v-model="searchModel.score"
-            ></v-range-slider>
           </v-col>
 
           <v-spacer />
@@ -98,8 +54,13 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
-                <template v-slot:item.findings="{ item }">
-                  <v-chip :color="getColorByFindings(item.findings)" dark>{{ item.findings }}</v-chip>
+                <template v-slot:item.avator="">
+                  <v-avatar class="ma-3">
+                    <img src="/static/avatar/default.png" alt="avatar" />
+                  </v-avatar>
+                </template>
+                <template v-slot:item.roles="{ item }">
+                  <v-chip :color="getColorByRoles(item.roles)" dark>{{ item.roles }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -147,25 +108,22 @@ export default {
   data() {
     return {
       searchModel: {
-        resourceName: null,
-        dates: ['', ''],
-        score: [0.0, 100.0],
+        userName: null,
       },
       searchForm: {
-        resourceName: { label: 'Resource Name', placeholder: 'Filter for resource name' },
-        dates: { label: 'UpdatedAt Range', placeholder: 'Filter for dates range', menu: false },
-        score: { label: 'Sum Score', placeholder: 'Filter for score( from - to )' },
+        userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
-      resourceNameList: [],
-      resourceModel: { resource_id:'', resource_name:'', score:'', updated_at:'' },
+      userNameList: [],
+      userModel: { user_id:'', name:'', roles:'', updated_at:'' },
       search: '',
       table: {
         selected: [],
         headers: [
-          { text: 'ID',  align: 'center', sortable: false, value: 'resource_id' },
-          { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
-          { text: 'Findings', align: 'center', sortable: false, value: 'findings' },
-          { text: 'Updated', align: 'start', sortable: false, value: 'updated_at' },
+          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
+          { text: 'ID',  align: 'start', sortable: false, value: 'user_id' },
+          { text: 'Name', align: 'start', sortable: false, value: 'name' },
+          { text: 'Roles', align: 'center', sortable: false, value: 'roles' },
+          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: {
@@ -186,7 +144,7 @@ export default {
         },
         items: []
       },
-      resources: [],
+      users: [],
     }
   },
   filters: {
@@ -197,67 +155,59 @@ export default {
   mounted() {
     this.refleshList('')
   },
-  computed: {
-    dateRangeText () {
-      if ( this.searchModel.dates.length < 1 || this.searchModel.dates[0] === '' || this.searchModel.dates[1] === '' ) {
-        return ''
-      }
-      return this.searchModel.dates.join(' ~ ')
-    },
-  },
   methods: {
     async refleshList(searchCond) {
       const res = await this.$axios.get(
-        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
+        '/iam/list-user/?activated=true&project_id=' + this.$store.state.project.project_id + searchCond
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
       })
       const list = res.data
-      if ( !list || !list.data || !list.data.resource_id ) {
+      if ( !list || !list.data || !list.data.user_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.resource_id.length
-      this.resources = list.data.resource_id
+      this.table.total = list.data.user_id.length
+      this.users = list.data.user_id
       this.loadList()
     },
     async loadList() {
       this.table.loading = true
       var items = []
-      var resources = []
+      var userNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
-      const ids = this.resources.slice(from, to)
+      const ids = this.users.slice(from, to)
       ids.forEach( async id => {
-        const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
+        const res = await this.$axios.get('/iam/get-user/?project_id='+ this.$store.state.project.project_id +'&user_id=' + id).catch((err) =>  {
           this.clearList()
           return Promise.reject(err)
         })
-        const findings = await this.$axios.get('/finding/list-finding/?project_id='+ this.$store.state.project.project_id +'&resource_name=' + res.data.data.resource.resource_name).catch((err) =>  {
+        const roles = await this.$axios.get('/iam/list-role/?project_id='+ this.$store.state.project.project_id +'&user_id=' + id).catch((err) =>  {
           this.clearList()
           return Promise.reject(err)
         })
         const item = {
-          resource_id: res.data.data.resource.resource_id,
-          resource_name: res.data.data.resource.resource_name,
-          findings: findings.data.data.finding_id.length,
-          updated_at: res.data.data.resource.updated_at,
+          user_id:    res.data.data.user.user_id,
+          name:       res.data.data.user.name,
+          updated_at: res.data.data.user.updated_at,
+          roles:      roles.data.data.role_id.length,
         }
         items.push(item)
-        resources.push(item.resource_name)
+        userNames.push(item.name)
       })
       this.table.items = items
-      this.resourceNameList = resources
+      this.userNameList = userNames
       this.table.loading = false
     },
     clearList() {
-      this.resources = []
+      this.users = []
       this.table.total = 0
       this.table.items = []
-      this.resourceNameList = []
+      this.userNameList = []
     },
-    getColorByFindings(cnt) {
+    getColorByRoles(cnt) {
       if ( cnt <= 1 ) {
         return 'success'
       } else if ( 3 < cnt ) {
@@ -267,24 +217,12 @@ export default {
       }
     },
     handleViewItem(item) {
-      this.$router.push('/finding/finding?resource_name=' + item.resource_name)
+console.log(item)
     },
     handleSearch() {
       var searchCond = ''
-      if (this.searchModel.resourceName) {
-        searchCond += '&resource_name=' + this.searchModel.resourceName
-      }
-      if (this.searchModel.dates[0]) {
-        searchCond += '&from_at=' + Math.floor(Date.parse(this.searchModel.dates[0]) / 1000 )
-      }
-      if (this.searchModel.dates[1]) {
-        searchCond += '&to_at=' + Math.floor(Date.parse(this.searchModel.dates[1]) / 1000 )
-      }
-      if (this.searchModel.score[0]) {
-        searchCond += '&from_sum_score=' + this.searchModel.score[0]
-      }
-      if (this.searchModel.score[1]) {
-        searchCond += '&to_sum_score=' + this.searchModel.score[1]
+      if (this.searchModel.userName) {
+        searchCond += '&name=' + this.searchModel.userName
       }
       this.refleshList(searchCond)
     },
