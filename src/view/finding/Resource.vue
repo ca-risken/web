@@ -33,22 +33,19 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  outlined
-                  dense
+                  outlined dense readonly
                   v-model="dateRangeText"
                   :label="searchForm.dates.label"
                   prepend-icon="event"
-                  readonly
                   v-bind="attrs"
                   v-on="on"
                 ></v-text-field>
               </template>
               <v-date-picker
+                range no-title scrollable
                 v-model="searchModel.dates"
-                no-title
-                scrollable
-                range
               >
+                <v-btn text color="accent" @click="searchModel.dates = ['', '']">Clear</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="searchForm.menu = false">Cancel</v-btn>
                 <v-btn text color="primary" @click="$refs.menu.save(searchModel.dates)">OK</v-btn>
