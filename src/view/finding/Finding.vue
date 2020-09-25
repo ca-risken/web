@@ -15,19 +15,19 @@
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
-              :label="searchForm.dataSource.label"
-              :placeholder="searchForm.dataSource.placeholder"
-              :items="dataSourceList"
-              v-model="searchModel.dataSource"
+              :label="searchForm.resourceName.label"
+              :placeholder="searchForm.resourceName.placeholder"
+              :items="resourceNameList"
+              v-model="searchModel.resourceName"
             />
           </v-col>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
-              :label="searchForm.resourceName.label"
-              :placeholder="searchForm.resourceName.placeholder"
-              :items="resourceNameList"
-              v-model="searchModel.resourceName"
+              :label="searchForm.dataSource.label"
+              :placeholder="searchForm.dataSource.placeholder"
+              :items="dataSourceList"
+              v-model="searchModel.dataSource"
             />
           </v-col>
           <v-col cols="12" sm="3" md="3">
