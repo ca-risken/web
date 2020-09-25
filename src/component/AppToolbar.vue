@@ -80,7 +80,7 @@ export default {
           click: this.handleSetting
         },
         {
-          icon: 'fullscreen_exit',
+          icon: 'mdi-logout',
           href: '#',
           title: 'Logout',
           click: this.handleLogut
