@@ -24,12 +24,11 @@
           </v-col>
 
           <v-spacer />
-          <v-btn
-            fab
-            class="mt-3 mr-4"
-            @click="handleSearch"
-          >
+          <v-btn class="mt-3 mr-4" fab @click="handleSearch">
             <v-icon>search</v-icon>
+          </v-btn>
+          <v-btn class="mt-3 mr-4" color="primary darken-3" dark fab  @click="handleNewItem">
+            <v-icon x-large>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
       </v-form>
@@ -119,9 +118,68 @@
       </v-row>
     </v-container>
 
+    <v-dialog v-model="editDialog" max-width="600px">
+      <v-card>
+        <v-card-title><span class="headline">Policy</span></v-card-title>
+        <v-card-text>
+          <v-form v-model="policyForm.valid" ref="form">
+            <v-text-field
+              v-model="policyModel.policy_id"
+              :label="policyForm.policy_id.label"
+              :placeholder="policyForm.policy_id.placeholder"
+              filled disabled
+            ></v-text-field>
+            <template v-if="policyForm.newPolicy">
+              <v-text-field
+                v-model="policyModel.name"
+                :counter="64"
+                :rules="policyForm.name.validator"
+                :label="policyForm.name.label"
+                :placeholder="policyForm.name.placeholder"
+                required
+              ></v-text-field>
+            </template>
+            <template v-else>
+              <v-text-field
+                v-model="policyModel.name"
+                :counter="64"
+                :rules="policyForm.name.validator"
+                :label="policyForm.name.label"
+                :placeholder="policyForm.name.placeholder"
+                filled disabled
+              ></v-text-field>   
+            </template>
+
+            <v-text-field
+              v-model="policyModel.action_ptn"
+              :rules="policyForm.action_ptn.validator"
+              :label="policyForm.action_ptn.label"
+              :placeholder="policyForm.action_ptn.placeholder"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="policyModel.resource_ptn"
+              :rules="policyForm.resource_ptn.validator"
+              :label="policyForm.resource_ptn.label"
+              :placeholder="policyForm.resource_ptn.placeholder"
+              required
+            ></v-text-field>
+            <v-divider class="mt-3 mb-3"></v-divider>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn text outlined color="green darken-1" @click="putItem">
+                <template v-if="policyForm.newPolicy">Regist</template>
+                <template v-else>Edit</template>
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <v-dialog
       v-model="deleteDialog"
-      max-width="290"
+      max-width="290px"
     >
       <v-card>
         <v-card-title class="headline">削除しますか?</v-card-title>
@@ -145,15 +203,9 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text
-            color="green darken-1"
-            @click="deleteDialog = false"
-          >
-            NO
-          </v-btn>
           <v-btn
-            color="green darken-1"
-            text
+            color="red darken-1"
+            text outlined
             @click="deleteItem(policyModel.policy_id)"
           >
             YES
@@ -182,6 +234,26 @@ export default {
       },
       searchForm: {
         policyName: { label: 'Policy Name', placeholder: 'Filter for policy name' },
+      },
+      policyForm: {
+        newPolicy: false,
+        valid: false,
+        policy_id: { label: 'ID', placeholder: '-' },
+        name: { label: 'Name *', placeholder: 'something-policy', validator:[
+            v => !!v || 'Name is required',
+            v => v.length <= 64 || 'Name must be less than 64 characters',
+          ]
+        },
+        action_ptn: { label: 'Action Pattern *', placeholder: '`.*` for all aciotns', validator:[
+            v => !!v || 'Action Pattern is required',
+            v => this.compilableRegexp(v) || 'Action Pattern must be compilable regular expression',
+          ]
+        },
+        resource_ptn: { label: 'Resource Pattern *', placeholder: '`.*` for all resources', validator:[
+            v => !!v || 'Resource Pattern is required',
+            v => this.compilableRegexp(v) || 'Resource Pattern must be compilable regular expression',
+          ]
+        },
       },
       policyNameList: [],
       policyModel: { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' },
@@ -218,6 +290,7 @@ export default {
       },
       policies: [],
       deleteDialog: false,
+      editDialog: false,
     }
   },
   filters: {
@@ -281,13 +354,49 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess('Success: Your profile updated.')
+      this.$refs.snackbar.notifySuccess('Success: delete policy.')
 
       this.deleteDialog  = false
       this.handleSearch()
     },
+    async putItem() {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        policy: {
+          name: this.policyModel.name,
+          project_id: this.$store.state.project.project_id,
+          action_ptn: this.policyModel.action_ptn,
+          resource_ptn: this.policyModel.resource_ptn,
+        },
+      }
+      const res = await this.$axios.post('/iam/put-policy/', param).catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+console.log(res)
+      this.$refs.snackbar.notifySuccess('Success: put policy.')
+
+      this.editDialog  = false
+      this.handleSearch()
+    },
+    compilableRegexp(ptn) {
+      try {
+        new RegExp(ptn)
+      } catch(e) {
+        console.log('Regexp complie error: ' + e )
+        return false
+      }
+      return true
+    },
+    handleNewItem() {
+      this.policyModel = { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' }
+      this.policyForm.newPolicy = true
+      this.editDialog  = true
+    },
     handleEditItem(item) {
-console.log(item)
+      this.policyModel = Object.assign(this.policyModel, item)
+      this.policyForm.newPolicy = false
+      this.editDialog  = true
     },
     handleDeleteItem(item) {
       this.policyModel = Object.assign(this.policyModel, item)

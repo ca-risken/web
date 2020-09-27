@@ -24,12 +24,12 @@
         <v-text-field
           v-model="userForm.data.id"
           label="ID"
-          readonly
+          filled disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.sub"
           label="Sub"
-          readonly
+          filled disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.name"
@@ -42,14 +42,14 @@
           :value="userForm.data.updated_at | formatTime"
           label="Updated"
           @input="value => userForm.data.updated_at = value"
-          readonly
+          filled disabled
         >
           <pre>{{ userForm.data.updated_at | formatTime }}</pre>
         </v-text-field>
         <v-divider class="mt-3 mb-3"></v-divider>
         <v-card-actions>
           <v-spacer />
-          <v-btn tile color="primary" @click="handleSubmit">Edit</v-btn>
+          <v-btn text outlined color="green darken-1" @click="handleSubmit">Edit</v-btn>
         </v-card-actions>
       </v-form>
     </v-card-text>
