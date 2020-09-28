@@ -235,7 +235,6 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
-          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
