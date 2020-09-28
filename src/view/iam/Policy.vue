@@ -1,7 +1,7 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row>
+      <v-row dense justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
@@ -12,11 +12,10 @@
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row  dense justify="center" align-content="center">
+        <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-combobox
               outlined clearable dense
-              class="mt-2"
               :label="searchForm.policyName.label"
               :placeholder="searchForm.policyName.placeholder"
               :items="policyNameList"
@@ -25,11 +24,11 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense @click="handleSearch">
+          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense @click="handleNewItem">
-            <v-icon x-large>mdi-new-box</v-icon>
+          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+            <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
       </v-form>
@@ -49,14 +48,14 @@
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="id"
+                item-key="policy_id"
                 @click:row="handleEditItem"
                 @update:page="loadList"
                 v-model="table.selected"
               >
                 <template v-slot:item.avator="">
                   <v-avatar class="ma-3">
-                    <v-icon>mdi-certificate-outline</v-icon>
+                    <v-icon large>mdi-certificate-outline</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:item.action_ptn="{ item }">
@@ -121,7 +120,10 @@
 
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
-        <v-card-title><span class="headline">Policy</span></v-card-title>
+        <v-card-title>
+          <v-icon large>mdi-certificate-outline</v-icon>
+          <span class="mx-4 headline">Policy</span>
+        </v-card-title>
         <v-card-text>
           <v-form v-model="policyForm.valid" ref="form">
             <v-text-field
@@ -168,6 +170,9 @@
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
+              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+                CANCEL
+              </v-btn>
               <v-btn text outlined color="green darken-1" @click="putItem">
                 <template v-if="policyForm.newPolicy">Regist</template>
                 <template v-else>Edit</template>
@@ -178,12 +183,11 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="deleteDialog"
-      max-width="290px"
-    >
+    <v-dialog v-model="deleteDialog" max-width="300px">
       <v-card>
-        <v-card-title class="headline">削除しますか?</v-card-title>
+        <v-card-title class="headline">
+          <span class="mx-4">削除しますか?</span>
+        </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
@@ -204,6 +208,9 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+            CANCEL
+          </v-btn>
           <v-btn
             color="red darken-1"
             text outlined
@@ -355,7 +362,7 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess('Success: delete policy.')
+      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
 
       this.deleteDialog  = false
       this.handleSearch()
@@ -370,12 +377,11 @@ export default {
           resource_ptn: this.policyModel.resource_ptn,
         },
       }
-      const res = await this.$axios.post('/iam/put-policy/', param).catch((err) =>  {
+      await this.$axios.post('/iam/put-policy/', param).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-console.log(res)
-      this.$refs.snackbar.notifySuccess('Success: put policy.')
+      this.$refs.snackbar.notifySuccess('Success: Updated policy.')
 
       this.editDialog  = false
       this.handleSearch()

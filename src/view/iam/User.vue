@@ -1,7 +1,7 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row>
+      <v-row dense justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
@@ -12,7 +12,7 @@
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row>
+        <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               outlined dense clearable
@@ -24,16 +24,15 @@
           </v-col>
 
           <v-spacer />
-          <v-btn
-            fab
-            class="mt-3 mr-4"
-            @click="handleSearch"
-          >
+          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
             <v-icon>search</v-icon>
+          </v-btn>
+          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+            <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
       </v-form>
-      <v-row>
+      <v-row dense justify="center" align-content="center">
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -49,13 +48,13 @@
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="id"
+                item-key="user_id"
                 @click:row="handleViewItem"
                 @update:page="loadList"
                 v-model="table.selected"
               >
                 <template v-slot:item.avator="">
-                  <v-avatar class="ma-3">
+                  <v-avatar class="ma-2">
                     <img src="/static/avatar/default.png" alt="avatar" />
                   </v-avatar>
                 </template>
@@ -208,12 +207,14 @@ export default {
       this.userNameList = []
     },
     getColorByRoles(cnt) {
-      if ( cnt <= 1 ) {
+      if ( cnt < 1  ) {
+        return 'grey'
+      } else if ( cnt <= 3 ) {
         return 'success'
-      } else if ( 3 < cnt ) {
-        return 'red'
-      } else {
+      } else if ( cnt < 10 ) {
         return 'yellow'
+      } else {
+        return 'red'
       }
     },
     handleViewItem(item) {

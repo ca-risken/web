@@ -1,7 +1,7 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row>
+      <v-row dense justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
@@ -12,7 +12,7 @@
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row>
+        <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               outlined dense clearable
@@ -24,16 +24,15 @@
           </v-col>
 
           <v-spacer />
-          <v-btn
-            fab
-            class="mt-3 mr-4"
-            @click="handleSearch"
-          >
+          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
             <v-icon>search</v-icon>
+          </v-btn>
+          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+            <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
       </v-form>
-      <v-row>
+      <v-row dense>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -43,24 +42,23 @@
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
-                :loading="table.loading"
+                :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="id"
-                @click:row="handleViewItem"
+                item-key="role_id"
+                @click:row="handleEditItem"
                 @update:page="loadList"
-                v-model="table.selected"
               >
                 <template v-slot:item.avator="">
                   <v-avatar class="ma-3">
-                    <v-icon>mdi-alpha-r-circle</v-icon>
+                    <v-icon large>mdi-alpha-r-circle</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.policies="{ item }">
-                  <v-chip :color="getColorByPolicies(item.policies)" dark>{{ item.policies }}</v-chip>
+                <template v-slot:item.policy_cnt="{ item }">
+                  <v-chip :color="getColorByPolicyCnt(item.policy_cnt)" dark>{{ item.policy_cnt }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -97,43 +95,213 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Edit Dialog -->
+    <v-dialog v-model="editDialog" max-width="70%">
+      <v-card>
+        <v-card-title>
+          <v-icon large>mdi-alpha-r-circle</v-icon>
+          <span class="mx-4 headline">Role</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form v-model="roleForm.valid" ref="form">
+            <v-text-field
+              v-model="roleModel.role_id"
+              :label="roleForm.role_id.label"
+              :placeholder="roleForm.role_id.placeholder"
+              filled disabled
+            ></v-text-field>
+            <template v-if="roleForm.newRole">
+              <v-text-field
+                v-model="roleModel.name"
+                :counter="64"
+                :rules="roleForm.name.validator"
+                :label="roleForm.name.label"
+                :placeholder="roleForm.name.placeholder"
+                required
+              ></v-text-field>
+            </template>
+            <template v-else>
+              <v-text-field
+                v-model="roleModel.name"
+                :counter="64"
+                :rules="roleForm.name.validator"
+                :label="roleForm.name.label"
+                :placeholder="roleForm.name.placeholder"
+                filled disabled
+              ></v-text-field>   
+            </template>
+            <!-- Policy List -->
+            <v-toolbar flat color="white">
+              <v-toolbar-title class="grey--text text--darken-4">
+                <v-icon large>mdi-certificate-outline</v-icon>
+                <span class="mx-4">Policy</span>
+              </v-toolbar-title>
+              <v-text-field text solo flat
+                prepend-icon="mdi-magnify"
+                placeholder="Type something"
+                v-model="policyTable.search"
+                hide-details
+                class="hidden-sm-and-down"
+              />
+              <v-btn icon>
+                <v-icon>mdi-filter</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-divider></v-divider>
+
+            <v-data-table
+              v-model="policyTable.selected"
+              :selectableKey="policyTable.selectableKey"
+              :search="policyTable.search"
+              :headers="policyTable.headers"
+              :items="policyTable.items"
+              :options="policyTable.options"
+              :loading="loading"
+              locale="ja-jp"
+              loading-text="読込中"
+              no-data-text="データがありません。"
+              class="elevation-1"
+              item-key="policy_id"
+              show-select
+              @click:row="handleClickPolicyList"
+            >
+              <template v-slot:item.action_ptn="{ item }">
+                <v-card
+                  label outliend
+                  elevation="1"
+                  color="red lighten-5"
+                  class="ma-auto"
+                >
+                  <v-card-text class="font-weight-bold">
+                    {{ item.action_ptn }}
+                  </v-card-text>
+                </v-card>
+              </template>
+              <template v-slot:item.resource_ptn="{ item }">
+                <v-card
+                  label outliend
+                  elevation="1"
+                  color="red lighten-5"
+                  class="ma-auto"
+                >
+                  <v-card-text class="font-weight-bold">
+                    {{ item.resource_ptn }}
+                  </v-card-text>
+                </v-card>
+              </template>
+              <template v-slot:item.updated_at="{ item }">
+                <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+              </template>
+            </v-data-table>
+
+            <v-divider class="mt-3 mb-3"></v-divider>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+                CANCEL
+              </v-btn>
+              <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
+                <template v-if="roleForm.newRole">Regist</template>
+                <template v-else>Edit</template>
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Dialog -->
+    <v-dialog v-model="deleteDialog" max-width="300px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">削除しますか?</span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="roleModel.role_id"></v-list-item-title>
+              <v-list-item-subtitle>Role ID</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-alpha-r-circle</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="roleModel.name"></v-list-item-title>
+              <v-list-item-subtitle>Role Name</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+            CANCEL
+          </v-btn>
+          <v-btn
+            :loading="loading"
+            color="red darken-1"
+            text outlined
+            @click="deleteItem(roleModel.role_id)"
+          >
+            YES
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+
 export default {
   mixins: [mixin],
+  components: {
+    BottomSnackBar,
+  },
   data() {
     return {
       searchModel: {
         roleName: null,
       },
+      loading: false,
       searchForm: {
         roleName: { label: 'Role Name', placeholder: 'Filter for role name' },
       },
+      roleForm: {
+        newRole: false,
+        valid: false,
+        role_id: { label: 'ID', placeholder: '-' },
+        name: { label: 'Name *', placeholder: 'something-policy', validator:[
+            v => !!v || 'Name is required',
+            v => v.length <= 64 || 'Name must be less than 64 characters',
+          ]
+        },
+      },
+
       roleNameList: [],
-      roleModel: { role_id:'', name:'', policies:'', updated_at:'' },
+      roleModel: { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' },
       search: '',
       table: {
-        selected: [],
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'ID',  align: 'start', sortable: false, value: 'role_id' },
           { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'Policies', align: 'center', sortable: false, value: 'policies' },
+          { text: 'Policies', align: 'center', sortable: false, value: 'policy_cnt' },
           { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: {
-          page: 1,
-          itemsPerPage: 20,
-          sortBy: ['id'],
-        },
-        loading: false,
+        options: { page: 1, itemsPerPage: 20, sortBy: ['role_id'] },
         actions: [
-          { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
+          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
@@ -145,6 +313,28 @@ export default {
         items: []
       },
       roles: [],
+      deleteDialog: false,
+      editDialog: false,
+      policyTable: {
+        selectableKey: 'policy_id',
+        selected: [],
+        search: '',
+        headers: [
+          { text: 'ID',  align: 'start', sortable: true, value: 'policy_id' },
+          { text: 'Name', align: 'start', sortable: true, value: 'name' },
+          { text: 'Action Pattern', align: 'start', sortable: true, value: 'action_ptn' },
+          { text: 'Resource Pattern', align: 'start', sortable: true, value: 'resource_ptn' },
+        ],
+        options: { page: 1, itemsPerPage: 20, sortBy: ['policy_id'] },
+        total: 0,
+        footer: {
+          disableItemsPerPage: true,
+          itemsPerPageOptions: [20],
+          showCurrentPage: true,
+          showFirstLastPage: true,
+        },
+        items: []
+      },
     }
   },
   filters: {
@@ -173,7 +363,7 @@ export default {
       this.loadList()
     },
     async loadList() {
-      this.table.loading = true
+      this.loading = true
       var items = []
       var roleNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
@@ -196,14 +386,15 @@ export default {
           role_id:    res.data.data.role.role_id,
           name:       res.data.data.role.name,
           updated_at: res.data.data.role.updated_at,
-          policies:   policies.data.data.policy_id.length,
+          policy_cnt:  policies.data.data.policy_id ? policies.data.data.policy_id.length : 0,
+          policies:   policies.data.data.policy_id ? policies.data.data.policy_id : [],
         }
         items.push(item)
         roleNames.push(item.name)
       })
       this.table.items = items
       this.roleNameList = roleNames
-      this.table.loading = false
+      this.loading = false
     },
     clearList() {
       this.roles = []
@@ -211,17 +402,128 @@ export default {
       this.table.items = []
       this.roleNameList = []
     },
-    getColorByPolicies(cnt) {
-      if ( cnt <= 1 ) {
+
+    async loadPolicyList() {
+      this.loading = true
+      this.clearPolicyList()
+      const res = await this.$axios.get(
+        '/iam/list-policy/?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      const list = res.data
+      if ( !list || !list.data || !list.data.policy_id ) {
+        return false
+      }
+
+      list.data.policy_id.forEach( async id => {
+        const res = await this.$axios.get(
+          '/iam/get-policy/?project_id='+ this.$store.state.project.project_id +'&policy_id=' + id
+        ).catch((err) =>  {
+          return Promise.reject(err)
+        })
+        const p = res.data.data.policy
+        this.policyTable.items.push(p)
+
+        if (this.roleModel.policies.indexOf(p.policy_id) !== -1 ){
+          this.policyTable.selected.push(p)
+        }
+      })
+      this.loading = false
+    },
+    clearPolicyList() {
+      this.policyTable.items = []
+      this.policyTable.selected = []
+    },
+
+    getColorByPolicyCnt(cnt) {
+      if ( cnt < 1  ) {
+        return 'grey'
+      } else if ( cnt <= 3 ) {
         return 'success'
-      } else if ( 3 < cnt ) {
-        return 'red'
-      } else {
+      } else if ( cnt < 10 ) {
         return 'yellow'
+      } else {
+        return 'red'
       }
     },
-    handleViewItem(item) {
-console.log(item)
+
+    async putItem() {
+      this.loading = true
+      // clear all policies
+      this.policyTable.items.forEach( async item => {
+        const detachParam = { 
+          project_id: this.$store.state.project.project_id,
+          role_id: this.roleModel.role_id,
+          policy_id: item.policy_id,
+        }
+        await this.$axios.post('/iam/detach-policy/', detachParam).catch((err) =>  {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      })
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        role: {
+          name: this.roleModel.name,
+          project_id: this.$store.state.project.project_id,
+        },
+      }
+      await this.$axios.post('/iam/put-role/', param).catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+
+      this.policyTable.selected.forEach( async selected => {
+        const attacheParam = { 
+          project_id: this.$store.state.project.project_id,
+          role_id: this.roleModel.role_id,
+          policy_id: selected.policy_id,
+        }
+        await this.$axios.post('/iam/attach-policy/', attacheParam).catch((err) =>  {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      })
+
+      this.$refs.snackbar.notifySuccess('Success: Updated role.')
+      this.loading = false
+      this.editDialog  = false
+      this.handleSearch()
+    },
+    async deleteItem(roleID) {
+      this.loading = true
+      const param = {
+          project_id: this.$store.state.project.project_id,
+          role_id: roleID,
+      }
+      await this.$axios.post('/iam/delete-role/', param).catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.$refs.snackbar.notifySuccess('Success: Deleted role.')
+      this.loading = false
+      this.deleteDialog  = false
+      this.handleSearch()
+    },
+
+    handleNewItem() {
+      this.roleModel = { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' }
+      this.loadPolicyList()
+      this.roleForm.newRole = true
+      this.editDialog  = true
+    },
+    handleEditItem(item) {
+      this.roleModel = Object.assign(this.roleModel, item)
+      this.loadPolicyList()
+      this.roleForm.newRole = false
+      this.editDialog  = true
+    },    
+    handleDeleteItem(item) {
+      this.roleModel = Object.assign(this.roleModel, item)
+      this.deleteDialog  = true
     },
     handleSearch() {
       var searchCond = ''
@@ -229,6 +531,9 @@ console.log(item)
         searchCond += '&name=' + this.searchModel.roleName
       }
       this.refleshList(searchCond)
+    },
+    handleClickPolicyList( item ) {
+console.log(item)
     },
   }
 }

@@ -14,12 +14,12 @@ var mixin = {
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
     getServerityColorByScore: (score) => {
-      if ( score < 0.5 ) {
+      if ( score <= 0.6 ) {
         return 'success'
-      } else if ( 0.75 < score ) {
-        return 'red'
-      } else {
+      } else if ( score <= 0.8 ) {
         return 'yellow'
+      } else {
+        return 'red'
       }
     },
     getDataSourceIcon: (dataSource) => {
