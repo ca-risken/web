@@ -450,44 +450,40 @@ export default {
 
     async putItem() {
       this.loading = true
-      // clear all policies
-      this.policyTable.items.forEach( async item => {
-        const detachParam = { 
-          project_id: this.$store.state.project.project_id,
-          role_id: this.roleModel.role_id,
-          policy_id: item.policy_id,
-        }
-        await this.$axios.post('/iam/detach-policy/', detachParam).catch((err) =>  {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
-      })
-      await new Promise(resolve => setTimeout(resolve, 1500))
-
-      const param = { 
+      // Update role
+      const roleParam = { 
         project_id: this.$store.state.project.project_id,
         role: {
           name: this.roleModel.name,
           project_id: this.$store.state.project.project_id,
         },
       }
-      await this.$axios.post('/iam/put-role/', param).catch((err) =>  {
+      await this.$axios.post('/iam/put-role/', roleParam).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
 
-      this.policyTable.selected.forEach( async selected => {
-        const attacheParam = { 
+      // Attach/Detach policies
+      this.policyTable.items.forEach( async item => {
+        const policyParam = { 
           project_id: this.$store.state.project.project_id,
           role_id: this.roleModel.role_id,
-          policy_id: selected.policy_id,
+          policy_id: item.policy_id,
         }
-        await this.$axios.post('/iam/attach-policy/', attacheParam).catch((err) =>  {
+        var uri = '/iam/detach-policy/'
+        this.policyTable.selected.some( selected => {
+          if(item.policy_id === selected.policy_id){
+            uri = '/iam/attach-policy/'
+            return true
+          }
+        })
+        await this.$axios.post(uri, policyParam).catch((err) =>  {
           this.$refs.snackbar.notifyError(err.response.data)
           return Promise.reject(err)
         })
       })
 
+      await new Promise(resolve => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess('Success: Updated role.')
       this.loading = false
       this.editDialog  = false
