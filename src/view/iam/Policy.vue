@@ -12,10 +12,11 @@
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row>
-          <v-col cols="12" sm="4" md="4">
+        <v-row  dense justify="center" align-content="center">
+          <v-col cols="12" sm="6" md="6">
             <v-combobox
-              outlined dense clearable
+              outlined clearable dense
+              class="mt-2"
               :label="searchForm.policyName.label"
               :placeholder="searchForm.policyName.placeholder"
               :items="policyNameList"
@@ -24,15 +25,15 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab @click="handleSearch">
+          <v-btn class="mt-3 mr-4" fab dense @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" dark fab  @click="handleNewItem">
+          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense @click="handleNewItem">
             <v-icon x-large>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
       </v-form>
-      <v-row>
+      <v-row dense>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
