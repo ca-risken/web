@@ -13,7 +13,7 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
-          <v-col cols="12" sm="4" md="4">
+          <v-col cols="12" sm="6" md="6">
             <v-combobox
               outlined dense clearable
               :label="searchForm.userName.label"
@@ -32,7 +32,7 @@
           </v-btn>
         </v-row>
       </v-form>
-      <v-row dense justify="center" align-content="center">
+      <v-row dense>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -49,17 +49,16 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="user_id"
-                @click:row="handleViewItem"
+                @click:row="handleEditItem"
                 @update:page="loadList"
-                v-model="table.selected"
               >
                 <template v-slot:item.avator="">
                   <v-avatar class="ma-2">
                     <img src="/static/avatar/default.png" alt="avatar" />
                   </v-avatar>
                 </template>
-                <template v-slot:item.roles="{ item }">
-                  <v-chip :color="getColorByRoles(item.roles)" dark>{{ item.roles }}</v-chip>
+                <template v-slot:item.role_cnt="{ item }">
+                  <v-chip :color="getColorByRoleCnt(item.role_cnt)" dark>{{ item.role_cnt }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -96,14 +95,118 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Edit Dialog -->
+    <v-dialog v-model="editDialog" max-width="70%">
+      <v-card>
+        <v-card-title>
+          <v-icon large>mdi-account-multiple</v-icon>
+          <span class="mx-4 headline">User</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form">
+            <v-text-field
+              v-model="userModel.user_id"
+              :label="userForm.user_id.label"
+              :placeholder="userForm.user_id.placeholder"
+              filled disabled
+            ></v-text-field>
+            <v-text-field
+              v-model="userModel.name"
+              :counter="64"
+              :rules="userForm.name.validator"
+              :label="userForm.name.label"
+              :placeholder="userForm.name.placeholder"
+              filled disabled
+            ></v-text-field>
+            <!-- Role List -->
+            <v-toolbar flat color="white">
+              <v-toolbar-title class="grey--text text--darken-4">
+                <v-icon large>mdi-alpha-r-circle</v-icon>
+                <span class="mx-4">Role</span>
+              </v-toolbar-title>
+              <v-text-field text solo flat
+                prepend-icon="mdi-magnify"
+                placeholder="Type something"
+                v-model="roleTable.search"
+                hide-details
+                class="hidden-sm-and-down"
+              />
+              <v-btn icon>
+                <v-icon>mdi-filter</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-divider></v-divider>
+
+            <v-data-table
+              v-model="roleTable.selected"
+              :search="roleTable.search"
+              :headers="roleTable.headers"
+              :footer-props="roleTable.footer"
+              :items="roleTable.items"
+              :options.sync="roleTable.options"
+              :loading="loading"
+              locale="ja-jp"
+              loading-text="読込中"
+              no-data-text="データがありません。"
+              class="elevation-1"
+              item-key="role_id"
+              show-select
+            >
+              <template v-slot:item.action_ptn="{ item }">
+                <v-card
+                  label outliend
+                  elevation="0"
+                  color="red lighten-5"
+                  class="my-1"
+                >
+                  <v-card-text class="font-weight-bold">
+                    {{ item.action_ptn }}
+                  </v-card-text>
+                </v-card>
+              </template>
+              <template v-slot:item.resource_ptn="{ item }">
+                <v-card
+                  label outliend
+                  elevation="0"
+                  color="red lighten-5"
+                  class="my-1"
+                >
+                  <v-card-text class="font-weight-bold">
+                    {{ item.resource_ptn }}
+                  </v-card-text>
+                </v-card>
+              </template>
+            </v-data-table>
+
+            <v-divider class="mt-3 mb-3"></v-divider>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+                CANCEL
+              </v-btn>
+              <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
+                Edit
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+
 export default {
   mixins: [mixin],
+  components: {
+    BottomSnackBar,
+  },
   data() {
     return {
       loading: false,
@@ -113,37 +216,56 @@ export default {
       searchForm: {
         userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
+      userForm: {
+        user_id: { label: 'ID', placeholder: '-' },
+        name: { label: 'Name', placeholder: '-'},
+      },
+
       userNameList: [],
-      userModel: { user_id:'', name:'', roles:'', updated_at:'' },
-      search: '',
+      userModel: { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' },
       table: {
-        selected: [],
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'ID',  align: 'start', sortable: false, value: 'user_id' },
           { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'Roles', align: 'center', sortable: false, value: 'roles' },
+          { text: 'Roles', align: 'center', sortable: false, value: 'role_cnt' },
           { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: {
-          page: 1,
-          itemsPerPage: 20,
-          sortBy: ['id'],
-        },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
         actions: [
-          { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
+          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [10],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
         items: []
       },
       users: [],
+      deleteDialog: false,
+      editDialog: false,
+      roleTable: {
+        selected: [],
+        search: '',
+        headers: [
+          { text: 'ID',  align: 'start', sortable: true, value: 'role_id' },
+          { text: 'Name', align: 'start', sortable: true, value: 'name' },
+        ],
+        options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
+        total: 0,
+        footer: {
+          disableItemsPerPage: true,
+          itemsPerPageOptions: [5],
+          showCurrentPage: true,
+          showFirstLastPage: true,
+        },
+        items: []
+      },
     }
   },
   filters: {
@@ -191,7 +313,8 @@ export default {
           user_id:    res.data.data.user.user_id,
           name:       res.data.data.user.name,
           updated_at: res.data.data.user.updated_at,
-          roles:      roles.data.data.role_id.length,
+          role_cnt:   roles.data.data.role_id ? roles.data.data.role_id.length : 0,
+          roles:      roles.data.data.role_id ? roles.data.data.role_id : [],
         }
         items.push(item)
         userNames.push(item.name)
@@ -206,7 +329,40 @@ export default {
       this.table.items = []
       this.userNameList = []
     },
-    getColorByRoles(cnt) {
+    async loadRoleList() {
+      this.loading = true
+      this.clearRoleList()
+      const res = await this.$axios.get(
+        '/iam/list-role/?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      const list = res.data
+      if ( !list || !list.data || !list.data.role_id ) {
+        return false
+      }
+
+      list.data.role_id.forEach( async id => {
+        const res = await this.$axios.get(
+          '/iam/get-role/?project_id='+ this.$store.state.project.project_id +'&role_id=' + id
+        ).catch((err) =>  {
+          return Promise.reject(err)
+        })
+        const r = res.data.data.role
+        this.roleTable.items.push(r)
+
+        if (this.userModel.roles.indexOf(r.role_id) !== -1 ){
+          this.roleTable.selected.push(r)
+        }
+      })
+      this.loading = false
+    },
+    clearRoleList() {
+      this.roleTable.items = []
+      this.roleTable.selected = []
+    },
+
+    getColorByRoleCnt(cnt) {
       if ( cnt < 1  ) {
         return 'grey'
       } else if ( cnt <= 3 ) {
@@ -217,8 +373,44 @@ export default {
         return 'red'
       }
     },
-    handleViewItem(item) {
-console.log(item)
+
+    async putItem() {
+      this.loading = true
+      // Attach/Detach roles
+      this.roleTable.items.forEach( async item => {
+        const param = { 
+          project_id: this.$store.state.project.project_id,
+          user_id: this.userModel.user_id,
+          role_id: item.role_id,
+        }
+        var uri = '/iam/detach-role/'
+        this.roleTable.selected.some( selected => {
+          if(item.role_id === selected.role_id){
+            uri = '/iam/attach-role/'
+            return true
+          }
+        })
+        await this.$axios.post(uri, param).catch((err) =>  {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      })
+
+      this.finishUpdated('Success: Updated role.')
+    },
+    async finishUpdated(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.loading = false
+      this.editDialog  = false
+      this.handleSearch()
+    },
+
+    handleNewItem() {},
+    handleEditItem(item) {
+      this.userModel = Object.assign(this.userModel, item)
+      this.loadRoleList()
+      this.editDialog  = true
     },
     handleSearch() {
       var searchCond = ''

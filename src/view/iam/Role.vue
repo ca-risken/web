@@ -13,7 +13,7 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
-          <v-col cols="12" sm="4" md="4">
+          <v-col cols="12" sm="6" md="6">
             <v-combobox
               outlined dense clearable
               :label="searchForm.roleName.label"
@@ -152,11 +152,11 @@
 
             <v-data-table
               v-model="policyTable.selected"
-              :selectableKey="policyTable.selectableKey"
               :search="policyTable.search"
               :headers="policyTable.headers"
+              :footer-props="policyTable.footer"
               :items="policyTable.items"
-              :options="policyTable.options"
+              :options.sync="policyTable.options"
               :loading="loading"
               locale="ja-jp"
               loading-text="読込中"
@@ -164,14 +164,13 @@
               class="elevation-1"
               item-key="policy_id"
               show-select
-              @click:row="handleClickPolicyList"
             >
               <template v-slot:item.action_ptn="{ item }">
                 <v-card
                   label outliend
-                  elevation="1"
+                  elevation="0"
                   color="red lighten-5"
-                  class="ma-auto"
+                  class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
                     {{ item.action_ptn }}
@@ -181,17 +180,14 @@
               <template v-slot:item.resource_ptn="{ item }">
                 <v-card
                   label outliend
-                  elevation="1"
+                  elevation="0"
                   color="red lighten-5"
-                  class="ma-auto"
+                  class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
                     {{ item.resource_ptn }}
                   </v-card-text>
                 </v-card>
-              </template>
-              <template v-slot:item.updated_at="{ item }">
-                <v-chip>{{ item.updated_at | formatTime }}</v-chip>
               </template>
             </v-data-table>
 
@@ -268,10 +264,10 @@ export default {
   },
   data() {
     return {
+      loading: false,
       searchModel: {
         roleName: null,
       },
-      loading: false,
       searchForm: {
         roleName: { label: 'Role Name', placeholder: 'Filter for role name' },
       },
@@ -288,7 +284,6 @@ export default {
 
       roleNameList: [],
       roleModel: { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' },
-      search: '',
       table: {
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
@@ -298,7 +293,7 @@ export default {
           { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: { page: 1, itemsPerPage: 20, sortBy: ['role_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['role_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
@@ -306,7 +301,7 @@ export default {
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [10],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -316,7 +311,6 @@ export default {
       deleteDialog: false,
       editDialog: false,
       policyTable: {
-        selectableKey: 'policy_id',
         selected: [],
         search: '',
         headers: [
@@ -325,11 +319,11 @@ export default {
           { text: 'Action Pattern', align: 'start', sortable: true, value: 'action_ptn' },
           { text: 'Resource Pattern', align: 'start', sortable: true, value: 'resource_ptn' },
         ],
-        options: { page: 1, itemsPerPage: 20, sortBy: ['policy_id'] },
+        options: { page: 1, itemsPerPage: 5, sortBy: ['policy_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [5],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -463,6 +457,10 @@ export default {
         return Promise.reject(err)
       })
 
+      if ( this.roleForm.newRole) {
+        this.finishUpdated('Success: Created role.')
+        return
+      }
       // Attach/Detach policies
       this.policyTable.items.forEach( async item => {
         const policyParam = { 
@@ -483,11 +481,7 @@ export default {
         })
       })
 
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      this.$refs.snackbar.notifySuccess('Success: Updated role.')
-      this.loading = false
-      this.editDialog  = false
-      this.handleSearch()
+      this.finishUpdated('Success: Updated role.')
     },
     async deleteItem(roleID) {
       this.loading = true
@@ -499,9 +493,14 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess('Success: Deleted role.')
+      this.finishUpdated('Success: Deleted role.')
+    },
+    async finishUpdated(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
       this.deleteDialog  = false
+      this.editDialog  = false
       this.handleSearch()
     },
 
@@ -516,7 +515,7 @@ export default {
       this.loadPolicyList()
       this.roleForm.newRole = false
       this.editDialog  = true
-    },    
+    },
     handleDeleteItem(item) {
       this.roleModel = Object.assign(this.roleModel, item)
       this.deleteDialog  = true
@@ -527,9 +526,6 @@ export default {
         searchCond += '&name=' + this.searchModel.roleName
       }
       this.refleshList(searchCond)
-    },
-    handleClickPolicyList( item ) {
-console.log(item)
     },
   }
 }

@@ -51,7 +51,6 @@
                 item-key="policy_id"
                 @click:row="handleEditItem"
                 @update:page="loadList"
-                v-model="table.selected"
               >
                 <template v-slot:item.avator="">
                   <v-avatar class="ma-3">
@@ -266,9 +265,7 @@ export default {
       },
       policyNameList: [],
       policyModel: { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' },
-      search: '',
       table: {
-        selected: [],
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'ID',  align: 'start', sortable: false, value: 'policy_id' },
@@ -280,8 +277,8 @@ export default {
         ],
         options: {
           page: 1,
-          itemsPerPage: 20,
-          sortBy: ['id'],
+          itemsPerPage: 10,
+          sortBy: ['policy_id'],
         },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -290,7 +287,7 @@ export default {
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [10],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
