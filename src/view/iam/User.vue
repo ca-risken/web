@@ -24,7 +24,7 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
+          <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
           <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
@@ -42,7 +42,7 @@
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
-                :loading="table.loading"
+                :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
                 loading-text="読込中"
@@ -106,6 +106,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
+      loading: false,
       searchModel: {
         userName: null,
       },
@@ -130,7 +131,6 @@ export default {
           itemsPerPage: 20,
           sortBy: ['id'],
         },
-        loading: false,
         actions: [
           { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
         ],
@@ -172,7 +172,7 @@ export default {
       this.loadList()
     },
     async loadList() {
-      this.table.loading = true
+      this.loading = true
       var items = []
       var userNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
@@ -198,7 +198,7 @@ export default {
       })
       this.table.items = items
       this.userNameList = userNames
-      this.table.loading = false
+      this.loading = false
     },
     clearList() {
       this.users = []

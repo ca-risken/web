@@ -24,7 +24,7 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
+          <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
           <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
@@ -42,7 +42,7 @@
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
-                :loading="table.loading"
+                :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
                 loading-text="読込中"
@@ -173,7 +173,7 @@
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
                 CANCEL
               </v-btn>
-              <v-btn text outlined color="green darken-1" @click="putItem">
+              <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
                 <template v-if="policyForm.newPolicy">Regist</template>
                 <template v-else>Edit</template>
               </v-btn>
@@ -208,7 +208,7 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn text outlined color="grey darken-1" :loading="loading" @click="deleteDialog = false">
             CANCEL
           </v-btn>
           <v-btn
@@ -237,6 +237,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       searchModel: {
         policyName: null,
       },
@@ -282,7 +283,6 @@ export default {
           itemsPerPage: 20,
           sortBy: ['id'],
         },
-        loading: false,
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
@@ -327,7 +327,7 @@ export default {
       this.loadList()
     },
     async loadList() {
-      this.table.loading = true
+      this.loading = true
       var items = []
       var policyNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
@@ -345,7 +345,7 @@ export default {
       })
       this.table.items = items
       this.policyNameList = policyNames
-      this.table.loading = false
+      this.loading = false
     },
     clearList() {
       this.policies = []
