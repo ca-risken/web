@@ -134,7 +134,7 @@ export default {
       this.$router.push('/auth/signin')
     },
     handleSetting() {
-      this.$router.push('/profile')
+      this.$router.push('/iam/profile')
     },
     handleGoBack() {
       this.$router.go(-1)

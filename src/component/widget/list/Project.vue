@@ -1,8 +1,8 @@
 <template>
   <v-card tile>
-    <v-card-title>Select your project</v-card-title>
+    <v-card-title dense>Select your project</v-card-title>
     <v-divider></v-divider>
-    <v-card-text class="pa-0">
+    <v-card-text dense class="pa-0">
       <v-list rounded class="pa-0">
         <v-list-item
           v-for="(pj, index) in projects"
@@ -19,6 +19,12 @@
           </template>
           <v-list-item-content>{{ pj.name }}</v-list-item-content>
         </v-list-item>
+
+        <v-divider></v-divider>
+        <v-list-item @click="handleNewProject">
+          <v-list-item-content>New Project</v-list-item-content>
+        </v-list-item>
+
       </v-list>
     </v-card-text>
   </v-card>
@@ -39,19 +45,24 @@ export default {
   mixins: [mixin],
   methods: {
     async listProject() {
-      if (store.state.user) {
-        const res = await this.$axios.get('/project/list-project/?user_id=' + store.state.user.user_id ).catch((err) =>  {
-          return Promise.reject(err)
-        })
-        if (res.data.data.project ) {
-          this.projects = res.data.data.project
-        }
+      if ( !store.state.user ) {
+        this.$refs.snackbar.notifyError( 'Error: Try again after signin.' )
+        return
+      }
+      const res = await this.$axios.get('/project/list-project/?user_id=' + store.state.user.user_id ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if (res.data.data.project ) {
+        this.projects = res.data.data.project
       }
     },
-    handleClick: function (project)  {
+    handleClick(project)  {
       store.commit('updateProject', project)
       this.reload()
-    }
+    },
+    handleNewProject() {
+      this.$router.push('/project/new')
+    },
   }
 }
 </script>
