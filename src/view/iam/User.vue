@@ -27,7 +27,7 @@
           <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNew">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -49,7 +49,7 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="user_id"
-                @click:row="handleEditItem"
+                @click:row="handleEdit"
                 @update:page="loadList"
               >
                 <template v-slot:item.avator="">
@@ -102,25 +102,35 @@
         <v-card-title>
           <v-icon large>mdi-account-multiple</v-icon>
           <span class="mx-4 headline">User</span>
+          <v-spacer />
+          <template v-if="userForm.clickNew">
+            <v-btn text outlined @click="userDialog = true">
+              Select user
+            </v-btn>
+            <user
+              :userDialog="userDialog"
+              @handleUserDialogResponse="handleUserDialogResponse"
+            />
+          </template>
         </v-card-title>
         <v-card-text>
-          <v-form ref="form">
-            <v-text-field
-              v-model="userModel.user_id"
-              :label="userForm.user_id.label"
-              :placeholder="userForm.user_id.placeholder"
-              filled disabled
-            ></v-text-field>
-            <v-text-field
-              v-model="userModel.name"
-              :counter="64"
-              :rules="userForm.name.validator"
-              :label="userForm.name.label"
-              :placeholder="userForm.name.placeholder"
-              filled disabled
-            ></v-text-field>
-            <!-- Role List -->
-            <v-toolbar flat color="white">
+          <v-text-field
+            v-model="userModel.user_id"
+            :label="userForm.user_id.label"
+            :placeholder="userForm.user_id.placeholder"
+            filled disabled
+          ></v-text-field>
+          <v-text-field
+            v-model="userModel.name"
+            :counter="64"
+            :rules="userForm.name.validator"
+            :label="userForm.name.label"
+            :placeholder="userForm.name.placeholder"
+            filled disabled
+          ></v-text-field>
+          <!-- Role List -->
+          <div v-show="userModel.user_id">
+            <v-toolbar flat color="white" v-show="userModel.user_id">
               <v-toolbar-title class="grey--text text--darken-4">
                 <v-icon large>mdi-alpha-r-circle</v-icon>
                 <span class="mx-4">Role</span>
@@ -185,14 +195,15 @@
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
                 CANCEL
               </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
+              <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
                 Edit
               </v-btn>
             </v-card-actions>
-          </v-form>
+          </div>
         </v-card-text>
       </v-card>
     </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -201,11 +212,13 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import User from '@/component/widget/list/User'
 
 export default {
   mixins: [mixin],
   components: {
     BottomSnackBar,
+    User,
   },
   data() {
     return {
@@ -217,6 +230,7 @@ export default {
         userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
       userForm: {
+        clickNew: false,
         user_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name', placeholder: '-'},
       },
@@ -248,6 +262,7 @@ export default {
       users: [],
       deleteDialog: false,
       editDialog: false,
+      userDialog: false,
       roleTable: {
         selected: [],
         search: '',
@@ -405,11 +420,28 @@ export default {
       this.handleSearch()
     },
 
-    handleNewItem() {},
-    handleEditItem(item) {
+    handleUserDialogResponse(user) {
+      this.userModel = user
+      this.userDialog = false
+    },
+    handleNew() {
+      this.userForm.clickNew = true
+      this.userModel = { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' }
+      this.loadRoleList()
+      this.editDialog  = true
+    },
+    handleEdit(item) {
+      this.userForm.clickNew = false
       this.userModel = Object.assign(this.userModel, item)
       this.loadRoleList()
       this.editDialog  = true
+    },
+    handleEditSubmit() {
+      if( this.roleTable.selected.length < 1 ) {
+        this.$refs.snackbar.notifyError('Error: Select one or more roles.')
+        return false
+      }
+      this.putItem()
     },
     handleSearch() {
       var searchCond = ''
