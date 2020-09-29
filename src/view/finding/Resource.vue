@@ -1,7 +1,7 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row>
+      <v-row dense>
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
@@ -11,7 +11,7 @@
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row>
+        <v-row dense>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
@@ -68,16 +68,12 @@
           </v-col>
 
           <v-spacer />
-          <v-btn
-            fab
-            class="mt-3 mr-4"
-            @click="handleSearch"
-          >
+          <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
         </v-row>
       </v-form>
-      <v-row>
+      <v-row dense>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -87,13 +83,13 @@
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
-                :loading="table.loading"
+                :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="id"
+                item-key="resource_id"
                 @click:row="handleViewItem"
                 @update:page="loadList"
                 v-model="table.selected"
@@ -146,6 +142,7 @@ export default {
   mixins: [mixin],
   data() {
     return {
+      loading: false,
       searchModel: {
         resourceName: null,
         dates: ['', ''],
@@ -157,7 +154,6 @@ export default {
         score: { label: 'Sum Score', placeholder: 'Filter for score( from - to )' },
       },
       resourceNameList: [],
-      resourceModel: { resource_id:'', resource_name:'', score:'', updated_at:'' },
       search: '',
       table: {
         selected: [],
@@ -173,7 +169,6 @@ export default {
           itemsPerPage: 20,
           sortBy: ['id'],
         },
-        loading: false,
         actions: [
           { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
         ],
@@ -223,7 +218,7 @@ export default {
       this.loadList()
     },
     async loadList() {
-      this.table.loading = true
+      this.loading = true
       var items = []
       var resources = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
@@ -249,7 +244,7 @@ export default {
       })
       this.table.items = items
       this.resourceNameList = resources
-      this.table.loading = false
+      this.loading = false
     },
     clearList() {
       this.resources = []

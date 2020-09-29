@@ -9,11 +9,11 @@
     <template v-slot:action="{ attrs }">
       <v-btn
         dark
-        text
+        icon
         v-bind="attrs"
         @click="snackbar.show = false"
       >
-        Close
+        <v-icon>close</v-icon>
       </v-btn>
     </template>
   </v-snackbar>
