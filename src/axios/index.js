@@ -26,9 +26,6 @@ axios.interceptors.response.use(
     } else if (status === 403) {
       console.log('403認可エラー')
       router.push({path: '/403', query: { url: router.currentRoute.fullPath }})
-    } else if (status >= 500) {
-      console.log('500エラー')
-      router.push({path: '/500'})
     }
     return Promise.reject(error)
   }

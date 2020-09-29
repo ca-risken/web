@@ -139,16 +139,25 @@ export const appRoute = [
             },
             component: () => import('@/view/iam/Policy.vue')
           },
+          {
+            path: '/iam/profile',
+            name: 'Profile',
+            meta: {
+              title: 'Profile',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/iam/Policy.vue')
+          },
         ]
       },
       {
-        path: '/profile',
-        name: 'profile',
+        path: '/project/new',
+        name: 'Project',
         meta: {
-          title: 'Profile',
+          title: 'Project',
           hiddenInMenu: true,
         },
-        component: () => import('@/view/iam/Profile.vue')
+        component: () => import('@/view/project/Project.vue')
       },
       {
         path: '/403',
