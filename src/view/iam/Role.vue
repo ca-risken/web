@@ -265,9 +265,7 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: {
-        roleName: null,
-      },
+      searchModel: { roleName: null },
       searchForm: {
         roleName: { label: 'Role Name', placeholder: 'Filter for role name' },
       },

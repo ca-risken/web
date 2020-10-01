@@ -11,6 +11,21 @@
           </v-toolbar>
         </v-col>
       </v-row>
+      <v-row dense>
+        <v-col cols="12" sm="6" md="6">
+          <v-select
+            v-model="awsModel"
+            :items="awsList"
+            item-text="name"
+            item-value="aws_id"
+            label="Select your AWS"
+            @change="handleList"
+            return-object
+            outlined
+            dense
+          ></v-select>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -224,6 +239,7 @@ export default {
   data() {
     return {
       loading: false,
+      awsList: [],
       awsForm: {
         readOnly: false,
         valid: false,
@@ -275,12 +291,35 @@ export default {
     }
   },
   mounted() {
-    this.refleshList(this.$route.query.aws_id)
+    this.loading = true
+    this.listAWS()
+
+    if ( !this.$route.query.aws_id ) {
+      return false
+    }
+    this.awsModel.aws_id = Number(this.$route.query.aws_id)
+    this.loading = true
+    this.refleshList()
   },
   methods: {
-    async refleshList(awsID) {
+    async listAWS() {
+      const res = await this.$axios.get('/aws/list-aws/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      const list = res.data
+      if ( !list || !list.data || !list.data.aws ) {
+        return false
+      }
+      this.awsList = list.data.aws
+      this.loading = false
+    },
+    async refleshList() {
+      if ( !this.awsModel.aws_id ) {
+        this.clearList()
+        return
+      }
       const res = await this.$axios.get(
-        '/aws/list-datasource/?project_id=' + this.$store.state.project.project_id + '&aws_id=' + awsID
+        '/aws/list-datasource/?project_id=' + this.$store.state.project.project_id + '&aws_id=' + this.awsModel.aws_id
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
@@ -314,8 +353,6 @@ export default {
         default:
           return '/static/aws/default.png'
       }
-
-
     },
     async detachDataSource() {
       const param = {
@@ -360,6 +397,10 @@ export default {
     },
 
     // handler method
+    handleList() {
+      this.loading = true
+      this.refleshList()
+    },
     handleViewItem(item) {
       this.assignDataModel(item)
       this.awsForm.readOnly = true
@@ -395,7 +436,7 @@ export default {
       this.scanDataSource()
     },
     assignDataModel(item) {
-      this.awsModel = { aws_id: Number(this.$route.query.aws_id), aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' }
+      this.awsModel = { aws_id: Number(this.awsID), aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' }
       this.awsModel = Object.assign(this.awsModel, item)
     },
     async finish(msg) {
@@ -404,7 +445,7 @@ export default {
       this.loading = false
       this.editDialog  = false
       this.deleteDialog  = false
-      this.refleshList(this.$route.query.aws_id)
+      this.refleshList()
     },
   }
 }

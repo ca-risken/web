@@ -237,9 +237,7 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: {
-        policyName: null,
-      },
+      searchModel: { policyName: null },
       searchForm: {
         policyName: { label: 'Policy Name', placeholder: 'Filter for policy name' },
       },

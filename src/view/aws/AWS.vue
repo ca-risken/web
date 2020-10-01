@@ -268,6 +268,7 @@ export default {
     },
   },
   mounted() {
+    this.loading = true
     this.refleshList('')
   },
   methods: {
