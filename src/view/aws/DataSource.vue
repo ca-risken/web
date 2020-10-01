@@ -361,10 +361,10 @@ export default {
         aws_data_source_id: this.awsModel.aws_data_source_id
       }
       await this.$axios.post('/aws/detach-datasource/', param).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
+        this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finish('Success: Detach AWS Data Source.')
+      this.finishSuccess('Success: Detach AWS Data Source.')
     },
     async attachDataSource() {
       const param = {
@@ -378,10 +378,10 @@ export default {
         },
       }
       await this.$axios.post('/aws/attach-datasource/', param).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
+        this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finish('Success: Attach AWS Data Source.')
+      this.finishSuccess('Success: Attach AWS Data Source.')
     },
     async scanDataSource() {
       const param = {
@@ -390,10 +390,10 @@ export default {
         aws_data_source_id: this.awsModel.aws_data_source_id,
       }
       await this.$axios.post('/aws/invoke-scan/', param).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
+        this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finish('Success: Invoke scan for Data Source.')
+      this.finishSuccess('Success: Invoke scan for Data Source.')
     },
 
     // handler method
@@ -436,16 +436,25 @@ export default {
       this.scanDataSource()
     },
     assignDataModel(item) {
-      this.awsModel = { aws_id: Number(this.awsID), aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' }
+      this.awsModel = { aws_id: this.awsModel.aws_id, aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' }
       this.awsModel = Object.assign(this.awsModel, item)
     },
-    async finish(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+    async finishSuccess(msg) {
       this.$refs.snackbar.notifySuccess(msg)
+      this.finish(true)
+    },
+    async finishError(msg) {
+      this.$refs.snackbar.notifyError(msg)
+      this.finish(false)
+    },
+    async finish(reflesh) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
       this.loading = false
       this.editDialog  = false
       this.deleteDialog  = false
-      this.refleshList()
+      if ( reflesh ) {
+        this.refleshList()
+      }
     },
   }
 }
