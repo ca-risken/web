@@ -223,9 +223,7 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: {
-        userName: null,
-      },
+      searchModel: { userName: null },
       searchForm: {
         userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
