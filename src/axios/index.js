@@ -22,7 +22,7 @@ axios.interceptors.response.use(
       router.push({path: '/'})
     } else if (status === 401) {
       console.log('401認証エラー')
-      router.push({path: '/profile', query: { url: router.currentRoute.fullPath }})
+      router.push({path: '/iam/profile', query: { url: router.currentRoute.fullPath }})
     } else if (status === 403) {
       console.log('403認可エラー')
       router.push({path: '/403', query: { url: router.currentRoute.fullPath }})
