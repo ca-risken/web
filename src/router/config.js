@@ -78,6 +78,15 @@ export const appRoute = [
         component: () => import('@/view/Dashboard.vue')
       },
       {
+        path: '/project/new',
+        name: 'Project',
+        meta: {
+          title: 'Project',
+          hiddenInMenu: true,
+        },
+        component: () => import('@/view/project/Project.vue')
+      },
+      {
         path: '/finding',
         component: RouteWrapper,
         redirect: '/finding/resource',
@@ -151,13 +160,33 @@ export const appRoute = [
         ]
       },
       {
-        path: '/project/new',
-        name: 'Project',
+        path: '/aws',
+        component: RouteWrapper,
+        redirect: '/aws/aws',
         meta: {
-          title: 'Project',
-          hiddenInMenu: true,
+          title: 'AWS',
+          icon: 'mdi-aws',
+          color: 'orange',
+          group: 'aws'
         },
-        component: () => import('@/view/project/Project.vue')
+        children: [
+          {
+            path: '/aws/aws',
+            name: 'AWS',
+            meta: {
+              title: 'AWS',
+            },
+            component: () => import('@/view/aws/AWS.vue')
+          },
+          {
+            path: '/aws/data-source',
+            name: 'DataSource',
+            meta: {
+              title: 'DataSource',
+            },
+            component: () => import('@/view/aws/DataSource.vue')
+          },
+        ]
       },
       {
         path: '/403',

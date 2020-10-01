@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon class="pr-2">mdi-account-multiple</v-icon>
+              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
               Role
             </v-toolbar-title>
           </v-toolbar>
@@ -511,13 +511,13 @@ export default {
       this.editDialog  = true
     },
     handleEditItem(item) {
-      this.roleModel = Object.assign(this.roleModel, item)
+      this.assignDataModel(item)
       this.loadPolicyList()
       this.roleForm.newRole = false
       this.editDialog  = true
     },
     handleDeleteItem(item) {
-      this.roleModel = Object.assign(this.roleModel, item)
+      this.assignDataModel(item)
       this.deleteDialog  = true
     },
     handleSearch() {
@@ -526,6 +526,10 @@ export default {
         searchCond += '&name=' + this.searchModel.roleName
       }
       this.refleshList(searchCond)
+    },
+    assignDataModel(item) {
+      this.roleModel = { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' }
+      this.roleModel = Object.assign(this.roleModel, item)
     },
   }
 }

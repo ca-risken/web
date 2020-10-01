@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon class="pr-2">mdi-account-multiple</v-icon>
+              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
               Policy
             </v-toolbar-title>
           </v-toolbar>
@@ -207,7 +207,7 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" :loading="loading" @click="deleteDialog = false">
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
             CANCEL
           </v-btn>
           <v-btn
@@ -398,12 +398,12 @@ export default {
       this.editDialog  = true
     },
     handleEditItem(item) {
-      this.policyModel = Object.assign(this.policyModel, item)
+      this.assignDataModel(item)
       this.policyForm.newPolicy = false
       this.editDialog  = true
     },
     handleDeleteItem(item) {
-      this.policyModel = Object.assign(this.policyModel, item)
+      this.assignDataModel(item)
       this.deleteDialog  = true
     },
     handleSearch() {
@@ -412,6 +412,10 @@ export default {
         searchCond += '&name=' + this.searchModel.policyName
       }
       this.refleshList(searchCond)
+    },
+    assignDataModel(item) {
+      this.policyModel = { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' }
+      this.policyModel = Object.assign(this.policyModel, item)
     },
   }
 }

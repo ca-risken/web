@@ -29,6 +29,8 @@ var mixin = {
           return 'mdi-aws'
         case 'diagnosis':
           return 'mdi-jira'
+        case 'intrigue':
+          return 'http'
         default:
           return 'mdi-help-circle-outline'
       }
@@ -40,6 +42,8 @@ var mixin = {
           return 'orange'
         case 'diagnosis':
           return 'blue'
+        case 'intrigue':
+          return 'indigo'
         default:
           return 'mdi-help-circle-outline'
       }
