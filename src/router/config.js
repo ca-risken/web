@@ -155,7 +155,7 @@ export const appRoute = [
               title: 'Profile',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/iam/Policy.vue')
+            component: () => import('@/view/iam/Profile.vue')
           },
         ]
       },
