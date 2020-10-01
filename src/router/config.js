@@ -184,7 +184,7 @@ export const appRoute = [
             meta: {
               title: 'DataSource',
             },
-            component: () => import('@/view/aws/AWS.vue')
+            component: () => import('@/view/aws/DataSource.vue')
           },
         ]
       },

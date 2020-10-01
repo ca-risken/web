@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon class="pr-2">mdi-account-multiple</v-icon>
+              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
               User
             </v-toolbar-title>
           </v-toolbar>
@@ -248,7 +248,7 @@ export default {
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
         actions: [
-          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
+          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEdit },
         ],
         total: 0,
         footer: {
@@ -432,7 +432,7 @@ export default {
     },
     handleEdit(item) {
       this.userForm.clickNew = false
-      this.userModel = Object.assign(this.userModel, item)
+      this.assignDataModel(item)
       this.loadRoleList()
       this.editDialog  = true
     },
@@ -449,6 +449,10 @@ export default {
         searchCond += '&name=' + this.searchModel.userName
       }
       this.refleshList(searchCond)
+    },
+    assignDataModel(item) {
+      this.awsuserModelModel = { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' }
+      this.userModel = Object.assign(this.userModel, item)
     },
   }
 }

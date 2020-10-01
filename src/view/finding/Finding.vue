@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon class="pr-2">mdi-file-find-outline</v-icon>Finding
+              <v-icon large class="pr-2">mdi-file-find-outline</v-icon>Finding
             </v-toolbar-title>
           </v-toolbar>
         </v-col>

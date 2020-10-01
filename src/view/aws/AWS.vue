@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon class="pr-2" color="orange">mdi-aws</v-icon>
+              <v-icon large class="pr-2" color="orange">mdi-aws</v-icon>
               AWS
             </v-toolbar-title>
           </v-toolbar>
@@ -49,7 +49,7 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="aws_id"
-                @click:row="handleEditItem"
+                @click:row="handleRowClick"
               >
                 <template v-slot:item.avator="">
                   <v-avatar class="ma-3">
@@ -108,7 +108,7 @@
             ></v-text-field>
             <v-text-field
               v-model="awsModel.name"
-              :counter="64"
+              :counter="200"
               :rules="awsForm.name.validator"
               :label="awsForm.name.label"
               :placeholder="awsForm.name.placeholder"
@@ -185,7 +185,7 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" :loading="loading" @click="deleteDialog = false">
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
             CANCEL
           </v-btn>
           <v-btn
@@ -222,7 +222,7 @@ export default {
         aws_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
-            v => v.length <= 64 || 'Name must be less than 64 characters',
+            v => v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
         aws_account_id: { label: 'AWS Account ID *', placeholder: '123456789012', validator:[
@@ -324,7 +324,6 @@ export default {
     },
     isNewAccountID(accountID) {
       var isNew = true
-
       this.table.items.some( item => {
         if(item.aws_account_id == accountID){
           isNew = false
@@ -333,13 +332,16 @@ export default {
       })
       return isNew
     },
+    handleRowClick(item) {
+      this.$router.push('/aws/data-source?aws_id=' + item.aws_id)
+    },
     handleNewItem() {
       this.awsModel = { aws_id:'', name:'', aws_account_id:'', updated_at:'' }
       this.awsForm.newAWS = true
       this.editDialog  = true
     },
     handleEditItem(item) {
-      this.awsModel = Object.assign(this.awsModel, item)
+      this.assignDataModel(item)
       this.awsForm.newAWS = false
       this.editDialog  = true
     },
@@ -351,13 +353,18 @@ export default {
       this.putItem()
     },
     handleDeleteItem(item) {
-      this.awsModel = Object.assign(this.awsModel, item)
+      this.assignDataModel(item)
       this.deleteDialog  = true
     },
     handleDeleteSubmit() {
       this.loading = true
       this.deleteItem(this.awsModel.aws_id)
     },
+    assignDataModel(item) {
+      this.awsModel = {}
+      this.awsModel = Object.assign(this.awsModel, item)
+    },
+
     async finish(msg) {
       await new Promise(resolve => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess(msg)
