@@ -25,6 +25,13 @@
             dense
           ></v-select>
         </v-col>
+        <v-spacer />
+        <v-btn class="mt-3 mr-4" color="grey lighten-1" dense small icon fab outlined
+          :loading="loading"
+          @click="handleList"
+        >
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
       </v-row>
       <v-row>
         <v-col cols="12">
@@ -55,9 +62,9 @@
                 <template v-slot:item.status="{ item }">
                   <v-chip
                     v-if="item.aws_id"
-                    color="green"
+                    :color="getDataSourceStatusColor(item.status)"
                     dark
-                  >Configured</v-chip>
+                  >{{ getDataSourceStatusText(item.status) }}</v-chip>
                   <v-chip
                     v-else
                     color="grey"
@@ -103,32 +110,98 @@
           <v-icon large color="orange darken-1">mdi-aws</v-icon>
           <span class="mx-4 headline">AWS</span>
         </v-card-title>
+        <v-container fluid>
+          <v-row dense>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    {{ awsModel.aws_id }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>{{ awsForm.aws_id.label }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    {{ awsModel.aws_data_source_id }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>{{ awsForm.aws_data_source_id.label }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="6">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    {{ awsModel.data_source }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>{{ awsForm.data_source.label }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="3" v-if="awsModel.status">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    <v-chip dark :color="getDataSourceStatusColor(awsModel.status)">
+                      {{ getDataSourceStatusText(awsModel.status) }}
+                    </v-chip>
+                  </v-list-item-title>
+                  <v-list-item-subtitle>{{ awsForm.status.label }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4" v-if="awsModel.scan_at">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    <v-chip color="grey lighten-3">
+                      {{ awsModel.scan_at | formatTime }}
+                    </v-chip>
+                  </v-list-item-title>
+                  <v-list-item-subtitle>{{ awsForm.scan_at.label }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    <v-chip outlined>
+                      {{ awsModel.max_score }}
+                    </v-chip>
+                  </v-list-item-title>
+                  <v-list-item-subtitle>{{ awsForm.max_score.label }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="12" v-if="awsModel.status_detail">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    <v-textarea
+                      name="status_detail"
+                      v-model="awsModel.status_detail"
+                      :label="awsForm.status_detail.label"
+                      :placeholder="awsForm.status_detail.placeholder"
+                      filled disabled
+                    ></v-textarea>
+                  </v-list-item-title>
+                  <!-- <v-list-item-subtitle>{{ awsForm.status_detail.label }}</v-list-item-subtitle> -->
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+        </v-container>
         <v-card-text>
           <v-form v-model="awsForm.valid" ref="form">
-            <v-text-field
-              v-model="awsModel.aws_id"
-              :label="awsForm.aws_id.label"
-              :placeholder="awsForm.aws_id.placeholder"
-              outlined filled disabled
-            ></v-text-field>
-            <v-text-field
-              v-model="awsModel.aws_data_source_id"
-              :label="awsForm.aws_data_source_id.label"
-              :placeholder="awsForm.aws_data_source_id.placeholder"
-              outlined filled disabled
-            ></v-text-field>
-            <v-text-field
-              v-model="awsModel.data_source"
-              :label="awsForm.data_source.label"
-              :placeholder="awsForm.data_source.placeholder"
-              outlined filled disabled
-            ></v-text-field>
-            <v-text-field
-              v-model="awsModel.max_score"
-              :label="awsForm.max_score.label"
-              :placeholder="awsForm.max_score.placeholder"
-              outlined filled disabled
-            ></v-text-field>   
             <v-text-field
               v-model="awsModel.assume_role_arn"
               :counter="255"
@@ -226,8 +299,8 @@
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
-
 <script>
+import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 
@@ -257,8 +330,11 @@ export default {
         external_id: { label: 'External ID', placeholder: '-', validator: [
             v => v.length <= 255 || 'External ID must be less than 255 characters',
         ]},
+        status: { label: 'Status', placeholder: '-', validator: [] },
+        status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
+        scan_at: { label: 'Scaned', placeholder: '-', validator: [] },
       },
-      awsModel: { aws_id:'', aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' },
+      awsModel: { aws_id:'', aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'', status: 0, status_detail:'', scan_at: 0},
       table: {
         selected: [],
         search: '',
@@ -289,6 +365,11 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  filters: {
+    formatTime: (unix) => {
+      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
   },
   mounted() {
     this.loading = true
@@ -375,6 +456,9 @@ export default {
           project_id: this.$store.state.project.project_id,
           assume_role_arn: this.awsModel.assume_role_arn,
           external_id: this.awsModel.external_id,
+          status: 2, // CONFIGURED
+          status_detail: 'Configured at' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
+          scan_at: this.awsModel.scan_at,
         },
       }
       await this.$axios.post('/aws/attach-datasource/', param).catch((err) =>  {
@@ -399,7 +483,7 @@ export default {
     // handler method
     handleList() {
       this.loading = true
-      this.refleshList()
+      this.finishInfo('Reflesh list')
     },
     handleViewItem(item) {
       this.assignDataModel(item)
@@ -439,16 +523,22 @@ export default {
       this.awsModel = { aws_id: this.awsModel.aws_id, aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' }
       this.awsModel = Object.assign(this.awsModel, item)
     },
+    async finishInfo(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifyInfo(msg)
+      this.finish(true)
+    },
     async finishSuccess(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(true)
     },
     async finishError(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },
     async finish(reflesh) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
       this.loading = false
       this.editDialog  = false
       this.deleteDialog  = false
