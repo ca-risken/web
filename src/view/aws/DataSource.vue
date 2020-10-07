@@ -183,20 +183,15 @@
           </v-row>
           <v-row dense>
             <v-col cols="12" v-if="awsModel.status_detail">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    <v-textarea
-                      name="status_detail"
-                      v-model="awsModel.status_detail"
-                      :label="awsForm.status_detail.label"
-                      :placeholder="awsForm.status_detail.placeholder"
-                      filled disabled
-                    ></v-textarea>
-                  </v-list-item-title>
-                  <!-- <v-list-item-subtitle>{{ awsForm.status_detail.label }}</v-list-item-subtitle> -->
-                </v-list-item-content>
-              </v-list-item>
+              <v-card>
+                <v-card-title>
+                  <v-icon large left>mdi-pin-outline</v-icon>
+                  <span class="title font-weight-light">{{ awsForm.status_detail.label}}</span>
+                </v-card-title>
+                <v-card-text>
+                  {{ awsModel.status_detail }}
+                </v-card-text>
+              </v-card>
             </v-col>
           </v-row>
         </v-container>
