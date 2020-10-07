@@ -48,6 +48,34 @@ var mixin = {
           return 'mdi-help-circle-outline'
       }
     },
+    getDataSourceStatusText: (status) => {
+      switch (status) {
+        case 1:
+          return 'OK'
+        case 2:
+          return 'Configured'
+        case 3:
+          return 'Not configured'
+        case 4:
+          return 'Error'
+        default:
+          return 'Unknown'
+      }
+    },
+    getDataSourceStatusColor: (status) => {
+      switch (status) {
+        case 1:
+          return 'green'
+        case 2:
+          return 'blue'
+        case 3:
+          return 'grey'
+        case 4:
+          return 'red'
+        default:
+          return 'grey'
+      }
+    },
   },
 }
 

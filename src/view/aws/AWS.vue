@@ -202,7 +202,6 @@
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
-
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
