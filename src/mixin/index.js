@@ -22,6 +22,28 @@ var mixin = {
         return 'red'
       }
     },
+    getSeverityColor: (severity) => {
+      switch (severity) {
+        case 'high':
+          return 'pink'
+        case 'medium':
+          return 'yellow darken-3'
+        default:
+          return 'teal'
+      }
+    },
+    getHistoryTypeColor: (type) => {
+      switch (type) {
+        case 'created':
+          return 'teal'
+        case 'updated':
+          return 'amber'
+        case 'deleted':
+          return 'grey'
+        default:
+          return 'grey'
+      }
+    },
     getDataSourceIcon: (dataSource) => {
       if ( !dataSource.split(':')[0] ) { return 'mdi-help-circle-outline' }
       switch (dataSource.split(':')[0]) {

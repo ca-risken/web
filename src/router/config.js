@@ -115,6 +115,50 @@ export const appRoute = [
         ]
       },
       {
+        path: '/alert',
+        component: RouteWrapper,
+        redirect: '/alert/alert',
+        meta: {
+          title: 'Alert',
+          icon: 'mdi-alert',
+          group: 'alert'
+        },
+        children: [
+          {
+            path: '/alert/alert',
+            name: 'Alert',
+            meta: {
+              title: 'Alert'
+            },
+            component: () => import('@/view/alert/Alert.vue')
+          },
+          {
+            path: '/alert/condition',
+            name: 'Condition',
+            meta: {
+              title: 'Condition'
+            },
+            component: () => import('@/view/alert/Condition.vue')
+          },
+          {
+            path: '/alert/rule',
+            name: 'Rule',
+            meta: {
+              title: 'Rule'
+            },
+            component: () => import('@/view/alert/Rule.vue')
+          },
+          {
+            path: '/alert/notification',
+            name: 'Notification',
+            meta: {
+              title: 'Notification'
+            },
+            component: () => import('@/view/alert/Notification.vue')
+          },
+        ]
+      },
+      {
         path: '/iam',
         component: RouteWrapper,
         redirect: '/iam/user',
