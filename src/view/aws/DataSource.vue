@@ -185,8 +185,8 @@
             <v-col cols="12" v-if="awsModel.status_detail">
               <v-card>
                 <v-card-title>
-                  <v-icon large left>mdi-pin-outline</v-icon>
-                  <span class="title font-weight-light">{{ awsForm.status_detail.label}}</span>
+                  <v-icon left>mdi-pin-outline</v-icon>
+                  <span class="font-weight-light">{{ awsForm.status_detail.label}}</span>
                 </v-card-title>
                 <v-card-text>
                   {{ awsModel.status_detail }}
