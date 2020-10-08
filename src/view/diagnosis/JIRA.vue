@@ -5,8 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="orange">mdi-aws</v-icon>
-              AWS
+              <v-icon large class="pr-2" color="blue">mdi-bug-check-outline</v-icon>
+              JIRA
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -47,12 +47,12 @@
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="aws_id"
+                item-key="diagnosis_id"
                 @click:row="handleRowClick"
               >
                 <template v-slot:item.avator="">
                   <v-avatar class="ma-3">
-                    <v-icon color="orange darken-1" large>mdi-aws</v-icon>
+                    <v-icon color="blue darken-1" large>mdi-jira</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
@@ -94,45 +94,27 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large color="orange darken-1">mdi-aws</v-icon>
-          <span class="mx-4 headline">AWS</span>
+          <v-icon large color="blue darken-1">mdi-bug-check-outline</v-icon>
+          <span class="mx-4 headline">Diagnosis</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="awsForm.valid" ref="form">
+          <v-form v-model="diagnosisForm.valid" ref="form">
             <v-text-field
-              v-model="awsModel.aws_id"
-              :label="awsForm.aws_id.label"
-              :placeholder="awsForm.aws_id.placeholder"
+              v-model="diagnosisModel.diagnosis_id"
+              :label="diagnosisForm.diagnosis_id.label"
+              :placeholder="diagnosisForm.diagnosis_id.placeholder"
               outlined filled disabled
             ></v-text-field>
             <v-text-field
-              v-model="awsModel.name"
+              v-model="diagnosisModel.name"
               :counter="200"
-              :rules="awsForm.name.validator"
-              :label="awsForm.name.label"
-              :placeholder="awsForm.name.placeholder"
+              :rules="diagnosisForm.name.validator"
+              :label="diagnosisForm.name.label"
+              :placeholder="diagnosisForm.name.placeholder"
+              :disabled="!diagnosisForm.newDiagnosis"
+              :filled="!diagnosisForm.newDiagnosis"
               outlined required
             ></v-text-field>
-            <template v-if="awsForm.newAWS">
-              <v-text-field
-                v-model="awsModel.aws_account_id"
-                :counter="12"
-                :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
-                :placeholder="awsForm.aws_account_id.placeholder"
-                outlined required
-              ></v-text-field>
-            </template>
-            <template v-else>
-              <v-text-field
-                v-model="awsModel.aws_account_id"
-                :counter="12"
-                :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
-                :placeholder="awsForm.aws_account_id.placeholder"
-                outlined filled disabled
-              ></v-text-field>   
-            </template>
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -140,9 +122,12 @@
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
                 CANCEL
               </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="awsForm.newAWS">Regist</template>
-                <template v-else>Edit</template>
+              <v-btn text outlined color="green darken-1"
+                 v-if="diagnosisForm.newDiagnosis"
+                :loading="loading"
+                @click="handleEditSubmit"
+              >
+                Regist
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -159,8 +144,8 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS ID</v-list-item-subtitle>
+              <v-list-item-title v-text="diagnosisModel.diagnosis_id"></v-list-item-title>
+              <v-list-item-subtitle>Diagnosis ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -168,17 +153,8 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.name"></v-list-item-title>
-              <v-list-item-subtitle>AWS Name</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-aws</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_account_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS AccountID</v-list-item-subtitle>
+              <v-list-item-title v-text="diagnosisModel.name"></v-list-item-title>
+              <v-list-item-subtitle>Diagnosis Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -202,6 +178,7 @@
   </div>
 </template>
 <script>
+// TODO: Fix JIRA after fix API
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
@@ -214,37 +191,33 @@ export default {
   data() {
     return {
       loading: false,
-      awsForm: {
-        newAWS: false,
+      diagnosisForm: {
+        newDiagnosis: false,
         valid: false,
-        aws_id: { label: 'ID', placeholder: '-' },
+        diagnosis_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        aws_account_id: { label: 'AWS Account ID *', placeholder: '123456789012', validator:[
-            v => !!v || 'AWS Account ID is required',
-            v => v.length === 12 || 'AWS Account ID must be 12 characters',
-            v => this.isNewAccountID(v) || 'AWS Account ID is already exist.',
-          ]
-        },
       },
-      awsModel: { aws_id:'', name:'', aws_account_id:'', updated_at:'' },
+      diagnosisModel: { diagnosis_id:'', name:'', record_id:'', jira_id:'', jira_key:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'aws_id' },
+          { text: 'ID',  align: 'start', sortable: false, value: 'diagnosis_id' },
           { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'AccountID', align: 'start', sortable: false, value: 'aws_account_id' },
+          { text: 'Record ID', align: 'start', sortable: false, value: 'record_id' },
+          { text: 'JIRA ID', align: 'start', sortable: false, value: 'jira_id' },
+          { text: 'JIRA KEY', align: 'start', sortable: false, value: 'jira_key' },
           { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: { page: 1, itemsPerPage: 5, sortBy: ['aws_id'] },
+        options: { page: 1, itemsPerPage: 5, sortBy: ['diagnosis_id'] },
         actions: [
-          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
+          { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         footer: {
@@ -270,29 +243,29 @@ export default {
   methods: {
     async refleshList() {
       const res = await this.$axios.get(
-        '/aws/list-aws/?project_id=' + this.$store.state.project.project_id
+        '/diagnosis/list-diagnosis/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
       })
       const list = res.data
-      if ( !list || !list.data || !list.data.aws ) {
+      if ( !list || !list.data || !list.data.diagnosis ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.aws
+      this.table.items = list.data.diagnosis
       this.loading = false
     },
     clearList() {
       this.table.items = []
       this.loading = false
     },
-    async deleteItem(awsID) {
+    async deleteItem(diagnosisID) {
       const param = {
           project_id: this.$store.state.project.project_id,
-          aws_id: awsID,
+          diagnosis_id: diagnosisID,
       }
-      await this.$axios.post('/aws/delete-aws/', param).catch((err) =>  {
+      await this.$axios.post('/diagnosis/delete-diagnosis/', param).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
@@ -301,43 +274,33 @@ export default {
     async putItem() {
       const param = { 
         project_id: this.$store.state.project.project_id,
-        aws: {
+        diagnosis: {
           project_id: this.$store.state.project.project_id,
-          name: this.awsModel.name,
-          aws_account_id: this.awsModel.aws_account_id,
+          name: this.diagnosisModel.name,
         },
       }
-      await this.$axios.post('/aws/put-aws/', param).catch((err) =>  {
+      await this.$axios.post('/diagnosis/put-diagnosis/', param).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated AWS.'
-      if (this.awsForm.newAWS) {
-        msg = 'Success: Created new AWS.'
+      var msg = 'Success: Updated Diagnosis.'
+      if (this.diagnosisForm.newDiagnosis) {
+        msg = 'Success: Created new Diagnosis.'
       }
       this.finish(msg)
     },
-    isNewAccountID(accountID) {
-      var isNew = true
-      this.table.items.some( item => {
-        if(item.aws_account_id == accountID){
-          isNew = false
-          return true
-        }
-      })
-      return isNew
-    },
     handleRowClick(item) {
-      this.$router.push('/aws/data-source?aws_id=' + item.aws_id)
+      // this.$router.push('/diagnosis/data-source?diagnosis_id=' + item.diagnosis_id)
+      this.handleViewItem(item)
     },
     handleNewItem() {
-      this.awsModel = { aws_id:'', name:'', aws_account_id:'', updated_at:'' }
-      this.awsForm.newAWS = true
+      this.diagnosisModel = { diagnosis_id:'', name:'', updated_at:'' }
+      this.diagnosisForm.newDiagnosis = true
       this.editDialog  = true
     },
-    handleEditItem(item) {
+    handleViewItem(item) {
       this.assignDataModel(item)
-      this.awsForm.newAWS = false
+      this.diagnosisForm.newDiagnosis = false
       this.editDialog  = true
     },
     handleEditSubmit() {
@@ -353,11 +316,11 @@ export default {
     },
     handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem(this.awsModel.aws_id)
+      this.deleteItem(this.diagnosisModel.diagnosis_id)
     },
     assignDataModel(item) {
-      this.awsModel = {}
-      this.awsModel = Object.assign(this.awsModel, item)
+      this.diagnosisModel = {}
+      this.diagnosisModel = Object.assign(this.diagnosisModel, item)
     },
 
     async finish(msg) {

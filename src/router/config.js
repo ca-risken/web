@@ -166,7 +166,6 @@ export const appRoute = [
         meta: {
           title: 'AWS',
           icon: 'mdi-aws',
-          color: 'orange',
           group: 'aws'
         },
         children: [
@@ -185,6 +184,26 @@ export const appRoute = [
               title: 'DataSource',
             },
             component: () => import('@/view/aws/DataSource.vue')
+          },
+        ]
+      },
+      {
+        path: '/diagnosis',
+        component: RouteWrapper,
+        redirect: '/diagnosis/jira',
+        meta: {
+          title: 'Diagnosis',
+          icon: 'mdi-bug-check-outline',
+          group: 'diagnosis'
+        },
+        children: [
+          {
+            path: '/diagnosis/jira',
+            name: 'Diagnosis',
+            meta: {
+              title: 'JIRA',
+            },
+            component: () => import('@/view/diagnosis/JIRA.vue')
           },
         ]
       },

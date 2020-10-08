@@ -28,7 +28,7 @@ var mixin = {
         case 'aws':
           return 'mdi-aws'
         case 'diagnosis':
-          return 'mdi-jira'
+          return 'mdi-bug-check-outline'
         case 'intrigue':
           return 'http'
         default:
