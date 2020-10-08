@@ -44,9 +44,29 @@ const formatDate = (date, format) => {
   return format;
 }
 
+const elapsedTimeText = (from) => {
+  var diff = new Date().getTime() - from.getTime()
+  var elapsed = new Date(diff)
+
+  if (elapsed.getUTCFullYear() - 1970) {
+    return elapsed.getUTCFullYear() - 1970 + '年前'
+  } else if (elapsed.getUTCMonth()) {
+    return elapsed.getUTCMonth() + 'ヶ月前'
+  } else if (elapsed.getUTCDate() - 1) {
+    return elapsed.getUTCDate() - 1 + '日前'
+  } else if (elapsed.getUTCHours()) {
+    return elapsed.getUTCHours() + '時間前'
+  } else if (elapsed.getUTCMinutes()) {
+    return elapsed.getUTCMinutes() + '分前'
+  } else {
+    return elapsed.getUTCSeconds() + 'たった今'
+  }
+}
+
 export default {
   randomElement,
   toggleFullScreen,
   kebab,
   formatDate,
+  elapsedTimeText,
 }

@@ -51,6 +51,9 @@
                   <v-icon v-if="item.activated==true" color="success">mdi-check-circle</v-icon>
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
+                <template v-slot:item.created_at="{ item }">
+                  <v-chip dark label color="grey lighten-1">{{ item.created_at | elapsedTimeText }}</v-chip>
+                </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
@@ -87,7 +90,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="viewDialog" max-width="80%">
+    <v-dialog v-model="viewDialog" max-width="60%">
       <v-card>
         <v-card-title>
           <span class="mx-4 headline">AlertHistory</span>
@@ -160,12 +163,13 @@ export default {
         selected: [],
         search: '',
         headers: [
-          { text: 'ID',  align: 'center', sortable: true, value: 'alert_id' },
-          { text: 'Description', align: 'start', sortable: true, value: 'description' },
-          { text: 'Severity', align: 'center', sortable: true, value: 'severity' },
-          { text: 'Activated', align: 'center', sortable: true, value: 'activated' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
+          { text: 'Active', align: 'center', width: '10%', sortable: true, value: 'activated' },
+          { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
+          { text: 'Severity', align: 'center', width: '10%', sortable: true, value: 'severity' },
+          { text: 'Description', align: 'start', width: '40%', sortable: true, value: 'description' },
+          { text: 'Passed', align: 'center', width: '10%', sortable: true, value: 'created_at' },
+          { text: 'Updated', align: 'center', width: '10%', sortable: true, value: 'updated_at' },
+          { text: 'Action', align: 'center', width: '10%', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
         actions: [
@@ -184,6 +188,9 @@ export default {
   filters: {
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+    elapsedTimeText: (unix) => {
+      return Util.elapsedTimeText(new Date(unix * 1000))
     },
   },
   mounted() {
