@@ -5,8 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="white" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="orange">mdi-aws</v-icon>
-              AWS
+              <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
+              Notification
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -47,12 +47,12 @@
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="aws_id"
+                item-key="notification_id"
                 @click:row="handleRowClick"
               >
                 <template v-slot:item.avator="">
-                  <v-avatar class="ma-3">
-                    <v-icon color="orange darken-1" large>mdi-aws</v-icon>
+                  <v-avatar icon class="ma-1">
+                    <v-icon large class="pr-2" color="brown darken-2">mdi-slack</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
@@ -94,45 +94,41 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large color="orange darken-1">mdi-aws</v-icon>
-          <span class="mx-4 headline">AWS</span>
+          <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
+          <span class="mx-4 headline">Notification</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="awsForm.valid" ref="form">
+          <v-form v-model="form.valid" ref="form">
             <v-text-field
-              v-model="awsModel.aws_id"
-              :label="awsForm.aws_id.label"
-              :placeholder="awsForm.aws_id.placeholder"
+              v-model="notiModel.notification_id"
+              :label="form.notification_id.label"
+              :placeholder="form.notification_id.placeholder"
               outlined filled disabled
             ></v-text-field>
             <v-text-field
-              v-model="awsModel.name"
+              v-model="notiModel.name"
               :counter="200"
-              :rules="awsForm.name.validator"
-              :label="awsForm.name.label"
-              :placeholder="awsForm.name.placeholder"
+              :rules="form.name.validator"
+              :label="form.name.label"
+              :placeholder="form.name.placeholder"
               outlined required
             ></v-text-field>
-            <template v-if="awsForm.newAWS">
-              <v-text-field
-                v-model="awsModel.aws_account_id"
-                :counter="12"
-                :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
-                :placeholder="awsForm.aws_account_id.placeholder"
-                outlined required
-              ></v-text-field>
-            </template>
-            <template v-else>
-              <v-text-field
-                v-model="awsModel.aws_account_id"
-                :counter="12"
-                :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
-                :placeholder="awsForm.aws_account_id.placeholder"
-                outlined filled disabled
-              ></v-text-field>   
-            </template>
+            <v-combobox
+              outlined required clearable
+              v-model="notiModel.type"
+              :rules="form.type.validator"
+              :label="form.type.label"
+              :placeholder="form.type.placeholder"
+              :items="form.type.list"
+            />
+            <v-text-field
+              v-model="notiModel.webhook_url"
+              :counter="200"
+              :rules="form.webhook_url.validator"
+              :label="form.webhook_url.label"
+              :placeholder="form.webhook_url.placeholder"
+              outlined required
+            ></v-text-field>
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -141,7 +137,7 @@
                 CANCEL
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="awsForm.newAWS">Regist</template>
+                <template v-if="form.new">Regist</template>
                 <template v-else>Edit</template>
               </v-btn>
             </v-card-actions>
@@ -159,8 +155,8 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS ID</v-list-item-subtitle>
+              <v-list-item-title v-text="notiModel.notification_id"></v-list-item-title>
+              <v-list-item-subtitle>Notification ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -168,17 +164,8 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.name"></v-list-item-title>
-              <v-list-item-subtitle>AWS Name</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-aws</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_account_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS AccountID</v-list-item-subtitle>
+              <v-list-item-title v-text="notiModel.name"></v-list-item-title>
+              <v-list-item-subtitle>Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -214,35 +201,40 @@ export default {
   data() {
     return {
       loading: false,
-      awsForm: {
-        newAWS: false,
+      form: {
+        new: false,
         valid: false,
-        aws_id: { label: 'ID', placeholder: '-' },
+        notification_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        aws_account_id: { label: 'AWS Account ID *', placeholder: '123456789012', validator:[
-            v => !!v || 'AWS Account ID is required',
-            v => v.length === 12 || 'AWS Account ID must be 12 characters',
-            v => this.isNewAccountID(v) || 'AWS Account ID is already exist.',
+        type: { label: 'Type *', placeholder: 'slack',
+          list: ['slack'],
+          validator:[
+            v => !!v || 'Type is required',
+            v => v === 'slack' || 'Type is invalid type',
+          ]
+        },
+        webhook_url: { label: 'Webhook URL *', placeholder: 'https://xxx', validator:[
+            v => !!v || 'Webhook is required',
           ]
         },
       },
-      awsModel: { aws_id:'', name:'', aws_account_id:'', updated_at:'' },
+      notiModel: { notification_id:0, name:'', type:'', notify_setting: {}, webhook_url:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'aws_id' },
+          { text: 'ID',  align: 'start', sortable: false, value: 'notification_id' },
           { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'AccountID', align: 'start', sortable: false, value: 'aws_account_id' },
+          { text: 'type', align: 'start', sortable: false, value: 'type' },
           { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: { page: 1, itemsPerPage: 5, sortBy: ['aws_id'] },
+        options: { page: 1, itemsPerPage: 5, sortBy: ['notification_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
@@ -268,76 +260,77 @@ export default {
     this.refleshList('')
   },
   methods: {
+    // list
     async refleshList() {
       const res = await this.$axios.get(
-        '/aws/list-aws/?project_id=' + this.$store.state.project.project_id
+        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
+        this.finishError(err.response.data)
         return Promise.reject(err)
       })
       const list = res.data
-      if ( !list || !list.data || !list.data.aws ) {
+      if ( !list || !list.data || !list.data.notification ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.aws
+      this.table.items = list.data.notification
       this.loading = false
     },
     clearList() {
       this.table.items = []
       this.loading = false
     },
-    async deleteItem(awsID) {
+
+    // delete
+    async deleteItem() {
       const param = {
           project_id: this.$store.state.project.project_id,
-          aws_id: awsID,
+          notification_id: this.notiModel.notification_id,
       }
-      await this.$axios.post('/aws/delete-aws/', param).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
+      await this.$axios.post('/alert/delete-notification/', param).catch((err) =>  {
+        this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finish('Success: Delete.')
+      this.finishSuccess('Success: Delete.')
     },
+
+    // put
     async putItem() {
       const param = { 
         project_id: this.$store.state.project.project_id,
-        aws: {
+        notification: {
           project_id: this.$store.state.project.project_id,
-          name: this.awsModel.name,
-          aws_account_id: this.awsModel.aws_account_id,
+          notification_id: this.notiModel.notification_id,
+          type: this.notiModel.type,
+          name: this.notiModel.name,
+          notify_setting: JSON.stringify({
+            webhook_url: this.notiModel.webhook_url
+          }), 
         },
       }
-      await this.$axios.post('/aws/put-aws/', param).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
+      await this.$axios.post('/alert/put-notification/', param).catch((err) =>  {
+        this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated AWS.'
-      if (this.awsForm.newAWS) {
-        msg = 'Success: Created new AWS.'
+      var msg = 'Success: Updated Notification.'
+      if (this.form.new) {
+        msg = 'Success: Created new Notification.'
       }
-      this.finish(msg)
+      this.finishSuccess(msg)
     },
-    isNewAccountID(accountID) {
-      var isNew = true
-      this.table.items.some( item => {
-        if(item.aws_account_id == accountID){
-          isNew = false
-          return true
-        }
-      })
-      return isNew
+
+    handleNewItem() {
+      this.notiModel = { notification_id:0, name:'', type:'', webhook_url:'', updated_at:'' }
+      this.form.new = true
+      this.editDialog  = true
     },
     handleRowClick(item) {
-      this.$router.push('/aws/data-source?aws_id=' + item.aws_id)
-    },
-    handleNewItem() {
-      this.awsModel = { aws_id:'', name:'', aws_account_id:'', updated_at:'' }
-      this.awsForm.newAWS = true
-      this.editDialog  = true
+      this.handleEditItem(item)
     },
     handleEditItem(item) {
       this.assignDataModel(item)
-      this.awsForm.newAWS = false
+      this.form.new = false
       this.editDialog  = true
     },
     handleEditSubmit() {
@@ -353,20 +346,37 @@ export default {
     },
     handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem(this.awsModel.aws_id)
+      this.deleteItem()
     },
     assignDataModel(item) {
-      this.awsModel = {}
-      this.awsModel = Object.assign(this.awsModel, item)
+      this.notiModel = {}
+      this.notiModel = Object.assign(this.notiModel, item)
+
+      const setting = JSON.parse(this.notiModel.notify_setting)
+      // slack
+      if (this.notiModel.type === 'slack' && setting.webhook_url) {
+        this.notiModel.webhook_url = setting.webhook_url
+      }
     },
 
-    async finish(msg) {
+    // finish process
+    async finishSuccess(msg) {
       await new Promise(resolve => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess(msg)
+      this.finish(true)
+    },
+    async finishError(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifyError(msg)
+      this.finish(false)
+    },
+    async finish(reflesh) {
       this.loading = false
       this.editDialog  = false
       this.deleteDialog  = false
-      this.refleshList()
+      if ( reflesh ) {
+        this.refleshList()
+      }
     },
   }
 }

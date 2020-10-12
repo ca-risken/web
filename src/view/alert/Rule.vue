@@ -51,7 +51,7 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:item.avator="">
-                  <v-avatar class="ma-3">
+                  <v-avatar class="ma-1">
                     <v-icon color="orange darken-1" large>mdi-aws</v-icon>
                   </v-avatar>
                 </template>

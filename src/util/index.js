@@ -59,7 +59,7 @@ const elapsedTimeText = (from) => {
   } else if (elapsed.getUTCMinutes()) {
     return elapsed.getUTCMinutes() + '分前'
   } else {
-    return elapsed.getUTCSeconds() + 'たった今'
+    return 'たった今'
   }
 }
 

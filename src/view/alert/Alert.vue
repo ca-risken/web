@@ -45,7 +45,7 @@
                 @click:row="handleViewItem"
               >
                 <template v-slot:item.severity="{ item }">
-                  <v-chip dark :color="getSeverityColor(item.severity)">{{ item.severity }}</v-chip>
+                  <v-chip  class="ma-1" dark :color="getSeverityColor(item.severity)">{{ item.severity }}</v-chip>
                 </template>
                 <template v-slot:item.activated="{ item }">
                   <v-icon v-if="item.activated==true" color="success">mdi-check-circle</v-icon>
