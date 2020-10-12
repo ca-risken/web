@@ -95,7 +95,7 @@
                 v-model="table.selected"
               >
                 <template v-slot:item.findings="{ item }">
-                  <v-chip :color="getColorByFindings(item.findings)" dark>{{ item.findings }}</v-chip>
+                  <v-chip :color="getColorCount(item.findings)" dark>{{ item.findings }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -252,15 +252,7 @@ export default {
       this.table.items = []
       this.resourceNameList = []
     },
-    getColorByFindings(cnt) {
-      if ( cnt <= 1 ) {
-        return 'success'
-      } else if ( 3 < cnt ) {
-        return 'red'
-      } else {
-        return 'yellow'
-      }
-    },
+
     handleViewItem(item) {
       this.$router.push('/finding/finding?resource_name=' + item.resource_name)
     },

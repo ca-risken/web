@@ -82,7 +82,7 @@
                   <v-progress-linear
                     :value="item.score * 100"
                     height="5"
-                    :color="getServerityColorByScore(item.score)"
+                    :color="getColorByScore(item.score)"
                   />
                 </template>
 
@@ -158,7 +158,7 @@
           </v-list-item>
           <v-list-item>
             <v-list-item-avatar>
-              <v-icon :color="getServerityColorByScore(findingModel.score)">mdi-scoreboard-outline</v-icon>
+              <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard-outline</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.original_score"></v-list-item-title>
@@ -167,7 +167,7 @@
           </v-list-item>
           <v-list-item>
             <v-list-item-avatar>
-              <v-icon :color="getServerityColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
+              <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.score"></v-list-item-title>

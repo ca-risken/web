@@ -100,13 +100,13 @@
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-text-field
-              v-model="notiModel.notification_id"
+              v-model="dataModel.notification_id"
               :label="form.notification_id.label"
               :placeholder="form.notification_id.placeholder"
               outlined filled disabled
             ></v-text-field>
             <v-text-field
-              v-model="notiModel.name"
+              v-model="dataModel.name"
               :counter="200"
               :rules="form.name.validator"
               :label="form.name.label"
@@ -115,14 +115,14 @@
             ></v-text-field>
             <v-combobox
               outlined required clearable
-              v-model="notiModel.type"
+              v-model="dataModel.type"
               :rules="form.type.validator"
               :label="form.type.label"
               :placeholder="form.type.placeholder"
               :items="form.type.list"
             />
             <v-text-field
-              v-model="notiModel.webhook_url"
+              v-model="dataModel.webhook_url"
               :counter="200"
               :rules="form.webhook_url.validator"
               :label="form.webhook_url.label"
@@ -155,7 +155,7 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="notiModel.notification_id"></v-list-item-title>
+              <v-list-item-title v-text="dataModel.notification_id"></v-list-item-title>
               <v-list-item-subtitle>Notification ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -164,7 +164,7 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="notiModel.name"></v-list-item-title>
+              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
               <v-list-item-subtitle>Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -222,16 +222,16 @@ export default {
           ]
         },
       },
-      notiModel: { notification_id:0, name:'', type:'', notify_setting: {}, webhook_url:'', updated_at:'' },
+      dataModel: { notification_id:0, name:'', type:'', notify_setting: {}, webhook_url:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'notification_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'type', align: 'start', sortable: false, value: 'type' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
+          { text: 'ID',  align: 'start', sortable: true, value: 'notification_id' },
+          { text: 'Name', align: 'start', sortable: true, value: 'name' },
+          { text: 'type', align: 'start', sortable: true, value: 'type' },
+          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['notification_id'] },
@@ -286,7 +286,7 @@ export default {
     async deleteItem() {
       const param = {
           project_id: this.$store.state.project.project_id,
-          notification_id: this.notiModel.notification_id,
+          notification_id: this.dataModel.notification_id,
       }
       await this.$axios.post('/alert/delete-notification/', param).catch((err) =>  {
         this.finishError(err.response.data)
@@ -301,11 +301,11 @@ export default {
         project_id: this.$store.state.project.project_id,
         notification: {
           project_id: this.$store.state.project.project_id,
-          notification_id: this.notiModel.notification_id,
-          type: this.notiModel.type,
-          name: this.notiModel.name,
+          notification_id: this.dataModel.notification_id,
+          type: this.dataModel.type,
+          name: this.dataModel.name,
           notify_setting: JSON.stringify({
-            webhook_url: this.notiModel.webhook_url
+            webhook_url: this.dataModel.webhook_url
           }), 
         },
       }
@@ -321,7 +321,7 @@ export default {
     },
 
     handleNewItem() {
-      this.notiModel = { notification_id:0, name:'', type:'', webhook_url:'', updated_at:'' }
+      this.dataModel = { notification_id:0, name:'', type:'', webhook_url:'', updated_at:'' }
       this.form.new = true
       this.editDialog  = true
     },
@@ -349,13 +349,13 @@ export default {
       this.deleteItem()
     },
     assignDataModel(item) {
-      this.notiModel = {}
-      this.notiModel = Object.assign(this.notiModel, item)
+      this.dataModel = {}
+      this.dataModel = Object.assign(this.dataModel, item)
 
-      const setting = JSON.parse(this.notiModel.notify_setting)
+      const setting = JSON.parse(this.dataModel.notify_setting)
       // slack
-      if (this.notiModel.type === 'slack' && setting.webhook_url) {
-        this.notiModel.webhook_url = setting.webhook_url
+      if (this.dataModel.type === 'slack' && setting.webhook_url) {
+        this.dataModel.webhook_url = setting.webhook_url
       }
     },
 

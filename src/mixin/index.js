@@ -13,7 +13,16 @@ var mixin = {
     reload: function() {
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
-    getServerityColorByScore: (score) => {
+    getColorByCount(cnt) {
+      if ( cnt <= 1 ) {
+        return 'info'
+      } else if ( 3 < cnt ) {
+        return 'red'
+      } else {
+        return 'yellow'
+      }
+    },
+    getColorByScore: (score) => {
       if ( score <= 0.6 ) {
         return 'success'
       } else if ( score <= 0.8 ) {
