@@ -91,14 +91,35 @@
     </v-container>
 
     <v-dialog v-model="viewDialog" max-width="60%">
+      <!-- Finding -->
       <v-card>
         <v-card-title>
-          <span class="mx-4 headline">AlertHistory</span>
+          <span class="mx-4 headline">Alert Findings</span>
           <v-chip dark label color="primary darken-3">
             <v-icon left>mdi-label</v-icon>
             {{ alertModel.alert_id }}
           </v-chip>
           <strong class="mx-4 headline">{{alertModel.description}}</strong>
+        </v-card-title>
+        <v-card-text class="py-0">
+          <v-chip-group
+            active-class="primary--text"
+            column
+          >
+            <v-chip
+              v-for="(finding) in alertFindingModel"
+              :key="finding.finding_id"
+              @click="handleClickFinding(finding.resource_name)"
+            >
+              {{ finding.resource_name }}
+            </v-chip>
+          </v-chip-group>
+        </v-card-text>
+      </v-card>
+      <!-- History -->
+      <v-card>
+        <v-card-title>
+          <span class="mx-4 headline">AlertHistory</span>
         </v-card-title>
         <v-card-text class="py-0">
           <v-timeline align-top dense>
@@ -159,6 +180,7 @@ export default {
       loading: false,
       alertModel: {},
       alertHistoryModel: [],
+      alertFindingModel: [],
       table: {
         selected: [],
         search: '',
@@ -195,7 +217,7 @@ export default {
   },
   mounted() {
     this.loading = true
-    this.getAlert(true)
+    this.getAlert(false)
     this.loading = false
   },
   methods: {
@@ -240,12 +262,44 @@ export default {
       this.loading = false
     },
 
+    // alert finding list
+    async getFinding() {
+      this.clearFinding()
+      const res = await this.$axios.get(
+        '/alert/list-rel_alert_finding/?alert_id=' + this.alertModel.alert_id + '&project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      const list = res.data
+      if ( !list || !list.data || !list.data.rel_alert_finding ) {
+        this.clearFinding()
+        return false
+      }
+      list.data.rel_alert_finding.forEach( async finding => {
+        const res = await this.$axios.get(
+          '/finding/get-finding/?finding_id=' + finding.finding_id + '&project_id=' + this.$store.state.project.project_id
+        ).catch((err) =>  {
+          return Promise.reject(err)
+        })
+        this.alertFindingModel.push(res.data.data.finding)
+      })
+    },
+    clearFinding() {
+      this.alertFindingModel = []
+      this.loading = false
+    },
+
     handleViewItem(item) {
       this.loading = true
       this.assignDataModel(item)
+      this.getFinding()
       this.getHistory()
       this.viewDialog  = true
       this.loading = false
+    },
+    handleClickFinding(resourceName) {
+      this.$router.push('/finding/finding?resource_name=' + resourceName)
     },
     assignDataModel(item) {
       this.alertModel = {}

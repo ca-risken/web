@@ -79,11 +79,15 @@
                   </v-layout>
                 </template>
                 <template v-slot:item.score="{ item }">
-                  <v-progress-linear
+                  <!-- <v-progress-linear
                     :value="item.score * 100"
                     height="5"
                     :color="getColorByScore(item.score)"
-                  />
+                  /> -->
+                  <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
+                </template>
+                <template v-slot:item.updated_at="{ item }">
+                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
 
                 <template v-slot:item.action="{ item }">
@@ -229,8 +233,9 @@
                 <v-icon left>mdi-clock-outline</v-icon>
                 Updated At
               </v-list-item-subtitle>
-              <v-list-item-title v-model="findingModel.updated_at"></v-list-item-title>
-              <pre>{{ findingModel.updated_at | formatTime }}</pre>
+              <v-list-item-title class="headline">
+                <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
+              </v-list-item-title>
             </v-col>
           </v-row>        
         </v-container>
@@ -271,11 +276,12 @@ export default {
         selected: [],
         headers: [
           { text: 'ID',  align: 'center', sortable: false, value: 'finding_id' },
-          { text: 'Serverity', align: 'center', sortable: false, value: 'score' },
+          { text: 'Score', align: 'center', sortable: false, value: 'score' },
           { text: 'Data Source', align: 'center', sortable: false, value: 'data_source' },
           { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
           { text: 'Description', align: 'start', sortable: false, value: 'description' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
+          { text: 'Update', align: 'start', sortable: false, value: 'updated_at' },
+          { text: 'Action', align: 'center', sortable: false, value: 'action' },
         ],
         options: {
           page: 1,
