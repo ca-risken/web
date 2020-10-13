@@ -55,19 +55,23 @@
                     <v-icon large class="pr-2" color="brown darken-2">mdi-book-open-variant</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.score="{ item }">
-                  <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
-                </template>
-                <template v-slot:item.finding_cnt="{ item }">
-                  <v-chip :color="getColorByCount(item.finding_cnt)" dark>{{ item.finding_cnt }}</v-chip>
+                <template v-slot:item.resource_name="{ item }">
+                  <template v-if="item.resource_name">
+                    <v-chip label><v-icon left>mdi-file-find-outline</v-icon>{{ item.resource_name }}</v-chip>
+                  </template>
+                  <template v-else>-</template>
                 </template>
                 <template v-slot:item.tag="{ item }">
                   <template v-if="item.tag">
                     <v-chip label><v-icon left>mdi-label</v-icon>{{ item.tag }}</v-chip>
                   </template>
-                  <template v-else>
-                    -
-                  </template>
+                  <template v-else>-</template>
+                </template>
+                <template v-slot:item.score="{ item }">
+                  <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
+                </template>
+                <template v-slot:item.finding_cnt="{ item }">
+                  <v-chip :color="getColorByCount(item.finding_cnt)" dark>{{ item.finding_cnt }}</v-chip>
                 </template>
                 <!--
                 <template v-slot:item.updated_at="{ item }">
@@ -107,7 +111,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="70%">
+    <v-dialog v-model="editDialog" max-width="50%">
       <v-card>
         <v-card-title>
           <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
@@ -129,28 +133,6 @@
               :placeholder="form.name.placeholder"
               outlined required
             ></v-text-field>
-
-            <v-row>
-              <v-col cols="3">
-                <span
-                  class="display-2 font-weight-light"
-                  v-text="dataModel.score"
-                ></span>
-                <span class="subheading font-weight-light mr-1">pts over</span>
-              </v-col>
-              <v-col cols="9">
-                <v-slider
-                  v-model="dataModel.score"
-                  min="0.0" max="1.0" step="0.01"
-                  :rules="form.score.validator"
-                  :label="form.score.label"
-                  :messages="form.score.placeholder"
-                  thumb-label="always"
-                  thumb-color="red"
-                  outlined
-                ></v-slider>
-              </v-col>
-            </v-row>
             <v-text-field
               v-model="dataModel.resource_name"
               :counter="255"
@@ -176,6 +158,28 @@
               type="number"
               outlined required
             ></v-text-field>
+
+            <v-row>
+              <v-col cols="3">
+                <span
+                  class="display-2 font-weight-light"
+                  v-text="dataModel.score"
+                ></span>
+                <span class="subheading font-weight-light mr-1">pts over</span>
+              </v-col>
+              <v-col cols="9">
+                <v-slider
+                  v-model="dataModel.score"
+                  min="0.0" max="1.0" step="0.01"
+                  :rules="form.score.validator"
+                  :label="form.score.label"
+                  :messages="form.score.placeholder"
+                  thumb-label="always"
+                  thumb-color="red"
+                  outlined
+                ></v-slider>
+              </v-col>
+            </v-row>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
@@ -286,11 +290,10 @@ export default {
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'ID',  align: 'start', sortable: true, value: 'alert_rule_id' },
           { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'Score', align: 'center', sortable: true, value: 'score' },
           { text: 'Resource Name', align: 'start', sortable: true, value: 'resource_name' },
           { text: 'Tag', align: 'start', sortable: true, value: 'tag' },
           { text: 'Finding Count', align: 'center', sortable: true, value: 'finding_cnt' },
-          // { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
+          { text: 'Score', align: 'center', sortable: true, value: 'score' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },

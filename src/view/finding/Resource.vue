@@ -95,7 +95,7 @@
                 v-model="table.selected"
               >
                 <template v-slot:item.findings="{ item }">
-                  <v-chip :color="getColorCount(item.findings)" dark>{{ item.findings }}</v-chip>
+                  <v-chip :color="getColorByCount(item.findings)" dark>{{ item.findings }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>

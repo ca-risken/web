@@ -16,17 +16,17 @@ var mixin = {
     getColorByCount(cnt) {
       if ( cnt <= 1 ) {
         return 'info'
-      } else if ( 3 < cnt ) {
-        return 'red'
+      } else if ( cnt <= 3 ) {
+        return 'yellow darken-3'
       } else {
-        return 'yellow'
+        return 'red'
       }
     },
     getColorByScore: (score) => {
       if ( score <= 0.6 ) {
         return 'success'
       } else if ( score <= 0.8 ) {
-        return 'yellow'
+        return 'yellow darken-3'
       } else {
         return 'red'
       }
