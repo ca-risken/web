@@ -57,13 +57,13 @@
                 </template>
                 <template v-slot:item.resource_name="{ item }">
                   <template v-if="item.resource_name">
-                    <v-chip label><v-icon left>mdi-file-find-outline</v-icon>{{ item.resource_name }}</v-chip>
+                    <v-chip label><v-icon left>mdi-file-find-outline</v-icon>{{ item.resource_name| cutString }}</v-chip>
                   </template>
                   <template v-else>-</template>
                 </template>
                 <template v-slot:item.tag="{ item }">
                   <template v-if="item.tag">
-                    <v-chip label><v-icon left>mdi-label</v-icon>{{ item.tag }}</v-chip>
+                    <v-chip label><v-icon left>mdi-label</v-icon>{{ item.tag | cutString }}</v-chip>
                   </template>
                   <template v-else>-</template>
                 </template>
@@ -315,6 +315,9 @@ export default {
   filters: {
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+    cutString: (str) => {
+      return Util.cutLongString(str, 15)
     },
   },
   mounted() {

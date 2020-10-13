@@ -14,8 +14,10 @@ var mixin = {
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
     getColorByCount(cnt) {
-      if ( cnt <= 1 ) {
-        return 'info'
+      if ( cnt <= 0 ) {
+        return 'grey lighten-1'
+      } else if ( cnt <= 1 ) {
+        return 'info lighten-1'
       } else if ( cnt <= 3 ) {
         return 'yellow darken-3'
       } else {

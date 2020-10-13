@@ -61,7 +61,7 @@
                   <v-card
                     label outliend
                     elevation="1"
-                    color="red lighten-5"
+                    color="teal lighten-5"
                     class="mx-auto"
                   >
                     <v-card-text class="font-weight-bold">
@@ -73,7 +73,7 @@
                   <v-card
                     label outliend
                     elevation="1"
-                    color="red lighten-5"
+                    color="light-green lighten-5"
                     class="mx-auto"
                   >
                     <v-card-text class="font-weight-bold">

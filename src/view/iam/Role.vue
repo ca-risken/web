@@ -58,7 +58,7 @@
                   </v-avatar>
                 </template>
                 <template v-slot:item.policy_cnt="{ item }">
-                  <v-chip :color="getColorCount(item.policy_cnt)" dark>{{ item.policy_cnt }}</v-chip>
+                  <v-chip :color="getColorByCount(item.policy_cnt)" dark>{{ item.policy_cnt }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -169,7 +169,7 @@
                 <v-card
                   label outliend
                   elevation="0"
-                  color="red lighten-5"
+                  color="teal lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -181,7 +181,7 @@
                 <v-card
                   label outliend
                   elevation="0"
-                  color="red lighten-5"
+                  color="light-green lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">

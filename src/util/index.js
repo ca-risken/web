@@ -44,6 +44,16 @@ const formatDate = (date, format) => {
   return format;
 }
 
+const cutLongString = (str, maxLen) => {
+  if (!str) {
+    return ''
+  }
+  if (str.length >= maxLen ) {
+    return str.substring(0, maxLen) + '...'
+  }
+  return str
+}
+
 const elapsedTimeText = (from) => {
   var diff = new Date().getTime() - from.getTime()
   var elapsed = new Date(diff)
@@ -68,5 +78,6 @@ export default {
   toggleFullScreen,
   kebab,
   formatDate,
+  cutLongString,
   elapsedTimeText,
 }

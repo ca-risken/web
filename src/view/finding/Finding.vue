@@ -121,76 +121,119 @@
 
     <v-dialog v-model="viewDialog" max-width="70%">
       <v-card>
-        <v-toolbar>Finding Detail</v-toolbar>
-        <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="findingModel.finding_id"></v-list-item-title>
-              <v-list-item-subtitle>Finding ID</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon 
-                v-text="getDataSourceIcon(findingModel.data_source)"
-                :color="getDataSourceIconColor(findingModel.data_source)"
-              />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="findingModel.data_source"></v-list-item-title>
-              <v-list-item-subtitle>Data Source</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-file-find-outline</v-icon></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="findingModel.resource_name"></v-list-item-title>
-              <v-list-item-subtitle>Resource Name</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-image-text</v-icon></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="findingModel.description"></v-list-item-title>
-              <v-list-item-subtitle>Description</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard-outline</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="findingModel.original_score"></v-list-item-title>
-              <v-list-item-subtitle>Original Score</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="findingModel.score"></v-list-item-title>
-              <v-list-item-subtitle>Score</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-code-json</v-icon></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-model="findingModel.data"></v-list-item-title>
-              <pre>{{ findingModel.data | pretty }}</pre>
-              <v-list-item-subtitle>JSON Data</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-clock-outline</v-icon></v-list-item-avatar>
-            <v-list-item-content>
+        <v-toolbar>
+          <v-card-title>Finding Detail</v-card-title>
+        </v-toolbar>
+        <v-container fluid>
+          <v-row dense>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-identifier</v-icon>
+                    Finding ID
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.finding_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left
+                      v-text="getDataSourceIcon(findingModel.data_source)"
+                      :color="getDataSourceIconColor(findingModel.data_source)"
+                    />
+                    Data Source
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.data_source }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="6">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-file-find-outline</v-icon>
+                    Resource Name
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.resource_name }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="2">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
+                    Score
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.score }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon outlined>mdi-scoreboard</v-icon>
+                    Original Score
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.original_score }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="7">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-image-text</v-icon>
+                    Description
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.description }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row class="ma-2">
+            <v-col cols="12">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-code-json</v-icon>
+                JSON Data
+              </v-list-item-subtitle>
+              <v-card dark color="grey darken-3" class="ma-4">
+                <v-card-text class="title font-weight-bold">
+                <pre>{{ findingModel.data | pretty }}</pre>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="4">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-clock-outline</v-icon>
+                Updated At
+              </v-list-item-subtitle>
               <v-list-item-title v-model="findingModel.updated_at"></v-list-item-title>
               <pre>{{ findingModel.updated_at | formatTime }}</pre>
-              <v-list-item-subtitle>Updated At</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+            </v-col>
+          </v-row>        
+        </v-container>
       </v-card>
     </v-dialog>
 
