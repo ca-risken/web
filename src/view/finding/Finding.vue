@@ -234,6 +234,12 @@
             </v-col>
           </v-row>        
         </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="viewDialog = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 

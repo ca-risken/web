@@ -25,6 +25,15 @@
           </v-col>
 
           <v-spacer />
+          <v-btn 
+            fab dense outlined small 
+            color="blue darken-1" 
+            class="mt-3 mr-4"
+            :loading="loading" 
+            @click="handleAnalyze"
+          >
+            <v-icon>mdi-magnify-scan</v-icon>
+          </v-btn>
           <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
@@ -306,6 +315,68 @@
       </v-card>
     </v-dialog>
 
+    <!-- Notification Dialog -->
+    <v-dialog v-model="notiDialog" max-width="70%">
+      <v-card>
+        <v-card-title>
+          <v-icon large color="darken-2">mdi-cog</v-icon>
+          <span class="mx-4 headline">Alert Rule Condition</span>
+          <v-chip dark label color="primary darken-3">
+            <v-icon left>mdi-identifier</v-icon>
+            {{ dataModel.alert_condition_id }}
+          </v-chip>
+          <strong class="mx-4 headline">{{ dataModel.description }}</strong>
+        </v-card-title>
+        <v-card-text>
+          <!-- Notification List -->
+          <v-toolbar flat color="white">
+            <v-toolbar-title class="grey--text text--darken-4">
+              <v-icon large color="brown darken-2">mdi-slack</v-icon>
+              <span class="mx-4">Notification</span>
+            </v-toolbar-title>
+            <v-text-field text solo flat
+              prepend-icon="mdi-magnify"
+              placeholder="Type something"
+              v-model="notiTable.search"
+              hide-details
+              class="hidden-sm-and-down"
+            />
+            <v-btn icon>
+              <v-icon>mdi-filter</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-divider></v-divider>
+
+          <v-data-table
+            v-model="notiTable.selected"
+            :search="notiTable.search"
+            :headers="notiTable.headers"
+            :footer-props="notiTable.footer"
+            :items="notiTable.items"
+            :options.sync="notiTable.options"
+            :loading="loading"
+            locale="ja-jp"
+            loading-text="読込中"
+            no-data-text="データがありません。"
+            class="elevation-1"
+            item-key="notification_id"
+            show-select
+          >
+          </v-data-table>
+          <v-divider class="mt-3 mb-3"></v-divider>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text outlined color="grey darken-1" @click="notiDialog = false">
+              CANCEL
+            </v-btn>
+            <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditNotiSubmit">
+              <template>Edit</template>
+            </v-btn>
+          </v-card-actions>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -369,14 +440,16 @@ export default {
           { text: 'And Or', align: 'start', sortable: true, value: 'and_or' },
           { text: 'Rules', align: 'center', sortable: true, value: 'rules' },
           { text: 'Notificationns', align: 'center', sortable: true, value: 'notifications' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
+          // { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_condition_id'] },
         actions: [
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Edit Rule', icon:'mdi-book-open-variant', click:this.handleEditRule },
+          { text: 'Edit Notification', icon:'mdi-email', click:this.handleEditNoti },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
+          { text: 'Analyze Alert', icon: 'mdi-magnify-scan', click: this.handleAnalyze },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -406,10 +479,28 @@ export default {
         },
         items: []
       },
-
+      notiTable: {
+        selected: [],
+        search: '',
+        headers: [
+          { text: 'ID',  align: 'start', sortable: true, value: 'notification_id' },
+          { text: 'Name', align: 'start', sortable: true, value: 'name' },
+          { text: 'type', align: 'start', sortable: true, value: 'type' },
+        ],
+        options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
+        total: 0,
+        footer: {
+          disableItemsPerPage: true,
+          itemsPerPageOptions: [5],
+          showCurrentPage: true,
+          showFirstLastPage: true,
+        },
+        items: []
+      },
       deleteDialog: false,
       editDialog: false,
       ruleDialog: false,
+      notiDialog: false,
     }
   },
   filters: {
@@ -425,7 +516,7 @@ export default {
     this.refleshList('')
   },
   methods: {
-    // list
+    // List Condition
     async refleshList() {
       this.clearList()
       const res = await this.$axios.get(
@@ -448,6 +539,13 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
+        const notis = await this.$axios.get(
+          '/alert/list-condition_notification/?project_id=' + this.$store.state.project.project_id
+            + '&alert_condition_id=' + cond.alert_condition_id
+        ).catch((err) =>  {
+          this.clearList()
+          return Promise.reject(err)
+        })
         const item = {
           alert_condition_id: cond.alert_condition_id,
           description: cond.description, 
@@ -456,7 +554,8 @@ export default {
           enabled: cond.enabled,
           rules: rules.data.data.alert_cond_rule ?
             rules.data.data.alert_cond_rule.map(item => item.alert_rule_id) : [],
-          notifications: [],
+          notifications: notis.data.data.alert_cond_notification ?
+            notis.data.data.alert_cond_notification.map(item => item.notification_id) : [],
           updated_at: cond.updated_at,
         }
         this.table.items.push(item)
@@ -468,7 +567,7 @@ export default {
       this.loading = false
     },
 
-    // delete
+    // Delete Condition
     async deleteItem() {
       const param = {
           project_id: this.$store.state.project.project_id,
@@ -481,7 +580,7 @@ export default {
       this.finishSuccess('Success: Delete.')
     },
 
-    // put
+    // Put Condition
     async putItem() {
       const param = { 
         project_id: this.$store.state.project.project_id,
@@ -505,7 +604,7 @@ export default {
       this.finishSuccess(msg)
     },
 
-    // list rule
+    // List Rule
     async listRule() {
       this.clearRuleList()
       const res = await this.$axios.get(
@@ -531,6 +630,7 @@ export default {
       this.ruleTable.items = []
     },
 
+    // Put Rules
     async putRule() {
       this.ruleTable.items.forEach( async item => {
         // Set param for delete request.
@@ -561,6 +661,79 @@ export default {
         })
       })
       this.finishSuccess('Success: Updated alert rules.')
+    },
+
+    // List Notifications
+    async listNotification() {
+      this.clearNotiList()
+
+      const res = await this.$axios.get(
+        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      const list = res.data
+      if ( !list || !list.data || !list.data.notification ) {
+        return false
+      }
+      list.data.notification.forEach( async noti => {
+        this.notiTable.items.push(noti)
+        if (this.dataModel.notifications.indexOf(noti.notification_id) !== -1 ){
+          this.notiTable.selected.push(noti)
+        }
+      })
+      this.loading = false
+    },
+    clearNotiList() {
+      this.notiTable.selected = []
+      this.notiTable.items = []
+    },
+
+    // Put Notifications
+    async putNotification() {
+      this.notiTable.items.forEach( async item => {
+        // Set param for delete request.
+        var uri = '/alert/delete-condition_notification/'
+        var param = { 
+          project_id: this.$store.state.project.project_id,
+          alert_condition_id: this.dataModel.alert_condition_id,
+          notification_id: item.notification_id,
+        }
+        this.notiTable.selected.some( selected => {
+          if(item.notification_id === selected.notification_id){
+            // If the rule is selected, change to param for put request.
+            uri = '/alert/put-condition_notification/'
+            param = { 
+              project_id: this.$store.state.project.project_id,
+              alert_cond_notification: {
+                project_id: this.$store.state.project.project_id,
+                alert_condition_id: this.dataModel.alert_condition_id,
+                notification_id: item.notification_id,
+                cache_second: 60 * 60, // an hour 
+                notified_at: new Date().getTime(),
+              },
+            }
+            return true
+          }
+        })
+        await this.$axios.post(uri, param).catch((err) =>  {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      })
+      this.finishSuccess('Success: Updated alert notifications.')
+    },
+
+    // Analyze Alert
+    async analyzeAlert() {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+      }
+      await this.$axios.post('/alert/analyze-alert/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Analyze Alert.')
     },
 
     // handler
@@ -595,13 +768,21 @@ export default {
     },
     handleEditRule(item) {
       this.assignDataModel(item)
-      this.clearRuleList()
       this.listRule()
       this.ruleDialog  = true
     },
     handleEditRuleSubmit() {
       this.loading = true
       this.putRule()
+    },
+    handleEditNoti(item) {
+      this.assignDataModel(item)
+      this.listNotification()
+      this.notiDialog  = true
+    },
+    handleEditNotiSubmit() {
+      this.loading = true
+      this.putNotification()
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
@@ -610,6 +791,10 @@ export default {
     handleDeleteSubmit() {
       this.loading = true
       this.deleteItem()
+    },
+    handleAnalyze() {
+      this.loading = true
+      this.analyzeAlert()
     },
     assignDataModel(item) {
       this.dataModel = {}
@@ -632,6 +817,7 @@ export default {
       this.editDialog  = false
       this.deleteDialog  = false
       this.ruleDialog  = false
+      this.notiDialog = false
       if ( reflesh ) {
         this.refleshList()
       }

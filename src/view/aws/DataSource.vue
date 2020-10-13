@@ -350,6 +350,7 @@ export default {
           { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
           { text: 'Detach DataSource', icon: 'mdi-trash-can-outline', click: this.handleDetachItem },
+          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         total: 0,
         footer: {
@@ -513,7 +514,8 @@ export default {
       this.loading = true
       this.detachDataSource()
     },
-    handleScan() {
+    handleScan(item) {
+      this.assignDataModel(item)
       this.loading = true
       this.scanDataSource()
     },
