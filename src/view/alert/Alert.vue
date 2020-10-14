@@ -23,6 +23,15 @@
           />
         </v-col>
         <v-spacer />
+        <v-btn 
+          fab dense outlined small 
+          color="primary darken-3" 
+          class="mt-3 mr-4"
+          :loading="loading" 
+          @click="handleCondition"
+        >
+          <v-icon>mdi-cog</v-icon>
+        </v-btn>
       </v-row>
       <v-row>
         <v-col cols="12">
@@ -290,6 +299,10 @@ export default {
       this.loading = false
     },
 
+    // handler
+    handleCondition() {
+      this.$router.push('/alert/condition/')
+    },
     handleViewItem(item) {
       this.loading = true
       this.assignDataModel(item)

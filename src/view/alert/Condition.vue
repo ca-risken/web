@@ -27,7 +27,7 @@
           <v-spacer />
           <v-btn 
             fab dense outlined small 
-            color="blue darken-1" 
+            color="blue darken-3" 
             class="mt-3 mr-4"
             :loading="loading" 
             @click="handleAnalyze"
@@ -128,8 +128,8 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
-          <span class="mx-4 headline">Notification</span>
+          <v-icon large class="pr-2" color="grey darken-2">mdi-cog</v-icon>
+          <span class="mx-4 headline">Alert Condition</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
@@ -230,8 +230,8 @@
     <v-dialog v-model="ruleDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large color="darken-2">mdi-cog</v-icon>
-          <span class="mx-4 headline">Alert Rule Condition</span>
+          <v-icon large color="brown darken-2">mdi-book-open-variant</v-icon>
+          <span class="mx-4 headline">Alert Rule</span>
           <v-chip dark label color="primary darken-3">
             <v-icon left>mdi-identifier</v-icon>
             {{ dataModel.alert_condition_id }}
@@ -250,10 +250,6 @@
         <v-card-text>
           <!-- Rule List -->
           <v-toolbar flat color="white">
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large color="brown darken-2">mdi-book-open-variant</v-icon>
-              <span class="mx-4">Rule</span>
-            </v-toolbar-title>
             <v-text-field text solo flat
               prepend-icon="mdi-magnify"
               placeholder="Type something"
@@ -319,8 +315,8 @@
     <v-dialog v-model="notiDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large color="darken-2">mdi-cog</v-icon>
-          <span class="mx-4 headline">Alert Rule Condition</span>
+          <v-icon large color="brown darken-2">mdi-email</v-icon>
+          <span class="mx-4 headline">Alert Notification</span>
           <v-chip dark label color="primary darken-3">
             <v-icon left>mdi-identifier</v-icon>
             {{ dataModel.alert_condition_id }}
@@ -330,10 +326,6 @@
         <v-card-text>
           <!-- Notification List -->
           <v-toolbar flat color="white">
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large color="brown darken-2">mdi-slack</v-icon>
-              <span class="mx-4">Notification</span>
-            </v-toolbar-title>
             <v-text-field text solo flat
               prepend-icon="mdi-magnify"
               placeholder="Type something"
@@ -710,7 +702,7 @@ export default {
                 alert_condition_id: this.dataModel.alert_condition_id,
                 notification_id: item.notification_id,
                 cache_second: 60 * 60, // an hour 
-                notified_at: new Date().getTime(),
+                notified_at: 0,
               },
             }
             return true

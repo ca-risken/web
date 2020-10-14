@@ -311,14 +311,14 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated AWS.'
+      let msg = 'Success: Updated AWS.'
       if (this.awsForm.newAWS) {
         msg = 'Success: Created new AWS.'
       }
       this.finish(msg)
     },
     isNewAccountID(accountID) {
-      var isNew = true
+      let isNew = true
       this.table.items.some( item => {
         if(item.aws_account_id == accountID){
           isNew = false

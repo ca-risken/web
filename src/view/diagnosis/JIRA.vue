@@ -283,7 +283,7 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated Diagnosis.'
+      let msg = 'Success: Updated Diagnosis.'
       if (this.diagnosisForm.newDiagnosis) {
         msg = 'Success: Created new Diagnosis.'
       }

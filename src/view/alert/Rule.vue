@@ -398,7 +398,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated alert rule.'
+      let msg = 'Success: Updated alert rule.'
       if (this.form.new) {
         msg = 'Success: Created new alert rule.'
       }
