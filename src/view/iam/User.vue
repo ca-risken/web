@@ -58,7 +58,7 @@
                   </v-avatar>
                 </template>
                 <template v-slot:item.role_cnt="{ item }">
-                  <v-chip :color="getColorByRoleCnt(item.role_cnt)" dark>{{ item.role_cnt }}</v-chip>
+                  <v-chip :color="getColorByCount(item.role_cnt)" dark>{{ item.role_cnt }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -372,18 +372,6 @@ export default {
     clearRoleList() {
       this.roleTable.items = []
       this.roleTable.selected = []
-    },
-
-    getColorByRoleCnt(cnt) {
-      if ( cnt < 1  ) {
-        return 'grey'
-      } else if ( cnt <= 3 ) {
-        return 'success'
-      } else if ( cnt < 10 ) {
-        return 'yellow'
-      } else {
-        return 'red'
-      }
     },
 
     async putItem() {

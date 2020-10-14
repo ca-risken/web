@@ -13,13 +13,46 @@ var mixin = {
     reload: function() {
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
-    getServerityColorByScore: (score) => {
+    getColorByCount(cnt) {
+      if ( cnt <= 0 ) {
+        return 'grey lighten-1'
+      } else if ( cnt <= 1 ) {
+        return 'info lighten-1'
+      } else if ( cnt <= 3 ) {
+        return 'yellow darken-3'
+      } else {
+        return 'red'
+      }
+    },
+    getColorByScore: (score) => {
       if ( score <= 0.6 ) {
         return 'success'
       } else if ( score <= 0.8 ) {
-        return 'yellow'
+        return 'yellow darken-3'
       } else {
         return 'red'
+      }
+    },
+    getSeverityColor: (severity) => {
+      switch (severity) {
+        case 'high':
+          return 'pink'
+        case 'medium':
+          return 'yellow darken-3'
+        default:
+          return 'teal'
+      }
+    },
+    getHistoryTypeColor: (type) => {
+      switch (type) {
+        case 'created':
+          return 'teal'
+        case 'updated':
+          return 'amber'
+        case 'deleted':
+          return 'grey'
+        default:
+          return 'grey'
       }
     },
     getDataSourceIcon: (dataSource) => {

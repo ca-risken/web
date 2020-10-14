@@ -58,7 +58,7 @@
                   </v-avatar>
                 </template>
                 <template v-slot:item.policy_cnt="{ item }">
-                  <v-chip :color="getColorByPolicyCnt(item.policy_cnt)" dark>{{ item.policy_cnt }}</v-chip>
+                  <v-chip :color="getColorByCount(item.policy_cnt)" dark>{{ item.policy_cnt }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -169,7 +169,7 @@
                 <v-card
                   label outliend
                   elevation="0"
-                  color="red lighten-5"
+                  color="teal lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -181,7 +181,7 @@
                 <v-card
                   label outliend
                   elevation="0"
-                  color="red lighten-5"
+                  color="light-green lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -426,18 +426,6 @@ export default {
     clearPolicyList() {
       this.policyTable.items = []
       this.policyTable.selected = []
-    },
-
-    getColorByPolicyCnt(cnt) {
-      if ( cnt < 1  ) {
-        return 'grey'
-      } else if ( cnt <= 3 ) {
-        return 'success'
-      } else if ( cnt < 10 ) {
-        return 'yellow'
-      } else {
-        return 'red'
-      }
     },
 
     async putItem() {
