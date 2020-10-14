@@ -12,16 +12,25 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense>
-          <v-col cols="12" sm="4" md="4">
+          <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
-              :items="resourceNameList"
+              :items="searchForm.resourceNameList"
               v-model="searchModel.resourceName"
             />
           </v-col>
-          <v-col cols="12" sm="4" md="4">
+          <v-col cols="3">
+            <v-combobox
+              multiple outlined dense clearable small-chips deletable-chips
+              :label="searchForm.tag.label"
+              :placeholder="searchForm.tag.placeholder"
+              :items="searchForm.tagList"
+              v-model="searchModel.tag"
+            />
+          </v-col>
+          <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               :label="searchForm.dataSource.label"
@@ -30,7 +39,7 @@
               v-model="searchModel.dataSource"
             />
           </v-col>
-          <v-col cols="12" sm="3" md="3">
+          <v-col cols="2">
             <v-range-slider
               outlined
               dense
@@ -79,12 +88,13 @@
                   </v-layout>
                 </template>
                 <template v-slot:item.score="{ item }">
-                  <!-- <v-progress-linear
-                    :value="item.score * 100"
-                    height="5"
-                    :color="getColorByScore(item.score)"
-                  /> -->
-                  <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
+                  <v-chip dark :color="getColorByScore(item.score)">{{ item.score | formatScore }}</v-chip>
+                </template>
+                <template v-slot:item.tags="{ item }">
+                  <v-chip>
+                    <v-icon left>mdi-label</v-icon>
+                    {{ item.tags | itemCount }}
+                  </v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -182,7 +192,7 @@
                     Score
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ findingModel.score }}
+                    <v-chip dark :color="getColorByScore(findingModel.score)">{{ findingModel.score | formatScore }}</v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -217,6 +227,24 @@
           <v-row class="ma-2">
             <v-col cols="12">
               <v-list-item-subtitle>
+                <v-icon left>mdi-label</v-icon>
+                Tag
+              </v-list-item-subtitle>
+              <v-list-item-title>
+                <v-chip
+                  v-for="tag in findingModel.tags"
+                  :key="tag.finding_tag_id"
+                  class="mx-1"
+                >
+                  {{ tag.tag }}
+                </v-chip>
+              </v-list-item-title>
+            </v-col>
+          </v-row>
+
+          <v-row class="ma-2">
+            <v-col cols="12">
+              <v-list-item-subtitle>
                 <v-icon left>mdi-code-json</v-icon>
                 JSON Data
               </v-list-item-subtitle>
@@ -231,9 +259,18 @@
             <v-col cols="4">
               <v-list-item-subtitle>
                 <v-icon left>mdi-clock-outline</v-icon>
+                Created At
+              </v-list-item-subtitle>
+              <v-list-item-title>
+                <v-chip>{{ findingModel.created_at | formatTime }}</v-chip>
+              </v-list-item-title>
+            </v-col>
+            <v-col cols="4">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-clock-outline</v-icon>
                 Updated At
               </v-list-item-subtitle>
-              <v-list-item-title class="headline">
+              <v-list-item-title>
                 <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
               </v-list-item-title>
             </v-col>
@@ -262,15 +299,29 @@ export default {
       searchModel: {
         dataSource: [],
         resourceName: [],
+        tag: [],
         score: [0.00, 1.00],
       },
       searchForm: {
-        dataSource: { label: 'Data Source', placeholder: 'Filter for data_sources' },
-        resourceName: { label: 'Resource Name', placeholder: 'Filter for resource name' },
-        score: { label: 'Score', placeholder: 'Filter for score( from - to )' },
+        dataSource: { label: 'Data Source', placeholder: 'Filter data sources' },
+        resourceName: { label: 'Resource Name', placeholder: 'Filter resource' },
+        tag: { label: 'Tag', placeholder: 'Filter tag' },
+        score: { label: 'Score', placeholder: 'Filter score( from - to )' },
+        resourceNameList: [],
+        tagList: [],
       },
-      resourceNameList: [],
-      findingModel: { finding_id:'', data_source:'', resource_name:'', description:'', original_score:'', score:'', updated_at:'' },
+      findingModel: {
+        finding_id:'',
+        score:'',
+        original_score:'',
+        data_source:'',
+        resource_name:'',
+        description:'',
+        tags: [],
+        data: '',
+        created_at:'',
+        updated_at:'',
+      },
       viewDialog: false,
       table: {
         selected: [],
@@ -280,6 +331,7 @@ export default {
           { text: 'Data Source', align: 'center', sortable: false, value: 'data_source' },
           { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
           { text: 'Description', align: 'start', sortable: false, value: 'description' },
+          { text: 'Tags', align: 'start', sortable: false, value: 'tags' },
           { text: 'Update', align: 'start', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' },
         ],
@@ -311,6 +363,14 @@ export default {
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
+    formatScore: (score) => {
+      if (!Number.isInteger(score)){return score}
+      return score.toFixed(2)
+    },
+    itemCount: (items) => {
+      if (!items){return 0}
+      return items.length
+    },
   },
   mounted() {
     if ( this.$route.query.resource_name ) {
@@ -318,6 +378,7 @@ export default {
       this.handleSearch()
       return false
     }
+    this.getTag()
     this.refleshList('')
   },
   methods: {
@@ -339,8 +400,8 @@ export default {
     },
     async loadList() {
       this.loading = true
-      var items = []
-      var resources = []
+      let items = []
+      let resources = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.findings.slice(from, to)
@@ -349,27 +410,64 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
-        items.push(res.data.data.finding)
+        const tag = await this.$axios.get('/finding/list-finding-tag/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+          this.clearList()
+          return Promise.reject(err)
+        })
+        const item = {
+          finding_id:     res.data.data.finding.finding_id,
+          score:          res.data.data.finding.score,
+          original_score: res.data.data.finding.original_score,
+          data_source:    res.data.data.finding.data_source,
+          resource_name:  res.data.data.finding.resource_name,
+          description:    res.data.data.finding.description,
+          tags:           tag.data.data.tag,
+          data:           res.data.data.finding.data,
+          updated_at:     res.data.data.finding.updated_at,
+          created_at:     res.data.data.finding.created_at,
+        }
+        items.push(item)
         resources.push(res.data.data.finding.resource_name)
       })
       this.table.items = items
-      this.resourceNameList = resources
+      this.searchForm.resourceNameList = resources
       this.loading = false
     },
     clearList() {
       this.findings = []
       this.table.total = 0
       this.table.items = []
-      this.resourceNameList = []
+      this.searchForm.resourceNameList = []
+      this.searchForm.tagList = []
     },
+
+    async getTag() {
+      this.searchForm.tagList = []
+      const res = await this.$axios.get(
+        '/finding/list-finding-tag-name/?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      const list = res.data
+      if ( !list || !list.data || !list.data.tag ) {
+        return false
+      }
+      this.searchForm.tagList = list.data.tag
+    },
+
+    // handler
     handleViewItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
       this.viewDialog = true
     },
     handleSearch() {
-      var searchCond = ''
+      let searchCond = ''
       if (this.searchModel.dataSource) {
         searchCond += '&data_source=' + this.searchModel.dataSource
+      }
+      if (this.searchModel.tag) {
+        searchCond += '&tag=' + this.searchModel.tag
       }
       if (this.searchModel.resourceName) {
         searchCond += '&resource_name=' + this.searchModel.resourceName

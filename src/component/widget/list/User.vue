@@ -109,8 +109,8 @@ export default {
     },
     async loadList() {
       this.loading = true
-      var items = []
-      var userNames = []
+      let items = []
+      let userNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
@@ -139,7 +139,7 @@ export default {
     },
 
     handleSearch() {
-      var searchCond = ''
+      let searchCond = ''
       if (this.searchModel.userName) {
         searchCond += '&name=' + this.searchModel.userName
       }

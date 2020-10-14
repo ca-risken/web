@@ -323,8 +323,8 @@ export default {
     },
     async loadList() {
       this.loading = true
-      var items = []
-      var policyNames = []
+      let items = []
+      let policyNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.policies.slice(from, to)
@@ -405,7 +405,7 @@ export default {
       this.deleteDialog  = true
     },
     handleSearch() {
-      var searchCond = ''
+      let searchCond = ''
       if (this.searchModel.policyName) {
         searchCond += '&name=' + this.searchModel.policyName
       }

@@ -55,8 +55,8 @@ const cutLongString = (str, maxLen) => {
 }
 
 const elapsedTimeText = (from) => {
-  var diff = new Date().getTime() - from.getTime()
-  var elapsed = new Date(diff)
+  let diff = new Date().getTime() - from.getTime()
+  let elapsed = new Date(diff)
 
   if (elapsed.getUTCFullYear() - 1970) {
     return elapsed.getUTCFullYear() - 1970 + '年前'

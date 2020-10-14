@@ -356,8 +356,8 @@ export default {
     },
     async loadList() {
       this.loading = true
-      var items = []
-      var roleNames = []
+      let items = []
+      let roleNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.roles.slice(from, to)
@@ -454,7 +454,7 @@ export default {
           role_id: this.roleModel.role_id,
           policy_id: item.policy_id,
         }
-        var uri = '/iam/detach-policy/'
+        let uri = '/iam/detach-policy/'
         this.policyTable.selected.some( selected => {
           if(item.policy_id === selected.policy_id){
             uri = '/iam/attach-policy/'
@@ -507,7 +507,7 @@ export default {
       this.deleteDialog  = true
     },
     handleSearch() {
-      var searchCond = ''
+      let searchCond = ''
       if (this.searchModel.roleName) {
         searchCond += '&name=' + this.searchModel.roleName
       }

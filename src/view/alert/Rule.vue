@@ -73,11 +73,6 @@
                 <template v-slot:item.finding_cnt="{ item }">
                   <v-chip :color="getColorByCount(item.finding_cnt)" dark>{{ item.finding_cnt }}</v-chip>
                 </template>
-                <!--
-                <template v-slot:item.updated_at="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
-                </template>
-                -->
                 <template v-slot:item.action="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
@@ -328,7 +323,6 @@ export default {
   methods: {
     // list
     async tagList() {
-      // TODO: distinct tag from tag API(new API).
       const res = await this.$axios.get(
         '/finding/list-finding-tag/?finding_id=1001&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
@@ -398,13 +392,14 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated alert rule.'
+      let msg = 'Success: Updated alert rule.'
       if (this.form.new) {
         msg = 'Success: Created new alert rule.'
       }
       this.finishSuccess(msg)
     },
 
+    // handler
     handleNewItem() {
       this.dataModel = { alert_rule_id:0, name:'', score:0, resource_name: '', tag:'', finding_cnt:0, updated_at:'' }
       this.form.new = true

@@ -313,7 +313,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated Notification.'
+      let msg = 'Success: Updated Notification.'
       if (this.form.new) {
         msg = 'Success: Created new Notification.'
       }

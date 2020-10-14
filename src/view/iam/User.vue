@@ -307,8 +307,8 @@ export default {
     },
     async loadList() {
       this.loading = true
-      var items = []
-      var userNames = []
+      let items = []
+      let userNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
@@ -383,7 +383,7 @@ export default {
           user_id: this.userModel.user_id,
           role_id: item.role_id,
         }
-        var uri = '/iam/detach-role/'
+        let uri = '/iam/detach-role/'
         this.roleTable.selected.some( selected => {
           if(item.role_id === selected.role_id){
             uri = '/iam/attach-role/'
@@ -430,7 +430,7 @@ export default {
       this.putItem()
     },
     handleSearch() {
-      var searchCond = ''
+      let searchCond = ''
       if (this.searchModel.userName) {
         searchCond += '&name=' + this.searchModel.userName
       }
