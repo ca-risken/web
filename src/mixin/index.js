@@ -21,7 +21,7 @@ let mixin = {
       } else if ( cnt <= 3 ) {
         return 'yellow darken-3'
       } else {
-        return 'red'
+        return 'red darken-2'
       }
     },
     getColorByScore: (score) => {
@@ -30,7 +30,7 @@ let mixin = {
       } else if ( score <= 0.8 ) {
         return 'yellow darken-3'
       } else {
-        return 'red'
+        return 'red darken-2'
       }
     },
     getSeverityColor: (severity) => {

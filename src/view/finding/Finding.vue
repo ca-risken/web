@@ -84,7 +84,7 @@
                     height="5"
                     :color="getColorByScore(item.score)"
                   /> -->
-                  <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
+                  <v-chip dark :color="getColorByScore(item.score)">{{ item.score | formatScore }}</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -182,7 +182,7 @@
                     Score
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ findingModel.score }}
+                    <v-chip dark :color="getColorByScore(findingModel.score)">{{ findingModel.score | formatScore }}</v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -310,6 +310,10 @@ export default {
     },
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+    formatScore: (score) => {
+      if (!Number.isInteger(score)){return score}
+      return score.toFixed(2)
     },
   },
   mounted() {
