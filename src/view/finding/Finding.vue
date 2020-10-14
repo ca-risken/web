@@ -339,8 +339,8 @@ export default {
     },
     async loadList() {
       this.loading = true
-      var items = []
-      var resources = []
+      let items = []
+      let resources = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.findings.slice(from, to)
@@ -367,7 +367,7 @@ export default {
       this.viewDialog = true
     },
     handleSearch() {
-      var searchCond = ''
+      let searchCond = ''
       if (this.searchModel.dataSource) {
         searchCond += '&data_source=' + this.searchModel.dataSource
       }

@@ -597,7 +597,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      var msg = 'Success: Updated Notification.'
+      let msg = 'Success: Updated Notification.'
       if (this.form.new) {
         msg = 'Success: Created new Notification.'
       }
@@ -634,8 +634,8 @@ export default {
     async putRule() {
       this.ruleTable.items.forEach( async item => {
         // Set param for delete request.
-        var uri = '/alert/delete-condition_rule/'
-        var param = { 
+        let uri = '/alert/delete-condition_rule/'
+        let param = { 
           project_id: this.$store.state.project.project_id,
           alert_condition_id: this.dataModel.alert_condition_id,
           alert_rule_id: item.alert_rule_id,
@@ -693,8 +693,8 @@ export default {
     async putNotification() {
       this.notiTable.items.forEach( async item => {
         // Set param for delete request.
-        var uri = '/alert/delete-condition_notification/'
-        var param = { 
+        let uri = '/alert/delete-condition_notification/'
+        let param = { 
           project_id: this.$store.state.project.project_id,
           alert_condition_id: this.dataModel.alert_condition_id,
           notification_id: item.notification_id,

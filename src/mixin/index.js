@@ -1,4 +1,4 @@
-var mixin = {
+let mixin = {
   data: () => {
     return {
       dataSourceList: [
