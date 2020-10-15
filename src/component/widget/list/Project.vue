@@ -1,8 +1,8 @@
 <template>
-  <v-card tile>
-    <v-card-title dense>Select your project</v-card-title>
+  <v-card>
+    <v-card-title>Select roject</v-card-title>
     <v-divider></v-divider>
-    <v-card-text dense class="pa-0">
+    <v-card-text class="pa-0">
       <v-list rounded class="pa-0">
         <v-list-item
           v-for="(pj, index) in projects"

@@ -139,12 +139,12 @@
           <v-card-title>Finding Detail</v-card-title>
         </v-toolbar>
         <v-container fluid>
-          <v-row dense>
+          <v-row dense class="mx-2">
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    <v-icon left>mdi-identifier</v-icon>
+                    <v-icon color="black" dark left>mdi-identifier</v-icon>
                     Finding ID
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
@@ -183,8 +183,21 @@
               </v-list-item>
             </v-col>
           </v-row>
-          <v-row dense>
-            <v-col cols="2">
+          <v-row dense class="mx-2">
+            <v-col cols="6">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-image-text</v-icon>
+                    Description
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.description }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
@@ -210,21 +223,8 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="7">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon left>mdi-image-text</v-icon>
-                    Description
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.description }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
           </v-row>
-          <v-row class="ma-2">
+          <v-row dense class="mx-4">
             <v-col cols="12">
               <v-list-item-subtitle>
                 <v-icon left>mdi-label</v-icon>
@@ -255,7 +255,7 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row dense>
+          <v-row class="ma-2">
             <v-col cols="4">
               <v-list-item-subtitle>
                 <v-icon left>mdi-clock-outline</v-icon>
@@ -278,7 +278,7 @@
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="viewDialog = false">
+          <v-btn text outlined  color="grey darken-1" @click="viewDialog = false">
             CANCEL
           </v-btn>
         </v-card-actions>

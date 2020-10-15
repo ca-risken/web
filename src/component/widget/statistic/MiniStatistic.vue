@@ -1,14 +1,14 @@
 <template>
-  <v-card tile>
+  <v-card tile @click="handleClick">
     <v-card-text class="pa-0">
       <div class="d-flex">
         <div class="flex pa-3">
           <div class="layout justify-center align-center">
-            <v-icon size="56px" :color="color">{{ icon }}</v-icon>
+            <v-icon size="54px" :color="color">{{ icon }}</v-icon>
           </div>
         </div>
         <div class="flex pa-3" :class="color">
-          <div class="white--text">{{ title }}</div>
+          <div class="white--text headline">{{ title }}</div>
           <span class="white--text">{{ subTitle }}</span>
         </div>
       </div>
@@ -22,7 +22,13 @@ export default {
     icon: String,
     title: String,
     subTitle: String,
-    color: String
+    color: String,
+    link: String,
+  },
+  methods: {
+    handleClick() {
+      this.$router.push(this.link)
+    }
   }
 }
 </script>
