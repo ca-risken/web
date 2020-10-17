@@ -12,14 +12,14 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="mx-2">
         <!-- Status -->
         <v-col cols="8">
           <status-statistic
-            :icon="status.riskIcon"
-            :color="status.riskColor"
-            :description="status.riskDescription"
-            :detail="status.riskDetail"
+            :icon="status.risk.icon"
+            :color="status.risk.color"
+            :description="status.risk.description"
+            :detail="status.risk.detail"
             class="mx-2"
             ref="weather"
           />
@@ -27,30 +27,14 @@
 
         <!-- mini statistic start -->
         <v-col cols="4">
-          <!-- <v-btn text tile class="ma-0" width="100%"> -->
           <mini-statistic
-            icon="mdi-alert"
-            :title="status.activeAlerts.toString()"
-            sub-title="Action Required ...."
-            color="red darken-3"
-            link="/alert/alert/"
-            class="mb-2"
-          />
-          <!-- </v-btn> -->
-          <mini-statistic
-            icon="mdi-file-find-outline"
-            :title="status.highScoreFindings.toString()"
-            sub-title="HighScore Findings "
-            color="blue darken-1"
-            link="/finding/finding/"
-            class="mb-2"
-          />
-          <mini-statistic
-            icon="mdi-cog"
-            :title="status.settingCompRate"
-            sub-title="Setting Coverage ..."
-            color="grey darken-2"
-            link="/alert/condition/"
+            v-for="factor in status.riskFactor"
+            :key="factor.title"
+            :icon="factor.icon"
+            :title="factor.title"
+            :sub-title="factor.subTitle"
+            :color="factor.color"
+            :link="factor.link"
             class="mb-2"
           />
         </v-col>
@@ -67,7 +51,21 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="mx-2">
+        <v-col
+          cols="3"
+          v-for="c in category"
+          :key="c.category"
+        >
+          <category-statistic
+            :icon="c.icon"
+            :category="c.category"
+            :title="c.title"
+            :sub-title="c.subTitle"
+            :color="c.color"
+            :link="c.link"
+          />
+        </v-col>
       </v-row>
 
       <!-- Static -->
@@ -91,184 +89,288 @@
 <script>
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
+import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
 export default {
   name: 'PageDashboard',
   components: {
     StatusStatistic,
     MiniStatistic,
+    CategoryStatistic,
   },
   data() {
     return {
-      activeAlert: [],
-      highScoreFinding: [],
-      settings: {
-        steps: 5,            // [Total 5 setting steps]
-        invitedUsers: [],    // 1. User invited, 
-        storeFindings: [],   // 2, Setting DataSources ( = Store some Findings),
-        alertConditions: [], // 3. Setting Alert Condition,
-        alertRules: [],      // 4. Setting Alert Rule,
-        notifications: [],   // 5. Setting Alert Notification
+      oneMonthAgoUnix:  0,
+      raw: {
+        activeAlert: [],
+        highScoreFinding: [],
+
+        settingStep: 5,     // [Total 5 setting steps]
+        invitedUser: [],    // 1. User invited, 
+        storeFinding: [],   // 2, Setting DataSources ( = Store some Findings),
+        alertCondition: [], // 3. Setting Alert Condition,
+        alertRule: [],      // 4. Setting Alert Rule,
+        notification: [],   // 5. Setting Alert Notification
       },
       status: {
-        activeAlerts: 0,
-        highScoreFindings: 0,
-        imcompletedSettings: 0,
-        settingCompRate: '-',
+        alert: '0',
+        finding: '0',
+        compSettingRate: '-',
+        imcompSetting: '0',
+        riskFactor: [],
+        risk: {
+          icon: '',
+          color: '',
+          description: '',
+          detail: '',
+        }
+      },
 
-        riskIcon: '',
-        riskColor: '',
-        riskDescription: '',
-        riskDetail: '',
-      }
+      category: [],
     }
   },
   async mounted() {
-    await this.getActiveAlert()
-    await this.getHighScoreFindings()
-    await this.getSettings()
-    this.riskAssessment()
+    this.oneMonthAgoUnix = Math.floor(new Date().setMonth(new Date().getMonth() - 1) / 1000)
+
+    await this.setRawData()
+    this.setStatus()
+    this.setCategory()
   },
   methods: {
+    // -- Raw Data ---------------------------------
+    async setRawData() {
+      await this.setActiveAlert()
+      await this.setHighScoreFinding()
+      await this.setUser()              // 1. User invited, 
+      await this.setStoreFinding()      // 2, Setting DataSources ( = Store some Findings),
+      await this.setAlertCondition()    // 3. Setting Alert Condition,
+      await this.setAlertRule()         // 4. Setting Alert Rule,
+      await this.setAlertNotification() // 5. Setting Alert Notification
+    },
     // alert list
-    async getActiveAlert() {
+    async setActiveAlert() {
       const res = await this.$axios.get(
         '/alert/list-alert/?activated=true&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.alert ) {
-        this.clearAlert()
-        return false
+        return []
       }
-      this.activeAlert = res.data.data.alert
-      this.status.activeAlerts =  res.data.data.alert.length
+      this.raw.activeAlert = res.data.data.alert
     },
-
     // Findings
-    async getHighScoreFindings() {
-      const oneMonthAgoUnix = Math.floor(new Date().setMonth(new Date().getMonth() - 1) / 1000)
-      this.highScoreFinding = await this.getFindings(oneMonthAgoUnix, 0.8)
-      this.status.highScoreFindings = this.highScoreFinding.length
+    async setHighScoreFinding() {
+      this.raw.highScoreFinding          = await this.getFinding(this.oneMonthAgoUnix, 0.8, '')
+      this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, 0.8, 'aws:guard-duty')
+      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, 0.8, 'diagnosis:jira')
+      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, 0.8, 'osint:intrigue')
     },
-    async getFindings(fromAt, fromScore) {
+    async setStoreFinding() {
+      this.raw.storeFindings = await this.getFinding(0, 0, '')
+    },
+    async getFinding(fromAt, fromScore, dataSource) {
       const res = await this.$axios.get(
         '/finding/list-finding/?project_id=' + this.$store.state.project.project_id
           + '&from_at=' + fromAt
           + '&from_score=' + fromScore
+          + '&data_source=' + dataSource
       ).catch((err) =>  {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.finding_id ) {
-        return false
+        return []
       }
       return res.data.data.finding_id
     },
-
-    // Settings
-    async getSettings() {
-      await this.getUsers()              // 1. User invited, 
-      await this.getStoreFindings()      // 2, Setting DataSources ( = Store some Findings),
-      await this.getAlertConditions()    // 3. Setting Alert Condition,
-      await this.getAlertRules()         // 4. Setting Alert Rule,
-      await this.getAlertNotifications() // 5. Setting Alert Notification
-
-      this.status.imcompletedSettings = this.settings.steps
-      let completed = 0
-      if (this.settings.invitedUsers.length > 0) {
-        completed++
-      }
-      if (this.settings.storeFindings.length > 0) {
-        completed++
-      }
-      if (this.settings.alertConditions.length > 0) {
-        completed++
-      }
-      if (this.settings.alertRules.length > 0) {
-        completed++
-      }
-      if (this.settings.notifications.length > 0) {
-        completed++
-      }
-      this.status.imcompletedSettings = this.settings.steps - completed
-      this.status.settingCompRate = ((completed / this.settings.steps) * 100 ).toString() + '%'
-    },
-    async getUsers() {
-      this.settings.invitedUsers = []
+    // User
+    async setUser() {
+      this.raw.invitedUser = []
       const res = await this.$axios.get(
         '/iam/list-user/?activated=true&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.user_id ) {
-        return false
+        return []
       }
-      this.settings.invitedUsers = res.data.data.user_id
+      this.raw.invitedUser = res.data.data.user_id
     },
-    async getStoreFindings() {
-      this.settings.storeFindings = []
-      this.settings.storeFindings = await this.getFindings(0, 0)
-    },
-    async getAlertConditions() {
-      this.settings.alertConditions = []
+    // Alert condition
+    async setAlertCondition() {
+      this.raw.alertCondition = []
       const res = await this.$axios.get(
         '/alert/list-condition/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.alert_condition ) {
-        return false
+        return []
       }
-      this.settings.alertConditions = res.data.data.alert_condition
+      this.raw.alertCondition = res.data.data.alert_condition
     },
-    async getAlertRules() {
-      this.settings.alertRules = []
+    // Alert condition
+    async setAlertRule() {
+      this.raw.alertRule = []
       const res = await this.$axios.get(
         '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.alert_rule ) {
-        return false
+        return []
       }
-      this.settings.alertRules = res.data.data.alert_rule
+      this.raw.alertRule = res.data.data.alert_rule
     },
-    async getAlertNotifications() {
-      this.settings.notifications = []
+    // Notification
+    async setAlertNotification() {
+      this.raw.notification = []
       const res = await this.$axios.get(
         '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.notification ) {
-        return false
+        return []
       }
-      this.settings.notifications = res.data.data.notification
+      this.raw.notification = res.data.data.notification
     },
 
-    // Risk Assessment
-    riskAssessment() {
-      const totalRisk = Number(this.status.activeAlerts) + Number(this.status.highScoreFindings) + Number(this.status.imcompletedSettings)
-      this.status.riskDetail =
-        '  Active Alerts: ' + this.status.activeAlerts +
-        ', High Score Findings: ' + this.status.highScoreFindings +
-        ', Imcompleted Settings: ' + this.status.imcompletedSettings + ' / ' + this.settings.steps
-      if ( totalRisk === 0 ) {
-        this.status.riskIcon = 'mdi-check-circle-outline'
-        this.status.riskColor = 'green'
-        this.status.riskDescription = '問題ありません.'
-      } else if ( 0 < totalRisk && totalRisk <= 3 ) {
-        this.status.riskIcon = 'mdi-weather-cloudy'
-        this.status.riskColor = 'grey darken-1'
-        this.status.riskDescription = '確認が必要な項目があります.'
-      } else if ( 3 < totalRisk && totalRisk <= 10 ) {
-        this.status.riskIcon = 'mdi-weather-pouring'
-        this.status.riskColor = 'lime darken-3'
-        this.status.riskDescription = '何か問題がありそうです...'
-      } else {
-        this.status.riskIcon = 'mdi-weather-lightning'
-        this.status.riskColor = 'red darken-2'
-        this.status.riskDescription = '問題が山積みです...!'
+    // -- Status ---------------------------------
+    setStatus() {
+      this.status.alert = this.raw.activeAlert.length.toString()
+      this.status.finding = this.raw.highScoreFinding.length.toString(),
+      this.setSettingStatus()
+
+      this.setTotalStatus()
+      this.status.riskFactor = []
+      this.status.riskFactor.push({
+        title: this.status.alert,
+        subTitle: 'Action Required ....',
+        icon: 'mdi-alert',
+        color: 'red darken-3',
+        link: '/alert/alert/',
+      })
+      this.status.riskFactor.push({
+        title: this.status.finding,
+        subTitle: 'HighScore Findings ',
+        icon: 'mdi-file-find-outline',
+        color: 'blue darken-1',
+        link: '/finding/finding/',
+      })
+      this.status.riskFactor.push({
+        title: this.status.compSettingRate,
+        subTitle: 'HighScore Findings ',
+        icon: 'mdi-cog',
+        color: 'grey darken-2',
+        link: '/alert/condition/',
+      })
+    },
+    // Setting Status
+    setSettingStatus() {
+      let completed = 0
+      if (this.raw.invitedUser.length > 0) {
+        completed++
       }
+      if (this.raw.storeFinding.length > 0) {
+        completed++
+      }
+      if (this.raw.alertCondition.length > 0) {
+        completed++
+      }
+      if (this.raw.alertRule.length > 0) {
+        completed++
+      }
+      if (this.raw.notification.length > 0) {
+        completed++
+      }
+      this.status.imcompSetting = this.raw.settingStep - completed
+      this.status.compSettingRate = ((completed / this.raw.settingStep) * 100 ).toString() + '%'
+    },
+    // Total Status
+    setTotalStatus() {
+      const totalRisk = Number(this.status.alert) + Number(this.status.finding) + Number(this.status.imcompSetting)
+      this.status.risk.detail =
+        '  Active Alerts: ' + this.status.alert +
+        ', High Score Findings: ' + this.status.finding +
+        ', Imcompleted Settings: ' + this.status.imcompSetting + ' / ' + this.raw.settingStep
+      if ( totalRisk === 0 ) {
+        this.status.risk.icon = 'mdi-check-circle-outline'
+        this.status.risk.color = 'green'
+        this.status.risk.description = '問題ありません👌'
+      } else if ( 0 < totalRisk && totalRisk <= 3 ) {
+        this.status.risk.icon = 'mdi-weather-cloudy'
+        this.status.risk.color = 'grey darken-1'
+        this.status.risk.description = '確認が必要な項目があります👀'
+      } else if ( 3 < totalRisk && totalRisk <= 10 ) {
+        this.status.risk.icon = 'mdi-weather-pouring'
+        this.status.risk.color = 'lime darken-3'
+        this.status.risk.description = '何か問題がありそうです...😥'
+      } else {
+        this.status.risk.icon = 'mdi-weather-lightning'
+        this.status.risk.color = 'red darken-2'
+        this.status.risk.description = '問題が山積みです...🙀'
+      }
+    },
+
+    // -- Category ---------------------------------
+    setCategory() {
+      this.category = []
+      this.category.push({
+        category: 'User',
+        title: this.raw.invitedUser.length.toString(),
+        subTitle: 'Project members',
+        icon: 'mdi-account-multiple',
+        color: 'pink darken-1',
+        link: '/iam/user/',
+      })
+      this.category.push({
+        category: 'AWS',
+        title: this.raw.highScoreFindingAWS.length.toString(),
+        subTitle: 'High score findings',
+        icon: 'mdi-aws',
+        color: 'orange darken-2',
+        link: '/finding/finding/',
+      })
+      this.category.push({
+        category: 'Diagnosis',
+        title: this.raw.highScoreFindingDiagnosis.length.toString(),
+        subTitle: 'High score findings',
+        icon: 'mdi-bug-check-outline',
+        color: 'indigo darken-2',
+        link: '/finding/finding/',
+      })
+      this.category.push({
+        category: 'OSINT',
+        title: '0',
+        subTitle: 'High score findings',
+        icon: 'http',
+        color: 'cyan darken-1',
+        link: '/finding/finding/',
+      })
+      this.category.push({
+        category: 'GCP',
+        title: '0',
+        subTitle: 'High score findings',
+        icon: 'mdi-google-cloud',
+        color: 'blue darken-1',
+        link: '/finding/finding/',
+      })
+      this.category.push({
+        category: 'Source Code',
+        title: '0',
+        subTitle: 'High score findings',
+        icon: 'mdi-github',
+        color: 'grey darken-3',
+        link: '/finding/finding/',
+      })
+      this.category.push({
+        category: 'Azure',
+        title: '0',
+        subTitle: 'High score findings',
+        icon: 'mdi-microsoft-azure',
+        color: 'light-blue darken-2',
+        link: '/finding/finding/',
+      })
     },
 
   },

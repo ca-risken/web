@@ -375,11 +375,9 @@ export default {
   mounted() {
     if ( this.$route.query.resource_name ) {
       this.searchModel.resourceName[0] = this.$route.query.resource_name
-      this.handleSearch()
-      return false
     }
     this.getTag()
-    this.refleshList('')
+    this.handleSearch()
   },
   methods: {
     async refleshList(searchCond) {
