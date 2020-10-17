@@ -6,7 +6,7 @@
         <v-col cols="12">
           <v-toolbar flat>
             <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon large class="pr-2" color="indigo darken-2">mdi-thermometer</v-icon>
+              <v-icon x-large class="pr-2" color="indigo darken-2">mdi-thermometer</v-icon>
               Status
             </v-toolbar-title>
           </v-toolbar>
@@ -21,7 +21,6 @@
             :description="status.risk.description"
             :detail="status.risk.detail"
             class="mx-2"
-            ref="weather"
           />
         </v-col>
 
@@ -45,7 +44,7 @@
         <v-col cols="12">
           <v-toolbar flat>
             <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon large class="pr-2" color="indigo darken-2">mdi-shape-outline</v-icon>
+              <v-icon x-large class="pr-2" color="indigo darken-2">mdi-shape</v-icon>
               Category
             </v-toolbar-title>
           </v-toolbar>
@@ -68,18 +67,30 @@
         </v-col>
       </v-row>
 
-      <!-- Static -->
+      <!-- Chart -->
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat>
             <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon large class="pr-2" color="indigo darken-2">mdi-graph</v-icon>
-              Statics
+              <v-icon x-large class="pr-2" color="indigo darken-2">mdi-chart-areaspline</v-icon>
+              Chart
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
       </v-row>
       <v-row>
+        <v-col cols="6" class="ml-6">
+          <v-card>
+            <v-card-text>
+              <time-line-chart
+                v-if="chart.loaded"
+                :height="chart.height"
+                :chartdata="chart.data"
+                :options="chart.options"
+              ></time-line-chart>
+            </v-card-text>
+          </v-card>
+        </v-col>
       </v-row>
 
     </v-container>
@@ -90,15 +101,18 @@
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
+import TimeLineChart from '@/component/widget/chart/TimeLineChart'
 export default {
   name: 'PageDashboard',
   components: {
     StatusStatistic,
     MiniStatistic,
     CategoryStatistic,
+    TimeLineChart,
   },
   data() {
     return {
+      nowUnix:  0,
       oneMonthAgoUnix:  0,
       raw: {
         activeAlert: [],
@@ -126,14 +140,49 @@ export default {
       },
 
       category: [],
+
+      chart: {
+        loaded: false,
+        height: 300,
+        data: {
+          labels: [],  // will be label data set
+          datasets: [
+            {
+              label: 'Findings',
+              data: [], // will be timeline data set
+              borderColor: 'teal',
+              type: 'line',
+              lineTension: 0.3,
+            }
+          ]
+        },
+        options: {
+          scales: {
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: 'Week term'
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                stepSize: 2,
+              }
+            }]
+          }
+        }
+      }
     }
   },
   async mounted() {
+    this.nowUnix = Math.floor(new Date() / 1000)
     this.oneMonthAgoUnix = Math.floor(new Date().setMonth(new Date().getMonth() - 1) / 1000)
 
     await this.setRawData()
     this.setStatus()
     this.setCategory()
+    this.setChart()
   },
   methods: {
     // -- Raw Data ---------------------------------
@@ -160,18 +209,19 @@ export default {
     },
     // Findings
     async setHighScoreFinding() {
-      this.raw.highScoreFinding          = await this.getFinding(this.oneMonthAgoUnix, 0.8, '')
-      this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, 0.8, 'aws:guard-duty')
-      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, 0.8, 'diagnosis:jira')
-      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, 0.8, 'osint:intrigue')
+      this.raw.highScoreFinding          = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, '')
+      this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:guard-duty')
+      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:jira')
+      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:intrigue')
     },
     async setStoreFinding() {
-      this.raw.storeFindings = await this.getFinding(0, 0, '')
+      this.raw.storeFindings = await this.getFinding(0, this.nowUnix, 0, '')
     },
-    async getFinding(fromAt, fromScore, dataSource) {
+    async getFinding(fromAt, toAt, fromScore, dataSource) {
       const res = await this.$axios.get(
         '/finding/list-finding/?project_id=' + this.$store.state.project.project_id
           + '&from_at=' + fromAt
+          + '&to_at=' + toAt
           + '&from_score=' + fromScore
           + '&data_source=' + dataSource
       ).catch((err) =>  {
@@ -320,7 +370,7 @@ export default {
         title: this.raw.invitedUser.length.toString(),
         subTitle: 'Project members',
         icon: 'mdi-account-multiple',
-        color: 'pink darken-1',
+        color: 'cyan darken-1',
         link: '/iam/user/',
       })
       this.category.push({
@@ -344,7 +394,7 @@ export default {
         title: '0',
         subTitle: 'High score findings',
         icon: 'http',
-        color: 'cyan darken-1',
+        color: 'light-green darken-1',
         link: '/finding/finding/',
       })
       this.category.push({
@@ -373,6 +423,27 @@ export default {
       })
     },
 
+    // -- Chart ---------------------------------
+    async setChart() {
+      const now = new Date()
+      for (let day = 7; day >= 0; day--) {
+        const from = new Date(now.getFullYear(), now.getMonth(), now.getDate() -day, 0, 0, 0)
+        const to = new Date(now.getFullYear(), now.getMonth(), now.getDate() -day +1, 0, 0, 0)
+        await this.setFindingChartByDayNumber(from, to)
+      }
+      this.chart.loaded = true
+    },
+    async setFindingChartByDayNumber(from, to){
+      const fromUnix = Math.floor(from / 1000)
+      const toUnix = Math.floor(to / 1000)
+      const finding = await this.getFinding(fromUnix, toUnix-1, 0, '')
+console.log(finding.length)
+      this.chart.data.labels.push(this.getDateLabel(from))
+      this.chart.data.datasets[0].data.push(finding.length.toString())
+    },
+    getDateLabel(dt) {
+      return dt.getMonth()+1 + '/' + dt.getDate() // `getMonth()` will return 0~11, because need +1 month for display label
+    }
   },
 }
 </script>
