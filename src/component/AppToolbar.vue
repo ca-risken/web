@@ -9,14 +9,21 @@
         transition="scale-transition"
       >
         <template v-slot:activator="{ on }">
-          <v-btn text dark slot="activator" v-on="on" style="text-transform: none">
+          <!-- Project -->
+          <v-btn
+            text dark
+            slot="activator"
+            v-on="on"
+            class="pa-0 ml-4"
+            style="text-transform: none"
+          >
             <v-card rounded color="primary" elevation="0">
               <v-card-title>
                 <v-avatar tile color="primary darken-2" size="42">
                   <span class="whie--text text-h6 font-weight-black">PJ</span>
                 </v-avatar>
                 <v-layout align-center justify-center
-                  class="text-h5 mx-4 font-weight-black"
+                  class="text-h5 ml-4 font-weight-black"
                   style="text-decoration: underline;"
                 >
                   {{ projectName }}
