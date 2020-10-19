@@ -211,7 +211,7 @@
     <v-dialog v-model="deleteDialog" max-width="300px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">削除しますか?</span>
+          <span class="mx-4">Do you really want to delete this?</span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
@@ -242,7 +242,7 @@
             text outlined
             @click="deleteItem(roleModel.role_id)"
           >
-            YES
+            DELETE
           </v-btn>
         </v-card-actions>
       </v-card>
