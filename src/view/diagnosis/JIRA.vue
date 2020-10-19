@@ -31,6 +31,9 @@
           >
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
+          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+            <v-icon>mdi-new-box</v-icon>
+          </v-btn>
         </v-row>
       </v-form>
       <v-row>
@@ -71,7 +74,8 @@
                   >Not configured</v-chip>
                 </template>
                 <template v-slot:item.scan_at="{ item }">
-                  <v-chip>{{ item.scan_at | formatTime }}</v-chip>
+                  <v-chip v-if="item.scan_at">{{ item.scan_at | formatTime }}</v-chip>
+                  <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:item.updated_at="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -120,9 +124,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Diagnosis ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>Diagnosis DataSouce ID</v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ diagnosisModel.diagnosis_id }}
+                    {{ diagnosisModel.diagnosis_data_source_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -137,7 +141,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>Description</v-list-item-subtitle>
@@ -147,8 +151,30 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
+            <v-col cols="2">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>MAX Score</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    <v-chip outlined>
+                      {{ diagnosisModel.max_score }}
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
           </v-row>
           <v-row dense>
+            <v-col cols="3" v-if="jiraModel.jira_setting_id">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>JIRA Setting ID</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ jiraModel.jira_setting_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
             <v-col cols="3" v-if="jiraModel.status">
               <v-list-item two-line>
                 <v-list-item-content>
@@ -168,18 +194,6 @@
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ jiraModel.scan_at | formatTime }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>MAX Score</v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip outlined>
-                      {{ diagnosisModel.max_score }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -350,30 +364,29 @@ export default {
       jiraForm: {
         readOnly: false,
         valid: false,
-        diagnosis_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
-            v => v.length <= 200 || 'Name must be less than 200 characters',
+            v => !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        identity_field: { label: 'identity_field *', placeholder: '-', validator:[
+        identity_field: { label: 'identity_field', placeholder: '-', validator:[
             v => !v || v.length <= 50 || 'identity_field must be less than 50 characters',
           ]
         },
-        identity_value: { label: 'identity_value *', placeholder: '-', validator:[
+        identity_value: { label: 'identity_value', placeholder: '-', validator:[
             v => !v || v.length <= 50 || 'identity_value must be less than 50 characters',
           ]
         },
-        jira_id: { label: 'jira_id *', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'jira_id must be less than 50 characters',
+        jira_id: { label: 'JIRA ID', placeholder: '-', validator:[
+            v => !v || v.length <= 50 || 'JIRA ID must be less than 50 characters',
           ]
         },
-        jira_key: { label: 'jira_key *', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'jira_key must be less than 50 characters',
+        jira_key: { label: 'JIRA Key', placeholder: '-', validator:[
+            v => !v || v.length <= 50 || 'JIRA Key must be less than 50 characters',
           ]
         },
       },
-      diagnosisModel: { diagnosis_id:'', name:'', description:'', max_score:'', updated_at:'' },
+      diagnosisModel: { diagnosis_data_source_id:'', name:'', description:'', max_score:'', updated_at:'' },
       jiraModel: {
         jira_setting_id: '',
         name:'',
@@ -394,8 +407,8 @@ export default {
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'ID',  align: 'start', sortable: true, value: 'jira_setting_id' },
           { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'jira_id', align: 'start', sortable: true, value: 'jira_id' },
-          { text: 'jira_key', align: 'start', sortable: true, value: 'jira_key' },
+          { text: 'JIRA ID', align: 'start', sortable: true, value: 'jira_id' },
+          { text: 'JIRA Key', align: 'start', sortable: true, value: 'jira_key' },
           { text: 'Status', align: 'start', sortable: true, value: 'status' },
           { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
           { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
@@ -487,8 +500,9 @@ export default {
         project_id: this.$store.state.project.project_id,
         jira_setting: {
           project_id: this.$store.state.project.project_id,
+          jira_setting_id: this.jiraModel.jira_setting_id,
           name: this.jiraModel.name,
-          diagnosis_data_source_id: this.jiraModel.diagnosis_data_source_id,
+          diagnosis_data_source_id: this.diagnosisModel.diagnosis_data_source_id,
           identity_field: this.jiraModel.identity_field,
           identity_value: this.jiraModel.identity_value,
           jira_id: this.jiraModel.jira_id,
@@ -530,6 +544,9 @@ export default {
       this.jiraForm.readOnly = true
       this.editDialog  = true
     },
+    handleNewItem() {
+      this.handleEditItem()
+    },
     handleEditItem(item) {
       this.assignDataModel(item)
       this.jiraForm.readOnly = false
@@ -552,9 +569,7 @@ export default {
     },
     handleScan(item) {
       this.loading = true
-      if (item.jira_setting_id) {
-        this.assignDataModel(item)
-      }
+      this.assignDataModel(item)
       this.scanDataSource()
     },
 
