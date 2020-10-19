@@ -400,32 +400,32 @@ export default {
       })
       this.category.push({
         category: 'OSINT',
-        title: '0',
-        subTitle: 'High score findings',
+        title: '-',
+        subTitle: 'Not yet suported...',
         icon: 'http',
         color: 'light-green darken-1',
-        link: '/finding/finding/',
+        link: '/',
       })
       this.category.push({
         category: 'GCP',
-        title: '0',
-        subTitle: 'High score findings',
+        title: '-',
+        subTitle: 'Not yet suported...',
         icon: 'mdi-google-cloud',
         color: 'blue darken-1',
         link: '/finding/finding/',
       })
       this.category.push({
         category: 'Source Code',
-        title: '0',
-        subTitle: 'High score findings',
+        title: '-',
+        subTitle: 'Not yet suported...',
         icon: 'mdi-github',
         color: 'grey darken-3',
         link: '/finding/finding/',
       })
       this.category.push({
         category: 'Azure',
-        title: '0',
-        subTitle: 'High score findings',
+        title: '-',
+        subTitle: 'Not yet suported...',
         icon: 'mdi-microsoft-azure',
         color: 'light-blue darken-2',
         link: '/finding/finding/',
