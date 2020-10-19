@@ -125,127 +125,86 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="600px">
+    <v-dialog v-model="editDialog" max-width="65%">
       <v-card>
+        <!-- Alert Condition -->
         <v-card-title>
           <v-icon large class="pr-2" color="grey darken-2">mdi-cog</v-icon>
           <span class="mx-4 headline">Alert Condition</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form v-model="form.valid" ref="form">
-            <v-text-field
-              v-model="dataModel.alert_condition_id"
-              :label="form.alert_condition_id.label"
-              :placeholder="form.alert_condition_id.placeholder"
-              outlined filled disabled
-            ></v-text-field>
-            <v-text-field
-              v-model="dataModel.description"
-              :counter="200"
-              :rules="form.description.validator"
-              :label="form.description.label"
-              :placeholder="form.description.placeholder"
-              outlined required
-            ></v-text-field>
-            <v-combobox
-              outlined required clearable
-              v-model="dataModel.severity"
-              :rules="form.severity.validator"
-              :label="form.severity.label"
-              :placeholder="form.severity.placeholder"
-              :items="form.severity.list"
-            />
-            <v-combobox
-              outlined required clearable
-              v-model="dataModel.and_or"
-              :rules="form.and_or.validator"
-              :label="form.and_or.label"
-              :placeholder="form.and_or.placeholder"
-              :items="form.and_or.list"
-            />
-            <v-checkbox
-              required
-              v-model="dataModel.enabled"
-              :rules="form.enabled.validator"
-              :label="form.enabled.label"
-            ></v-checkbox>
-
-            <v-divider class="mt-3 mb-3"></v-divider>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
-              </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="form.new">Regist</template>
-                <template v-else>Edit</template>
-              </v-btn>
-            </v-card-actions>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="deleteDialog" max-width="400px">
-      <v-card>
-        <v-card-title class="headline">
-          <span class="mx-4">削除しますか?</span>
-        </v-card-title>
-        <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="dataModel.alert_condition_id"></v-list-item-title>
-              <v-list-item-subtitle>Alert Condition ID</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="dataModel.description"></v-list-item-title>
-              <v-list-item-subtitle>Description</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
-          </v-btn>
-          <v-btn
-            color="red darken-1"
-            text outlined
-            :loading="loading"
-            @click="handleDeleteSubmit"
-          >
-            YES
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Rule Dialog -->
-    <v-dialog v-model="ruleDialog" max-width="70%">
-      <v-card>
-        <v-card-title>
-          <v-icon large color="brown darken-2">mdi-book-open-variant</v-icon>
-          <span class="mx-4 headline">Alert Rule</span>
           <v-chip dark label color="primary darken-3">
             <v-icon left>mdi-identifier</v-icon>
             {{ dataModel.alert_condition_id }}
           </v-chip>
+        </v-card-title>
+        <v-card-text>
+          <v-form v-model="form.valid" ref="form">
+            <v-row>
+              <v-col cols="10">
+                <v-text-field
+                  v-model="dataModel.description"
+                  :counter="200"
+                  :rules="form.description.validator"
+                  :label="form.description.label"
+                  :placeholder="form.description.placeholder"
+                  outlined required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="4">
+                <v-combobox
+                  outlined required clearable
+                  v-model="dataModel.severity"
+                  :rules="form.severity.validator"
+                  :label="form.severity.label"
+                  :placeholder="form.severity.placeholder"
+                  :items="form.severity.list"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-combobox
+                  outlined required clearable
+                  v-model="dataModel.and_or"
+                  :rules="form.and_or.validator"
+                  :label="form.and_or.label"
+                  :placeholder="form.and_or.placeholder"
+                  :items="form.and_or.list"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-checkbox
+                  required
+                  v-model="dataModel.enabled"
+                  :rules="form.enabled.validator"
+                  :label="form.enabled.label"
+                ></v-checkbox>
+              </v-col>
+            </v-row>
+
+            <v-divider class="mt-3 mb-3"></v-divider>
+          </v-form>
+        </v-card-text>
+
+
+        <!-- Alert Rule -->
+        <v-card-title>
+          <v-icon large color="brown darken-2">mdi-book-open-variant</v-icon>
+          <span class="mx-4 headline">Alert Rule</span>
           <v-chip outliend class="mx-4" v-if="dataModel.and_or=='and'">
             <v-icon left color="teal lighten-2">mdi-set-center</v-icon>
             AND
           </v-chip>
           <v-chip outliend class="mx-4" v-else>
             <v-icon left color="teal lighten-2">mdi-set-all</v-icon>
-             OR
+            OR
           </v-chip>
-
-          <strong class="mx-4 headline">{{ dataModel.description }}</strong>
+          <v-spacer />
+          <v-btn
+            text outlined link
+            to="/alert/rule/"
+          >
+            create new rule
+          </v-btn>
         </v-card-title>
         <v-card-text>
           <!-- Rule List -->
@@ -298,30 +257,19 @@
             </template>
           </v-data-table>
           <v-divider class="mt-3 mb-3"></v-divider>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn text outlined color="grey darken-1" @click="ruleDialog = false">
-              CANCEL
-            </v-btn>
-            <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditRuleSubmit">
-              <template>Edit</template>
-            </v-btn>
-          </v-card-actions>
         </v-card-text>
-      </v-card>
-    </v-dialog>
 
-    <!-- Notification Dialog -->
-    <v-dialog v-model="notiDialog" max-width="70%">
-      <v-card>
+        <!-- Alert Notification -->
         <v-card-title>
           <v-icon large color="brown darken-2">mdi-email</v-icon>
           <span class="mx-4 headline">Alert Notification</span>
-          <v-chip dark label color="primary darken-3">
-            <v-icon left>mdi-identifier</v-icon>
-            {{ dataModel.alert_condition_id }}
-          </v-chip>
-          <strong class="mx-4 headline">{{ dataModel.description }}</strong>
+          <v-spacer />
+          <v-btn
+            text outlined link
+            to="/alert/notification/"
+          >
+            create new Notification
+          </v-btn>
         </v-card-title>
         <v-card-text>
           <!-- Notification List -->
@@ -356,16 +304,60 @@
           >
           </v-data-table>
           <v-divider class="mt-3 mb-3"></v-divider>
+        </v-card-text>
+
+        <v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn text outlined color="grey darken-1" @click="notiDialog = false">
+            <v-btn text outlined color="grey darken-1" @click="editDialog = false">
               CANCEL
             </v-btn>
-            <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditNotiSubmit">
-              <template>Edit</template>
+            <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
+              <template v-if="form.new">Regist</template>
+              <template v-else>Edit</template>
             </v-btn>
           </v-card-actions>
         </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="deleteDialog" max-width="400px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">削除しますか?</span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="dataModel.alert_condition_id"></v-list-item-title>
+              <v-list-item-subtitle>Alert Condition ID</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>account_box</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="dataModel.description"></v-list-item-title>
+              <v-list-item-subtitle>Description</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+            CANCEL
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            text outlined
+            :loading="loading"
+            @click="handleDeleteSubmit"
+          >
+            YES
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -438,8 +430,6 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_condition_id'] },
         actions: [
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
-          { text: 'Edit Rule', icon:'mdi-book-open-variant', click:this.handleEditRule },
-          { text: 'Edit Notification', icon:'mdi-email', click:this.handleEditNoti },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
           { text: 'Analyze Alert', icon: 'mdi-magnify-scan', click: this.handleAnalyze },
         ],
@@ -491,8 +481,6 @@ export default {
       },
       deleteDialog: false,
       editDialog: false,
-      ruleDialog: false,
-      notiDialog: false,
     }
   },
   filters: {
@@ -589,11 +577,6 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      let msg = 'Success: Updated Notification.'
-      if (this.form.new) {
-        msg = 'Success: Created new Notification.'
-      }
-      this.finishSuccess(msg)
     },
 
     // List Rule
@@ -652,7 +635,6 @@ export default {
           return Promise.reject(err)
         })
       })
-      this.finishSuccess('Success: Updated alert rules.')
     },
 
     // List Notifications
@@ -713,13 +695,13 @@ export default {
           return Promise.reject(err)
         })
       })
-      this.finishSuccess('Success: Updated alert notifications.')
     },
 
     // Analyze Alert
-    async analyzeAlert() {
+    async analyzeAlert(alertConditionID) {
       const param = { 
         project_id: this.$store.state.project.project_id,
+        alert_condition_id: alertConditionID,
       }
       await this.$axios.post('/alert/analyze-alert/', param).catch((err) =>  {
         this.finishError(err.response.data)
@@ -748,33 +730,20 @@ export default {
     },
     handleEditItem(item) {
       this.assignDataModel(item)
+      this.listRule()
+      this.listNotification()
       this.form.new = false
       this.editDialog  = true
     },
-    handleEditSubmit() {
+    async handleEditSubmit() {
       if ( !this.$refs.form.validate() ) {
         return
       }
       this.loading = true
-      this.putItem()
-    },
-    handleEditRule(item) {
-      this.assignDataModel(item)
-      this.listRule()
-      this.ruleDialog  = true
-    },
-    handleEditRuleSubmit() {
-      this.loading = true
-      this.putRule()
-    },
-    handleEditNoti(item) {
-      this.assignDataModel(item)
-      this.listNotification()
-      this.notiDialog  = true
-    },
-    handleEditNotiSubmit() {
-      this.loading = true
-      this.putNotification()
+      await this.putItem()
+      await this.putRule()
+      await this.putNotification()
+      this.finishSuccess('Success: Put alert condition.')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
@@ -784,9 +753,13 @@ export default {
       this.loading = true
       this.deleteItem()
     },
-    handleAnalyze() {
+    handleAnalyze(item) {
       this.loading = true
-      this.analyzeAlert()
+      let alertConditionID = ''
+      if (item.alert_condition_id) {
+        alertConditionID = item.alert_condition_id
+      }
+      this.analyzeAlert(alertConditionID)
     },
     assignDataModel(item) {
       this.dataModel = {}
