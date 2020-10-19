@@ -38,6 +38,15 @@
           />
         </v-col>
       </v-row>
+      <v-row dense>
+        <v-spacer />
+        <v-btn text dense
+          class="mr-4"
+          color="grey"
+          @click="settingDialog = true">
+          setting steps
+        </v-btn>
+      </v-row>
 
       <!-- Category -->
       <v-row justify="center" align-content="center">
@@ -104,6 +113,56 @@
       </v-row>
 
     </v-container>
+    <v-dialog v-model="settingDialog" max-width="600px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">Setting Step Detail</span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                1. User invited: <span class="headline">{{ raw.invitedUser.length }}</span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                2, Setting DataSources(≒ Store some Findings): <span class="headline">{{ raw.storeFinding.length }}</span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                3. Setting Alert Condition: <span class="headline">{{ raw.alertCondition.length }}</span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                4. Setting Alert Rule: <span class="headline">{{ raw.alertRule.length }}</span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-subtitle>
+                5. Setting Alert Notification: <span class="headline">{{ raw.notification.length }}</span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="settingDialog = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -181,7 +240,8 @@ export default {
             ]
           },
         },
-      }
+      },
+      settingDialog: false,
     }
   },
   async mounted() {
@@ -224,7 +284,7 @@ export default {
       this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:intrigue')
     },
     async setStoreFinding() {
-      this.raw.storeFindings = await this.getFinding(0, this.nowUnix, 0, '')
+      this.raw.storeFinding = await this.getFinding(0, this.nowUnix, 0, '')
     },
     async getFinding(fromAt, toAt, fromScore, dataSource) {
       const res = await this.$axios.get(
@@ -477,6 +537,11 @@ export default {
         }
       })
       this.chart.alert.data.datasets[0].data = [ highCnt, mediumCnt, lowCnt ]
+    },
+
+    // handler
+    handleSettingSteps() {
+      this.settingDialog = true
     }
   },
 }
