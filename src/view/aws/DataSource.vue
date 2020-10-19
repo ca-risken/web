@@ -515,8 +515,10 @@ export default {
       this.detachDataSource()
     },
     handleScan(item) {
-      this.assignDataModel(item)
       this.loading = true
+      if (item.aws_data_source_id) {
+        this.assignDataModel(item)
+      }
       this.scanDataSource()
     },
     assignDataModel(item) {
