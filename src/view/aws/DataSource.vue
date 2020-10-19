@@ -118,30 +118,30 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
+                  <v-list-item-subtitle>{{ awsForm.aws_id.label }}</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ awsModel.aws_id }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{ awsForm.aws_id.label }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
+                  <v-list-item-subtitle>{{ awsForm.aws_data_source_id.label }}</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ awsModel.aws_data_source_id }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{ awsForm.aws_data_source_id.label }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
             <v-col cols="6">
               <v-list-item two-line>
                 <v-list-item-content>
+                  <v-list-item-subtitle>{{ awsForm.data_source.label }}</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ awsModel.data_source }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{ awsForm.data_source.label }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
@@ -151,35 +151,35 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
+                    <v-list-item-subtitle>{{ awsForm.status.label }}</v-list-item-subtitle>
                     <v-chip dark :color="getDataSourceStatusColor(awsModel.status)">
                       {{ getDataSourceStatusText(awsModel.status) }}
                     </v-chip>
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{ awsForm.status.label }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
             <v-col cols="4" v-if="awsModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
+                  <v-list-item-subtitle>{{ awsForm.scan_at.label }}</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ awsModel.scan_at | formatTime }}
                     </v-chip>
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{ awsForm.scan_at.label }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
+                  <v-list-item-subtitle>{{ awsForm.max_score.label }}</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ awsModel.max_score }}
                     </v-chip>
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{ awsForm.max_score.label }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
@@ -447,6 +447,10 @@ export default {
       this.finishSuccess('Success: Detach AWS Data Source.')
     },
     async attachDataSource() {
+      let scan_at = 0
+      if (this.awsModel.scan_at > 0 ) {
+        scan_at = this.awsModel.scan_at
+      }
       const param = {
         project_id: this.$store.state.project.project_id,
         attach_data_source: {
@@ -456,8 +460,8 @@ export default {
           assume_role_arn: this.awsModel.assume_role_arn,
           external_id: this.awsModel.external_id,
           status: 2, // CONFIGURED
-          status_detail: 'Configured at' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
-          scan_at: this.awsModel.scan_at,
+          status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
+          scan_at: scan_at,
         },
       }
       await this.$axios.post('/aws/attach-datasource/', param).catch((err) =>  {
@@ -482,6 +486,7 @@ export default {
     // handler method
     handleList() {
       this.loading = true
+      this.refleshList()
       this.finishInfo('Reflesh list')
     },
     handleViewItem(item) {

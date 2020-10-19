@@ -7,6 +7,7 @@ let mixin = {
         'aws:iam-checker',
         'diagnosis:jira',
       ],
+      jira_datasource_id: 1001,
     }
   },
   methods: {
