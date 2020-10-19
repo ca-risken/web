@@ -1,35 +1,27 @@
 <script>
-import { Line, mixins } from 'vue-chartjs'
+import { Doughnut, mixins } from 'vue-chartjs'
 import 'chartjs-plugin-colorschemes'
 const { reactiveProp } = mixins
 
 export default {
-  extends: Line,
+  extends: Doughnut,
   mixins: [reactiveProp],
   props: {
-    chartData: {
+    chartdata: {
       type: Object,
-      default: null
+      default: () => {
+        return {
+          labels: ['Red', 'Yellow', 'Blue'],
+          datasets: [{
+            data: [10, 20, 30]
+          }],
+        }
+      }
     },
     options: {
       type: Object,
       default: () => {
         return {
-          scales: {
-            xAxes: [{
-              type: 'time',
-              time: {
-                displayFormats: {
-                  day: 'MM-DD'
-                },
-                unit: 'day'
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'Week'
-              }
-            }],
-          },
           plugins: {
             colorschemes: {
               // scheme: 'brewer.Set3-12'
@@ -41,7 +33,6 @@ export default {
     },
   },
   mounted () {
-    // this.addPlugin(this.plugins)
     this.renderChart(this.chartData, this.options)
   }
 }

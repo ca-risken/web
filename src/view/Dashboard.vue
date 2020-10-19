@@ -28,7 +28,7 @@
         <v-col cols="4">
           <mini-statistic
             v-for="factor in status.riskFactor"
-            :key="factor.title"
+            :key="factor.subTitle"
             :icon="factor.icon"
             :title="factor.title"
             :sub-title="factor.subTitle"
@@ -85,9 +85,19 @@
               <time-line-chart
                 v-if="chart.loaded"
                 :height="chart.height"
-                :chartdata="chart.data"
-                :options="chart.options"
+                :chart-data="chart.finding.data"
               ></time-line-chart>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="5">
+          <v-card>
+            <v-card-text>
+              <doughnut-chart
+                v-if="chart.loaded"
+                :height="chart.height"
+                :chart-data="chart.alert.data"
+              ></doughnut-chart>
             </v-card-text>
           </v-card>
         </v-col>
@@ -102,6 +112,7 @@ import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
 import TimeLineChart from '@/component/widget/chart/TimeLineChart'
+import DoughnutChart from '@/component/widget/chart/DoughnutChart'
 export default {
   name: 'PageDashboard',
   components: {
@@ -109,6 +120,7 @@ export default {
     MiniStatistic,
     CategoryStatistic,
     TimeLineChart,
+    DoughnutChart,
   },
   data() {
     return {
@@ -144,34 +156,31 @@ export default {
       chart: {
         loaded: false,
         height: 300,
-        data: {
-          labels: [],  // will be label data set
-          datasets: [
-            {
-              label: 'Findings',
-              data: [], // will be timeline data set
-              borderColor: 'teal',
-              type: 'line',
-              lineTension: 0.3,
-            }
-          ]
+        finding: {
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: 'Findings',
+                data: [],
+                type: 'line',
+                lineTension: 0.3,
+              }
+            ]
+          },
         },
-        options: {
-          scales: {
-            xAxes: [{
-              scaleLabel: {
-                display: true,
-                labelString: 'Week term'
+        alert: {
+          data: {
+            labels: ['high', 'medium', 'low'],
+            datasets: [
+              {
+                label: 'Alerts',
+                data: [10, 40, 50],
+                type: 'doughnut',
               }
-            }],
-            yAxes: [{
-              ticks: {
-                beginAtZero: true,
-                stepSize: 2,
-              }
-            }]
-          }
-        }
+            ]
+          },
+        },
       }
     }
   },
@@ -309,7 +318,7 @@ export default {
       })
       this.status.riskFactor.push({
         title: this.status.compSettingRate,
-        subTitle: 'HighScore Findings ',
+        subTitle: 'Coverage Settings...',
         icon: 'mdi-cog',
         color: 'grey darken-2',
         link: '/alert/condition/',
@@ -425,24 +434,49 @@ export default {
 
     // -- Chart ---------------------------------
     async setChart() {
+      await this.setFindingChart()
+      await this.setAlertChart()
+      this.chart.loaded = true
+    },
+    async setFindingChart() {
       const now = new Date()
       for (let day = 7; day >= 0; day--) {
         const from = new Date(now.getFullYear(), now.getMonth(), now.getDate() -day, 0, 0, 0)
         const to = new Date(now.getFullYear(), now.getMonth(), now.getDate() -day +1, 0, 0, 0)
         await this.setFindingChartByDayNumber(from, to)
       }
-      this.chart.loaded = true
     },
     async setFindingChartByDayNumber(from, to){
       const fromUnix = Math.floor(from / 1000)
       const toUnix = Math.floor(to / 1000)
       const finding = await this.getFinding(fromUnix, toUnix-1, 0, '')
-console.log(finding.length)
-      this.chart.data.labels.push(this.getDateLabel(from))
-      this.chart.data.datasets[0].data.push(finding.length.toString())
+      this.chart.finding.data.labels.push(from)
+      this.chart.finding.data.datasets[0].data.push(finding.length.toString())
     },
-    getDateLabel(dt) {
-      return dt.getMonth()+1 + '/' + dt.getDate() // `getMonth()` will return 0~11, because need +1 month for display label
+    // getDateLabel(dt) {
+    //   return dt.getMonth()+1 + '/' + dt.getDate() // `getMonth()` will return 0~11, because need +1 month for display label
+    // }
+    setAlertChart() {
+      this.chart.alert.data.labels = [ 'high', 'medium', 'low']
+      let highCnt =0
+      let mediumCnt = 0
+      let lowCnt = 0
+      this.raw.activeAlert.forEach( async alert => {
+        switch (alert.severity) {
+          case 'high':
+            highCnt++
+            break
+          case 'medium': 
+            mediumCnt++
+            break
+          case 'low':
+            lowCnt++
+            break
+          default:
+            console.log('Unknown serverity: ' + alert.severity)
+        }
+      })
+      this.chart.alert.data.datasets[0].data = [ highCnt, mediumCnt, lowCnt ]
     }
   },
 }
