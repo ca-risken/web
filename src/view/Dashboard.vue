@@ -217,11 +217,11 @@ export default {
         height: 300,
         finding: {
           data: {
-            labels: [],
+            labels: [new Date()],
             datasets: [
               {
                 label: 'Findings',
-                data: [],
+                data: [0],
                 type: 'line',
                 lineTension: 0.3,
               }
