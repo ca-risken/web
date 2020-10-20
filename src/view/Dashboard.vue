@@ -197,16 +197,16 @@ export default {
         notification: [],   // 5. Setting Alert Notification
       },
       status: {
-        alert: '0',
-        finding: '0',
+        alert: '-',
+        finding: '-',
         compSettingRate: '-',
-        imcompSetting: '0',
+        imcompSetting: '-',
         riskFactor: [],
         risk: {
-          icon: '',
-          color: '',
-          description: '',
-          detail: '',
+          icon: 'mdi-map-marker-question-outline',
+          color: 'grey',
+          description: 'There is nothing to display.',
+          detail: 'Please reload after selecting the project.',
         }
       },
 
@@ -217,11 +217,11 @@ export default {
         height: 300,
         finding: {
           data: {
-            labels: [],
+            labels: [new Date()],
             datasets: [
               {
                 label: 'Findings',
-                data: [],
+                data: [0],
                 type: 'line',
                 lineTension: 0.3,
               }
@@ -245,6 +245,9 @@ export default {
     }
   },
   async mounted() {
+    if (!this.$store.state.project.project_id) {
+      return false
+    }
     this.nowUnix = Math.floor(new Date() / 1000)
     this.oneMonthAgoUnix = Math.floor(new Date().setMonth(new Date().getMonth() - 1) / 1000)
 

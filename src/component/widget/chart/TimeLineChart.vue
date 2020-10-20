@@ -20,7 +20,7 @@ export default {
               type: 'time',
               time: {
                 displayFormats: {
-                  day: 'MM-DD'
+                  day: 'MM/DD'
                 },
                 unit: 'day'
               },
@@ -28,6 +28,11 @@ export default {
                 display: true,
                 labelString: 'Week'
               }
+            }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
             }],
           },
           plugins: {
