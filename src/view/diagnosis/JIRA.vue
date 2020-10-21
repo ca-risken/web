@@ -232,30 +232,6 @@
             <v-row>
               <v-col cols="4">
                 <v-text-field
-                  v-model="jiraModel.identity_field"
-                  :counter="50"
-                  :rules="jiraForm.identity_field.validator"
-                  :label="jiraForm.identity_field.label"
-                  :placeholder="jiraForm.identity_field.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field
-                  v-model="jiraModel.identity_value"
-                  :counter="50"
-                  :rules="jiraForm.identity_value.validator"
-                  :label="jiraForm.identity_value.label"
-                  :placeholder="jiraForm.identity_value.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-text-field
                   v-model="jiraModel.jira_id"
                   :counter="50"
                   :rules="jiraForm.jira_id.validator"
@@ -377,11 +353,11 @@ export default {
             v => !v || v.length <= 50 || 'identity_value must be less than 50 characters',
           ]
         },
-        jira_id: { label: 'JIRA ID', placeholder: '-', validator:[
+        jira_id: { label: 'JIRA ID(JIRA Project ID)', placeholder: '-', validator:[
             v => !v || v.length <= 50 || 'JIRA ID must be less than 50 characters',
           ]
         },
-        jira_key: { label: 'JIRA Key', placeholder: '-', validator:[
+        jira_key: { label: 'JIRA Key(JIRA Project Key)', placeholder: '-', validator:[
             v => !v || v.length <= 50 || 'JIRA Key must be less than 50 characters',
           ]
         },
@@ -569,7 +545,9 @@ export default {
     },
     handleScan(item) {
       this.loading = true
-      this.assignDataModel(item)
+      if (item && item.jira_setting_id) {
+        this.assignDataModel(item)
+      }
       this.scanDataSource()
     },
 
