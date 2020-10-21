@@ -707,7 +707,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Analyze Alert.')
+      this.finishAnalyze('Analyze Started: You will be redirected to the alert result soon...')
     },
 
     // handler
@@ -767,6 +767,11 @@ export default {
     },
 
     // finish process
+    async finishAnalyze(msg) {
+      this.$refs.snackbar.notifyInfo(msg)
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      this.$router.push('/alert/alert/')
+    },
     async finishSuccess(msg) {
       await new Promise(resolve => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess(msg)
