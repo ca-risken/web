@@ -56,8 +56,9 @@
                 <template v-slot:item.severity="{ item }">
                   <v-chip  class="ma-1" dark :color="getSeverityColor(item.severity)">{{ item.severity }}</v-chip>
                 </template>
-                <template v-slot:item.activated="{ item }">
-                  <v-icon v-if="item.activated==true" color="success">mdi-check-circle</v-icon>
+                <template v-slot:item.status="{ item }">
+                  <v-icon v-if="getAlertStatusText(item.status)=='ACTIVE'" color="success">mdi-check-circle</v-icon>
+                  <v-icon v-else-if="getAlertStatusText(item.status)=='PENDING'" color="yellow">mdi-check-circle</v-icon>
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
                 <template v-slot:item.created_at="{ item }">
@@ -194,7 +195,7 @@ export default {
         selected: [],
         search: '',
         headers: [
-          { text: 'Active', align: 'center', width: '10%', sortable: true, value: 'activated' },
+          { text: 'Atatus', align: 'center', width: '10%', sortable: true, value: 'status' },
           { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
           { text: 'Severity', align: 'center', width: '10%', sortable: true, value: 'severity' },
           { text: 'Description', align: 'start', width: '40%', sortable: true, value: 'description' },
@@ -226,14 +227,14 @@ export default {
   },
   mounted() {
     this.loading = true
-    this.getAlert(false)
+    this.getAlert()
     this.loading = false
   },
   methods: {
     // alert list
-    async getAlert(activate) {
+    async getAlert() {
       const res = await this.$axios.get(
-        '/alert/list-alert/?activated=' + activate + '&project_id=' + this.$store.state.project.project_id
+        '/alert/list-alert/?' + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
