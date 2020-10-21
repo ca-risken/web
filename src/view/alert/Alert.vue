@@ -148,6 +148,10 @@
                   <div class="caption">{{ item.alert_history_id }}</div>
                   <strong>{{ item.description }}</strong>
                 </v-col>
+                <v-col>
+                  <div class="caption">findings</div>
+                  <strong>{{ item.findingsIDs }}</strong>
+                </v-col>
                 <v-col cols="2">
                   <v-chip
                     dark
@@ -254,6 +258,7 @@ export default {
 
     // alert history list
     async getHistory() {
+      this.alertHistoryModel = []
       const res = await this.$axios.get(
         '/alert/list-history/?alert_id=' + this.alertModel.alert_id + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
@@ -265,7 +270,37 @@ export default {
         this.clearHistory()
         return false
       }
-      this.alertHistoryModel = list.data.alert_history
+      // this.alertHistoryModel = list.data.alert_history
+      list.data.alert_history.forEach(async history => {
+        const json = JSON.parse(history.finding_history)
+        let findingsIDs = ""
+        if (json && json.finding_id) {
+          findingsIDs = this.formatFindingIDs(json.finding_id)
+        }
+        this.alertHistoryModel.push({
+          alert_history_id: history.alert_history_id,
+          history_type: history.history_type,
+          alert_id: history.alert_id,
+          description: history.description,
+          severity: history.severity,
+          finding_history: history.finding_history,
+          project_id: history.project_id,
+          created_at: history.created_at,
+          updated_at: history.updated_at,
+          findingsIDs: findingsIDs,
+        })
+      })
+    },
+    formatFindingIDs(ids){
+      if (ids.length <= 5) {
+        return ids
+      }
+      let formated = []
+      for ( let i=0; i < 5; i++ ) {
+        formated.push(ids[i])
+      }
+      formated.push('...')
+      return formated
     },
     clearHistory() {
       this.alertHistoryModel = []
