@@ -96,6 +96,30 @@ let mixin = {
           return 'Unknown'
       }
     },
+    getAlertStatus: (statusText) => {
+      switch (statusText) {
+        case 'ACTIVE':
+          return 1
+        case 'PENDING':
+          return 2
+        case 'DEACTIVE':
+          return 3
+        default:
+          return 0 // Unknown
+      }
+    },
+    getAlertStatusText: (status) => {
+      switch (status) {
+        case 1:
+          return 'ACTIVE'
+        case 2:
+          return 'PENDING'
+        case 3:
+          return 'DEACTIVE'
+        default:
+          return 'UNKNOWN'
+      }
+    },
     getDataSourceStatusColor: (status) => {
       switch (status) {
         case 1:

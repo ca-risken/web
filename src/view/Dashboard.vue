@@ -167,6 +167,7 @@
 </template>
 
 <script>
+import mixin from '@/mixin'
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
@@ -174,6 +175,7 @@ import TimeLineChart from '@/component/widget/chart/TimeLineChart'
 import DoughnutChart from '@/component/widget/chart/DoughnutChart'
 export default {
   name: 'PageDashboard',
+  mixins: [mixin],
   components: {
     StatusStatistic,
     MiniStatistic,
@@ -270,7 +272,7 @@ export default {
     // alert list
     async setActiveAlert() {
       const res = await this.$axios.get(
-        '/alert/list-alert/?activated=true&project_id=' + this.$store.state.project.project_id
+        '/alert/list-alert/?status='+this.getAlertStatus('ACTIVE')+'&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         return Promise.reject(err)
       })

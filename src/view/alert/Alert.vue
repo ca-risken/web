@@ -56,8 +56,9 @@
                 <template v-slot:item.severity="{ item }">
                   <v-chip  class="ma-1" dark :color="getSeverityColor(item.severity)">{{ item.severity }}</v-chip>
                 </template>
-                <template v-slot:item.activated="{ item }">
-                  <v-icon v-if="item.activated==true" color="success">mdi-check-circle</v-icon>
+                <template v-slot:item.status="{ item }">
+                  <v-icon v-if="getAlertStatusText(item.status)=='ACTIVE'" color="success">mdi-check-circle</v-icon>
+                  <v-icon v-else-if="getAlertStatusText(item.status)=='PENDING'" color="yellow">mdi-check-circle</v-icon>
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
                 <template v-slot:item.created_at="{ item }">
@@ -147,6 +148,10 @@
                   <div class="caption">{{ item.alert_history_id }}</div>
                   <strong>{{ item.description }}</strong>
                 </v-col>
+                <v-col>
+                  <div class="caption">findings</div>
+                  <strong>{{ item.findingsIDs }}</strong>
+                </v-col>
                 <v-col cols="2">
                   <v-chip
                     dark
@@ -194,7 +199,7 @@ export default {
         selected: [],
         search: '',
         headers: [
-          { text: 'Active', align: 'center', width: '10%', sortable: true, value: 'activated' },
+          { text: 'Atatus', align: 'center', width: '10%', sortable: true, value: 'status' },
           { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
           { text: 'Severity', align: 'center', width: '10%', sortable: true, value: 'severity' },
           { text: 'Description', align: 'start', width: '40%', sortable: true, value: 'description' },
@@ -226,14 +231,14 @@ export default {
   },
   mounted() {
     this.loading = true
-    this.getAlert(false)
+    this.getAlert()
     this.loading = false
   },
   methods: {
     // alert list
-    async getAlert(activate) {
+    async getAlert() {
       const res = await this.$axios.get(
-        '/alert/list-alert/?activated=' + activate + '&project_id=' + this.$store.state.project.project_id
+        '/alert/list-alert/?' + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
@@ -253,6 +258,7 @@ export default {
 
     // alert history list
     async getHistory() {
+      this.alertHistoryModel = []
       const res = await this.$axios.get(
         '/alert/list-history/?alert_id=' + this.alertModel.alert_id + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
@@ -264,7 +270,37 @@ export default {
         this.clearHistory()
         return false
       }
-      this.alertHistoryModel = list.data.alert_history
+      // this.alertHistoryModel = list.data.alert_history
+      list.data.alert_history.forEach(async history => {
+        const json = JSON.parse(history.finding_history)
+        let findingsIDs = ""
+        if (json && json.finding_id) {
+          findingsIDs = this.formatFindingIDs(json.finding_id)
+        }
+        this.alertHistoryModel.push({
+          alert_history_id: history.alert_history_id,
+          history_type: history.history_type,
+          alert_id: history.alert_id,
+          description: history.description,
+          severity: history.severity,
+          finding_history: history.finding_history,
+          project_id: history.project_id,
+          created_at: history.created_at,
+          updated_at: history.updated_at,
+          findingsIDs: findingsIDs,
+        })
+      })
+    },
+    formatFindingIDs(ids){
+      if (ids.length <= 5) {
+        return ids
+      }
+      let formated = []
+      for ( let i=0; i < 5; i++ ) {
+        formated.push(ids[i])
+      }
+      formated.push('...')
+      return formated
     },
     clearHistory() {
       this.alertHistoryModel = []
