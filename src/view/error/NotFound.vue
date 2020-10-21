@@ -2,9 +2,6 @@
   <v-app class="exception">
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
-        <div class="mr-3 hidden-sm-and-down">
-          <img src="/static/error/404.svg" alt />
-        </div>
         <div class="text-md-center">
           <h1>404</h1>
           <h2 class="my-3 headline">Sorry, page not found</h2>

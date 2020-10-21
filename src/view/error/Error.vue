@@ -2,9 +2,6 @@
   <v-app class="exception">
     <v-container fluid fill-height>
       <v-layout align-center justify-center row>
-        <div class="mr-3 hidden-sm-and-down">
-          <img src="/static/error/500.svg" alt />
-        </div>
         <div class="text-md-center">
           <h1>500</h1>
           <h2 class="my-3 headline">Sorry, the server is down.</h2>
