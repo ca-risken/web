@@ -17,7 +17,7 @@
             class="pa-0 ml-4"
             style="text-transform: none"
           >
-            <v-card rounded color="primary" elevation="0">
+            <v-card color="primary" elevation="0">
               <v-card-title>
                 <v-avatar tile color="primary darken-2" size="42">
                   <span class="whie--text text-h6 font-weight-black">PJ</span>
