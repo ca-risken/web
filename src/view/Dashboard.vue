@@ -44,7 +44,7 @@
           class="mr-4"
           color="grey"
           @click="settingDialog = true">
-          setting steps
+          setting tutorial
         </v-btn>
       </v-row>
 
@@ -116,7 +116,7 @@
     <v-dialog v-model="settingDialog" max-width="600px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Setting Step Detail</span>
+          <span class="mx-2">SETTING TUTORIAL</span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
@@ -129,28 +129,28 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                2, Setting DataSources(≒ Store some Findings): <span class="headline">{{ raw.storeFinding.length }}</span>
+                2, Setting data sources(≒ Store some findings): <span class="headline">{{ raw.storeFinding.length }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                3. Setting Alert Condition: <span class="headline">{{ raw.alertCondition.length }}</span>
+                3. Setting alert condition: <span class="headline">{{ raw.alertCondition.length }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                4. Setting Alert Rule: <span class="headline">{{ raw.alertRule.length }}</span>
+                4. Setting alert rule: <span class="headline">{{ raw.alertRule.length }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                5. Setting Alert Notification: <span class="headline">{{ raw.notification.length }}</span>
+                5. Setting alert notification: <span class="headline">{{ raw.notification.length }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -369,21 +369,21 @@ export default {
       this.status.riskFactor = []
       this.status.riskFactor.push({
         title: this.status.alert,
-        subTitle: 'Action Required ....',
+        subTitle: 'Action required ....',
         icon: 'mdi-alert',
         color: 'red darken-3',
         link: '/alert/alert/',
       })
       this.status.riskFactor.push({
         title: this.status.finding,
-        subTitle: 'HighScore Findings ',
+        subTitle: 'High score findings ',
         icon: 'mdi-file-find-outline',
         color: 'blue darken-1',
         link: '/finding/finding/',
       })
       this.status.riskFactor.push({
         title: this.status.compSettingRate,
-        subTitle: 'Coverage Settings...',
+        subTitle: 'Settings coverage...',
         icon: 'mdi-cog',
         color: 'grey darken-2',
         link: '/alert/condition/',
@@ -414,9 +414,9 @@ export default {
     setTotalStatus() {
       const totalRisk = Number(this.status.alert) + Number(this.status.finding) + Number(this.status.imcompSetting)
       this.status.risk.detail =
-        '  Active Alerts: ' + this.status.alert +
-        ', High Score Findings: ' + this.status.finding +
-        ', Imcompleted Settings: ' + this.status.imcompSetting + ' / ' + this.raw.settingStep
+        '  Active alerts: ' + this.status.alert +
+        ', High score findings: ' + this.status.finding +
+        ', Imcompleted settings: ' + this.status.imcompSetting + ' / ' + this.raw.settingStep
       if ( totalRisk === 0 ) {
         this.status.risk.icon = 'mdi-check-circle-outline'
         this.status.risk.color = 'green'
@@ -444,7 +444,7 @@ export default {
         title: this.raw.invitedUser.length.toString(),
         subTitle: 'Project members',
         icon: 'mdi-account-multiple',
-        color: 'cyan darken-1',
+        color: 'primary lighten-1',
         link: '/iam/user/',
       })
       this.category.push({
@@ -452,7 +452,7 @@ export default {
         title: this.raw.highScoreFindingAWS.length.toString(),
         subTitle: 'High score findings',
         icon: 'mdi-aws',
-        color: 'orange darken-2',
+        color: 'primary lighten-1',
         link: '/finding/finding/',
       })
       this.category.push({
@@ -460,7 +460,7 @@ export default {
         title: this.raw.highScoreFindingDiagnosis.length.toString(),
         subTitle: 'High score findings',
         icon: 'mdi-bug-check-outline',
-        color: 'indigo darken-2',
+        color: 'primary lighten-1',
         link: '/finding/finding/',
       })
       this.category.push({
@@ -468,7 +468,7 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'http',
-        color: 'light-green darken-1',
+        color: 'primary lighten-1',
         link: '/',
       })
       this.category.push({
@@ -476,15 +476,15 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'mdi-google-cloud',
-        color: 'blue darken-1',
+        color: 'primary lighten-1',
         link: '/finding/finding/',
       })
       this.category.push({
-        category: 'Source Code',
+        category: 'Code',
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'mdi-github',
-        color: 'grey darken-3',
+        color: 'primary lighten-1',
         link: '/finding/finding/',
       })
       this.category.push({
@@ -492,7 +492,7 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'mdi-microsoft-azure',
-        color: 'light-blue darken-2',
+        color: 'primary lighten-1',
         link: '/finding/finding/',
       })
     },
