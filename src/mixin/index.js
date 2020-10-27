@@ -102,7 +102,7 @@ let mixin = {
           return 1
         case 'PENDING':
           return 2
-        case 'DEACTIVE':
+        case 'DEACTIVATE':
           return 3
         default:
           return 0 // Unknown

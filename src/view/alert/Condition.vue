@@ -711,7 +711,7 @@ export default {
     },
 
     // handler
-    handleNewItem() {
+    async handleNewItem() {
       this.dataModel = {
         alert_condition_id:0,
         description:'', 
@@ -722,6 +722,8 @@ export default {
         notifications: [],
         updated_at:''
       }
+      await this.listRule()
+      await this.listNotification()
       this.form.new = true
       this.editDialog  = true
     },

@@ -176,6 +176,57 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="pendDialog" max-width="600px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">Do you want to update PENDING this?</span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="alertModel.alert_id"></v-list-item-title>
+              <v-list-item-subtitle>Alert ID</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-file-find-outline</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                <v-chip  class="ma-1" dark :color="getSeverityColor(alertModel.severity)">{{ alertModel.severity }}</v-chip>
+              </v-list-item-title>
+              <v-list-item-subtitle>Serverity</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-image-text</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="alertModel.description"></v-list-item-title>
+              <v-list-item-subtitle>Description</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="pendDialog = false">
+            CANCEL
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            text outlined
+            :loading="loading"
+            @click="handlePendSubmit"
+          >
+            PEND
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -199,7 +250,7 @@ export default {
         selected: [],
         search: '',
         headers: [
-          { text: 'Atatus', align: 'center', width: '10%', sortable: true, value: 'status' },
+          { text: 'Status', align: 'center', width: '10%', sortable: true, value: 'status' },
           { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
           { text: 'Severity', align: 'center', width: '10%', sortable: true, value: 'severity' },
           { text: 'Description', align: 'start', width: '40%', sortable: true, value: 'description' },
@@ -210,6 +261,7 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'Pending', icon: 'mdi-trash-can-outline', click: this.handlePendItem },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -219,6 +271,7 @@ export default {
         items: []
       },
       viewDialog: false,
+      pendDialog: false,
     }
   },
   filters: {
@@ -335,6 +388,26 @@ export default {
       this.loading = false
     },
 
+    // Pending alert
+    async pendingAlert() {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        alert: {
+          project_id: this.$store.state.project.project_id,
+          alert_id: this.alertModel.alert_id,
+          alert_condition_id: this.alertModel.alert_condition_id,
+          description: this.alertModel.description,
+          severity: this.alertModel.severity,
+          status: Number(this.getAlertStatus('PENDING')),
+        },
+      }
+      await this.$axios.post('/alert/put-alert/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Update pending status.')
+    },
+
     // handler
     handleCondition() {
       this.$router.push('/alert/condition/')
@@ -350,9 +423,39 @@ export default {
     handleClickFinding(resourceName) {
       this.$router.push('/finding/finding?resource_name=' + resourceName)
     },
+    handlePendItem(item) {
+      this.assignDataModel(item)
+      this.pendDialog  = true
+    },
+    handlePendSubmit() {
+      this.loading = true
+      this.pendingAlert()
+    },
     assignDataModel(item) {
       this.alertModel = {}
       this.alertModel = Object.assign(this.alertModel, item)
+    },
+
+    // finish
+
+    // finish process
+    async finishSuccess(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.finish(true)
+    },
+    async finishError(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifyError(msg)
+      this.finish(false)
+    },
+    async finish(reflesh) {
+      this.loading = false
+      this.viewDialog  = false
+      this.pendDialog  = false
+      if ( reflesh ) {
+        this.getAlert()
+      }
     },
   }
 }

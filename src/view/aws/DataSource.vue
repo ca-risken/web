@@ -428,7 +428,7 @@ export default {
           return '/static/aws/prowler.png'
         case 'aws:iam-activity':
           return '/static/aws/iam.svg'
-        case 'aws:iam-admin':
+        case 'aws:admin-checker':
           return '/static/aws/iam.svg'
         default:
           return '/static/aws/default.png'

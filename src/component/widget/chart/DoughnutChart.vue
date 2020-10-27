@@ -22,12 +22,12 @@ export default {
       type: Object,
       default: () => {
         return {
-          plugins: {
-            colorschemes: {
-              // scheme: 'brewer.Set3-12'
-              scheme: 'tableau.NurielStone9',
-            }
-          },
+          // plugins: {
+          //   colorschemes: {
+          //     // scheme: 'brewer.Set3-12'
+          //     scheme: 'tableau.NurielStone9',
+          //   }
+          // },
         }
       }
     },
