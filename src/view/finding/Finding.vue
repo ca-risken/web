@@ -285,6 +285,55 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="deleteDialog" max-width="400px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">Do you really want to delete this?</span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="findingModel.finding_id"></v-list-item-title>
+              <v-list-item-subtitle>Finding ID</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-file-find-outline</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="findingModel.resource_name"></v-list-item-title>
+              <v-list-item-subtitle>Resource</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-image-text</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="findingModel.description"></v-list-item-title>
+              <v-list-item-subtitle>Description</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+            CANCEL
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            text outlined
+            :loading="loading"
+            @click="handleDeleteSubmit"
+          >
+            DELETE
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -323,17 +372,18 @@ export default {
         updated_at:'',
       },
       viewDialog: false,
+      deleteDialog: false,
       table: {
         selected: [],
         headers: [
-          { text: 'ID',  align: 'center', sortable: false, value: 'finding_id' },
-          { text: 'Score', align: 'center', sortable: false, value: 'score' },
-          { text: 'Data Source', align: 'center', sortable: false, value: 'data_source' },
-          { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
-          { text: 'Description', align: 'start', sortable: false, value: 'description' },
-          { text: 'Tags', align: 'start', sortable: false, value: 'tags' },
-          { text: 'Update', align: 'start', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' },
+          { text: 'ID',  align: 'center', width: '5%', sortable: false, value: 'finding_id' },
+          { text: 'Score', align: 'center', width: '5%', sortable: false, value: 'score' },
+          { text: 'Data Source', align: 'center', width: '10%', sortable: false, value: 'data_source' },
+          { text: 'Resource', align: 'start', width: '10%', sortable: false, value: 'resource_name' },
+          { text: 'Description', align: 'start', width: '30%', sortable: false, value: 'description' },
+          { text: 'Tags', align: 'start', width: '5%', sortable: false, value: 'tags' },
+          // { text: 'Update', align: 'start', width: '10%', sortable: false, value: 'updated_at' },
+          { text: 'Action', align: 'center', width: '5%', sortable: false, value: 'action' },
         ],
         options: {
           page: 1,
@@ -342,6 +392,7 @@ export default {
         },
         actions: [
           { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
+          // { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
@@ -454,6 +505,19 @@ export default {
       this.searchForm.tagList = list.data.tag
     },
 
+    // Delete Condition
+    async deleteItem() {
+      const param = {
+          project_id: this.$store.state.project.project_id,
+          finding_id: this.findingModel.finding_id,
+      }
+      await this.$axios.post('/finding/delete-finding/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Delete.')
+    },
+
     // handler
     handleViewItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
@@ -477,6 +541,34 @@ export default {
         searchCond += '&to_score=' + this.searchModel.score[1]
       }
       this.refleshList(searchCond)
+    },
+    handleDeleteItem(row) {
+      this.findingModel = Object.assign(this.findingModel, row)
+      this.deleteDialog  = true
+    },
+    handleDeleteSubmit() {
+      this.loading = true
+      this.deleteItem()
+    },
+
+    // finish
+    async finishSuccess(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.finish(true)
+    },
+    async finishError(msg) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      this.$refs.snackbar.notifyError(msg)
+      this.finish(false)
+    },
+    async finish(reflesh) {
+      this.loading = false
+      this.editDialog  = false
+      this.deleteDialog  = false
+      if ( reflesh ) {
+        this.handleSearch()
+      }
     },
   }
 }
