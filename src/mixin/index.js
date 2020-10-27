@@ -15,10 +15,10 @@ let mixin = {
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
     getColorByCount(cnt) {
-      if ( cnt <= 0 ) {
+      if ( cnt == 0 ) {
         return 'grey lighten-1'
       } else if ( cnt <= 1 ) {
-        return 'info lighten-1'
+        return 'teal lighten-2'
       } else if ( cnt <= 3 ) {
         return 'yellow darken-3'
       } else {
@@ -26,9 +26,9 @@ let mixin = {
       }
     },
     getColorByScore: (score) => {
-      if ( score <= 0.6 ) {
-        return 'success'
-      } else if ( score <= 0.8 ) {
+      if ( score < 0.6 ) {
+        return 'teal lighten-2'
+      } else if ( score < 0.8 ) {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
@@ -37,21 +37,21 @@ let mixin = {
     getSeverityColor: (severity) => {
       switch (severity) {
         case 'high':
-          return 'pink'
+          return 'red darken-2'
         case 'medium':
           return 'yellow darken-3'
         default:
-          return 'teal'
+          return 'teal lighten-2'
       }
     },
     getHistoryTypeColor: (type) => {
       switch (type) {
         case 'created':
-          return 'teal'
+          return 'teal lighten-2'
         case 'updated':
-          return 'amber'
+          return 'yellow darken-3'
         case 'deleted':
-          return 'grey'
+          return 'grey lighten-1'
         default:
           return 'grey'
       }

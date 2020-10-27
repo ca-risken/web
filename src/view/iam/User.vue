@@ -97,15 +97,15 @@
     </v-container>
 
     <!-- Edit Dialog -->
-    <v-dialog v-model="editDialog" max-width="70%">
+    <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
           <v-icon large>mdi-account-multiple</v-icon>
           <span class="mx-4 headline">User</span>
           <v-spacer />
           <template v-if="userForm.clickNew">
-            <v-btn text outlined @click="userDialog = true">
-              Select user
+            <v-btn outlined  color="primary darken-3" dark @click="userDialog = true">
+              Invite New User
             </v-btn>
             <user
               :userDialog="userDialog"
@@ -230,7 +230,7 @@ export default {
       userForm: {
         clickNew: false,
         user_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name', placeholder: '-'},
+        name: { label: 'Name', placeholder: 'Please select user...'},
       },
 
       userNameList: [],
