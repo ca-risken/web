@@ -573,10 +573,14 @@ export default {
           enabled: this.dataModel.enabled,  // falase をセットしても正しく反映されない？
         },
       }
-      await this.$axios.post('/alert/put-condition/', param).catch((err) =>  {
+      const res = await this.$axios.post('/alert/put-condition/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
+      if (res && res.data && res.data.data && res.data.data.alert_condition) {
+        // update `alert_condition_id` for NEW condition data
+        this.dataModel.alert_condition_id = res.data.data.alert_condition.alert_condition_id
+      }
     },
 
     // List Rule

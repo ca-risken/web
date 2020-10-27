@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="70%" v-model="userDialog" @click:outside="handleCancel">
+  <v-dialog max-width="50%" v-model="userDialog" @click:outside="handleCancel">
     <v-card>
       <v-card-title>
           <v-combobox
@@ -8,6 +8,7 @@
             :placeholder="searchForm.userName.placeholder"
             :items="userNameList"
             v-model="searchModel.userName"
+            @change="handleSearch"
           />
         <v-spacer />
         <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
