@@ -12,7 +12,7 @@
         </v-col>
       </v-row>
       <v-row dense justify="center" align-content="center">
-        <v-col cols="12" sm="6" md="6">
+        <v-col cols="6">
           <v-text-field
             outlined clearable dense
             prepend-icon="mdi-magnify"
@@ -21,6 +21,14 @@
             hide-details
             class="hidden-sm-and-down"
           />
+        </v-col>
+        <v-col cols="3">
+          <v-checkbox
+            required
+            v-model="table.activeOnly"
+            label="Active only"
+            @change="handleRefleshList"
+          ></v-checkbox>
         </v-col>
         <v-spacer />
         <v-btn 
@@ -249,6 +257,7 @@ export default {
       table: {
         selected: [],
         search: '',
+        activeOnly: true,
         headers: [
           { text: 'Status', align: 'center', width: '10%', sortable: true, value: 'status' },
           { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
@@ -283,15 +292,18 @@ export default {
     },
   },
   mounted() {
-    this.loading = true
-    this.getAlert()
-    this.loading = false
+    this.handleRefleshList()
   },
   methods: {
     // alert list
     async getAlert() {
+      this.table.items = []
+      let statusParam = ''
+      if (this.table.activeOnly) {
+        statusParam = '&status=' + this.getAlertStatus('ACTIVE')
+      }
       const res = await this.$axios.get(
-        '/alert/list-alert/?' + '&project_id=' + this.$store.state.project.project_id
+        '/alert/list-alert/?project_id=' + this.$store.state.project.project_id + statusParam
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
@@ -409,6 +421,10 @@ export default {
     },
 
     // handler
+    handleRefleshList() {
+      this.loading = true
+      this.getAlert()
+    },
     handleCondition() {
       this.$router.push('/alert/condition/')
     },

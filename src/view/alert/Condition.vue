@@ -13,7 +13,7 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
-          <v-col cols="12" sm="6" md="6">
+          <v-col cols="6">
             <v-text-field
               outlined clearable dense
               prepend-icon="mdi-magnify"
@@ -23,7 +23,14 @@
               class="hidden-sm-and-down"
             />
           </v-col>
-
+          <v-col cols="3">
+            <v-checkbox
+              required
+              v-model="table.enabledOnly"
+              label="Enabled only"
+              @change="searchCondition"
+            ></v-checkbox>
+          </v-col>
           <v-spacer />
           <v-btn 
             fab dense outlined small 
@@ -415,6 +422,7 @@ export default {
       table: {
         selected: [],
         search: '',
+        enabledOnly: true,
         headers: [
           { text: '', align: 'center', width: '5%', sortable: false, value: 'avator' },
           { text: 'Enabled', align: 'start', sortable: true, value: 'enabled' },
@@ -492,15 +500,18 @@ export default {
     },
   },
   mounted() {
-    this.loading = true
-    this.refleshList('')
+    this.handleSearchList()
   },
   methods: {
     // List Condition
-    async refleshList() {
+    async searchCondition() {
       this.clearList()
+      let enabledParam = ''
+      if (this.table.enabledOnly) {
+        enabledParam = '&enabled=true'
+      }
       const res = await this.$axios.get(
-        '/alert/list-condition/?project_id=' + this.$store.state.project.project_id
+        '/alert/list-condition/?project_id=' + this.$store.state.project.project_id + enabledParam
       ).catch((err) =>  {
         this.clearList()
         this.finishError(err.response.data)
@@ -715,6 +726,10 @@ export default {
     },
 
     // handler
+    handleSearchList() {
+      this.loading = true
+      this.searchCondition('')
+    },
     async handleNewItem() {
       this.dataModel = {
         alert_condition_id:0,
@@ -795,7 +810,7 @@ export default {
       this.ruleDialog  = false
       this.notiDialog = false
       if ( reflesh ) {
-        this.refleshList()
+        this.searchCondition()
       }
     },
   }
