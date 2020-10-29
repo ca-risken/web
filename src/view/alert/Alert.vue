@@ -125,11 +125,11 @@
             column
           >
             <v-chip
-              v-for="(finding) in alertFindingModel"
-              :key="finding.finding_id"
-              @click="handleClickFinding(finding.resource_name)"
+              v-for="(resouruce, idx) in getResourceList(alertResource)"
+              :key="idx"
+              @click="handleClickFinding(resouruce)"
             >
-              {{ finding.resource_name }}
+              {{ resouruce }}
             </v-chip>
           </v-chip-group>
         </v-card-text>
@@ -253,7 +253,7 @@ export default {
       loading: false,
       alertModel: {},
       alertHistoryModel: [],
-      alertFindingModel: [],
+      alertResource: [],
       table: {
         selected: [],
         search: '',
@@ -392,12 +392,25 @@ export default {
         ).catch((err) =>  {
           return Promise.reject(err)
         })
-        this.alertFindingModel.push(res.data.data.finding)
+        this.alertResource.push(res.data.data.finding.resource_name)
       })
     },
     clearFinding() {
-      this.alertFindingModel = []
+      this.alertResource = []
       this.loading = false
+    },
+    getResourceList(array) {
+      const resources = Array.from(new Set(array)) // 重複削除
+      let result = []
+      if ( resources.length > 10 ) {
+        for (let i = 0; i < 10; i++) {
+          result.push(resources[i])
+        }
+        result.push('...')
+      } else {
+        result = resources
+      }
+      return result
     },
 
     // Pending alert
@@ -437,7 +450,11 @@ export default {
       this.loading = false
     },
     handleClickFinding(resourceName) {
-      this.$router.push('/finding/finding?resource_name=' + resourceName)
+      let name = resourceName
+      if (resourceName == '...') {
+        name = ''
+      }
+      this.$router.push('/finding/finding?resource_name=' + name)
     },
     handlePendItem(item) {
       this.assignDataModel(item)
