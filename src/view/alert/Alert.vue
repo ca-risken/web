@@ -12,7 +12,7 @@
         </v-col>
       </v-row>
       <v-row dense justify="center" align-content="center">
-        <v-col cols="12" sm="6" md="6">
+        <v-col cols="6">
           <v-text-field
             outlined clearable dense
             prepend-icon="mdi-magnify"
@@ -21,6 +21,14 @@
             hide-details
             class="hidden-sm-and-down"
           />
+        </v-col>
+        <v-col cols="3">
+          <v-checkbox
+            required
+            v-model="table.activeOnly"
+            label="Active only"
+            @change="handleRefleshList"
+          ></v-checkbox>
         </v-col>
         <v-spacer />
         <v-btn 
@@ -117,11 +125,11 @@
             column
           >
             <v-chip
-              v-for="(finding) in alertFindingModel"
-              :key="finding.finding_id"
-              @click="handleClickFinding(finding.resource_name)"
+              v-for="(resouruce, idx) in getResourceList(alertResource)"
+              :key="idx"
+              @click="handleClickFinding(resouruce)"
             >
-              {{ finding.resource_name }}
+              {{ resouruce }}
             </v-chip>
           </v-chip-group>
         </v-card-text>
@@ -245,10 +253,11 @@ export default {
       loading: false,
       alertModel: {},
       alertHistoryModel: [],
-      alertFindingModel: [],
+      alertResource: [],
       table: {
         selected: [],
         search: '',
+        activeOnly: true,
         headers: [
           { text: 'Status', align: 'center', width: '10%', sortable: true, value: 'status' },
           { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
@@ -283,15 +292,18 @@ export default {
     },
   },
   mounted() {
-    this.loading = true
-    this.getAlert()
-    this.loading = false
+    this.handleRefleshList()
   },
   methods: {
     // alert list
     async getAlert() {
+      this.table.items = []
+      let statusParam = ''
+      if (this.table.activeOnly) {
+        statusParam = '&status=' + this.getAlertStatus('ACTIVE')
+      }
       const res = await this.$axios.get(
-        '/alert/list-alert/?' + '&project_id=' + this.$store.state.project.project_id
+        '/alert/list-alert/?project_id=' + this.$store.state.project.project_id + statusParam
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
@@ -380,12 +392,25 @@ export default {
         ).catch((err) =>  {
           return Promise.reject(err)
         })
-        this.alertFindingModel.push(res.data.data.finding)
+        this.alertResource.push(res.data.data.finding.resource_name)
       })
     },
     clearFinding() {
-      this.alertFindingModel = []
+      this.alertResource = []
       this.loading = false
+    },
+    getResourceList(array) {
+      const resources = Array.from(new Set(array)) // 重複削除
+      let result = []
+      if ( resources.length > 10 ) {
+        for (let i = 0; i < 10; i++) {
+          result.push(resources[i])
+        }
+        result.push('...')
+      } else {
+        result = resources
+      }
+      return result
     },
 
     // Pending alert
@@ -409,6 +434,10 @@ export default {
     },
 
     // handler
+    handleRefleshList() {
+      this.loading = true
+      this.getAlert()
+    },
     handleCondition() {
       this.$router.push('/alert/condition/')
     },
@@ -421,7 +450,11 @@ export default {
       this.loading = false
     },
     handleClickFinding(resourceName) {
-      this.$router.push('/finding/finding?resource_name=' + resourceName)
+      let name = resourceName
+      if (resourceName == '...') {
+        name = ''
+      }
+      this.$router.push('/finding/finding?resource_name=' + name)
     },
     handlePendItem(item) {
       this.assignDataModel(item)
