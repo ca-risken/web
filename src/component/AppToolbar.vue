@@ -16,6 +16,7 @@
             v-on="on"
             class="pa-0 ml-4"
             style="text-transform: none"
+            @click="handleSearchProject"
           >
             <v-card color="primary" elevation="0">
               <v-card-title>
@@ -32,7 +33,7 @@
             </v-card>
           </v-btn>
         </template>
-        <project-list></project-list>
+        <!-- <project-list></project-list> -->
       </v-menu>
     </v-toolbar-items>
     <v-spacer />
@@ -78,19 +79,87 @@
         <v-icon v-text="'mdi-arrow-left'" @click="handleGoBack" />
       </v-btn>
     </v-toolbar>
+
+    <!-- Project dialog -->
+    <v-dialog max-width="60%" v-model="projectDialog" @click:outside="projectDialog = false">
+      <v-card>
+        <v-card-title>
+          <span class="mx-2"> Project </span>
+          <v-text-field
+            outlined clearable dense
+            prepend-icon="mdi-magnify"
+            placeholder="Type something..."
+            v-model="projectTable.search"
+            hide-details
+            class="hidden-sm-and-down"
+          />
+        </v-card-title>
+        <v-divider />
+        <v-card-text class="pa-0">
+          <v-data-table
+            :search="projectTable.search"
+            :headers="projectTable.headers"
+            :items="projectTable.item"
+            :options.sync="projectTable.options"
+            :loading="loading"
+            :footer-props="projectTable.footer"
+            locale="ja-jp"
+            loading-text="読込中"
+            no-data-text="データがありません。"
+            class="elevation-1"
+            item-key="project_id"
+            @click:row="handleProjectClick"
+          >
+            <template v-slot:item.updated_at="{ item }">
+              <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+            </template>
+          </v-data-table>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text outlined color="grey darken-1" @click="projectDialog = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <bottom-snack-bar ref="snackbar" />
   </v-app-bar>
 </template>
 <script>
-import ProjectList from '@/component/widget/list/Project'
+// import ProjectList from '@/component/widget/list/Project'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import Util from '@/util'
 import store from '@/store'
+import mixin from '@/mixin'
 export default {
   name: 'AppToolbar',
   components: {
-    ProjectList
+    // ProjectList,
+    BottomSnackBar,
   },
+  mixins: [mixin],
   data() {
     return {
+      loading: false,
+      projectDialog:false,
+      projectTable: {
+        search: '',
+        headers: [
+          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
+          { text: 'ID',  align: 'start', sortable: true, value: 'project_id' },
+          { text: 'Name', align: 'start', sortable: true, value: 'name' },
+          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
+        ],
+        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
+        footer: {
+          itemsPerPageOptions: [10],
+          showCurrentPage: true,
+          showFirstLastPage: true,
+        },
+        item: [],
+      },
+
       profileMenus: [
         {
           icon: 'settings',
@@ -130,7 +199,36 @@ export default {
       return store.state.project.name
     },
   },
+  filters: {
+    formatTime: (unix) => {
+      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+  },
   methods: {
+    async listProject() {
+      this.clearProjectList()
+      if ( !store.state.user || !store.state.user.user_id ) {
+        this.$refs.snackbar.notifyError( 'Error: Try again after signin.' )
+        return
+      }
+      const admin = await this.$axios.get('/iam/is-admin/?user_id=' + store.state.user.user_id ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      let listUserID = store.state.user.user_id
+      if (admin.data.data.ok) {
+        listUserID = ''
+      }
+      const res = await this.$axios.get('/project/list-project/?user_id=' + listUserID ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      this.loading = false
+      this.projectTable.item = res.data.data.project
+    },
+    clearProjectList() {
+      this.projectTable.item = []
+    },
+
+    // handler
     handleDrawerToggle() {
       this.$emit('side-icon-click')
     },
@@ -145,7 +243,20 @@ export default {
     },
     handleGoBack() {
       this.$router.go(-1)
-    }
+    },
+    handleProjectClick(project)  {
+      store.commit('updateProject', project)
+      this.reload()
+    },
+    handleNewProject() {
+      this.$router.push('/project/new')
+    },
+    handleSearchProject() {
+      this.loading = true
+      this.projectDialog = true
+      this.listProject()
+    },
+
   },
   created() {}
 }
