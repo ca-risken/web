@@ -60,8 +60,10 @@
 <script>
 import store from '@/store'
 import Util from '@/util'
+import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  mixins: [mixin],
   components: {
     BottomSnackBar,
   },
@@ -72,7 +74,7 @@ export default {
           valid: false,
           name: [
             v => !!v || 'Name is required',
-            v => v.length <= 64 || 'Name must be less than 64 characters',
+            v => !v || v.length <= 64 || 'Name must be less than 64 characters',
           ],
         },
         data: {
@@ -97,17 +99,23 @@ export default {
   },
   methods: {
     async getUser() {
-      if (store.state.user) {
-        const res = await this.$axios.get('/iam/get-user/?user_id=' + store.state.user.user_id).catch((err) =>  {
+      let userID = ""
+      if (store.state.user.user_id) {
+        userID = store.state.user.user_id
+      } else {
+        userID = await this.signin().catch((err) =>  {
           return Promise.reject(err)
         })
-        if (!res.data.data.user) { return false }
-        this.userForm.data = {
-          id : res.data.data.user.user_id,
-          sub: res.data.data.user.sub,
-          name: res.data.data.user.name,
-          updated_at: res.data.data.user.updated_at,
-        }
+      }
+      const res = await this.$axios.get('/iam/get-user/?user_id=' + userID).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if (!res.data.data.user) { return false }
+      this.userForm.data = {
+        id : res.data.data.user.user_id,
+        sub: res.data.data.user.sub,
+        name: res.data.data.user.name,
+        updated_at: res.data.data.user.updated_at,
       }
     },
     async putUser() {
