@@ -499,7 +499,7 @@ export default {
         project_id: this.$store.state.project.project_id,
         jira_setting_id: this.jiraModel.jira_setting_id,
       }
-      await this.$axios.post('/diagnosis/start-diagnosis/', param).catch((err) =>  {
+      await this.$axios.post('/diagnosis/invoke-scan/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
