@@ -11,6 +11,15 @@ let mixin = {
     }
   },
   methods: {
+    async signin() {
+      const res = await this.$axios.get('/signin/').catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if (!res.data.user_id) {
+        return
+      }
+      return res.data.user_id
+    },
     reload: function() {
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
