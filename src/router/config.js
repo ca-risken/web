@@ -159,6 +159,82 @@ export const appRoute = [
         ]
       },
       {
+        path: '/aws',
+        component: RouteWrapper,
+        redirect: '/aws/aws',
+        meta: {
+          title: 'AWS',
+          icon: 'mdi-aws',
+          group: 'aws'
+        },
+        children: [
+          {
+            path: '/aws/aws',
+            name: 'AWS',
+            meta: {
+              title: 'AWS',
+            },
+            component: () => import('@/view/aws/AWS.vue')
+          },
+          {
+            path: '/aws/data-source',
+            name: 'AWS DataSource',
+            meta: {
+              title: 'DataSource',
+            },
+            component: () => import('@/view/aws/DataSource.vue')
+          },
+        ]
+      },
+      {
+        path: '/diagnosis',
+        component: RouteWrapper,
+        redirect: '/diagnosis/jira',
+        meta: {
+          title: 'Diagnosis',
+          icon: 'mdi-bug-check-outline',
+          group: 'diagnosis'
+        },
+        children: [
+          {
+            path: '/diagnosis/jira',
+            name: 'Diagnosis',
+            meta: {
+              title: 'JIRA',
+            },
+            component: () => import('@/view/diagnosis/JIRA.vue')
+          },
+        ]
+      },
+      {
+        path: '/osint',
+        component: RouteWrapper,
+        redirect: '/osint/osint',
+        meta: {
+          title: 'OSINT',
+          icon: 'http',
+          group: 'osint'
+        },
+        children: [
+          {
+            path: '/osint/osint',
+            name: 'OSINT',
+            meta: {
+              title: 'OSINT',
+            },
+            component: () => import('@/view/osint/OSINT.vue')
+          },
+          {
+            path: '/osint/data-source',
+            name: 'OSINT DataSource',
+            meta: {
+              title: 'DataSource',
+            },
+            component: () => import('@/view/osint/DataSource.vue')
+          },
+        ]
+      },
+      {
         path: '/iam',
         component: RouteWrapper,
         redirect: '/iam/user',
@@ -200,54 +276,6 @@ export const appRoute = [
               hiddenInMenu: true,
             },
             component: () => import('@/view/iam/Profile.vue')
-          },
-        ]
-      },
-      {
-        path: '/aws',
-        component: RouteWrapper,
-        redirect: '/aws/aws',
-        meta: {
-          title: 'AWS',
-          icon: 'mdi-aws',
-          group: 'aws'
-        },
-        children: [
-          {
-            path: '/aws/aws',
-            name: 'AWS',
-            meta: {
-              title: 'AWS',
-            },
-            component: () => import('@/view/aws/AWS.vue')
-          },
-          {
-            path: '/aws/data-source',
-            name: 'DataSource',
-            meta: {
-              title: 'DataSource',
-            },
-            component: () => import('@/view/aws/DataSource.vue')
-          },
-        ]
-      },
-      {
-        path: '/diagnosis',
-        component: RouteWrapper,
-        redirect: '/diagnosis/jira',
-        meta: {
-          title: 'Diagnosis',
-          icon: 'mdi-bug-check-outline',
-          group: 'diagnosis'
-        },
-        children: [
-          {
-            path: '/diagnosis/jira',
-            name: 'Diagnosis',
-            meta: {
-              title: 'JIRA',
-            },
-            component: () => import('@/view/diagnosis/JIRA.vue')
           },
         ]
       },

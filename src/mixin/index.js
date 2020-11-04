@@ -72,7 +72,7 @@ let mixin = {
           return 'mdi-aws'
         case 'diagnosis':
           return 'mdi-bug-check-outline'
-        case 'intrigue':
+        case 'osint':
           return 'http'
         default:
           return 'mdi-help-circle-outline'
@@ -85,8 +85,8 @@ let mixin = {
           return 'orange'
         case 'diagnosis':
           return 'blue'
-        case 'intrigue':
-          return 'indigo'
+        case 'osint':
+          return 'green'
         default:
           return 'mdi-help-circle-outline'
       }
