@@ -456,11 +456,12 @@ export default {
     this.loading = true
     this.listOSINT()
     if ( !this.$route.query.osint_id ) {
+      this.loading = false
       return false
     }
     this.dataModel.osint_id = Number(this.$route.query.osint_id)
-    this.loading = true
     this.listDataSource()
+    this.loading = false
   },
   methods: {
     async listOSINT() {
@@ -472,7 +473,6 @@ export default {
         return false
       }
       this.osintList = osint
-      this.loading = false
     },
     async listDataSource() {
       this.table.total = 0
