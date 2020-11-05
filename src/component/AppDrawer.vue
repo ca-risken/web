@@ -1,19 +1,18 @@
 <template>
   <v-navigation-drawer
     app
-    class="app--drawer"
+    class="app--drawer" 
     :mini-variant.sync="mini"
     v-model="drawer"
     :width="drawerWidth"
-    :dark="$vuetify.dark"
   >
-    <v-toolbar color="primary darken-1" dark>
+    <v-toolbar color="secondary" dark>
       <img :src="computeLogo" height="36" alt="RISKEN" />
       <v-toolbar-title class="ml-0 pl-3">
         <span class="hidden-sm-and-down">RISKEN</span>
       </v-toolbar-title>
     </v-toolbar>
-    <v-list class="pa-0">
+    <v-list class="pa-0" >
       <template v-for="(item, key) in computeMenu">
         <template v-if="item.children && item.children.length > 0">
           <v-list-group

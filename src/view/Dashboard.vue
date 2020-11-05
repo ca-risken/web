@@ -71,6 +71,7 @@
             :title="c.title"
             :sub-title="c.subTitle"
             :color="c.color"
+            :dark="c.dark"
             :link="c.link"
           />
         </v-col>
@@ -444,7 +445,8 @@ export default {
         title: this.raw.invitedUser.length.toString(),
         subTitle: 'Project members',
         icon: 'mdi-account-multiple',
-        color: 'primary lighten-1',
+        color: 'cyan lighten-2',
+        dark: false,
         link: '/iam/user/',
       })
       this.category.push({
@@ -452,7 +454,8 @@ export default {
         title: this.raw.highScoreFindingAWS.length.toString(),
         subTitle: 'High score findings',
         icon: 'mdi-aws',
-        color: 'primary lighten-1',
+        color: 'orange darken-1',
+        dark: true,
         link: '/finding/finding/',
       })
       this.category.push({
@@ -460,7 +463,8 @@ export default {
         title: this.raw.highScoreFindingDiagnosis.length.toString(),
         subTitle: 'High score findings',
         icon: 'mdi-bug-check-outline',
-        color: 'primary lighten-1',
+        color: 'indigo darken-1',
+        dark: true,
         link: '/finding/finding/',
       })
       this.category.push({
@@ -468,7 +472,8 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'http',
-        color: 'primary lighten-1',
+        color: 'green darken-1',
+        dark: true,
         link: '/',
       })
       this.category.push({
@@ -476,7 +481,8 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'mdi-google-cloud',
-        color: 'primary lighten-1',
+        color: 'light-blue darken-1',
+        dark: true,
         link: '/finding/finding/',
       })
       this.category.push({
@@ -484,7 +490,8 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'mdi-github',
-        color: 'primary lighten-1',
+        color: 'grey darken-3',
+        dark: true,
         link: '/finding/finding/',
       })
       this.category.push({
@@ -492,7 +499,8 @@ export default {
         title: '-',
         subTitle: 'Not yet suported...',
         icon: 'mdi-microsoft-azure',
-        color: 'primary lighten-1',
+        color: 'blue darken-1',
+        dark: true,
         link: '/finding/finding/',
       })
     },

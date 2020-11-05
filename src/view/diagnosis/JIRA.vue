@@ -116,7 +116,7 @@
     <v-dialog v-model="editDialog" max-width="60%">
       <v-card>
         <v-card-title>
-          <v-icon large color="orange darken-1">mdi-jira</v-icon>
+          <v-icon large color="blue">mdi-jira</v-icon>
           <span class="mx-4 headline">JIRA</span>
         </v-card-title>
         <v-container fluid>

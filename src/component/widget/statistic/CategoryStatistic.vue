@@ -1,12 +1,11 @@
 <template>
   <v-card
     class="mx-auto"
-    :color="color"
-    dark
     @click="handleClick"
   >
+    <v-system-bar  height="10" :color="color" :dark="dark" />
     <v-card-title>
-      <v-icon large left>{{ icon }}</v-icon>
+      <v-icon :color="color" large left>{{ icon }}</v-icon>
       <span class="title font-weight-bold">{{ category }}</span>
     </v-card-title>
     <v-card-text class="headline font-weight-black ml-4">
@@ -26,6 +25,7 @@ export default {
     title: String,
     subTitle: String,
     color: String,
+    dark: Boolean,
     link: String,
   },
   methods: {
