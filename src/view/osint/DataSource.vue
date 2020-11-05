@@ -53,7 +53,7 @@
                 no-data-text="データがありません。"
                 class="elevation-1"
                 item-key="osint_data_source_id"
-                @click:row="handleViewItem"
+                @click:row="handleAttachItem"
               >
                 <template v-slot:item.avator="{}">
                   <v-avatar tile class="ma-1">
@@ -246,48 +246,47 @@
             <v-col cals="3">
               <v-btn text outlined color="black lighten-1" @click="handleNewWord">New word</v-btn>
             </v-col>
-
           </v-row>
           <v-row class="mx-4" v-if="dataModel.detectWords">
             <v-col cols="12">
               <v-list-item-title>
                 <v-chip
                   class="mx-1" close
-                  v-for="word in dataModel.detectWords"
-                  :key="word.osint_detect_word_id"
-                  @click:close="handleDeleteWord(word)"
+                  v-for="(word, idx) in dataModel.detectWords"
+                  :key="idx"
+                  @update:active="handleDeleteWord(word)"
                 >
+                  <v-avatar left>
+                    <v-icon>mdi-filter-outline</v-icon>
+                  </v-avatar>
                   {{ word.word }}
                 </v-chip>
               </v-list-item-title>
             </v-col>
           </v-row>
         </v-container>
+        <v-divider />
         <v-card-text>
-          <v-form v-model="form.valid" ref="form">
-            <v-divider />
-            <v-card-actions>
-              <v-btn 
-                text outlined color="blue darken-1" 
-                v-if="form.readOnly"
-                :loading="loading" 
-                @click="handleScan"
-              >
-                SCAN
-              </v-btn>
-              <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
-              </v-btn>
-              <v-btn
-                text outlined color="green darken-1" 
-                v-if="!form.readOnly"
-                :loading="loading" 
-                @click="handleAttachSubmit">
-                Attach
-              </v-btn>
-            </v-card-actions>
-          </v-form>
+          <v-card-actions>
+            <v-btn 
+              text outlined color="blue darken-1" 
+              v-if="dataModel.rel_osint_data_source_id"
+              :loading="loading" 
+              @click="handleScan"
+            >
+              SCAN
+            </v-btn>
+            <v-spacer />
+            <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+              CANCEL
+            </v-btn>
+            <v-btn
+              text outlined color="green darken-1" 
+              :loading="loading" 
+              @click="handleAttachSubmit">
+              Attach
+            </v-btn>
+          </v-card-actions>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -384,7 +383,6 @@ export default {
         'admin',
       ],
       form: {
-        readOnly: false,
         valid: false,
         osint_id: { label: 'OSINT ID', placeholder: '-', validator: []},
         resource_type: { label: 'Resource Type', placeholder: '-', validator: []},
@@ -431,7 +429,6 @@ export default {
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['osint_id'] },
         actions: [
-          { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
           { text: 'Detach DataSource', icon: 'mdi-trash-can-outline', click: this.handleDetachItem },
           { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
@@ -644,18 +641,12 @@ export default {
     handleList() {
       this.loading = true
       this.listDataSource()
-      // this.finishInfo('Reflesh list')
-    },
-    async handleViewItem(item) {
-      this.assignDataModel(item)
-      await this.listWord()
-      this.form.readOnly = true
-      this.editDialog  = true
     },
     async handleAttachItem(item) {
       this.assignDataModel(item)
-      await this.listWord()
-      this.form.readOnly = false
+      if (this.dataModel.rel_osint_data_source_id) {
+        await this.listWord()
+      }
       this.editDialog  = true
     },
     handleAttachSubmit() {
@@ -691,8 +682,9 @@ export default {
     async handleDeleteWord(item) {
       if ( item.osint_detect_word_id ) {
         await this.deleteWord(item.osint_detect_word_id)
+        await this.listWord()
       }
-      this.finishSuccess('Success: Delete word.')
+      this.finishSuccess('Success: Deleted.')
     },
     handleScan(item) {
       this.loading = true
