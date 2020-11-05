@@ -120,6 +120,9 @@
           <v-btn text outlined color="grey darken-1" @click="projectDialog = false">
             CANCEL
           </v-btn>
+          <v-btn text outlined color="green darken-1" @click="$router.push('/project/new/'); projectDialog = false">
+            CREATE NEW PROJECT
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
