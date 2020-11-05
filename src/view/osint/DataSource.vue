@@ -650,9 +650,6 @@ export default {
       this.editDialog  = true
     },
     handleAttachSubmit() {
-      if ( !this.$refs.form.validate() ) {
-        return
-      }
       this.loading = true
       this.attachDataSource()
     },
