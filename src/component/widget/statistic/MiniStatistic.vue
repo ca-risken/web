@@ -1,5 +1,5 @@
 <template>
-  <v-card tile @click="handleClick">
+  <v-card tile>
     <v-card-text class="pa-0">
       <div class="d-flex">
         <div class="flex pa-3">
@@ -23,12 +23,6 @@ export default {
     title: String,
     subTitle: String,
     color: String,
-    link: String,
   },
-  methods: {
-    handleClick() {
-      this.$router.push(this.link)
-    }
-  }
 }
 </script>

@@ -26,26 +26,20 @@
 
         <!-- mini statistic start -->
         <v-col cols="4">
-          <mini-statistic
+          <v-card
             v-for="factor in status.riskFactor"
             :key="factor.subTitle"
-            :icon="factor.icon"
-            :title="factor.title"
-            :sub-title="factor.subTitle"
-            :color="factor.color"
-            :link="factor.link"
+            @click="handleClickFactor(factor.link)"
+          >
+            <mini-statistic
+              :icon="factor.icon"
+              :title="factor.title"
+              :sub-title="factor.subTitle"
+              :color="factor.color"
             class="mb-2"
-          />
+            />
+          </v-card>
         </v-col>
-      </v-row>
-      <v-row dense>
-        <v-spacer />
-        <v-btn text dense
-          class="mr-4"
-          color="grey"
-          @click="settingDialog = true">
-          setting tutorial
-        </v-btn>
       </v-row>
 
       <!-- Category -->
@@ -387,7 +381,7 @@ export default {
         subTitle: 'Settings coverage...',
         icon: 'mdi-cog',
         color: 'grey darken-2',
-        link: '/alert/condition/',
+        link: 'settingDialog',
       })
     },
     // Setting Status
@@ -553,6 +547,13 @@ export default {
     },
 
     // handler
+    handleClickFactor(link) {
+      if (link === 'settingDialog') {
+        this.handleSettingSteps()
+        return
+      }
+      this.$router.push(link)
+    },
     handleSettingSteps() {
       this.settingDialog = true
     }
