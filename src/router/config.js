@@ -53,13 +53,12 @@ export const appRoute = [
     path: '/',
     component: LayoutDefault,
     meta: {
-      /* title: 'Home',
-      group: 'apps', */
-      title: 'Project',
+      title: 'Home',
       group: 'apps',
+    
     },
     children: [
-      /* {
+      {
         path: '/',
         name: 'Home',
         meta: {
@@ -67,7 +66,7 @@ export const appRoute = [
           hiddenInMenu: true,
         },
         component: () => import('@/view/Home.vue')
-      }, */
+      },
       {
         path: '/project/new',
         name: 'Project',
