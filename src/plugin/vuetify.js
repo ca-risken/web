@@ -10,7 +10,8 @@ const opts = {
     },
     themes: {
       light: {
-        primary: '#37474F',
+        primary: '#546E7A',
+        // primary: '#37474F',
         // primary: '#880E4F',
         // primary: '#1A237E',
         // primary: '#006064',
