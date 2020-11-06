@@ -84,7 +84,7 @@
         </template>
       </template>
     </v-list>
-    <template v-slot:append>
+    <!-- <template v-slot:append>
       <template v-if="drawerWidth === 64">
         <div class="d-flex">
           <v-btn
@@ -106,7 +106,7 @@
           </v-btn>
         </div>
       </template>
-    </template>
+    </template> -->
   </v-navigation-drawer>
 </template>
 <script>
