@@ -55,6 +55,7 @@ export const appRoute = [
     meta: {
       title: 'Home',
       group: 'apps',
+    
     },
     children: [
       {
