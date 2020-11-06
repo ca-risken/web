@@ -19,7 +19,8 @@ const opts = {
         error: '#FF5252',
         info: '#2196F3',
         success: '#4CAF50',
-        warning: '#c0ae4c'
+        warning: '#c0ae4c',
+        background: '#F5F5F5',
       }
     }
   }

@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-account-multiple</v-icon>
               Policy
@@ -16,6 +16,7 @@
           <v-col cols="12" sm="6" md="6">
             <v-combobox
               outlined clearable dense
+              background-color="white"
               :label="searchForm.policyName.label"
               :placeholder="searchForm.policyName.placeholder"
               :items="policyNameList"

@@ -2,16 +2,19 @@
   <v-app id="inspire" class="app dashboard">
     <app-drawer class="app--drawer" :show-drawer="showDrawer" />
     <app-toolbar class="app--toolbar" @side-icon-click="handleDrawerVisiable" />
-    <v-main>
+    <v-main >
       <!-- Page Header -->
-      <div class="page-wrapper"><router-view /></div>
-      <!-- App Footer -->
-      <v-footer height="auto" class="pa-3 app--footer">
-        <span>RISKEN @ {{ new Date().getFullYear() }}</span>
-        <v-spacer />
-        <v-icon color="pink" small>favorite</v-icon>
-      </v-footer>
+      <v-card height="100%" color="background" class="page-wrapper">
+        <router-view />
+      </v-card>
     </v-main>
+    <!-- App Footer -->
+    <!-- <v-footer height="auto" class="pa-3 app--footer" dark color="primary lighten-1">
+      <span>RISKEN @ {{ new Date().getFullYear() }}</span>
+      <v-spacer />
+      <v-icon color="red" small>favorite</v-icon>
+    </v-footer> -->
+
     <!-- Go to top -->
     <app-fab />
   </v-app>

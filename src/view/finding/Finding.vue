@@ -3,8 +3,8 @@
     <v-container>
       <v-row dense>
         <v-col cols="12">
-          <v-toolbar color="white" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
+          <v-toolbar color="background" flat>
+            <v-toolbar-title  class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-file-find-outline</v-icon>Finding
             </v-toolbar-title>
           </v-toolbar>
@@ -15,6 +15,7 @@
           <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
+              background-color="white"
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
               :items="searchForm.resourceNameList"
@@ -24,6 +25,7 @@
           <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
+              background-color="white"
               :label="searchForm.tag.label"
               :placeholder="searchForm.tag.placeholder"
               :items="searchForm.tagList"
@@ -33,6 +35,7 @@
           <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
+              background-color="white"
               :label="searchForm.dataSource.label"
               :placeholder="searchForm.dataSource.placeholder"
               :items="dataSourceList"

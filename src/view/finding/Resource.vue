@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense>
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-file-find-outline</v-icon>Resource
             </v-toolbar-title>
@@ -15,6 +15,7 @@
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
+              background-color="white"
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
               :items="resourceNameList"
@@ -34,6 +35,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   outlined dense readonly
+                  background-color="white"
                   v-model="dateRangeText"
                   :label="searchForm.dates.label"
                   prepend-icon="event"

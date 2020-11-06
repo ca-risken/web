@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-account-multiple</v-icon>
               Role
@@ -16,6 +16,7 @@
           <v-col cols="12" sm="6" md="6">
             <v-combobox
               outlined dense clearable
+              background-color="white"
               :label="searchForm.roleName.label"
               :placeholder="searchForm.roleName.placeholder"
               :items="roleNameList"
