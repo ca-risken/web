@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
               Notification
@@ -16,6 +16,7 @@
           <v-col cols="12" sm="6" md="6">
             <v-text-field
               outlined clearable dense
+              background-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"

@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="orange">mdi-aws</v-icon>
               Data Source
@@ -15,6 +15,7 @@
         <v-col cols="12" sm="6" md="6">
           <v-select
             v-model="awsModel"
+            background-color="white"
             :items="awsList"
             item-text="name"
             item-value="aws_id"
@@ -26,7 +27,7 @@
           ></v-select>
         </v-col>
         <v-spacer />
-        <v-btn class="mt-3 mr-4" color="grey lighten-1" dense small icon fab outlined
+        <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
           :loading="loading"
           @click="handleList"
         >

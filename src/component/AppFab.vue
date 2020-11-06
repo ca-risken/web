@@ -21,7 +21,7 @@ export default {
   name: 'AppFab',
   data() {
     return {
-      fab: false
+      fab: true
     }
   },
   methods: {

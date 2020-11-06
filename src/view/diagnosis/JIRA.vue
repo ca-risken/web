@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue">mdi-bug-check-outline</v-icon>
               JIRA
@@ -16,6 +16,7 @@
           <v-col cols="12" sm="6" md="6">
             <v-text-field
               outlined clearable dense
+              background-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -25,7 +26,7 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="grey lighten-1" dense small icon fab outlined
+          <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
             :loading="loading"
             @click="handleList"
           >

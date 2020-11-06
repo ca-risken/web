@@ -4,7 +4,7 @@
       <!-- Status -->
       <v-row justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar flat>
+          <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 headline">
               <v-icon x-large class="pr-2" color="indigo darken-2">mdi-thermometer</v-icon>
               Status
@@ -45,7 +45,7 @@
       <!-- Category -->
       <v-row justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar flat>
+          <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 headline">
               <v-icon x-large class="pr-2" color="indigo darken-2">mdi-shape</v-icon>
               Category
@@ -74,7 +74,7 @@
       <!-- Chart -->
       <v-row justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar flat>
+          <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 headline">
               <v-icon x-large class="pr-2" color="indigo darken-2">mdi-chart-areaspline</v-icon>
               Chart

@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
-          <v-toolbar color="white" flat>
+          <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="green">http</v-icon>
               Data Source
@@ -14,20 +14,19 @@
       <v-row dense>
         <v-col cols="12" sm="6" md="6">
           <v-select
+            return-object outlined dense
+            background-color="white"
             v-model="dataModel"
             :items="osintList"
             item-text="resource_name"
             item-value="osint_id"
             label="Select your OSINT"
             @change="handleList"
-            return-object
-            outlined
-            dense
           ></v-select>
         </v-col>
         <v-spacer />
         <v-btn
-          class="mt-3 mr-4" color="grey lighten-1" dense small icon fab outlined
+          class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
           :loading="loading"
           @click="handleList"
         >

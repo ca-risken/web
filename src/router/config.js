@@ -62,10 +62,18 @@ export const appRoute = [
         name: 'Home',
         meta: {
           title: 'Home',
-          group: 'apps',
-          icon: 'mdi-home'
+          hiddenInMenu: true,
         },
         component: () => import('@/view/Home.vue')
+      },
+      {
+        path: '/project/new',
+        name: 'Project',
+        meta: {
+          title: 'Project',
+          hiddenInMenu: true,
+        },
+        component: () => import('@/view/project/Project.vue')
       },
       {
         path: '/dashboard',
@@ -76,15 +84,6 @@ export const appRoute = [
           icon: 'mdi-view-dashboard'
         },
         component: () => import('@/view/Dashboard.vue')
-      },
-      {
-        path: '/project/new',
-        name: 'Project',
-        meta: {
-          title: 'Project',
-          hiddenInMenu: true,
-        },
-        component: () => import('@/view/project/Project.vue')
       },
       {
         path: '/finding',
