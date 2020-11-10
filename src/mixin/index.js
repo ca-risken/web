@@ -6,6 +6,7 @@ let mixin = {
         'aws:access-analyzer',
         'aws:iam-checker',
         'diagnosis:jira',
+        'osint:subdomain',
       ],
       jira_datasource_id: 1001,
     }
