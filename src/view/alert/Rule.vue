@@ -402,7 +402,7 @@ export default {
 
     // handler
     handleNewItem() {
-      this.dataModel = { alert_rule_id:0, name:'', score:0, resource_name: '', tag:'', finding_cnt:0, updated_at:'' }
+      this.dataModel = { alert_rule_id:0, name:'', score:0.6, resource_name: '', tag:'', finding_cnt:1, updated_at:'' }
       this.form.new = true
       this.editDialog  = true
     },
