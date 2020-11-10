@@ -737,7 +737,7 @@ export default {
         description:'', 
         severity:'', 
         and_or:'',
-        enabled:false,
+        enabled:true,
         rules: [],
         notifications: [],
         updated_at:''
