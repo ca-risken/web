@@ -376,11 +376,12 @@ export default {
     this.listAWS()
 
     if ( !this.$route.query.aws_id ) {
+      this.loading = false
       return false
     }
     this.awsModel.aws_id = Number(this.$route.query.aws_id)
-    this.loading = true
     this.refleshList()
+    this.loading = false
   },
   methods: {
     async listAWS() {
