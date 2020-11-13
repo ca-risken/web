@@ -232,12 +232,14 @@
               <v-list-item-subtitle>
                 <v-icon left>mdi-label</v-icon>
                 Tag
+                <v-btn text outlined dense color="black lighten-1" class="ma-4" :loading="loading" @click="handleNewTag">New Tag</v-btn>
               </v-list-item-subtitle>
               <v-list-item-title>
                 <v-chip
                   v-for="tag in findingModel.tags"
                   :key="tag.finding_tag_id"
-                  class="mx-1"
+                  @update:active="handleUntag(tag)"
+                  class="mx-1" close
                 >
                   {{ tag.tag }}
                 </v-chip>
@@ -283,6 +285,36 @@
           <v-spacer></v-spacer>
           <v-btn text outlined  color="grey darken-1" @click="viewDialog = false">
             CANCEL
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="tagDialog" max-width="400px">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">New tag</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="findingModel.new_tag"
+            label="tag"
+            placeholder="key:value"
+            outlined
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="tagDialog = false">
+            CANCEL
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text outlined
+            :loading="loading"
+            @click="handleNewTagSubmit"
+          >
+            TAG
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -377,8 +409,10 @@ export default {
         data: '',
         created_at:'',
         updated_at:'',
+        new_tag: '',
       },
       viewDialog: false,
+      tagDialog: false,
       deleteDialog: false,
       table: {
         selected: [],
@@ -512,6 +546,32 @@ export default {
       this.searchForm.tagList = list.data.tag
     },
 
+    // Finding Tag
+    async tagFinding( findingID, tag ) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        tag: {
+          project_id: this.$store.state.project.project_id,
+          finding_id: findingID,
+          tag: tag,
+        }
+      }
+      await this.$axios.post('/finding/tag-finding/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+    },
+    async untagFinding( findingTagID ) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        finding_tag_id: findingTagID,
+      }
+      await this.$axios.post('/finding/untag-finding/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+    },
+
     // Delete Condition
     async deleteItem() {
       const param = {
@@ -553,6 +613,28 @@ export default {
       this.findingModel = Object.assign(this.findingModel, row)
       this.deleteDialog  = true
     },
+    handleNewTag(){
+      this.findingModel.new_tag = '' // clear
+      this.tagDialog = true
+    },
+    async handleNewTagSubmit(){
+      this.loading = true
+      if ( this.findingModel.finding_id && this.findingModel.new_tag ) {
+        await this.tagFinding( this.findingModel.finding_id, this.findingModel.new_tag)
+        this.finishSuccess('Success: New Tag `' + this.findingModel.new_tag + '`.')
+      }
+      this.tagDialog = false
+      this.loading = false
+    },
+    async handleUntag(item) {
+      this.loading = true
+      if ( item.finding_tag_id ) {
+        await this.untagFinding(item.finding_tag_id)
+        this.finishSuccess('Success: Untag `' + item.tag + '`.')
+      }
+      this.viewDialog = false
+      this.loading = false
+    },
     handleDeleteSubmit() {
       this.loading = true
       this.deleteItem()
@@ -571,8 +653,9 @@ export default {
     },
     async finish(reflesh) {
       this.loading = false
-      this.editDialog  = false
+      this.viewDialog  = false
       this.deleteDialog  = false
+      this.tagDialog = false
       if ( reflesh ) {
         this.handleSearch()
       }

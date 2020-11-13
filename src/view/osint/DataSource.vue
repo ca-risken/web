@@ -615,7 +615,7 @@ export default {
     async deleteWord( osint_detect_word_id ) {
       const param = {
         project_id: this.$store.state.project.project_id,
-       osint_detect_word_id: osint_detect_word_id,
+        osint_detect_word_id: osint_detect_word_id,
       }
       await this.$axios.post('/osint/delete-word/', param).catch((err) =>  {
         this.finishError(err.response.data)
