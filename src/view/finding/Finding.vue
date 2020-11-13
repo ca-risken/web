@@ -336,15 +336,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin],
+  components: {
+    BottomSnackBar,
+  },
   data() {
     return {
       loading: false,
@@ -395,7 +399,7 @@ export default {
         },
         actions: [
           { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
-          // { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
+          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
