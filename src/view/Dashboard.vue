@@ -281,7 +281,7 @@ export default {
       this.raw.highScoreFinding          = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, '')
       this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:guard-duty')
       this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:jira')
-      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:subdomain')
+      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:private-expose')
     },
     async setStoreFinding() {
       this.raw.storeFinding = await this.getFinding(0, this.nowUnix, 0, '')
