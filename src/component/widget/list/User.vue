@@ -32,7 +32,7 @@
           @click:row="handleSelectItem"
           @update:page="loadList"
         >
-          <template v-slot:item.updated_at="{ item }">
+          <template v-slot:[`item.updated_at`]="{ item }">
             <v-chip>{{ item.updated_at | formatTime }}</v-chip>
           </template>
         </v-data-table>

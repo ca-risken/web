@@ -55,15 +55,15 @@
                 item-key="aws_data_source_id"
                 @click:row="handleViewItem"
               >
-                <template v-slot:item.avator="{ item }">
+                <template v-slot:[`item.avator`]="{ item }">
                   <v-avatar tile class="ma-2">
                     <img :src="getAWSDataSourceIcon(item.data_source)" :alt="item.data_source" />
                   </v-avatar>
                 </template>
-                <template v-slot:item.max_score="{ item }">
+                <template v-slot:[`item.max_score`]="{ item }">
                   <v-chip outlined>{{ item.max_score }}</v-chip>
                 </template>
-                <template v-slot:item.status="{ item }">
+                <template v-slot:[`item.status`]="{ item }">
                   <v-chip
                     v-if="item.aws_id"
                     :color="getDataSourceStatusColor(item.status)"
@@ -75,7 +75,7 @@
                     dark
                   >Not configured</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

@@ -57,12 +57,12 @@
                 item-key="diagnosis_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:item.avator="">
+                <template v-slot:[`item.avator`]="">
                   <v-avatar class="ma-3">
                     <v-icon color="blue darken-1" large>mdi-jira</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.status="{ item }">
+                <template v-slot:[`item.status`]="{ item }">
                   <v-chip
                     v-if="item.status"
                     :color="getDataSourceStatusColor(item.status)"
@@ -74,14 +74,14 @@
                     dark
                   >Not configured</v-chip>
                 </template>
-                <template v-slot:item.scan_at="{ item }">
+                <template v-slot:[`item.scan_at`]="{ item }">
                   <v-chip v-if="item.scan_at">{{ item.scan_at | formatTime }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

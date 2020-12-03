@@ -53,12 +53,12 @@
                 @click:row="handleEditItem"
                 @update:page="loadList"
               >
-                <template v-slot:item.avator="">
+                <template v-slot:[`item.avator`]="">
                   <v-avatar class="ma-3">
                     <v-icon large>mdi-certificate-outline</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.action_ptn="{ item }">
+                <template v-slot:[`item.action_ptn`]="{ item }">
                   <v-card
                     label outliend
                     elevation="1"
@@ -70,7 +70,7 @@
                     </v-card-text>
                   </v-card>
                 </template>
-                <template v-slot:item.resource_ptn="{ item }">
+                <template v-slot:[`item.resource_ptn`]="{ item }">
                   <v-card
                     label outliend
                     elevation="1"
@@ -82,10 +82,10 @@
                     </v-card-text>
                   </v-card>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

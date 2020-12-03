@@ -82,7 +82,7 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
-                <template v-slot:item.data_source="{ item }">
+                <template v-slot:[`item.data_source`]="{ item }">
                   <v-layout justify-center>
                     <v-icon 
                       v-text="getDataSourceIcon(item.data_source)"
@@ -90,20 +90,20 @@
                     />
                   </v-layout>
                 </template>
-                <template v-slot:item.score="{ item }">
+                <template v-slot:[`item.score`]="{ item }">
                   <v-chip dark :color="getColorByScore(item.score)">{{ item.score | formatScore }}</v-chip>
                 </template>
-                <template v-slot:item.tags="{ item }">
+                <template v-slot:[`item.tags`]="{ item }">
                   <v-chip>
                     <v-icon left>mdi-label</v-icon>
                     {{ item.tags | itemCount }}
                   </v-chip>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
 
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

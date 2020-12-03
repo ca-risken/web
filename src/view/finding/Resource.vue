@@ -96,13 +96,13 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
-                <template v-slot:item.findings="{ item }">
+                <template v-slot:[`item.findings`]="{ item }">
                   <v-chip :color="getColorByCount(item.findings)" dark>{{ item.findings }}</v-chip>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

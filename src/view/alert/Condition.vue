@@ -67,19 +67,19 @@
                 item-key="alert_condition_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:item.avator="">
+                <template v-slot:[`item.avator`]="">
                   <v-avatar icon class="ma-1">
                     <v-icon large class="pr-2" color="darken-2">mdi-cog</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.enabled="{ item }">
+                <template v-slot:[`item.enabled`]="{ item }">
                   <v-icon v-if="item.enabled==true" color="success">mdi-check-circle</v-icon>
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
-                <template v-slot:item.severity="{ item }">
+                <template v-slot:[`item.severity`]="{ item }">
                   <v-chip  class="ma-1" dark :color="getSeverityColor(item.severity)">{{ item.severity }}</v-chip>
                 </template>
-                <template v-slot:item.and_or="{ item }">
+                <template v-slot:[`item.and_or`]="{ item }">
                   <template v-if="item.and_or=='and'">
                     <v-icon left color="teal lighten-2">mdi-set-center</v-icon>AND
                   </template>
@@ -87,20 +87,16 @@
                     <v-icon left color="teal lighten-2">mdi-set-all</v-icon> OR
                   </template>
                 </template>
-                <template v-slot:item.enabled="{ item }">
-                  <v-icon v-if="item.enabled==true" color="success">mdi-check-circle</v-icon>
-                  <v-icon v-else color="grey">mdi-cancel</v-icon>
-                </template>
-                <template v-slot:item.rules="{ item }">
+                <template v-slot:[`item.rules`]="{ item }">
                   <v-chip :color="getColorByCount(item.rules.length)" dark>{{ item.rules.length }}</v-chip>
                 </template>
-                <template v-slot:item.notifications="{ item }">
+                <template v-slot:[`item.notifications`]="{ item }">
                   <v-chip :color="getColorByCount(item.notifications.length)" dark>{{ item.notifications.length }}</v-chip>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>
@@ -245,22 +241,22 @@
             item-key="alert_rule_id"
             show-select
           >
-            <template v-slot:item.resource_name="{ item }">
+            <template v-slot:[`item.resource_name`]="{ item }">
               <template v-if="item.resource_name">
                 <v-chip label><v-icon left>mdi-file-find-outline</v-icon>{{ item.resource_name | cutString }}</v-chip>
               </template>
               <template v-else>-</template>
             </template>
-            <template v-slot:item.tag="{ item }">
+            <template v-slot:[`item.tag`]="{ item }">
               <template v-if="item.tag">
                 <v-chip label><v-icon left>mdi-label</v-icon>{{ item.tag | cutString }}</v-chip>
               </template>
               <template v-else>-</template>
             </template>
-            <template v-slot:item.score="{ item }">
+            <template v-slot:[`item.score`]="{ item }">
               <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
             </template>
-            <template v-slot:item.finding_cnt="{ item }">
+            <template v-slot:[`item.finding_cnt`]="{ item }">
               <v-chip :color="getColorByCount(item.finding_cnt)" dark>{{ item.finding_cnt }}</v-chip>
             </template>
           </v-data-table>
