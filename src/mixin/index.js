@@ -9,6 +9,7 @@ let mixin = {
         'osint:private-expose',
       ],
       jira_datasource_id: 1001,
+      gitleaks_datasource_id: 1001,
     }
   },
   methods: {
@@ -75,6 +76,8 @@ let mixin = {
           return 'mdi-bug-check-outline'
         case 'osint':
           return 'http'
+        case 'code':
+          return 'mdi-github'
         default:
           return 'mdi-help-circle-outline'
       }
@@ -88,6 +91,8 @@ let mixin = {
           return 'blue'
         case 'osint':
           return 'green'
+        case 'code':
+          return 'black'
         default:
           return 'mdi-help-circle-outline'
       }
