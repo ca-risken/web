@@ -62,21 +62,21 @@
                 item-key="alert_id"
                 @click:row="handleViewItem"
               >
-                <template v-slot:item.severity="{ item }">
+                <template v-slot:[`item.severity`]="{ item }">
                   <v-chip  class="ma-1" dark :color="getSeverityColor(item.severity)">{{ item.severity }}</v-chip>
                 </template>
-                <template v-slot:item.status="{ item }">
+                <template v-slot:[`item.status`]="{ item }">
                   <v-icon v-if="getAlertStatusText(item.status)=='ACTIVE'" color="success">mdi-check-circle</v-icon>
                   <v-icon v-else-if="getAlertStatusText(item.status)=='PENDING'" color="yellow">mdi-check-circle</v-icon>
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
-                <template v-slot:item.created_at="{ item }">
+                <template v-slot:[`item.created_at`]="{ item }">
                   <v-chip dark label color="grey lighten-1">{{ item.created_at | elapsedTimeText }}</v-chip>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

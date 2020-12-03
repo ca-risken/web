@@ -51,15 +51,15 @@
                 item-key="notification_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:item.avator="">
+                <template v-slot:[`item.avator`]="">
                   <v-avatar icon class="ma-1">
                     <v-icon large class="pr-2" color="brown darken-2">mdi-slack</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.updated_at="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

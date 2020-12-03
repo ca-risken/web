@@ -5,8 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue">mdi-bug-check-outline</v-icon>
-              JIRA
+              <v-icon large class="pr-2" color="black">mdi-github</v-icon>
+              Gitleaks
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -59,8 +59,11 @@
               >
                 <template v-slot:[`item.avator`]="">
                   <v-avatar class="ma-3">
-                    <v-icon color="blue darken-1" large>mdi-jira</v-icon>
+                    <v-icon color="black" large>mdi-github</v-icon>
                   </v-avatar>
+                </template>
+                <template v-slot:[`item.type_text`]="{ item }">
+                  <v-chip dark label outlined color="blue darken-2">{{ item.type_text }}</v-chip>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
                   <v-chip
@@ -114,20 +117,20 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="60%">
+    <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue">mdi-jira</v-icon>
-          <span class="mx-4 headline">JIRA</span>
+          <v-icon large color="black">mdi-github</v-icon>
+          <span class="mx-4 headline">Gitleaks</span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Diagnosis DataSouce ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>Gitleaks ID</v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ diagnosisModel.diagnosis_data_source_id }}
+                    {{ codeDataSourceModel.code_data_source_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -137,17 +140,53 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>DataSource</v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ diagnosisModel.name }}
+                    {{ codeDataSourceModel.name }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="6">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>Description</v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ diagnosisModel.description }}
+                    {{ codeDataSourceModel.description }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="3" v-if="gitleaksModel.gitleaks_id">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>Gitleaks ID</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ gitleaksModel.gitleaks_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3" v-if="gitleaksModel.status">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    <v-list-item-subtitle>Status</v-list-item-subtitle>
+                    <v-chip dark :color="getDataSourceStatusColor(gitleaksModel.status)">
+                      {{ getDataSourceStatusText(gitleaksModel.status) }}
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4" v-if="gitleaksModel.scan_at">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>Scan At</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    <v-chip color="grey lighten-3">
+                      {{ gitleaksModel.scan_at | formatTime }}
+                    </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -158,7 +197,7 @@
                   <v-list-item-subtitle>MAX Score</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
-                      {{ diagnosisModel.max_score }}
+                      {{ codeDataSourceModel.max_score }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -166,91 +205,92 @@
             </v-col>
           </v-row>
           <v-row dense>
-            <v-col cols="3" v-if="jiraModel.jira_setting_id">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>JIRA Setting ID</v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ jiraModel.jira_setting_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="3" v-if="jiraModel.status">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="headline">
-                    <v-list-item-subtitle>Status</v-list-item-subtitle>
-                    <v-chip dark :color="getDataSourceStatusColor(jiraModel.status)">
-                      {{ getDataSourceStatusText(jiraModel.status) }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="4" v-if="jiraModel.scan_at">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>Scan At</v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip color="grey lighten-3">
-                      {{ jiraModel.scan_at | formatTime }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="12" v-if="jiraModel.status_detail">
+            <v-col cols="12" v-if="gitleaksModel.status_detail">
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
                   <span class="font-weight-light">Status Detail</span>
                 </v-card-title>
                 <v-card-text>
-                  {{ jiraModel.status_detail }}
+                  {{ gitleaksModel.status_detail }}
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
         </v-container>
         <v-card-text>
-          <v-form v-model="jiraForm.valid" ref="form">
+          <v-form v-model="gitleaksForm.valid" ref="form">
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="jiraModel.name"
-                  :counter="255"
-                  :rules="jiraForm.name.validator"
-                  :label="jiraForm.name.label"
-                  :placeholder="jiraForm.name.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
+                  v-model="gitleaksModel.name"
+                  :counter="64"
+                  :rules="gitleaksForm.name.validator"
+                  :label="gitleaksForm.name.label"
+                  :placeholder="gitleaksForm.name.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="3">
+                <v-combobox
+                  required clearable
+                  v-model="gitleaksModel.type_text"
+                  :rules="gitleaksForm.type.validator"
+                  :label="gitleaksForm.type.label"
+                  :placeholder="gitleaksForm.type.placeholder"
+                  :items="gitleaksForm.type.list"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  required
+                  v-model="gitleaksModel.target_resource"
+                  :counter="128"
+                  :rules="gitleaksForm.target_resource.validator"
+                  :label="gitleaksForm.target_resource.label"
+                  :placeholder="gitleaksForm.target_resource.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="gitleaksModel.repository_pattern"
+                  :counter="128"
+                  :rules="gitleaksForm.repository_pattern.validator"
+                  :label="gitleaksForm.repository_pattern.label"
+                  :placeholder="gitleaksForm.repository_pattern.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
                 ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="4">
                 <v-text-field
-                  v-model="jiraModel.jira_id"
-                  :counter="50"
-                  :rules="jiraForm.jira_id.validator"
-                  :label="jiraForm.jira_id.label"
-                  :placeholder="jiraForm.jira_id.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
+                  v-model="gitleaksModel.github_user"
+                  :counter="64"
+                  :rules="gitleaksForm.github_user.validator"
+                  :label="gitleaksForm.github_user.label"
+                  :placeholder="gitleaksForm.github_user.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
                 ></v-text-field>
               </v-col>
               <v-col cols="8">
                 <v-text-field
-                  v-model="jiraModel.jira_key"
-                  :counter="50"
-                  :rules="jiraForm.jira_key.validator"
-                  :label="jiraForm.jira_key.label"
-                  :placeholder="jiraForm.jira_key.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
+                  v-model="gitleaksModel.personal_access_token"
+                  :counter="255"
+                  :rules="gitleaksForm.personal_access_token.validator"
+                  :label="gitleaksForm.personal_access_token.label"
+                  :placeholder="gitleaksForm.personal_access_token.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -259,7 +299,7 @@
             <v-card-actions>
               <v-btn 
                 text outlined color="blue darken-1" 
-                v-if="jiraForm.readOnly"
+                v-if="gitleaksForm.readOnly"
                 :loading="loading" 
                 @click="handleScan"
               >
@@ -271,7 +311,7 @@
               </v-btn>
               <v-btn
                 text outlined color="green darken-1" 
-                v-if="!jiraForm.readOnly"
+                v-if="!gitleaksForm.readOnly"
                 :loading="loading" 
                 @click="handleEditSubmit">
                 EDIT
@@ -291,8 +331,8 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="diagnosisModel.jira_setting_id"></v-list-item-title>
-              <v-list-item-subtitle>JIRA Setting ID</v-list-item-subtitle>
+              <v-list-item-title v-text="gitleaksModel.gitleaks_id"></v-list-item-title>
+              <v-list-item-subtitle>Gitleaks ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -300,7 +340,7 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="diagnosisModel.name"></v-list-item-title>
+              <v-list-item-title v-text="gitleaksModel.name"></v-list-item-title>
               <v-list-item-subtitle>Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -337,40 +377,57 @@ export default {
   data() {
     return {
       loading: false,
-      jiraForm: {
+      gitleaksForm: {
         readOnly: false,
         valid: false,
-        name: { label: 'Name *', placeholder: 'something', validator:[
+        name: { label: 'Name *', placeholder: 'Gitleaks setting name', validator:[
             v => !!v || 'Name is required',
-            v => !v || v.length <= 200 || 'Name must be less than 200 characters',
+            v => !v || v.length <= 64 || 'Name must be less than 64 characters',
           ]
         },
-        identity_field: { label: 'identity_field', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'identity_field must be less than 50 characters',
+        type: { label: 'Type *', placeholder: '-',
+          list: ['Organization', 'User'],
+          validator:[
+            v => !!v || 'Type is required',
+            v => !v || v === 'Organization' || v === 'User' || 'Type is invalid',
           ]
         },
-        identity_value: { label: 'identity_value', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'identity_value must be less than 50 characters',
+        target_resource: { label: 'TargetResource *', placeholder: 'your organization/user name', validator:[
+            v => !!v || 'TargetResource is required',
+            v => !v || v.length <= 128 || 'TargetResource must be less than 128 characters',
           ]
         },
-        jira_id: { label: 'JIRA ID(JIRA Project ID)', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'JIRA ID must be less than 50 characters',
+        repository_pattern: { label: 'RepositoryPattern', placeholder: '-', validator:[
+            v => !v || v.length <= 128 || 'RepositoryPattern must be less than 128 characters',
           ]
         },
-        jira_key: { label: 'JIRA Key(JIRA Project Key)', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'JIRA Key must be less than 50 characters',
+        github_user: { label: 'GitHubUser', placeholder: '-', validator:[
+            v => !v || v.length <= 64 || 'GitHubUser must be less than 64 characters',
+          ]
+        },
+        personal_access_token: { label: 'PersonalAccessToken', placeholder: '-', validator:[
+            v => !v || v.length <= 255 || 'PersonalAccessToken must be less than 255 characters',
           ]
         },
       },
-      diagnosisModel: { diagnosis_data_source_id:'', name:'', description:'', max_score:'', updated_at:'' },
-      jiraModel: {
-        jira_setting_id: '',
+      codeDataSourceModel: { 
+        code_data_source_id: '',
         name:'',
-        diagnosis_data_source_id:'',
-        identity_field:'',
-        identity_value:'',
-        jira_id:'',
-        jira_key:'',
+        description:'',
+        max_score:'',
+        updated_at:''
+      },
+      gitleaksModel: {
+        gitleaks_id: '',
+        code_data_source_id: '',
+        name:'',
+        type: '',
+        type_text: '',
+        target_resource: '',
+        repository_pattern: '',
+        github_user: '',
+        personal_access_token: '',
+        gitleaks_config: '',
         status:'',
         status_detail:'',
         scan_at:'',
@@ -381,16 +438,17 @@ export default {
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'jira_setting_id' },
+          { text: 'ID',  align: 'start', sortable: true, value: 'gitleaks_id' },
           { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'JIRA ID', align: 'start', sortable: true, value: 'jira_id' },
-          { text: 'JIRA Key', align: 'start', sortable: true, value: 'jira_key' },
+          { text: 'Type', align: 'start', sortable: true, value: 'type_text' },
+          { text: 'Target', align: 'start', sortable: true, value: 'target_resource' },
+          { text: 'Repository', align: 'start', sortable: true, value: 'repository_pattern' },
           { text: 'Status', align: 'start', sortable: true, value: 'status' },
           { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
+          // { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: { page: 1, itemsPerPage: 5, sortBy: ['diagnosis_data_source_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['gitleaks_id'] },
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -415,42 +473,62 @@ export default {
   },
   async mounted() {
     this.loading = true
-    await this.getJira()
-    await this.listJiraSetting()
+    await this.getGitleaksDataSource()
+    await this.listGitleaks()
   },
   methods: {
-    async getJira() {
+    async getGitleaksDataSource() {
       const res = await this.$axios.get(
-        '/diagnosis/get-datasource/'
-          + '?diagnosis_data_source_id=' + this.jira_datasource_id 
-          + '&project_id=' + this.$store.state.project.project_id
+        '/code/list-datasource/'
+          + '?code_data_source_id=' + this.gitleaks_datasource_id
       ).catch((err) =>  {
         this.clearList()
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.diagnosis_data_source ) {
+      if ( !res.data || !res.data.data || !res.data.data.code_data_source ) {
         this.clearList()
         return false
       }
-      this.diagnosisModel = res.data .data.diagnosis_data_source
+      this.codeDataSourceModel = res.data.data.code_data_source[0]
       this.loading = false
     },
-    async listJiraSetting() {
+    async listGitleaks() {
+      this.table.items = []
       const res = await this.$axios.get(
-        '/diagnosis/list-jira-setting/'
-          + '?diagnosis_data_source_id=' + this.diagnosisModel.diagnosis_data_source_id
+        '/code/list-gitleaks/'
+          + '?code_data_source_id=' + this.gitleaks_datasource_id
           + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.jira_setting ) {
+      if ( !res.data || !res.data.data || !res.data.data.gitleaks ) {
         this.clearList()
         return false
       }
-      this.table.items = res.data.data.jira_setting
+      // this.table.items = res.data.data.gitleaks
+      res.data.data.gitleaks.forEach( async gitleaks => {
+        const item = {
+          gitleaks_id:           gitleaks.gitleaks_id,
+          code_data_source_id:   gitleaks.code_data_source_id,
+          name:                  gitleaks.name,
+          type:                  gitleaks.type,
+          type_text:             this.getGitleaksTypeText(gitleaks.type),
+          target_resource:       gitleaks.target_resource,
+          repository_pattern:    gitleaks.repository_pattern,
+          github_user:           gitleaks.github_user,
+          personal_access_token: gitleaks.personal_access_token,
+          gitleaks_config:       gitleaks.gitleaks_config,
+          status:                gitleaks.status,
+          status_detail:         gitleaks.status_detail,
+          scan_at:               gitleaks.scan_at,
+          updated_at:            gitleaks.updated_at,
+        }
+        this.table.items.push(item)
+      })
+
     },
     clearList() {
       this.table.items = []
@@ -459,47 +537,73 @@ export default {
     async deleteItem() {
       const param = {
           project_id: this.$store.state.project.project_id,
-          jira_setting_id: this.jiraModel.jira_setting_id,
+          gitleaks_id: this.gitleaksModel.gitleaks_id,
       }
-      await this.$axios.post('/diagnosis/delete-jira-setting/', param).catch((err) =>  {
+      await this.$axios.post('/code/delete-gitleaks/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Delete.')
+      this.finishSuccess('Success: Deleted.')
     },
     async putItem() {
       let scan_at = 0
-      if (this.jiraModel.scan_at > 0 ) {
-        scan_at = this.jiraModel.scan_at
+      if (this.gitleaksModel.scan_at > 0 ) {
+        scan_at = this.gitleaksModel.scan_at
       }
       const param = {
         project_id: this.$store.state.project.project_id,
-        jira_setting: {
+        gitleaks: {
+          gitleaks_id: this.gitleaksModel.gitleaks_id,
+          code_data_source_id: this.gitleaks_datasource_id,
+          name: this.gitleaksModel.name,
           project_id: this.$store.state.project.project_id,
-          jira_setting_id: this.jiraModel.jira_setting_id,
-          name: this.jiraModel.name,
-          diagnosis_data_source_id: this.diagnosisModel.diagnosis_data_source_id,
-          identity_field: this.jiraModel.identity_field,
-          identity_value: this.jiraModel.identity_value,
-          jira_id: this.jiraModel.jira_id,
-          jira_key: this.jiraModel.jira_key,
+          type: this.getGitleaksTypeCode(this.gitleaksModel.type_text),
+          target_resource: this.gitleaksModel.target_resource,
+          repository_pattern: this.gitleaksModel.repository_pattern,
+          github_user: this.gitleaksModel.github_user,
+          personal_access_token: this.gitleaksModel.personal_access_token,
+          gitleaks_config: this.gitleaksModel.gitleaks_config,
           status: 2, // CONFIGURED
           status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
           scan_at: scan_at,
         },
       }
-      await this.$axios.post('/diagnosis/put-jira-setting/', param).catch((err) =>  {
+      await this.$axios.post('/code/put-gitleaks/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Put JIRA.')
+      this.finishSuccess('Success: Updated.')
+    },
+    getGitleaksTypeCode(typeText) {
+      switch (typeText) {
+        case 'Enterprise':
+          return 1
+        case 'Organization':
+          return 2
+        case 'User':
+          return 3
+        default:
+          return 0 // Unknown
+      }
+    },
+    getGitleaksTypeText(typeCode) {
+      switch (typeCode) {
+        case 1:
+          return 'Enterprise'
+        case 2:
+          return 'Organization'
+        case 3:
+          return 'User'
+        default:
+          return 'Unknown' // Unknown
+      }
     },
     async scanDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
-        jira_setting_id: this.jiraModel.jira_setting_id,
+        gitleaks_id: this.gitleaksModel.gitleaks_id,
       }
-      await this.$axios.post('/diagnosis/invoke-scan/', param).catch((err) =>  {
+      await this.$axios.post('/code/invoke-scan-gitleaks/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -509,7 +613,7 @@ export default {
     // Handler
     async handleList() {
       this.loading = true
-      await this.listJiraSetting()
+      await this.listGitleaks()
       this.finishInfo('Reflesh list')
     },
     handleRowClick(item) {
@@ -517,7 +621,7 @@ export default {
     },
     handleViewItem(item) {
       this.assignDataModel(item)
-      this.jiraForm.readOnly = true
+      this.gitleaksForm.readOnly = true
       this.editDialog  = true
     },
     handleNewItem() {
@@ -525,7 +629,7 @@ export default {
     },
     handleEditItem(item) {
       this.assignDataModel(item)
-      this.jiraForm.readOnly = false
+      this.gitleaksForm.readOnly = false
       this.editDialog  = true
     },
     handleEditSubmit() {
@@ -545,15 +649,15 @@ export default {
     },
     handleScan(item) {
       this.loading = true
-      if (item && item.jira_setting_id) {
+      if (item && item.gitleaks_id) {
         this.assignDataModel(item)
       }
       this.scanDataSource()
     },
 
     assignDataModel(item) {
-      this.jiraModel = {}
-      this.jiraModel = Object.assign(this.jiraModel, item)
+      this.gitleaksModel = {}
+      this.gitleaksModel = Object.assign(this.gitleaksModel, item)
     },
 
     async finishInfo(msg) {
@@ -576,7 +680,7 @@ export default {
       this.editDialog  = false
       this.deleteDialog  = false
       if ( reflesh ) {
-        this.listJiraSetting()
+        this.listGitleaks()
       }
     },
   }

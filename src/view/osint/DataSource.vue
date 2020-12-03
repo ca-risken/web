@@ -54,15 +54,15 @@
                 item-key="osint_data_source_id"
                 @click:row="handleAttachItem"
               >
-                <template v-slot:item.avator="{}">
+                <template v-slot:[`item.avator`]="{}">
                   <v-avatar tile class="ma-1">
                     <span class="whie--text text-h9 font-weight-black">Domain</span>
                   </v-avatar>
                 </template>
-                <template v-slot:item.max_score="{ item }">
+                <template v-slot:[`item.max_score`]="{ item }">
                   <v-chip outlined>{{ item.max_score }}</v-chip>
                 </template>
-                <template v-slot:item.status="{ item }">
+                <template v-slot:[`item.status`]="{ item }">
                   <v-chip
                     v-if="item.osint_id"
                     :color="getDataSourceStatusColor(item.status)"
@@ -74,7 +74,7 @@
                     dark
                   >Not configured</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>

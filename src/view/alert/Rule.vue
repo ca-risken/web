@@ -51,30 +51,30 @@
                 item-key="alert_rule_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:item.avator="">
+                <template v-slot:[`item.avator`]="">
                   <v-avatar icon class="ma-2">
                     <v-icon large class="pr-2" color="brown darken-2">mdi-book-open-variant</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:item.resource_name="{ item }">
+                <template v-slot:[`item.resource_name`]="{ item }">
                   <template v-if="item.resource_name">
                     <v-chip label><v-icon left>mdi-file-find-outline</v-icon>{{ item.resource_name| cutString }}</v-chip>
                   </template>
                   <template v-else>-</template>
                 </template>
-                <template v-slot:item.tag="{ item }">
+                <template v-slot:[`item.tag`]="{ item }">
                   <template v-if="item.tag">
                     <v-chip label><v-icon left>mdi-label</v-icon>{{ item.tag | cutString }}</v-chip>
                   </template>
                   <template v-else>-</template>
                 </template>
-                <template v-slot:item.score="{ item }">
+                <template v-slot:[`item.score`]="{ item }">
                   <v-chip :color="getColorByScore(item.score)" dark>{{ item.score }}</v-chip>
                 </template>
-                <template v-slot:item.finding_cnt="{ item }">
+                <template v-slot:[`item.finding_cnt`]="{ item }">
                   <v-chip :color="getColorByCount(item.finding_cnt)" dark>{{ item.finding_cnt }}</v-chip>
                 </template>
-                <template v-slot:item.action="{ item }">
+                <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
                       <v-tooltip bottom>
