@@ -228,8 +228,8 @@
                   :rules="gitleaksForm.name.validator"
                   :label="gitleaksForm.name.label"
                   :placeholder="gitleaksForm.name.placeholder"
-                  :disabled="gitleaksForm.readOnly"
-                  :filled="gitleaksForm.readOnly"
+                  :disabled="gitleaksForm.readOnly || !gitleaksForm.isNew"
+                  :filled="gitleaksForm.readOnly || !gitleaksForm.isNew"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -294,7 +294,35 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-
+            <v-row>
+              <v-col cols="3">
+                <v-checkbox
+                  v-model="gitleaksModel.scan_public"
+                  :label="gitleaksForm.scan_public.label"
+                  :placeholder="gitleaksForm.scan_public.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
+                ></v-checkbox>
+              </v-col>
+              <v-col cols="3">
+                <v-checkbox
+                  v-model="gitleaksModel.scan_internal"
+                  :label="gitleaksForm.scan_internal.label"
+                  :placeholder="gitleaksForm.scan_internal.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
+                ></v-checkbox>
+              </v-col>
+              <v-col cols="3">
+                <v-checkbox
+                  v-model="gitleaksModel.scan_private"
+                  :label="gitleaksForm.scan_private.label"
+                  :placeholder="gitleaksForm.scan_private.placeholder"
+                  :disabled="gitleaksForm.readOnly"
+                  :filled="gitleaksForm.readOnly"
+                ></v-checkbox>
+              </v-col>
+            </v-row>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-btn 
@@ -379,6 +407,7 @@ export default {
       loading: false,
       gitleaksForm: {
         readOnly: false,
+        isNew: false,
         valid: false,
         name: { label: 'Name *', placeholder: 'Gitleaks setting name', validator:[
             v => !!v || 'Name is required',
@@ -409,6 +438,9 @@ export default {
             v => !v || v.length <= 255 || 'PersonalAccessToken must be less than 255 characters',
           ]
         },
+        scan_public: { label: 'Scan Public Repository', placeholder: '-', validator:[] },
+        scan_internal: { label: 'Scan Internal Repository', placeholder: '-', validator:[] },
+        scan_private: { label: 'Scan Private Repository', placeholder: '-', validator:[] },
       },
       codeDataSourceModel: { 
         code_data_source_id: '',
@@ -427,6 +459,9 @@ export default {
         repository_pattern: '',
         github_user: '',
         personal_access_token: '',
+        scan_public: '',
+        scan_internal: '',
+        scan_private: '',
         gitleaks_config: '',
         status:'',
         status_detail:'',
@@ -520,6 +555,9 @@ export default {
           repository_pattern:    gitleaks.repository_pattern,
           github_user:           gitleaks.github_user,
           personal_access_token: gitleaks.personal_access_token,
+          scan_public:           gitleaks.scan_public,
+          scan_internal:         gitleaks.scan_internal,
+          scan_private:          gitleaks.scan_private,
           gitleaks_config:       gitleaks.gitleaks_config,
           status:                gitleaks.status,
           status_detail:         gitleaks.status_detail,
@@ -553,16 +591,19 @@ export default {
       const param = {
         project_id: this.$store.state.project.project_id,
         gitleaks: {
-          gitleaks_id: this.gitleaksModel.gitleaks_id,
-          code_data_source_id: this.gitleaks_datasource_id,
-          name: this.gitleaksModel.name,
-          project_id: this.$store.state.project.project_id,
-          type: this.getGitleaksTypeCode(this.gitleaksModel.type_text),
-          target_resource: this.gitleaksModel.target_resource,
-          repository_pattern: this.gitleaksModel.repository_pattern,
-          github_user: this.gitleaksModel.github_user,
+          gitleaks_id:           this.gitleaksModel.gitleaks_id,
+          code_data_source_id:   this.gitleaks_datasource_id,
+          name:                  this.gitleaksModel.name,
+          project_id:            this.$store.state.project.project_id,
+          type:                  this.getGitleaksTypeCode(this.gitleaksModel.type_text),
+          target_resource:       this.gitleaksModel.target_resource,
+          repository_pattern:    this.gitleaksModel.repository_pattern,
+          github_user:           this.gitleaksModel.github_user,
           personal_access_token: this.gitleaksModel.personal_access_token,
-          gitleaks_config: this.gitleaksModel.gitleaks_config,
+          scan_public:           Boolean(this.gitleaksModel.scan_public),
+          scan_internal:         Boolean(this.gitleaksModel.scan_internal),
+          scan_private:          Boolean(this.gitleaksModel.scan_private),
+          gitleaks_config:       this.gitleaksModel.gitleaks_config,
           status: 2, // CONFIGURED
           status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
           scan_at: scan_at,
@@ -625,10 +666,18 @@ export default {
       this.editDialog  = true
     },
     handleNewItem() {
-      this.handleEditItem()
+      this.gitleaksModel = {
+        scan_public:   true,
+        scan_internal: true,
+        scan_private:  false,
+      }
+      this.gitleaksForm.isNew = true
+      this.gitleaksForm.readOnly = false
+      this.editDialog  = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
+      this.gitleaksForm.isNew = false
       this.gitleaksForm.readOnly = false
       this.editDialog  = true
     },
