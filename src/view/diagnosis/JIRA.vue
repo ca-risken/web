@@ -497,7 +497,8 @@ export default {
     async scanDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
-        jira_setting_id: this.jiraModel.jira_setting_id,
+        setting_id: this.jiraModel.jira_setting_id,
+        diagnosis_data_source_id: this.jiraModel.diagnosis_data_source_id,
       }
       await this.$axios.post('/diagnosis/invoke-scan/', param).catch((err) =>  {
         this.finishError(err.response.data)
