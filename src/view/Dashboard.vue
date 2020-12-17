@@ -280,8 +280,8 @@ export default {
     async setHighScoreFinding() {
       this.raw.highScoreFinding          = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, '')
       this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:guard-duty,aws:access-analyzer,aws:admin-checker')
-      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:jira')
-      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:subdomain,osint:private-expose')
+      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:jira,diagnosis-wpscan')
+      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:subdomain')
       this.raw.highScoreFindingCode      = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:gitleaks')
     },
     async setStoreFinding() {

@@ -6,9 +6,11 @@ let mixin = {
         'aws:access-analyzer',
         'aws:iam-checker',
         'diagnosis:jira',
-        'osint:private-expose',
+        'diagnosis:wpscan',
+        'osint:subdomain',
       ],
       jira_datasource_id: 1001,
+      wpscan_datasource_id: 1002,
       gitleaks_datasource_id: 1001,
     }
   },

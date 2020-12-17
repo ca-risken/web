@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue">mdi-bug-check-outline</v-icon>
-              JIRA
+              WPScan
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -59,7 +59,7 @@
               >
                 <template v-slot:[`item.avator`]="">
                   <v-avatar class="ma-3">
-                    <v-icon color="blue darken-1" large>mdi-jira</v-icon>
+                    <v-icon color="blue darken-1" large>mdi-wordpress</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
@@ -117,8 +117,8 @@
     <v-dialog v-model="editDialog" max-width="60%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue">mdi-jira</v-icon>
-          <span class="mx-4 headline">JIRA</span>
+          <v-icon large color="blue">mdi-wpscan</v-icon>
+          <span class="mx-4 headline">WPScan</span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
@@ -166,35 +166,35 @@
             </v-col>
           </v-row>
           <v-row dense>
-            <v-col cols="3" v-if="jiraModel.jira_setting_id">
+            <v-col cols="3" v-if="wpscanModel.wpscan_setting_id">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>JIRA Setting ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>WPScan Setting ID</v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ jiraModel.jira_setting_id }}
+                    {{ wpscanModel.wpscan_setting_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="3" v-if="jiraModel.status">
+            <v-col cols="3" v-if="wpscanModel.status">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
                     <v-list-item-subtitle>Status</v-list-item-subtitle>
-                    <v-chip dark :color="getDataSourceStatusColor(jiraModel.status)">
-                      {{ getDataSourceStatusText(jiraModel.status) }}
+                    <v-chip dark :color="getDataSourceStatusColor(wpscanModel.status)">
+                      {{ getDataSourceStatusText(wpscanModel.status) }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="4" v-if="jiraModel.scan_at">
+            <v-col cols="4" v-if="wpscanModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>Scan At</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
-                      {{ jiraModel.scan_at | formatTime }}
+                      {{ wpscanModel.scan_at | formatTime }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -202,55 +202,31 @@
             </v-col>
           </v-row>
           <v-row dense>
-            <v-col cols="12" v-if="jiraModel.status_detail">
+            <v-col cols="12" v-if="wpscanModel.status_detail">
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
                   <span class="font-weight-light">Status Detail</span>
                 </v-card-title>
                 <v-card-text>
-                  {{ jiraModel.status_detail }}
+                  {{ wpscanModel.status_detail }}
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
         </v-container>
         <v-card-text>
-          <v-form v-model="jiraForm.valid" ref="form">
+          <v-form v-model="wpscanForm.valid" ref="form">
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="jiraModel.name"
+                  v-model="wpscanModel.target_url"
                   :counter="255"
-                  :rules="jiraForm.name.validator"
-                  :label="jiraForm.name.label"
-                  :placeholder="jiraForm.name.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-text-field
-                  v-model="jiraModel.jira_id"
-                  :counter="50"
-                  :rules="jiraForm.jira_id.validator"
-                  :label="jiraForm.jira_id.label"
-                  :placeholder="jiraForm.jira_id.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field
-                  v-model="jiraModel.jira_key"
-                  :counter="50"
-                  :rules="jiraForm.jira_key.validator"
-                  :label="jiraForm.jira_key.label"
-                  :placeholder="jiraForm.jira_key.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
+                  :rules="wpscanForm.target_url.validator"
+                  :label="wpscanForm.target_url.label"
+                  :placeholder="wpscanForm.target_url.placeholder"
+                  :disabled="wpscanForm.readOnly"
+                  :filled="wpscanForm.readOnly"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -259,7 +235,7 @@
             <v-card-actions>
               <v-btn 
                 text outlined color="blue darken-1" 
-                v-if="jiraForm.readOnly"
+                v-if="wpscanForm.readOnly"
                 :loading="loading" 
                 @click="handleScan"
               >
@@ -271,7 +247,7 @@
               </v-btn>
               <v-btn
                 text outlined color="green darken-1" 
-                v-if="!jiraForm.readOnly"
+                v-if="!wpscanForm.readOnly"
                 :loading="loading" 
                 @click="handleEditSubmit">
                 EDIT
@@ -291,8 +267,8 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="diagnosisModel.jira_setting_id"></v-list-item-title>
-              <v-list-item-subtitle>JIRA Setting ID</v-list-item-subtitle>
+              <v-list-item-title v-text="diagnosisModel.wpscan_setting_id"></v-list-item-title>
+              <v-list-item-subtitle>WPScan Setting ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -337,40 +313,19 @@ export default {
   data() {
     return {
       loading: false,
-      jiraForm: {
+      wpscanForm: {
         readOnly: false,
         valid: false,
-        name: { label: 'Name *', placeholder: 'something', validator:[
-            v => !!v || 'Name is required',
-            v => !v || v.length <= 200 || 'Name must be less than 200 characters',
-          ]
-        },
-        identity_field: { label: 'identity_field', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'identity_field must be less than 50 characters',
-          ]
-        },
-        identity_value: { label: 'identity_value', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'identity_value must be less than 50 characters',
-          ]
-        },
-        jira_id: { label: 'JIRA ID(JIRA Project ID)', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'JIRA ID must be less than 50 characters',
-          ]
-        },
-        jira_key: { label: 'JIRA Key(JIRA Project Key)', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'JIRA Key must be less than 50 characters',
+        target_url: { label: 'Target URL', placeholder: '-', validator:[
+            v => !v || v.length <= 200 || 'WPScan Key must be less than 200 characters',
           ]
         },
       },
       diagnosisModel: { diagnosis_data_source_id:'', name:'', description:'', max_score:'', updated_at:'' },
-      jiraModel: {
-        jira_setting_id: '',
-        name:'',
+      wpscanModel: {
+        wpscan_setting_id: '',
         diagnosis_data_source_id:'',
-        identity_field:'',
-        identity_value:'',
-        jira_id:'',
-        jira_key:'',
+        target_url:'',
         status:'',
         status_detail:'',
         scan_at:'',
@@ -381,10 +336,8 @@ export default {
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'jira_setting_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'JIRA ID', align: 'start', sortable: true, value: 'jira_id' },
-          { text: 'JIRA Key', align: 'start', sortable: true, value: 'jira_key' },
+          { text: 'ID',  align: 'start', sortable: true, value: 'wpscan_setting_id' },
+          { text: 'TARGET URL', align: 'start', sortable: true, value: 'target_url' },
           { text: 'Status', align: 'start', sortable: true, value: 'status' },
           { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
           { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
@@ -415,14 +368,14 @@ export default {
   },
   async mounted() {
     this.loading = true
-    await this.getJira()
-    await this.listJiraSetting()
+    await this.getWPScan()
+    await this.listWPScanSetting()
   },
   methods: {
-    async getJira() {
+    async getWPScan() {
       const res = await this.$axios.get(
         '/diagnosis/get-datasource/'
-          + '?diagnosis_data_source_id=' + this.jira_datasource_id 
+          + '?diagnosis_data_source_id=' + this.wpscan_datasource_id 
           + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
@@ -436,9 +389,9 @@ export default {
       this.diagnosisModel = res.data .data.diagnosis_data_source
       this.loading = false
     },
-    async listJiraSetting() {
+    async listWPScanSetting() {
       const res = await this.$axios.get(
-        '/diagnosis/list-jira-setting/'
+        '/diagnosis/list-wpscan-setting/'
           + '?diagnosis_data_source_id=' + this.diagnosisModel.diagnosis_data_source_id
           + '&project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
@@ -446,11 +399,11 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.jira_setting ) {
+      if ( !res.data || !res.data.data || !res.data.data.wpscan_setting ) {
         this.clearList()
         return false
       }
-      this.table.items = res.data.data.jira_setting
+      this.table.items = res.data.data.wpscan_setting
     },
     clearList() {
       this.table.items = []
@@ -459,9 +412,9 @@ export default {
     async deleteItem() {
       const param = {
           project_id: this.$store.state.project.project_id,
-          jira_setting_id: this.jiraModel.jira_setting_id,
+          wpscan_setting_id: this.wpscanModel.wpscan_setting_id,
       }
-      await this.$axios.post('/diagnosis/delete-jira-setting/', param).catch((err) =>  {
+      await this.$axios.post('/diagnosis/delete-wpscan-setting/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -469,37 +422,33 @@ export default {
     },
     async putItem() {
       let scan_at = 0
-      if (this.jiraModel.scan_at > 0 ) {
-        scan_at = this.jiraModel.scan_at
+      if (this.wpscanModel.scan_at > 0 ) {
+        scan_at = this.wpscanModel.scan_at
       }
       const param = {
         project_id: this.$store.state.project.project_id,
-        jira_setting: {
+        wpscan_setting: {
           project_id: this.$store.state.project.project_id,
-          jira_setting_id: this.jiraModel.jira_setting_id,
-          name: this.jiraModel.name,
+          wpscan_setting_id: this.wpscanModel.wpscan_setting_id,
           diagnosis_data_source_id: this.diagnosisModel.diagnosis_data_source_id,
-          identity_field: this.jiraModel.identity_field,
-          identity_value: this.jiraModel.identity_value,
-          jira_id: this.jiraModel.jira_id,
-          jira_key: this.jiraModel.jira_key,
+          target_url: this.wpscanModel.target_url,
           status: 2, // CONFIGURED
           status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
           scan_at: scan_at,
         },
       }
-      await this.$axios.post('/diagnosis/put-jira-setting/', param).catch((err) =>  {
+      await this.$axios.post('/diagnosis/put-wpscan-setting/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Put JIRA.')
+      this.finishSuccess('Success: Put WPScan.')
     },
     async scanDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
-        setting_id: this.jiraModel.jira_setting_id,
-        diagnosis_data_source_id: this.jiraModel.diagnosis_data_source_id,
-      }
+        setting_id: this.wpscanModel.wpscan_setting_id,
+        diagnosis_data_source_id: this.wpscanModel.diagnosis_data_source_id,
+}
       await this.$axios.post('/diagnosis/invoke-scan/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -510,7 +459,7 @@ export default {
     // Handler
     async handleList() {
       this.loading = true
-      await this.listJiraSetting()
+      await this.listWPScanSetting()
       this.finishInfo('Reflesh list')
     },
     handleRowClick(item) {
@@ -518,7 +467,7 @@ export default {
     },
     handleViewItem(item) {
       this.assignDataModel(item)
-      this.jiraForm.readOnly = true
+      this.wpscanForm.readOnly = true
       this.editDialog  = true
     },
     handleNewItem() {
@@ -526,7 +475,7 @@ export default {
     },
     handleEditItem(item) {
       this.assignDataModel(item)
-      this.jiraForm.readOnly = false
+      this.wpscanForm.readOnly = false
       this.editDialog  = true
     },
     handleEditSubmit() {
@@ -546,15 +495,15 @@ export default {
     },
     handleScan(item) {
       this.loading = true
-      if (item && item.jira_setting_id) {
+      if (item && item.wpscan_setting_id) {
         this.assignDataModel(item)
       }
       this.scanDataSource()
     },
 
     assignDataModel(item) {
-      this.jiraModel = {}
-      this.jiraModel = Object.assign(this.jiraModel, item)
+      this.wpscanModel = {}
+      this.wpscanModel = Object.assign(this.wpscanModel, item)
     },
 
     async finishInfo(msg) {
@@ -577,7 +526,7 @@ export default {
       this.editDialog  = false
       this.deleteDialog  = false
       if ( reflesh ) {
-        this.listJiraSetting()
+        this.listWPScanSetting()
       }
     },
   }
