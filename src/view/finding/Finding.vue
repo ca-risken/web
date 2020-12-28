@@ -82,6 +82,9 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
+                <template v-slot:[`item.resource_name`]="{ item }">
+                  {{ cutLongText(item.resource_name, 64) }}
+                </template>
                 <template v-slot:[`item.data_source`]="{ item }">
                   <v-layout justify-center>
                     <v-icon 

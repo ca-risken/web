@@ -8,6 +8,8 @@ let mixin = {
         'diagnosis:jira',
         'diagnosis:wpscan',
         'osint:subdomain',
+        'code:gitleaks',
+        'google:asset',
       ],
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,
@@ -81,7 +83,9 @@ let mixin = {
           return 'http'
         case 'code':
           return 'mdi-github'
-        default:
+        case 'google':
+          return 'mdi-google'
+          default:
           return 'mdi-help-circle-outline'
       }
     },
@@ -96,6 +100,8 @@ let mixin = {
           return 'green'
         case 'code':
           return 'black'
+        case 'google':
+          return 'blue'
         default:
           return 'mdi-help-circle-outline'
       }
