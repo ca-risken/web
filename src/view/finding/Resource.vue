@@ -97,7 +97,7 @@
                 v-model="table.selected"
               >
                 <template v-slot:[`item.resource_name`]="{ item }">
-                  {{ cutLongText(item.resource_name, 64) }}
+                  {{ cutLongText(item.resource_name, 80) }}
                 </template>
                 <template v-slot:[`item.findings`]="{ item }">
                   <v-chip :color="getColorByCount(item.findings)" dark>{{ item.findings }}</v-chip>

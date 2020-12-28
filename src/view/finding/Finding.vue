@@ -388,7 +388,7 @@ export default {
         dataSource: [],
         resourceName: [],
         tag: [],
-        score: [0.00, 1.00],
+        score: [0.0, 1.0],
       },
       searchForm: {
         dataSource: { label: 'Data Source', placeholder: 'Filter data sources' },
