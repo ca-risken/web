@@ -75,7 +75,7 @@
           </v-btn>
         </v-row>
       </v-form>
-      <v-row dense>
+      <v-row>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -96,6 +96,9 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
+                <template v-slot:[`item.resource_name`]="{ item }">
+                  {{ cutLongText(item.resource_name, 64) }}
+                </template>
                 <template v-slot:[`item.findings`]="{ item }">
                   <v-chip :color="getColorByCount(item.findings)" dark>{{ item.findings }}</v-chip>
                 </template>
@@ -160,11 +163,11 @@ export default {
       table: {
         selected: [],
         headers: [
-          { text: 'ID',  align: 'center', sortable: false, value: 'resource_id' },
-          { text: 'Resource', align: 'start', sortable: false, value: 'resource_name' },
-          { text: 'Findings', align: 'center', sortable: false, value: 'findings' },
-          { text: 'Updated', align: 'start', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
+          { text: 'ID',  align: 'center', width: '5%', sortable: false, value: 'resource_id' },
+          { text: 'Resource', align: 'start', width: '20%', sortable: false, value: 'resource_name' },
+          { text: 'Findings', align: 'center', width: '5%', sortable: false, value: 'findings' },
+          { text: 'Updated', align: 'start', width: '10%', sortable: false, value: 'updated_at' },
+          { text: 'Action', align: 'center', width: '10%', sortable: false, value: 'action' }
         ],
         options: {
           page: 1,
@@ -191,8 +194,8 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
-  mounted() {
-    this.refleshList('')
+  async mounted() {
+    await this.refleshList('')
   },
   computed: {
     dateRangeText () {
@@ -217,12 +220,12 @@ export default {
       }
       this.table.total = list.data.resource_id.length
       this.resources = list.data.resource_id
-      this.loadList()
+      await this.loadList()
     },
     async loadList() {
       this.loading = true
-      let items = []
-      let resources = []
+      this.table.items = []
+      this.resourceNameList = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.resources.slice(from, to)
@@ -235,23 +238,25 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
+        let finding_cnt = 0
+        if (findings.data.data.finding_id) {
+           finding_cnt = findings.data.data.finding_id.length
+        }
         const item = {
           resource_id: res.data.data.resource.resource_id,
           resource_name: res.data.data.resource.resource_name,
-          findings: findings.data.data.finding_id.length,
+          findings: finding_cnt,
           updated_at: res.data.data.resource.updated_at,
         }
-        items.push(item)
-        resources.push(item.resource_name)
+        this.table.items.push(item)
+        this.resourceNameList.push(item.resource_name)
       })
-      this.table.items = items
-      this.resourceNameList = resources
       this.loading = false
     },
     clearList() {
-      this.resources = []
       this.table.total = 0
       this.table.items = []
+      this.resources = []
       this.resourceNameList = []
     },
 

@@ -151,6 +151,12 @@ let mixin = {
           return 'grey'
       }
     },
+    cutLongText: (str, cutNum) => {
+      if (str.length < cutNum || cutNum < 1 ) {
+        return str
+      }
+      return str.substr(0, cutNum) + ' ...'
+    },
   },
 }
 
