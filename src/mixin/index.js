@@ -12,6 +12,7 @@ let mixin = {
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,
       gitleaks_datasource_id: 1001,
+      cloud_asset_datasource_id: 1001,
     }
   },
   methods: {
@@ -150,6 +151,12 @@ let mixin = {
         default:
           return 'grey'
       }
+    },
+    cutLongText: (str, cutNum) => {
+      if (str.length < cutNum || cutNum < 1 ) {
+        return str
+      }
+      return str.substr(0, cutNum) + ' ...'
     },
   },
 }
