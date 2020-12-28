@@ -279,10 +279,11 @@ export default {
     // Findings
     async setHighScoreFinding() {
       this.raw.highScoreFinding          = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, '')
-      this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:guard-duty,aws:access-analyzer,aws:admin-checker')
-      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:jira,diagnosis-wpscan')
-      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:subdomain')
-      this.raw.highScoreFindingCode      = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:gitleaks')
+      this.raw.highScoreFindingAWS       = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:')
+      this.raw.highScoreFindingDiagnosis = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:')
+      this.raw.highScoreFindingOsint     = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:')
+      this.raw.highScoreFindingCode      = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:')
+      this.raw.highScoreFindingGoogle    = await this.getFinding(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'google:')
     },
     async setStoreFinding() {
       this.raw.storeFinding = await this.getFinding(0, this.nowUnix, 0, '')
@@ -481,10 +482,10 @@ export default {
         link: '/finding/finding/',
       })
       this.category.push({
-        category: 'GCP',
-        title: '-',
-        subTitle: 'Not yet supported...',
-        icon: 'mdi-google-cloud',
+        category: 'Google',
+        title: this.raw.highScoreFindingGoogle.length.toString(),
+        subTitle: 'High score findings',
+        icon: 'mdi-google',
         color: 'light-blue darken-1',
         dark: true,
         link: '/finding/finding/',
