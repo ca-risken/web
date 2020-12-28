@@ -49,7 +49,7 @@
               thumb-label
               min="0.0"
               max="1.0"
-              step="0.01"
+              step="0.1"
               :label="searchForm.score.label"
               :messages="searchForm.score.placeholder"
               v-model="searchModel.score"

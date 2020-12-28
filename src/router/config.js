@@ -263,6 +263,26 @@ export const appRoute = [
         ]
       },
       {
+        path: '/google',
+        component: RouteWrapper,
+        redirect: '/google/asset',
+        meta: {
+          title: 'Google',
+          icon: 'mdi-google',
+          group: 'google'
+        },
+        children: [
+          {
+            path: '/google/asset',
+            name: 'Cloud Asset',
+            meta: {
+              title: 'CloudAsset',
+            },
+            component: () => import('@/view/google/CloudAsset.vue')
+          },
+        ]
+      },
+      {
         path: '/iam',
         component: RouteWrapper,
         redirect: '/iam/user',
