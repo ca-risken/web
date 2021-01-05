@@ -5,6 +5,7 @@ let mixin = {
         'aws:guard-duty',
         'aws:access-analyzer',
         'aws:iam-checker',
+        'aws:cloudsploit',
         'diagnosis:jira',
         'diagnosis:wpscan',
         'osint:subdomain',
