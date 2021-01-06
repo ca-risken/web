@@ -388,11 +388,10 @@ export default {
       const res = await this.$axios.get('/aws/list-aws/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.aws ) {
+      if ( !res.data.data.aws ) {
         return false
       }
-      this.awsList = list.data.aws
+      this.awsList = res.data.data.aws
       this.loading = false
     },
     async refleshList() {
@@ -406,13 +405,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.data_source ) {
+      if ( !res.data.data.data_source ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.data_source.length
-      this.table.items = list.data.data_source
+      this.table.total = res.data.data.data_source.length
+      this.table.items = res.data.data.data_source
       this.loading = false
     },
     clearList() {

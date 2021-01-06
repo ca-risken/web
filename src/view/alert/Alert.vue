@@ -309,12 +309,11 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.alert ) {
+      if ( !res.data.data.alert ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.alert
+      this.table.items = res.data.data.alert
       this.loading = false
     },
     clearList() {
@@ -331,13 +330,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.alert_history ) {
+      if ( !res.data.data.alert_history ) {
         this.clearHistory()
         return false
       }
       // this.alertHistoryModel = list.data.alert_history
-      list.data.alert_history.forEach(async history => {
+      res.data.data.alert_history.forEach(async history => {
         const json = JSON.parse(history.finding_history)
         let findingsIDs = ""
         if (json && json.finding_id) {
@@ -382,12 +380,11 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.rel_alert_finding ) {
+      if ( !res.data.data.rel_alert_finding ) {
         this.clearFinding()
         return false
       }
-      list.data.rel_alert_finding.forEach( async finding => {
+      res.data.data.rel_alert_finding.forEach( async finding => {
         const res = await this.$axios.get(
           '/finding/get-finding/?finding_id=' + finding.finding_id + '&project_id=' + this.$store.state.project.project_id
         ).catch((err) =>  {

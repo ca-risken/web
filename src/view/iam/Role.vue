@@ -346,13 +346,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.role_id ) {
+      if ( !res.data.data.role_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.role_id.length
-      this.roles = list.data.role_id
+      this.table.total = res.data.data.role_id.length
+      this.roles = res.data.data.role_id
       this.loadList()
     },
     async loadList() {
@@ -404,12 +403,10 @@ export default {
       ).catch((err) =>  {
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.policy_id ) {
+      if ( !res.data.data.policy_id ) {
         return false
       }
-
-      list.data.policy_id.forEach( async id => {
+      res.data.data.policy_id.forEach( async id => {
         const res = await this.$axios.get(
           '/iam/get-policy/?project_id='+ this.$store.state.project.project_id +'&policy_id=' + id
         ).catch((err) =>  {

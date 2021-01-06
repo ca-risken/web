@@ -276,12 +276,11 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.aws ) {
+      if ( !res.data.data.aws ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.aws
+      this.table.items = res.data.data.aws
       this.loading = false
     },
     clearList() {

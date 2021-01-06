@@ -275,12 +275,11 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.gcp ) {
+      if ( !res.data.data.gcp ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.gcp
+      this.table.items = res.data.data.gcp
       this.loading = false
     },
     clearList() {

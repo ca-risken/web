@@ -213,13 +213,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.resource_id ) {
+      if ( !res.data.data.resource_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.resource_id.length
-      this.resources = list.data.resource_id
+      this.table.total = res.data.data.resource_id.length
+      this.resources = res.data.data.resource_id
       await this.loadList()
     },
     async loadList() {

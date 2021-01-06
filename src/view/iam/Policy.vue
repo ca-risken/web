@@ -313,13 +313,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.policy_id ) {
+      if ( !res.data.data.policy_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.policy_id.length
-      this.policies = list.data.policy_id
+      this.table.total = res.data.data.policy_id.length
+      this.policies = res.data.data.policy_id
       this.loadList()
     },
     async loadList() {

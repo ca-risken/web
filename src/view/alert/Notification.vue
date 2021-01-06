@@ -270,12 +270,11 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.notification ) {
+      if ( !res.data.data.notification ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.notification
+      this.table.items = res.data.data.notification
       this.loading = false
     },
     clearList() {
