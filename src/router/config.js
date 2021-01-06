@@ -265,7 +265,7 @@ export const appRoute = [
       {
         path: '/google',
         component: RouteWrapper,
-        redirect: '/google/asset',
+        redirect: '/google/gcp',
         meta: {
           title: 'Google',
           icon: 'mdi-google',
@@ -273,12 +273,20 @@ export const appRoute = [
         },
         children: [
           {
-            path: '/google/asset',
-            name: 'Cloud Asset',
+            path: '/google/gcp',
+            name: 'GCP',
             meta: {
-              title: 'CloudAsset',
+              title: 'GCP',
             },
-            component: () => import('@/view/google/CloudAsset.vue')
+            component: () => import('@/view/google/GCP.vue')
+          },
+          {
+            path: '/google/gcp-data-source',
+            name: 'GCP DataSource',
+            meta: {
+              title: 'GCP DataSource',
+            },
+            component: () => import('@/view/google/GCPDataSource.vue')
           },
         ]
       },

@@ -331,12 +331,11 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.tag ) {
+      if ( !res.data.data.tag ) {
         this.form.tag.list = []
         return false
       }
-      list.data.tag.forEach( async tag => {
+      res.data.data.tag.forEach( async tag => {
         this.form.tag.list.push(tag.tag)
       })
       this.loading = false
@@ -349,12 +348,11 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.alert_rule ) {
+      if ( !res.data.data.alert_rule ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.alert_rule
+      this.table.items = res.data.data.alert_rule
       this.loading = false
     },
     clearList() {

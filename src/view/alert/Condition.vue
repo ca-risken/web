@@ -514,12 +514,11 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.alert_condition ) {
+      if ( !res.data.data.alert_condition ) {
         this.clearList()
         return false
       }
-      list.data.alert_condition.forEach( async cond => {
+      res.data.data.alert_condition.forEach( async cond => {
         const rules = await this.$axios.get(
           '/alert/list-condition_rule/?project_id=' + this.$store.state.project.project_id
             + '&alert_condition_id=' + cond.alert_condition_id
@@ -600,11 +599,10 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.alert_rule	 ) {
+      if ( !res.data.data.alert_rule	 ) {
         return false
       }
-      list.data.alert_rule.forEach( async rule => {
+      res.data.data.alert_rule.forEach( async rule => {
         this.ruleTable.items.push(rule)
         if (this.dataModel.rules.indexOf(rule.alert_rule_id) !== -1 ){
           this.ruleTable.selected.push(rule)
@@ -658,11 +656,10 @@ export default {
       ).catch((err) =>  {
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.notification ) {
+      if ( !res.data.data.notification ) {
         return false
       }
-      list.data.notification.forEach( async noti => {
+      res.data.data.notification.forEach( async noti => {
         this.notiTable.items.push(noti)
         if (this.dataModel.notifications.indexOf(noti.notification_id) !== -1 ){
           this.notiTable.selected.push(noti)

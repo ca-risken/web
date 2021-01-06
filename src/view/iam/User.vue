@@ -297,13 +297,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.user_id ) {
+      if ( !res.data.data.user_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.user_id.length
-      this.users = list.data.user_id
+      this.table.total = res.data.data.user_id.length
+      this.users = res.data.data.user_id
       this.loadList()
     },
     async loadList() {
@@ -350,12 +349,11 @@ export default {
       ).catch((err) =>  {
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.role_id ) {
+      if ( !res.data.data.role_id ) {
         return false
       }
 
-      list.data.role_id.forEach( async id => {
+      res.data.data.role_id.forEach( async id => {
         const res = await this.$axios.get(
           '/iam/get-role/?project_id='+ this.$store.state.project.project_id +'&role_id=' + id
         ).catch((err) =>  {

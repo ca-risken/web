@@ -5,8 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="orange">mdi-aws</v-icon>
-              AWS
+              <v-icon large class="pr-2" color="blue darken-1">mdi-google-cloud</v-icon>
+              GCP
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -48,12 +48,12 @@
                 loading-text="読込中"
                 no-data-text="データがありません。"
                 class="elevation-1"
-                item-key="aws_id"
+                item-key="gcp_id"
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]="">
                   <v-avatar class="ma-3">
-                    <v-icon color="orange darken-1" large>mdi-aws</v-icon>
+                    <v-icon color="blue darken-1" large>mdi-google-cloud</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
@@ -95,42 +95,41 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large color="orange darken-1">mdi-aws</v-icon>
-          <span class="mx-4 headline">AWS</span>
+          <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
+          <span class="mx-4 headline">GCP</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="awsForm.valid" ref="form">
+          <v-form v-model="gcpForm.valid" ref="form">
             <v-text-field
-              v-model="awsModel.aws_id"
-              :label="awsForm.aws_id.label"
-              :placeholder="awsForm.aws_id.placeholder"
+              v-model="gcpModel.gcp_id"
+              :label="gcpForm.gcp_id.label"
+              :placeholder="gcpForm.gcp_id.placeholder"
               outlined filled disabled
             ></v-text-field>
             <v-text-field
-              v-model="awsModel.name"
+              v-model="gcpModel.name"
               :counter="200"
-              :rules="awsForm.name.validator"
-              :label="awsForm.name.label"
-              :placeholder="awsForm.name.placeholder"
+              :rules="gcpForm.name.validator"
+              :label="gcpForm.name.label"
+              :placeholder="gcpForm.name.placeholder"
               outlined required
             ></v-text-field>
-            <template v-if="awsForm.newAWS">
+            <template v-if="gcpForm.newGCP">
               <v-text-field
-                v-model="awsModel.aws_account_id"
-                :counter="12"
-                :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
-                :placeholder="awsForm.aws_account_id.placeholder"
+                v-model="gcpModel.gcp_project_id"
+                :counter="128"
+                :rules="gcpForm.gcp_project_id.validator"
+                :label="gcpForm.gcp_project_id.label"
+                :placeholder="gcpForm.gcp_project_id.placeholder"
                 outlined required
               ></v-text-field>
             </template>
             <template v-else>
               <v-text-field
-                v-model="awsModel.aws_account_id"
-                :counter="12"
-                :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
-                :placeholder="awsForm.aws_account_id.placeholder"
+                v-model="gcpModel.gcp_project_id"
+                :counter="128"
+                :label="gcpForm.gcp_project_id.label"
+                :placeholder="gcpForm.gcp_project_id.placeholder"
                 outlined filled disabled
               ></v-text-field>   
             </template>
@@ -142,7 +141,7 @@
                 CANCEL
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="awsForm.newAWS">Regist</template>
+                <template v-if="gcpForm.newGCP">Regist</template>
                 <template v-else>Edit</template>
               </v-btn>
             </v-card-actions>
@@ -160,8 +159,8 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS ID</v-list-item-subtitle>
+              <v-list-item-title v-text="gcpModel.gcp_id"></v-list-item-title>
+              <v-list-item-subtitle>GCP ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -169,17 +168,17 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.name"></v-list-item-title>
-              <v-list-item-subtitle>AWS Name</v-list-item-subtitle>
+              <v-list-item-title v-text="gcpModel.name"></v-list-item-title>
+              <v-list-item-subtitle>GCP Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-avatar>
-              <v-icon>mdi-aws</v-icon>
+              <v-icon>mdi-google-cloud</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_account_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS AccountID</v-list-item-subtitle>
+              <v-list-item-title v-text="gcpModel.gcp_project_id"></v-list-item-title>
+              <v-list-item-subtitle>GCP Project ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -215,35 +214,35 @@ export default {
   data() {
     return {
       loading: false,
-      awsForm: {
-        newAWS: false,
+      gcpForm: {
+        newGCP: false,
         valid: false,
-        aws_id: { label: 'ID', placeholder: '-' },
+        gcp_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        aws_account_id: { label: 'AWS Account ID *', placeholder: '123456789012', validator:[
-            v => !!v || 'AWS Account ID is required',
-            v => v.length === 12 || 'AWS Account ID must be 12 characters',
-            v => this.isNewAccountID(v) || 'AWS Account ID is already exist.',
+        gcp_project_id: { label: 'GCP Project ID *', placeholder: 'your-project', validator:[
+            v => !!v || 'GCP Project ID is required',
+            v => v.length <= 128 || 'GCP Project ID must be less than 128 characters',
+            v => this.isNewGCPProjectID(v) || 'GCP Project ID is already exist.',
           ]
         },
       },
-      awsModel: { aws_id:'', name:'', aws_account_id:'', updated_at:'' },
+      gcpModel: { gcp_id:'', name:'', gcp_project_id:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'aws_id' },
+          { text: 'ID',  align: 'start', sortable: false, value: 'gcp_id' },
           { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'AccountID', align: 'start', sortable: false, value: 'aws_account_id' },
+          { text: 'GCP ProjectID', align: 'start', sortable: false, value: 'gcp_project_id' },
           { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
-        options: { page: 1, itemsPerPage: 5, sortBy: ['aws_id'] },
+        options: { page: 1, itemsPerPage: 5, sortBy: ['gcp_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
@@ -271,28 +270,28 @@ export default {
   methods: {
     async refleshList() {
       const res = await this.$axios.get(
-        '/aws/list-aws/?project_id=' + this.$store.state.project.project_id
+        '/google/list-gcp/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.aws ) {
+      if ( !res.data.data.gcp ) {
         this.clearList()
         return false
       }
-      this.table.items = res.data.data.aws
+      this.table.items = res.data.data.gcp
       this.loading = false
     },
     clearList() {
       this.table.items = []
       this.loading = false
     },
-    async deleteItem(awsID) {
+    async deleteItem(gcpID) {
       const param = {
           project_id: this.$store.state.project.project_id,
-          aws_id: awsID,
+          gcp_id: gcpID,
       }
-      await this.$axios.post('/aws/delete-aws/', param).catch((err) =>  {
+      await this.$axios.post('/google/delete-gcp/', param).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
@@ -301,26 +300,26 @@ export default {
     async putItem() {
       const param = { 
         project_id: this.$store.state.project.project_id,
-        aws: {
+        gcp: {
           project_id: this.$store.state.project.project_id,
-          name: this.awsModel.name,
-          aws_account_id: this.awsModel.aws_account_id,
+          name: this.gcpModel.name,
+          gcp_project_id: this.gcpModel.gcp_project_id,
         },
       }
-      await this.$axios.post('/aws/put-aws/', param).catch((err) =>  {
+      await this.$axios.post('/google/put-gcp/', param).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      let msg = 'Success: Updated AWS.'
-      if (this.awsForm.newAWS) {
-        msg = 'Success: Created new AWS.'
+      let msg = 'Success: Updated GCP.'
+      if (this.gcpForm.newGCP) {
+        msg = 'Success: Created new GCP.'
       }
       this.finish(msg)
     },
-    isNewAccountID(accountID) {
+    isNewGCPProjectID(pjID) {
       let isNew = true
       this.table.items.some( item => {
-        if(item.aws_account_id == accountID){
+        if(item.gcp_project_id == pjID){
           isNew = false
           return true
         }
@@ -328,16 +327,16 @@ export default {
       return isNew
     },
     handleRowClick(item) {
-      this.$router.push('/aws/data-source?aws_id=' + item.aws_id)
+      this.$router.push('/google/gcp-data-source?gcp_id=' + item.gcp_id)
     },
     handleNewItem() {
-      this.awsModel = { aws_id:'', name:'', aws_account_id:'', updated_at:'' }
-      this.awsForm.newAWS = true
+      this.gcpModel = { gcp_id:'', name:'', gcp_project_id:'', updated_at:'' }
+      this.gcpForm.newGCP = true
       this.editDialog  = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
-      this.awsForm.newAWS = false
+      this.gcpForm.newGCP = false
       this.editDialog  = true
     },
     handleEditSubmit() {
@@ -353,11 +352,11 @@ export default {
     },
     handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem(this.awsModel.aws_id)
+      this.deleteItem(this.gcpModel.gcp_id)
     },
     assignDataModel(item) {
-      this.awsModel = {}
-      this.awsModel = Object.assign(this.awsModel, item)
+      this.gcpModel = {}
+      this.gcpModel = Object.assign(this.gcpModel, item)
     },
 
     async finish(msg) {

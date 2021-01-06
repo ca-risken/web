@@ -263,12 +263,11 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.osint ) {
+      if ( !res.data.data.osint ) {
         this.clearList()
         return false
       }
-      this.table.items = list.data.osint
+      this.table.items = res.data.data.osint
       this.loading = false
     },
     clearList() {

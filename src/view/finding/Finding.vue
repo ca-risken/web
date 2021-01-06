@@ -482,13 +482,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.finding_id ) {
+      if ( !res.data.data.finding_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.finding_id.length
-      this.findings = list.data.finding_id
+      this.table.total = res.data.data.finding_id.length
+      this.findings = res.data.data.finding_id
       this.loadList()
     },
     async loadList() {
@@ -542,11 +541,10 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.tag ) {
+      if ( !res.data.data.tag ) {
         return false
       }
-      this.searchForm.tagList = list.data.tag
+      this.searchForm.tagList = res.data.data.tag
     },
 
     // Finding Tag

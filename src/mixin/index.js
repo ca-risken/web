@@ -85,7 +85,7 @@ let mixin = {
         case 'code':
           return 'mdi-github'
         case 'google':
-          return 'mdi-google'
+          return 'mdi-google-cloud'
           default:
           return 'mdi-help-circle-outline'
       }

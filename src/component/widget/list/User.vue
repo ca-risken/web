@@ -99,13 +99,12 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const list = res.data
-      if ( !list || !list.data || !list.data.user_id ) {
+      if ( !res.data.data.user_id ) {
         this.clearList()
         return false
       }
-      this.table.total = list.data.user_id.length
-      this.users = list.data.user_id
+      this.table.total = res.data.data.user_id.length
+      this.users = res.data.data.user_id
       this.loadList()
     },
     async loadList() {
