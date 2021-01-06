@@ -275,7 +275,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="awsModel.data_source"></v-list-item-title>
-              <v-list-item-subtitle>Data Souce </v-list-item-subtitle>
+              <v-list-item-subtitle>Data Source</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
