@@ -75,6 +75,10 @@
                     dark
                   >Not configured</v-chip>
                 </template>
+                <template v-slot:[`item.scan_at`]="{ item }">
+                  <v-chip v-if="item.scan_at">{{ item.scan_at | formatTime }}</v-chip>
+                  <v-chip v-else>Not yet scan...</v-chip>
+                </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
@@ -315,6 +319,7 @@ export default {
           { text: 'status', align: 'center', width: '12%', sortable: false, value: 'status' },
           { text: 'GCP ID',  align: 'start', sortable: false, value: 'gcp_id' },
           { text: 'GCP Project', align: 'start', sortable: false, value: 'gcp_project_id' },
+          { text: 'ScanAt', align: 'center', sortable: false, value: 'scan_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['gcp_id'] },
