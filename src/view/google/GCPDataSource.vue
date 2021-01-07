@@ -56,7 +56,7 @@
                 @click:row="handleViewItem"
               >
                 <template v-slot:[`item.avator`]="{ item }">
-                  <v-avatar tile class="ma-2">
+                  <v-avatar tile class="ma-3" size="74%">
                     <img :src="getGCPDataSourceIcon(item.name)" :alt="item.name" />
                   </v-avatar>
                 </template>
