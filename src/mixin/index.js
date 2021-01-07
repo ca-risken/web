@@ -11,11 +11,11 @@ let mixin = {
         'osint:subdomain',
         'code:gitleaks',
         'google:asset',
+        'google:cloudsploit',
       ],
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,
       gitleaks_datasource_id: 1001,
-      cloud_asset_datasource_id: 1001,
     }
   },
   methods: {
