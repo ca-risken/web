@@ -93,6 +93,11 @@
                     />
                   </v-layout>
                 </template>
+                <template v-slot:[`item.status`]="{ item }">
+                  <v-icon v-if="item.status === 'ACTIVE'" color="success">mdi-check-circle</v-icon>
+                  <v-icon v-else-if="item.status === 'PENDING'" color="grey">mdi-check-circle</v-icon>
+                  <v-icon v-else color="grey">mdi-cancel</v-icon>
+                </template>
                 <template v-slot:[`item.score`]="{ item }">
                   <v-chip dark :color="getColorByScore(item.score)">{{ item.score | formatScore }}</v-chip>
                 </template>
@@ -403,6 +408,7 @@ export default {
       },
       findingModel: {
         finding_id:'',
+        status: '',
         score:'',
         original_score:'',
         data_source:'',
@@ -421,12 +427,12 @@ export default {
         selected: [],
         headers: [
           { text: 'ID',  align: 'center', width: '5%', sortable: false, value: 'finding_id' },
+          { text: 'Active', align: 'center', width: '5%', sortable: false, value: 'status' },
           { text: 'Score', align: 'center', width: '5%', sortable: false, value: 'score' },
           { text: 'Data Source', align: 'center', width: '10%', sortable: false, value: 'data_source' },
           { text: 'Resource', align: 'start', width: '10%', sortable: false, value: 'resource_name' },
           { text: 'Description', align: 'start', width: '30%', sortable: false, value: 'description' },
           { text: 'Tags', align: 'start', width: '5%', sortable: false, value: 'tags' },
-          // { text: 'Update', align: 'start', width: '10%', sortable: false, value: 'updated_at' },
           { text: 'Action', align: 'center', width: '5%', sortable: false, value: 'action' },
         ],
         options: {
@@ -435,8 +441,10 @@ export default {
           sortBy: ['id'],
         },
         actions: [
-          { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
-          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
+          { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'Activate Finding', icon: 'mdi-check-circle', click: this.handleActivateItem },
+          { text: 'Pend Finding', icon: 'mdi-check-circle-outline', click: this.handlePendItem },
+          { text: 'Delete Finding', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         total: 0,
         footer: {
@@ -506,8 +514,13 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
+        const pend = await this.$axios.get('/finding/get-pend-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+          this.clearList()
+          return Promise.reject(err)
+        })
         const item = {
           finding_id:     res.data.data.finding.finding_id,
+          status:         !pend.data.data.pend_finding ? 'ACTIVE' : 'PENDING',
           score:          res.data.data.finding.score,
           original_score: res.data.data.finding.original_score,
           data_source:    res.data.data.finding.data_source,
@@ -572,8 +585,34 @@ export default {
         return Promise.reject(err)
       })
     },
-
-    // Delete Condition
+    // Activate Finding
+    async activateItem() {
+      const param = {
+          project_id: this.$store.state.project.project_id,
+          finding_id: this.findingModel.finding_id,
+      }
+      await this.$axios.post('/finding/delete-pend-finding/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Activated.')
+    },
+    // Pend Finding
+    async pendItem() {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        pend_finding: {
+          finding_id: this.findingModel.finding_id,
+          project_id: this.$store.state.project.project_id,
+        }
+      }
+      await this.$axios.post('/finding/put-pend-finding/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Pending.')
+    },
+    // Delete Finding
     async deleteItem() {
       const param = {
           project_id: this.$store.state.project.project_id,
@@ -613,6 +652,16 @@ export default {
     handleDeleteItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
       this.deleteDialog  = true
+    },
+    handleActivateItem(row) {
+      this.loading = true
+      this.findingModel = Object.assign(this.findingModel, row)
+      this.activateItem()
+    },
+    handlePendItem(row) {
+      this.loading = true
+      this.findingModel = Object.assign(this.findingModel, row)
+      this.pendItem()
     },
     handleNewTag(){
       this.findingModel.new_tag = '' // clear
