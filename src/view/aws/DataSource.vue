@@ -435,6 +435,8 @@ export default {
           return '/static/aws/iam.png'
         case 'aws:admin-checker':
           return '/static/aws/iam.png'
+        case 'aws:cloudsploit':
+          return '/static/aws/cloudsploit.png'
         default:
           return '/static/aws/default.png'
       }
