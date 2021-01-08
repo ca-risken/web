@@ -475,11 +475,9 @@ export default {
       return items.length
     },
   },
-  mounted() {
-    if ( this.$route.query.resource_name ) {
-      this.searchModel.resourceName[0] = this.$route.query.resource_name
-    }
+  async mounted() {
     this.getTag()
+    await this.parseQuery()
     this.handleSearch()
   },
   methods: {
@@ -630,22 +628,56 @@ export default {
       this.findingModel = Object.assign(this.findingModel, row)
       this.viewDialog = true
     },
+    parseQuery() {
+      if (!this.$route.query) {
+        return false
+      }
+      if ( this.$route.query.data_source ) {
+        this.searchModel.dataSource = this.$route.query.data_source.split(',')
+      }
+      if ( this.$route.query.tag ) {
+        this.searchModel.tag = this.$route.query.tag.split(',')
+      }
+      if ( this.$route.query.resource_name ) {
+        this.searchModel.resourceName = this.$route.query.resource_name.split(',')
+      }
+      this.searchModel.score[0] = 0.0
+      this.searchModel.score[1] = 1.0
+      if ( this.$route.query.from_score ) {
+        this.searchModel.score[0] = this.$route.query.from_score
+      }
+      if ( this.$route.query.to_score ) {
+        this.searchModel.score[1] = this.$route.query.to_score
+      }
+    },
     handleSearch() {
       let searchCond = ''
+      let queryOld = this.$route.query
+      let queryNew = {}
       if (this.searchModel.dataSource) {
         searchCond += '&data_source=' + this.searchModel.dataSource
+        queryNew.data_source = this.searchModel.dataSource
       }
       if (this.searchModel.tag) {
         searchCond += '&tag=' + this.searchModel.tag
+        queryNew.tag = this.searchModel.tag
       }
       if (this.searchModel.resourceName) {
         searchCond += '&resource_name=' + this.searchModel.resourceName
+        queryNew.resource_name = this.searchModel.resourceName
       }
       if (this.searchModel.score[0]) {
         searchCond += '&from_score=' + this.searchModel.score[0]
+        queryNew.from_score = this.searchModel.score[0]
       }
       if (this.searchModel.score[1]) {
         searchCond += '&to_score=' + this.searchModel.score[1]
+        queryNew.to_score = this.searchModel.score[1]
+      }
+// console.log("old: " + Object.entries(queryOld).sort().toString())
+// console.log("new: " + Object.entries(queryNew).sort().toString())
+      if (Object.entries(queryNew).sort().toString() != Object.entries(queryOld).sort().toString() ){
+        this.$router.push({query: queryNew})
       }
       this.refleshList(searchCond)
     },
@@ -710,6 +742,6 @@ export default {
         this.handleSearch()
       }
     },
-  }
+  },
 }
 </script>
