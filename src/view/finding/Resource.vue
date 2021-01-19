@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table">
+  <div>
     <v-container>
       <v-row dense>
         <v-col cols="12">
@@ -75,6 +75,19 @@
           </v-btn>
         </v-row>
       </v-form>
+      <v-row danse justify="center" align-content="center">
+        <v-col cols="12">
+          <v-card>
+            <v-card-text>
+              <force-direct
+                ref="graph"
+                :nodes="map.nodes"
+                :edges="map.edges"
+              ></force-direct>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -93,7 +106,7 @@
                 class="elevation-1"
                 item-key="resource_id"
                 @click:row="handleViewItem"
-                @update:page="loadList"
+                @update:page="refleshList"
                 v-model="table.selected"
               >
                 <template v-slot:[`item.resource_name`]="{ item }">
@@ -143,8 +156,12 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import ForceDirect from '@/component/widget/chart/ForceDirect'
 export default {
   mixins: [mixin],
+  components: {
+    ForceDirect,
+  },
   data() {
     return {
       loading: false,
@@ -171,7 +188,7 @@ export default {
         ],
         options: {
           page: 1,
-          itemsPerPage: 20,
+          itemsPerPage: 10,
           sortBy: ['id'],
         },
         actions: [
@@ -180,13 +197,32 @@ export default {
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [10],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
         items: []
       },
-      resources: [],
+      map: {
+        reflesh: 0,
+        nodes: [
+          // { name: '0' },
+          // { name: '1' },
+          // { name: '2' },
+          // { name: '3' },
+          // { name: '4' },
+          // { name: '5' },
+          // { name: '6' },
+          // { name: '7' },
+        ],
+        edges: [
+          // { source: 1, target: 2, relation: 'tag', value: 1 },
+          // { source: 1, target: 3, relation: 'tag', value: 1 },
+          // { source: 1, target: 4, relation: 'tag', value: 1 },
+          // { source: 5, target: 6, relation: 'tag', value: 1 },
+          // { source: 5, target: 7, relation: 'tag', value: 1 },
+        ],
+      },
     }
   },
   filters: {
@@ -206,59 +242,7 @@ export default {
     },
   },
   methods: {
-    async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.resource_id ) {
-        this.clearList()
-        return false
-      }
-      this.table.total = res.data.data.resource_id.length
-      this.resources = res.data.data.resource_id
-      await this.loadList()
-    },
-    async loadList() {
-      this.loading = true
-      this.table.items = []
-      this.resourceNameList = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.resources.slice(from, to)
-      ids.forEach( async id => {
-        const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const findings = await this.$axios.get('/finding/list-finding/?project_id='+ this.$store.state.project.project_id +'&resource_name=' + res.data.data.resource.resource_name).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        let finding_cnt = 0
-        if (findings.data.data.finding_id) {
-           finding_cnt = findings.data.data.finding_id.length
-        }
-        const item = {
-          resource_id: res.data.data.resource.resource_id,
-          resource_name: res.data.data.resource.resource_name,
-          findings: finding_cnt,
-          updated_at: res.data.data.resource.updated_at,
-        }
-        this.table.items.push(item)
-        this.resourceNameList.push(item.resource_name)
-      })
-      this.loading = false
-    },
-    clearList() {
-      this.table.total = 0
-      this.table.items = []
-      this.resources = []
-      this.resourceNameList = []
-    },
-
+    // Handler
     handleViewItem(item) {
       this.$router.push('/finding/finding?resource_name=' + item.resource_name)
     },
@@ -280,6 +264,99 @@ export default {
         searchCond += '&to_sum_score=' + this.searchModel.score[1]
       }
       this.refleshList(searchCond)
+    },
+    async refleshList(searchCond) {
+      this.loading = true
+      this.clearList()
+      const resourceIDs = await this.listResourceID(searchCond)
+      this.table.total = resourceIDs.length
+      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const to = from + this.table.options.itemsPerPage
+      const ids = resourceIDs.slice(from, to)
+      await ids.forEach( async id => {
+        const resource = await this.getResource(id)
+        const findingIDs = await this.listFindingsByResouceName(resource.resource_name)
+        await this.setResourceMap(resource, findingIDs)
+        this.table.items.push({
+          resource_id:   resource.resource_id,
+          resource_name: resource.resource_name,
+          updated_at:    resource.updated_at,
+          findings:      findingIDs.length,
+        })
+        this.resourceNameList.push(resource.resource_name)
+      })
+      // this.map.reflesh++
+      this.loading = false
+    },
+    async setResourceMap(resource, findingIDs) {
+      this.map.nodes.push({ name : resource.resource_name })
+console.log(findingIDs)
+
+      // const source = this.map.nodes.length - 1 
+      // findingIDs.forEach( async id => {
+      //   const finding = await this.getFinding(id)
+      //   this.map.nodes.push({ name : finding.finding_id })
+      //   const target = this.map.nodes.length - 1 
+      //   this.map.edges.push({
+      //     source: source,
+      //     target: target,
+      //     relation: 'rel',
+      //     value: 1,
+      //   })
+      // })
+    },
+    clearList() {
+      this.table.total = 0
+      this.table.items = []
+      this.resourceNameList = []
+      this.map.nodes = []
+      this.map.edges = []
+    },
+
+    // Call APIs
+    async listResourceID(searchCond){
+      const res = await this.$axios.get(
+        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
+      ).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.resource_id ) {
+        return [] // empty list
+      }
+      return res.data.data.resource_id
+    },
+    async getResource(id) {
+      const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.resource ) {
+        return {} // empty
+      }
+      return res.data.data.resource
+    },
+    async listFindingsByResouceName(resource_name){
+      const res = await this.$axios.get(
+        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id +
+        '&resource_name=' + resource_name ).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.finding_id ) {
+        return [] // empty list
+      }
+      return res.data.data.finding_id
+    },
+    async getFinding(id) {
+      const res = await this.$axios.get('/finding/get-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.finding ) {
+        return {} // empty
+      }
+      return res.data.data.finding
     },
   }
 }

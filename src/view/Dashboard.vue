@@ -1,5 +1,5 @@
 <template>
-  <div class="page-dashboard">
+  <div>
     <v-container>
       <!-- Status -->
       <v-row justify="center" align-content="center">

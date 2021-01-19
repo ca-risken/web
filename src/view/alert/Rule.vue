@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table">
+  <div>
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
