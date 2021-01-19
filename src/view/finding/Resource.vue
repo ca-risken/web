@@ -187,7 +187,7 @@ export default {
         ],
         options: {
           page: 1,
-          itemsPerPage: 10,
+          itemsPerPage: 8,
           sortBy: ['id'],
         },
         actions: [
@@ -196,7 +196,7 @@ export default {
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageOptions: [8],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -207,8 +207,7 @@ export default {
         nodes: [],
         links: [],
         options: {
-          force: 1600,
-          // size:{ h: 500 },
+          force: 1200,
           nodeSize: 30,
           nodeLabels: true,
           linkLabels:true,
@@ -300,7 +299,10 @@ export default {
         name:   this.getShortName(resource.resource_name),
         svgSym: 'icons.gitHub',
       })
+      let count = 0
       for( let id of findingIDs ) {
+        count++
+        if ( count > 10 ) { break } // nodes limit: 10
         const finding = await this.getFinding(id)
         const targetID = 'f-' + finding.finding_id
         this.map.nodes.push({
