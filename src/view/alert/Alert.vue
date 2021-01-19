@@ -56,8 +56,8 @@
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
-                loading-text="読込中"
-                no-data-text="データがありません。"
+                loading-text="Loading..."
+                no-data-text="No data."
                 class="elevation-1"
                 item-key="alert_id"
                 @click:row="handleViewItem"
@@ -398,7 +398,7 @@ export default {
       this.loading = false
     },
     getResourceList(array) {
-      const resources = Array.from(new Set(array)) // 重複削除
+      const resources = Array.from(new Set(array)) // dedupulicated
       let result = []
       if ( resources.length > 10 ) {
         for (let i = 0; i < 10; i++) {

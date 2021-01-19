@@ -417,19 +417,19 @@ export default {
       if ( totalRisk === 0 ) {
         this.status.risk.icon = 'mdi-check-circle-outline'
         this.status.risk.color = 'green'
-        this.status.risk.description = '問題ありません👌'
+        this.status.risk.description = 'No problem. 👌'
       } else if ( 0 < totalRisk && totalRisk <= 3 ) {
         this.status.risk.icon = 'mdi-weather-cloudy'
         this.status.risk.color = 'grey darken-1'
-        this.status.risk.description = '確認が必要な項目があります👀'
+        this.status.risk.description = 'Need to check a few things. 👀'
       } else if ( 3 < totalRisk && totalRisk <= 10 ) {
         this.status.risk.icon = 'mdi-weather-pouring'
         this.status.risk.color = 'lime darken-3'
-        this.status.risk.description = '何か問題がありそうです...😥'
+        this.status.risk.description = 'There are some problems... 😥'
       } else {
         this.status.risk.icon = 'mdi-weather-lightning'
         this.status.risk.color = 'red darken-2'
-        this.status.risk.description = '問題が山積みです...🙀'
+        this.status.risk.description = 'We have a lot of problems... 🙀'
       }
     },
 
