@@ -273,7 +273,7 @@ export default {
       const ids = this.resourceIDs.slice(from, to)
       for( let id of ids ) {
         const resource = await this.getResource(id)
-        const findingIDs = await this.listFindingsByResouceName(resource.resource_name)
+        const findingIDs = await this.listFindingByResouceName(resource.resource_name)
         await this.setResourceMap(resource, findingIDs)
         this.table.items.push({
           resource_id:   resource.resource_id,
@@ -320,51 +320,6 @@ export default {
     clickNode(event, node) {
       console.log('event: ' + event)
       console.log('node: ' + node)
-    },
-    // Call APIs
-    async listResourceID(searchCond){
-      const res = await this.$axios.get(
-        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.resource_id ) {
-        return [] // empty list
-      }
-      return res.data.data.resource_id
-    },
-    async getResource(id) {
-      const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.resource ) {
-        return {} // empty
-      }
-      return res.data.data.resource
-    },
-    async listFindingsByResouceName(resource_name){
-      const res = await this.$axios.get(
-        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id +
-        '&resource_name=' + resource_name ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.finding_id ) {
-        return [] // empty list
-      }
-      return res.data.data.finding_id
-    },
-    async getFinding(id) {
-      const res = await this.$axios.get('/finding/get-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.finding ) {
-        return {} // empty
-      }
-      return res.data.data.finding
     },
   }
 }
