@@ -149,6 +149,38 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <v-dialog v-model="resourceMapDialog" max-width="80%">
+      <v-card>
+        <v-card-title class="headline">
+          <v-icon large color="teal darken-2">mdi-file-tree-outline</v-icon>
+          <span class="mx-4">Resource Map</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row danse justify="center" align-content="center">
+              <v-col cols="12">
+                <v-card :loading="loading"  height="60vh">
+                  <d3-network
+                    :net-nodes="resourceMap.nodes" 
+                    :net-links="resourceMap.links" 
+                    :options="resourceMap.options" 
+                    @node-click="clickNode"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="resourceMapDialog = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -187,16 +219,17 @@ export default {
         ],
         options: {
           page: 1,
-          itemsPerPage: 10,
+          itemsPerPage: 8,
           sortBy: ['id'],
         },
         actions: [
-          { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewFinding },
+          { text: 'Resource Map', icon: 'mdi-file-tree-outline', click: this.handleViewItem },
         ],
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageOptions: [8],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -207,12 +240,26 @@ export default {
         nodes: [],
         links: [],
         options: {
-          force: 1600,
-          // size:{ h: 500 },
-          nodeSize: 30,
+          force: 1200,
+          nodeSize: 20,
           nodeLabels: true,
           linkLabels:true,
           linkWidth: 5,
+        }
+      },
+
+      resourceMapDialog: false,
+      resourceMap: {
+        nodes: [],
+        links: [],
+        options: {
+          force: 10000,
+          nodeSize: 30,
+          size: {w:1160, h:560},
+          nodeLabels: true,
+          linkLabels:true,
+          linkWidth: 30,
+          fontSize: 20,
         }
       },
     }
@@ -235,8 +282,14 @@ export default {
   },
   methods: {
     // Handler
-    handleViewItem(item) {
+    handleViewFinding(item) {
       this.$router.push('/finding/finding?resource_name=' + item.resource_name)
+    },
+    handleViewItem(item) {
+      this.resourceMap.nodes = []
+      this.resourceMap.links = []
+      this.loadResouceMap(item.resource_id)
+      this.resourceMapDialog = true
     },
     handleSearch() {
       let searchCond = ''
@@ -257,6 +310,8 @@ export default {
       }
       this.refleshList(searchCond)
     },
+
+    // Service
     async refleshList(searchCond) {
       this.loading = true
       const resourceIDs = await this.listResourceID(searchCond)
@@ -274,7 +329,7 @@ export default {
       for( let id of ids ) {
         const resource = await this.getResource(id)
         const findingIDs = await this.listFindingByResouceName(resource.resource_name)
-        await this.setResourceMap(resource, findingIDs)
+        await this.setResourceMap(resource, findingIDs, this.map, 10)
         this.table.items.push({
           resource_id:   resource.resource_id,
           resource_name: resource.resource_name,
@@ -285,6 +340,13 @@ export default {
       }
       this.loading = false
     },
+    async loadResouceMap( resourceID ) {
+      this.loading = true
+      const resource = await this.getResource(resourceID)
+      const findingIDs = await this.listFindingByResouceName(resource.resource_name)
+      await this.setResourceMap(resource, findingIDs, this.resourceMap, 99999)
+      this.loading = false
+    }, 
     clearList() {
       this.table.items = []
       this.resourceNameList = []
@@ -293,23 +355,26 @@ export default {
     },
 
     // ResourceMap
-    async setResourceMap(resource, findingIDs) {
+    async setResourceMap(resource, findingIDs, map, nodeLimits) {
       const srcID = 'r-' + resource.resource_id
-      this.map.nodes.push({
+      map.nodes.push({
         id :    srcID,
         name:   this.getShortName(resource.resource_name),
         svgSym: 'icons.gitHub',
       })
+      let count = 0
       for( let id of findingIDs ) {
+        count++
+        if ( count > nodeLimits ) { break } // limit
         const finding = await this.getFinding(id)
         const targetID = 'f-' + finding.finding_id
-        this.map.nodes.push({
+        map.nodes.push({
           id:     targetID,
           name:   finding.data_source,
           _color: this.getColorRGBByScore(finding.score),
           _size:  20 + finding.score * 10,
         })
-        this.map.links.push({
+        map.links.push({
           sid: srcID,
           tid: targetID,
           _svgAttrs:{'stroke-width':3, opacity:2},
