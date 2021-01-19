@@ -485,6 +485,7 @@ export default {
       this.clearList()
       const ids = await this.listFinding(searchCond)
       this.table.total = ids.length
+      this.table.options.page = 1
       this.findings = ids
       this.loadList()
     },
