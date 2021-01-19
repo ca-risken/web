@@ -243,7 +243,6 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
   mixins: [mixin],
   components: {
@@ -272,6 +271,7 @@ export default {
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Pending', icon: 'mdi-trash-can-outline', click: this.handlePendItem },
+          { text: 'Activate', icon: 'mdi-check-circle-outline', click: this.handleActiveItem },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -412,7 +412,7 @@ export default {
     },
 
     // Pending alert
-    async pendingAlert() {
+    async putAlertStatus(status) {
       const param = { 
         project_id: this.$store.state.project.project_id,
         alert: {
@@ -421,14 +421,14 @@ export default {
           alert_condition_id: this.alertModel.alert_condition_id,
           description: this.alertModel.description,
           severity: this.alertModel.severity,
-          status: Number(this.getAlertStatus('PENDING')),
+          status: Number(this.getAlertStatus(status)),
         },
       }
       await this.$axios.post('/alert/put-alert/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Update pending status.')
+      this.finishSuccess('Success: Update alert status.')
     },
 
     // handler
@@ -460,7 +460,12 @@ export default {
     },
     handlePendSubmit() {
       this.loading = true
-      this.pendingAlert()
+      this.putAlertStatus('PENDING')
+    },
+    handleActiveItem(item) {
+      this.loading = true
+      this.assignDataModel(item)
+      this.putAlertStatus('ACTIVE')
     },
     assignDataModel(item) {
       this.alertModel = {}
