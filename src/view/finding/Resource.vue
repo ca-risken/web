@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table">
+  <div>
     <v-container>
       <v-row dense>
         <v-col cols="12">
@@ -75,6 +75,18 @@
           </v-btn>
         </v-row>
       </v-form>
+      <v-row danse justify="center" align-content="center">
+        <v-col cols="12">
+          <v-card>
+            <d3-network
+              :net-nodes="map.nodes" 
+              :net-links="map.links" 
+              :options="map.options" 
+              @node-click="clickNode"
+            />
+          </v-card>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -88,8 +100,8 @@
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
-                loading-text="読込中"
-                no-data-text="データがありません。"
+                loading-text="Loading..."
+                no-data-text="No data."
                 class="elevation-1"
                 item-key="resource_id"
                 @click:row="handleViewItem"
@@ -143,8 +155,12 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import D3Network from 'vue-d3-network'
 export default {
   mixins: [mixin],
+  components: {
+    D3Network,
+  },
   data() {
     return {
       loading: false,
@@ -171,7 +187,7 @@ export default {
         ],
         options: {
           page: 1,
-          itemsPerPage: 20,
+          itemsPerPage: 10,
           sortBy: ['id'],
         },
         actions: [
@@ -180,13 +196,25 @@ export default {
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [10],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
         items: []
       },
-      resources: [],
+      resourceIDs: [],
+      map: {
+        nodes: [],
+        links: [],
+        options: {
+          force: 1600,
+          // size:{ h: 500 },
+          nodeSize: 30,
+          nodeLabels: true,
+          linkLabels:true,
+          linkWidth: 5,
+        }
+      },
     }
   },
   filters: {
@@ -206,59 +234,7 @@ export default {
     },
   },
   methods: {
-    async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.resource_id ) {
-        this.clearList()
-        return false
-      }
-      this.table.total = res.data.data.resource_id.length
-      this.resources = res.data.data.resource_id
-      await this.loadList()
-    },
-    async loadList() {
-      this.loading = true
-      this.table.items = []
-      this.resourceNameList = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.resources.slice(from, to)
-      ids.forEach( async id => {
-        const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const findings = await this.$axios.get('/finding/list-finding/?project_id='+ this.$store.state.project.project_id +'&resource_name=' + res.data.data.resource.resource_name).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        let finding_cnt = 0
-        if (findings.data.data.finding_id) {
-           finding_cnt = findings.data.data.finding_id.length
-        }
-        const item = {
-          resource_id: res.data.data.resource.resource_id,
-          resource_name: res.data.data.resource.resource_name,
-          findings: finding_cnt,
-          updated_at: res.data.data.resource.updated_at,
-        }
-        this.table.items.push(item)
-        this.resourceNameList.push(item.resource_name)
-      })
-      this.loading = false
-    },
-    clearList() {
-      this.table.total = 0
-      this.table.items = []
-      this.resources = []
-      this.resourceNameList = []
-    },
-
+    // Handler
     handleViewItem(item) {
       this.$router.push('/finding/finding?resource_name=' + item.resource_name)
     },
@@ -281,6 +257,109 @@ export default {
       }
       this.refleshList(searchCond)
     },
+    async refleshList(searchCond) {
+      this.loading = true
+      const resourceIDs = await this.listResourceID(searchCond)
+      this.table.total = resourceIDs.length
+      this.resourceIDs = resourceIDs
+      await this.loadList()
+      this.loading = false
+    },
+    async loadList() {
+      this.loading = true
+      this.clearList()
+      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const to = from + this.table.options.itemsPerPage
+      const ids = this.resourceIDs.slice(from, to)
+      for( let id of ids ) {
+        const resource = await this.getResource(id)
+        const findingIDs = await this.listFindingByResouceName(resource.resource_name)
+        await this.setResourceMap(resource, findingIDs)
+        this.table.items.push({
+          resource_id:   resource.resource_id,
+          resource_name: resource.resource_name,
+          updated_at:    resource.updated_at,
+          findings:      findingIDs.length,
+        })
+        this.resourceNameList.push(resource.resource_name)
+      }
+      this.loading = false
+    },
+    clearList() {
+      this.table.items = []
+      this.resourceNameList = []
+      this.map.nodes = []
+      this.map.links = []
+    },
+
+    // ResourceMap
+    async setResourceMap(resource, findingIDs) {
+      const srcID = 'r-' + resource.resource_id
+      this.map.nodes.push({
+        id :    srcID,
+        name:   this.getShortName(resource.resource_name),
+        svgSym: 'icons.gitHub',
+      })
+      for( let id of findingIDs ) {
+        const finding = await this.getFinding(id)
+        const targetID = 'f-' + finding.finding_id
+        this.map.nodes.push({
+          id:     targetID,
+          name:   finding.data_source,
+          _color: this.getColorRGBByScore(finding.score),
+          _size:  20 + finding.score * 10,
+        })
+        this.map.links.push({
+          sid: srcID,
+          tid: targetID,
+          _svgAttrs:{'stroke-width':3, opacity:2},
+          _color: '#E0E0E0',
+        })
+      }
+    },
+    clickNode(event, node) {
+      console.log('event: ' + event)
+      console.log('node: ' + node)
+    },
   }
 }
 </script>
+<style>
+.node {
+  stroke: rgba(18,120,98,.7);
+  stroke-width: 4px;
+  -webkit-transition: fill .5s ease;
+  transition: fill .5s ease;
+  fill: #E0E0E0
+}
+.node.selected {
+  stroke: #caa455
+}
+.node.pinned {
+  stroke: rgba(190,56,93,.6)
+}
+.link {
+  stroke: rgba(18,120,98,.3)
+}
+.link,.node {
+  stroke-linecap: round
+}
+.link:hover,.node:hover {
+  stroke: #be385d;
+  stroke-width: 5px
+}
+.link.selected {
+  stroke: rgba(202,164,85,.6)
+}
+.curve {
+  fill: none
+}
+.link-label,.node-label {
+  fill: #616161
+}
+.link-label {
+  -webkit-transform: translateY(-.5em);
+  transform: translateY(-.5em);
+  text-anchor: middle
+}
+</style>

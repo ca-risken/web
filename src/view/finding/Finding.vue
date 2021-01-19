@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table">
+  <div>
     <v-container>
       <v-row dense>
         <v-col cols="12">
@@ -74,8 +74,8 @@
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
-                loading-text="読込中"
-                no-data-text="データがありません。"
+                loading-text="Loading..."
+                no-data-text="No data."
                 class="elevation-1"
                 item-key="finding_id"
                 @click:row="handleViewItem"
@@ -482,18 +482,10 @@ export default {
   },
   methods: {
     async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.finding_id ) {
-        this.clearList()
-        return false
-      }
-      this.table.total = res.data.data.finding_id.length
-      this.findings = res.data.data.finding_id
+      this.clearList()
+      const ids = await this.listFinding(searchCond)
+      this.table.total = ids.length
+      this.findings = ids
       this.loadList()
     },
     async loadList() {
@@ -504,33 +496,24 @@ export default {
       const to = from + this.table.options.itemsPerPage
       const ids = this.findings.slice(from, to)
       ids.forEach( async id => {
-        const res = await this.$axios.get('/finding/get-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const tag = await this.$axios.get('/finding/list-finding-tag/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const pend = await this.$axios.get('/finding/get-pend-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        const finding = await this.getFinding(id)
+        const tag = await this.listFindingTag(id)
+        const pend = await this.getPendFinding(id)
         const item = {
-          finding_id:     res.data.data.finding.finding_id,
-          status:         !pend.data.data.pend_finding ? 'ACTIVE' : 'PENDING',
-          score:          res.data.data.finding.score,
-          original_score: res.data.data.finding.original_score,
-          data_source:    res.data.data.finding.data_source,
-          resource_name:  res.data.data.finding.resource_name,
-          description:    res.data.data.finding.description,
-          tags:           tag.data.data.tag,
-          data:           res.data.data.finding.data,
-          updated_at:     res.data.data.finding.updated_at,
-          created_at:     res.data.data.finding.created_at,
+          finding_id:     finding.finding_id,
+          status:         !pend.finding_id ? 'ACTIVE' : 'PENDING',
+          score:          finding.score,
+          original_score: finding.original_score,
+          data_source:    finding.data_source,
+          resource_name:  finding.resource_name,
+          description:    finding.description,
+          tags:           tag,
+          data:           finding.data,
+          updated_at:     finding.updated_at,
+          created_at:     finding.created_at,
         }
         items.push(item)
-        resources.push(res.data.data.finding.resource_name)
+        resources.push(finding.resource_name)
       })
       this.table.items = items
       this.searchForm.resourceNameList = resources
@@ -546,18 +529,9 @@ export default {
 
     async getTag() {
       this.searchForm.tagList = []
-      const res = await this.$axios.get(
-        '/finding/list-finding-tag-name/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.tag ) {
-        return false
-      }
-      this.searchForm.tagList = res.data.data.tag
+      const tag = await this.listFindingTagName()
+      this.searchForm.tagList = tag
     },
-
     // Finding Tag
     async tagFinding( findingID, tag ) {
       const param = {
@@ -674,8 +648,6 @@ export default {
         searchCond += '&to_score=' + this.searchModel.score[1]
         queryNew.to_score = this.searchModel.score[1]
       }
-// console.log("old: " + Object.entries(queryOld).sort().toString())
-// console.log("new: " + Object.entries(queryNew).sort().toString())
       if (Object.entries(queryNew).sort().toString() != Object.entries(queryOld).sort().toString() ){
         this.$router.push({query: queryNew})
       }

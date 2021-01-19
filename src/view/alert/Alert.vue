@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table">
+  <div>
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
@@ -56,8 +56,8 @@
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
-                loading-text="読込中"
-                no-data-text="データがありません。"
+                loading-text="Loading..."
+                no-data-text="No data."
                 class="elevation-1"
                 item-key="alert_id"
                 @click:row="handleViewItem"
@@ -243,7 +243,6 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
   mixins: [mixin],
   components: {
@@ -272,6 +271,7 @@ export default {
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Pending', icon: 'mdi-trash-can-outline', click: this.handlePendItem },
+          { text: 'Activate', icon: 'mdi-check-circle-outline', click: this.handleActiveItem },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -398,7 +398,7 @@ export default {
       this.loading = false
     },
     getResourceList(array) {
-      const resources = Array.from(new Set(array)) // 重複削除
+      const resources = Array.from(new Set(array)) // dedupulicated
       let result = []
       if ( resources.length > 10 ) {
         for (let i = 0; i < 10; i++) {
@@ -412,7 +412,7 @@ export default {
     },
 
     // Pending alert
-    async pendingAlert() {
+    async putAlertStatus(status) {
       const param = { 
         project_id: this.$store.state.project.project_id,
         alert: {
@@ -421,14 +421,14 @@ export default {
           alert_condition_id: this.alertModel.alert_condition_id,
           description: this.alertModel.description,
           severity: this.alertModel.severity,
-          status: Number(this.getAlertStatus('PENDING')),
+          status: Number(this.getAlertStatus(status)),
         },
       }
       await this.$axios.post('/alert/put-alert/', param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Update pending status.')
+      this.finishSuccess('Success: Update alert status.')
     },
 
     // handler
@@ -460,7 +460,12 @@ export default {
     },
     handlePendSubmit() {
       this.loading = true
-      this.pendingAlert()
+      this.putAlertStatus('PENDING')
+    },
+    handleActiveItem(item) {
+      this.loading = true
+      this.assignDataModel(item)
+      this.putAlertStatus('ACTIVE')
     },
     assignDataModel(item) {
       this.alertModel = {}

@@ -104,8 +104,8 @@
             :loading="loading"
             :footer-props="projectTable.footer"
             locale="ja-jp"
-            loading-text="読込中"
-            no-data-text="データがありません。"
+            loading-text="Loading..."
+            no-data-text="No data."
             class="elevation-1"
             item-key="project_id"
             @click:row="handleProjectClick"
@@ -130,7 +130,6 @@
   </v-app-bar>
 </template>
 <script>
-// import ProjectList from '@/component/widget/list/Project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import Util from '@/util'
 import store from '@/store'
@@ -173,9 +172,9 @@ export default {
         {
           icon: 'mdi-logout',
           href: '#',
-          title: 'Logout',
+          title: 'Signout',
           click: this.handleLogut
-        }
+        },
       ]
     }
   },

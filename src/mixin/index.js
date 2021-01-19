@@ -34,9 +34,9 @@ let mixin = {
     getColorByCount(cnt) {
       if ( cnt == 0 ) {
         return 'grey lighten-1'
-      } else if ( cnt <= 1 ) {
+      } else if ( cnt <= 10 ) {
         return 'teal lighten-2'
-      } else if ( cnt <= 3 ) {
+      } else if ( cnt <= 30 ) {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
@@ -49,6 +49,15 @@ let mixin = {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
+      }
+    },
+    getColorRGBByScore: (score) => {
+      if ( score < 0.6 ) {
+        return '#4DB6AC'
+      } else if ( score < 0.8 ) {
+        return '#F9A825'
+      } else {
+        return '#D32F2F'
       }
     },
     getSeverityColor: (severity) => {
@@ -165,6 +174,109 @@ let mixin = {
       }
       return str.substr(0, cutNum) + ' ...'
     },
+    getShortName: (longName) => {
+      // colon
+      if ( !longName.split(':').slice(-1)[0] ) { return longName }
+      const endOfColon = longName.split(':').slice(-1)[0]
+
+      // slash
+      if ( !endOfColon.split('/') ) { return endOfColon }
+      const slashSplited = endOfColon.split('/')
+
+      if ( slashSplited.length < 2 ) {
+        return slashSplited[slashSplited.length -1]
+      }
+      return slashSplited[slashSplited.length -2] + '/' + slashSplited[slashSplited.length -1]
+    },
+
+    // Common APIs ----------------------------------------------------------------
+    // FindingAPI 
+    async listFinding(searchCond){
+      const res = await this.$axios.get(
+        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.finding_id ) {
+        return [] // empty list
+      }
+      return res.data.data.finding_id
+    },
+    async listFindingByResouceName(resource_name){
+      const res = await this.$axios.get(
+        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id +
+        '&resource_name=' + resource_name ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.finding_id ) {
+        return [] // empty list
+      }
+      return res.data.data.finding_id
+    },
+    async getFinding(id) {
+      const res = await this.$axios.get(
+        '/finding/get-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.finding ) {
+        return {} // empty
+      }
+      return res.data.data.finding
+    },
+    async listFindingTag(id) {
+      const res = await this.$axios.get(
+        '/finding/list-finding-tag/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.tag ) {
+        return {} // empty
+      }
+      return res.data.data.tag
+    },
+    async listFindingTagName() {
+      const res = await this.$axios.get(
+        '/finding/list-finding-tag-name/?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.tag ) {
+        return [] // empty
+      }
+      return res.data.data.tag
+    },    
+    async getPendFinding(id) {
+      const res = await this.$axios.get(
+        '/finding/get-pend-finding/?project_id='+ this.$store.state.project.project_id +'&finding_id=' + id).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.pend_finding ) {
+        return {} // empty
+      }
+      return res.data.data.pend_finding
+    },
+    async listResourceID(searchCond){
+      const res = await this.$axios.get(
+        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
+      ).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.resource_id ) {
+        return [] // empty
+      }
+      return res.data.data.resource_id
+    },
+    async getResource(id) {
+      const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.resource ) {
+        return {} // empty
+      }
+      return res.data.data.resource
+    },
+
   },
 }
 

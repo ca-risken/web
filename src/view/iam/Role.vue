@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table">
+  <div>
     <v-container>
       <v-row dense justify="center" align-content="center">
         <v-col cols="12">
@@ -46,8 +46,8 @@
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
-                loading-text="読込中"
-                no-data-text="データがありません。"
+                loading-text="Loading..."
+                no-data-text="No data."
                 class="elevation-1"
                 item-key="role_id"
                 @click:row="handleEditItem"
@@ -160,8 +160,8 @@
               :options.sync="policyTable.options"
               :loading="loading"
               locale="ja-jp"
-              loading-text="読込中"
-              no-data-text="データがありません。"
+              loading-text="Loading..."
+              no-data-text="No data."
               class="elevation-1"
               item-key="policy_id"
               show-select
