@@ -80,8 +80,9 @@
           <v-card>
             <d3-network
               :net-nodes="map.nodes" 
-              :net-links="map.links" 
-              :options="map.options" 
+              :net-links="map.links"
+              :selection="map.selected" 
+              :options="map.options"
               @node-click="clickNode"
             />
           </v-card>
@@ -164,7 +165,7 @@
                   <d3-network
                     :net-nodes="resourceMap.nodes" 
                     :net-links="resourceMap.links" 
-                    :options="resourceMap.options" 
+                    :options="resourceMapOptions" 
                     @node-click="clickNode"
                   />
                 </v-card>
@@ -174,10 +175,45 @@
 
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="resourceMapDialog = false">
-            CANCEL
-          </v-btn>
+          <v-card-text>
+            <v-row>
+              <v-col cols="8">
+                <v-slider
+                  class="mx-6"
+                  v-model="resourceMap.options.force"
+                  label="MapSize"
+                  min="1"
+                  max="99999"
+                  step="10"
+                  append-icon="mdi-magnify-plus-outline"
+                  prepend-icon="mdi-magnify-minus-outline"
+                  thumb-color="teal"
+                  thumb-label="always"
+                  thumb-size="42"
+                ></v-slider>
+              </v-col>
+              <v-col cols="3">
+                <v-slider
+                  class="mx-2"
+                  v-model="resourceMap.options.nodeSize"
+                  label="NodeSize"
+                  min="1"
+                  max="99"
+                  step="1"
+                  append-icon="mdi-magnify-plus-outline"
+                  prepend-icon="mdi-magnify-minus-outline"
+                  thumb-color="teal"
+                  thumb-label="always"
+                  thumb-size="42"
+                ></v-slider>
+              </v-col>
+              <v-col cols="1">
+                <v-btn text outlined color="grey darken-1" @click="resourceMapDialog = false">
+                  CANCEL
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -279,6 +315,17 @@ export default {
       }
       return this.searchModel.dates.join(' ~ ')
     },
+    resourceMapOptions(){
+      return{
+        force:      this.resourceMap.options.force,
+        size:       {w:this.resourceMap.options.size.w, h:this.resourceMap.options.size.h},
+        nodeSize:   this.resourceMap.options.nodeSize,
+        nodeLabels: this.resourceMap.options.nodeLabels,
+        linkLabels: this.resourceMap.options.linkLabels,
+        linkWidth:  this.resourceMap.options.linkWidth,
+        fontSize:   this.resourceMap.options.fontSize,
+      }
+    }
   },
   methods: {
     // Handler
@@ -316,6 +363,7 @@ export default {
       this.loading = true
       const resourceIDs = await this.listResourceID(searchCond)
       this.table.total = resourceIDs.length
+      this.table.options.page = 1
       this.resourceIDs = resourceIDs
       await this.loadList()
       this.loading = false
@@ -372,7 +420,6 @@ export default {
           id:     targetID,
           name:   finding.data_source,
           _color: this.getColorRGBByScore(finding.score),
-          _size:  20 + finding.score * 10,
         })
         map.links.push({
           sid: srcID,
