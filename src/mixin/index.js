@@ -34,9 +34,9 @@ let mixin = {
     getColorByCount(cnt) {
       if ( cnt == 0 ) {
         return 'grey lighten-1'
-      } else if ( cnt <= 1 ) {
+      } else if ( cnt <= 10 ) {
         return 'teal lighten-2'
-      } else if ( cnt <= 3 ) {
+      } else if ( cnt <= 30 ) {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
@@ -49,6 +49,15 @@ let mixin = {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
+      }
+    },
+    getColorRGBByScore: (score) => {
+      if ( score < 0.6 ) {
+        return '#4DB6AC'
+      } else if ( score < 0.8 ) {
+        return '#F9A825'
+      } else {
+        return '#D32F2F'
       }
     },
     getSeverityColor: (severity) => {
@@ -164,6 +173,20 @@ let mixin = {
         return str
       }
       return str.substr(0, cutNum) + ' ...'
+    },
+    getShortName: (longName) => {
+      // colon
+      if ( !longName.split(':').slice(-1)[0] ) { return longName }
+      const endOfColon = longName.split(':').slice(-1)[0]
+
+      // slash
+      if ( !endOfColon.split('/') ) { return endOfColon }
+      const slashSplited = endOfColon.split('/')
+
+      if ( slashSplited.length < 2 ) {
+        return slashSplited[slashSplited.length -1]
+      }
+      return slashSplited[slashSplited.length -2] + '/' + slashSplited[slashSplited.length -1]
     },
   },
 }
