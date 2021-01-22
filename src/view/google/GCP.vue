@@ -116,6 +116,14 @@
             ></v-text-field>
             <template v-if="gcpForm.newGCP">
               <v-text-field
+                v-model="gcpModel.gcp_organization_id"
+                :counter="128"
+                :rules="gcpForm.gcp_organization_id.validator"
+                :label="gcpForm.gcp_organization_id.label"
+                :placeholder="gcpForm.gcp_organization_id.placeholder"
+                outlined required
+              ></v-text-field>
+              <v-text-field
                 v-model="gcpModel.gcp_project_id"
                 :counter="128"
                 :rules="gcpForm.gcp_project_id.validator"
@@ -125,6 +133,13 @@
               ></v-text-field>
             </template>
             <template v-else>
+              <v-text-field
+                v-model="gcpModel.gcp_organization_id"
+                :counter="128"
+                :label="gcpForm.gcp_organization_id.label"
+                :placeholder="gcpForm.gcp_organization_id.placeholder"
+                outlined filled disabled
+              ></v-text-field>   
               <v-text-field
                 v-model="gcpModel.gcp_project_id"
                 :counter="128"
@@ -220,26 +235,31 @@ export default {
         gcp_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
-            v => v.length <= 200 || 'Name must be less than 200 characters',
+            v => !v || v.length <= 200 || 'Name must be less than 200 characters',
+          ]
+        },
+        gcp_organization_id: { label: 'GCP Organization ID *', placeholder: 'your-org', validator:[
+            v => !v || v.length <= 128 || 'GCP Organization ID must be less than 128 characters',
           ]
         },
         gcp_project_id: { label: 'GCP Project ID *', placeholder: 'your-project', validator:[
             v => !!v || 'GCP Project ID is required',
-            v => v.length <= 128 || 'GCP Project ID must be less than 128 characters',
+            v => !v || v.length <= 128 || 'GCP Project ID must be less than 128 characters',
             v => this.isNewGCPProjectID(v) || 'GCP Project ID is already exist.',
           ]
         },
       },
-      gcpModel: { gcp_id:'', name:'', gcp_project_id:'', updated_at:'' },
+      gcpModel: { gcp_id:'', name:'', gcp_organization_id: '',gcp_project_id:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
         headers: [
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'gcp_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'GCP ProjectID', align: 'start', sortable: false, value: 'gcp_project_id' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
+          { text: 'ID',  align: 'start', sortable: true, value: 'gcp_id' },
+          { text: 'Name', align: 'start', sortable: true, value: 'name' },
+          { text: 'GCP OrganizationID', align: 'start', sortable: true, value: 'gcp_organization_id' },
+          { text: 'GCP ProjectID', align: 'start', sortable: true, value: 'gcp_project_id' },
+          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['gcp_id'] },
@@ -303,6 +323,7 @@ export default {
         gcp: {
           project_id: this.$store.state.project.project_id,
           name: this.gcpModel.name,
+          gcp_organization_id: this.gcpModel.gcp_organization_id,
           gcp_project_id: this.gcpModel.gcp_project_id,
         },
       }

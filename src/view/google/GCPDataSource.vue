@@ -112,7 +112,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="600px">
+    <v-dialog v-model="editDialog" max-width="56%">
       <v-card>
         <v-card-title>
           <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
@@ -120,7 +120,7 @@
         </v-card-title>
         <v-container fluid>
           <v-row dense>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ gcpForm.gcp_id.label }}</v-list-item-subtitle>
@@ -130,7 +130,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ gcpForm.google_data_source_id.label }}</v-list-item-subtitle>
@@ -140,38 +140,12 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ gcpForm.name.label }}</v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.name }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="3" v-if="gcpModel.status">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="headline">
-                    <v-list-item-subtitle>{{ gcpForm.status.label }}</v-list-item-subtitle>
-                    <v-chip dark :color="getDataSourceStatusColor(gcpModel.status)">
-                      {{ getDataSourceStatusText(gcpModel.status) }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="4" v-if="gcpModel.scan_at">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.scan_at.label }}</v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip color="grey lighten-3">
-                      {{ gcpModel.scan_at | formatTime }}
-                    </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -183,6 +157,52 @@
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ gcpModel.max_score }}
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col cols="2" v-if="gcpModel.status">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">
+                    <v-list-item-subtitle>{{ gcpForm.status.label }}</v-list-item-subtitle>
+                    <v-chip dark :color="getDataSourceStatusColor(gcpModel.status)">
+                      {{ getDataSourceStatusText(gcpModel.status) }}
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>{{ gcpForm.gcp_organization_id.label }}</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ gcpModel.gcp_organization_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>{{ gcpForm.gcp_project_id.label }}</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ gcpModel.gcp_project_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3" v-if="gcpModel.scan_at">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>{{ gcpForm.scan_at.label }}</v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    <v-chip color="grey lighten-3">
+                      {{ gcpModel.scan_at | formatTime }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -237,10 +257,12 @@
         </v-card-title>
         <v-list two-line>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-avatar>
+              <v-icon>mdi-google-cloud</v-icon>
+            </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="gcpModel.gcp_id"></v-list-item-title>
-              <v-list-item-subtitle>GCP ID</v-list-item-subtitle>
+              <v-list-item-title v-text="gcpModel.google_data_source_id"></v-list-item-title>
+              <v-list-item-subtitle>Data Source ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -248,17 +270,8 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="gcpModel.name"></v-list-item-title>
-              <v-list-item-subtitle>GCP Name</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-google-cloud</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="gcpModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Data Source</v-list-item-subtitle>
+              <v-list-item-title v-text="gcpModel.gcp_project_id"></v-list-item-title>
+              <v-list-item-subtitle>GCP Project</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -303,6 +316,8 @@ export default {
         name: { label: 'Data Source', placeholder: '-', validator: []},
         max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
         gcp_id: { label: 'GCP ID', placeholder: '-', validator: []},
+        gcp_project_id: { label: 'Project ID', placeholder: '-', validator: []},
+        gcp_organization_id: { label: 'Organization ID', placeholder: '-', validator: []},
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
         scan_at: { label: 'Scaned', placeholder: '-', validator: [] },
@@ -312,14 +327,15 @@ export default {
         selected: [],
         search: '',
         headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID', align: 'start', sortable: false, value: 'google_data_source_id' },
-          { text: 'Google Data Source', align: 'start', sortable: false, value: 'name' },
-          { text: 'MAX Score', align: 'center', sortable: false, value: 'max_score' },
-          { text: 'status', align: 'center', width: '12%', sortable: false, value: 'status' },
-          { text: 'GCP ID',  align: 'start', sortable: false, value: 'gcp_id' },
-          { text: 'GCP Project', align: 'start', sortable: false, value: 'gcp_project_id' },
-          { text: 'ScanAt', align: 'center', sortable: false, value: 'scan_at' },
+          { text: '', align: 'center', width: '8%', sortable: false, value: 'avator' },
+          { text: 'ID', align: 'start', sortable: true, value: 'google_data_source_id' },
+          { text: 'Google Data Source', align: 'start', sortable: true, value: 'name' },
+          { text: 'MAX Score', align: 'center', sortable: true, value: 'max_score' },
+          { text: 'status', align: 'center', width: '12%', sortable: true, value: 'status' },
+          { text: 'GCP ID',  align: 'start', sortable: true, value: 'gcp_id' },
+          { text: 'GCP Organization', align: 'start', sortable: true, value: 'gcp_organization_id' },
+          { text: 'GCP Project', align: 'start', sortable: true, value: 'gcp_project_id' },
+          { text: 'ScanAt', align: 'center', sortable: true, value: 'scan_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['gcp_id'] },
@@ -401,6 +417,7 @@ export default {
           description: ds.description,
           max_score: ds.max_score,
           gcp_id: this.gcpModel.gcp_id,
+          gcp_organization_id: '',
           gcp_project_id: '',
           status: 0,
           status_detail:'',
@@ -408,6 +425,7 @@ export default {
         }
         if ( res.data.data.gcp_data_source ) {
           item.gcp_id = res.data.data.gcp_data_source.gcp_id
+          item.gcp_organization_id = res.data.data.gcp_data_source.gcp_organization_id,
           item.gcp_project_id = res.data.data.gcp_data_source.gcp_project_id
           item.status = res.data.data.gcp_data_source.status
           item.status_detail = res.data.data.gcp_data_source.status_detail
@@ -429,6 +447,8 @@ export default {
           return '/static/google/asset.png'
         case 'google:cloudsploit':
           return '/static/google/cloudsploit.png'
+        case 'google:scc':
+          return '/static/google/scc.png'
         default:
           return '/static/google/default.png'
       }
