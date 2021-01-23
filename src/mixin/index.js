@@ -12,6 +12,7 @@ let mixin = {
         'code:gitleaks',
         'google:asset',
         'google:cloudsploit',
+        'google:scc',
       ],
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,

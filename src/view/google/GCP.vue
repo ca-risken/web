@@ -238,7 +238,7 @@ export default {
             v => !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        gcp_organization_id: { label: 'GCP Organization ID *', placeholder: 'your-org', validator:[
+        gcp_organization_id: { label: 'GCP Organization ID', placeholder: 'your-org', validator:[
             v => !v || v.length <= 128 || 'GCP Organization ID must be less than 128 characters',
           ]
         },
