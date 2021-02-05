@@ -366,13 +366,19 @@ export default {
   async mounted() {
     this.loading = true
     await this.listGoogleDataSource()
-    this.listGCP()
-    if ( !this.$route.query.gcp_id ) {
+    await this.listGCP()
+    if (this.gcpList.length < 1) {
       this.loading = false
       return false
     }
-    this.gcpModel.gcp_id = Number(this.$route.query.gcp_id)
-    this.refleshList()
+    this.gcpModel = this.gcpList[0]
+    this.gcpList.forEach( async gcp => {
+      if ( gcp.gcp_id ==  Number(this.$route.query.gcp_id)) {
+        this.gcpModel =  gcp
+        return
+      }
+    })
+    await this.refleshList()
     this.loading = false
   },
   methods: {

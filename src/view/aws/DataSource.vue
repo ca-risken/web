@@ -376,15 +376,20 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
-  mounted() {
+  async mounted() {
     this.loading = true
-    this.listAWS()
-
-    if ( !this.$route.query.aws_id ) {
+    await this.listAWS()
+    if (this.awsList.length < 1) {
       this.loading = false
       return false
     }
-    this.awsModel.aws_id = Number(this.$route.query.aws_id)
+    this.awsModel = this.awsList[0]
+    this.awsList.forEach( async aws => {
+      if ( aws.aws_id ==  Number(this.$route.query.aws_id)) {
+        this.awsModel =  aws
+        return
+      }
+    })
     this.refleshList()
     this.loading = false
   },
