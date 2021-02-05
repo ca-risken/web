@@ -451,15 +451,21 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
-  mounted() {
+  async mounted() {
     this.loading = true
-    this.listOSINT()
-    if ( !this.$route.query.osint_id ) {
+    await this.listOSINT()
+    if (this.osintList.length < 1) {
       this.loading = false
       return false
     }
-    this.dataModel.osint_id = Number(this.$route.query.osint_id)
-    this.listDataSource()
+    this.dataModel = this.osintList[0]
+    this.osintList.forEach( async osint => {
+      if ( osint.osint_id ==  Number(this.$route.query.osint_id)) {
+        this.dataModel =  osint
+        return
+      }
+    })
+    await this.listDataSource()
     this.loading = false
   },
   methods: {
