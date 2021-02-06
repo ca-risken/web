@@ -33,6 +33,14 @@
         >
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
+        <v-btn
+          class="mt-3 mr-4" dense medium dark
+          :loading="loading"
+          color="light-blue darken-2"
+          @click="handleSetupAll"
+        >
+          Setup all
+        </v-btn>
       </v-row>
       <v-row>
         <v-col cols="12">
@@ -130,7 +138,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="2" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ gcpForm.google_data_source_id.label }}</v-list-item-subtitle>
@@ -140,7 +148,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="4">
+            <v-col cols="4" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ gcpForm.name.label }}</v-list-item-subtitle>
@@ -150,7 +158,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ gcpForm.max_score.label }}</v-list-item-subtitle>
@@ -163,7 +171,7 @@
               </v-list-item>
             </v-col>
           </v-row>
-          <v-row dense>
+          <v-row dense v-if="!gcpForm.setupAll">
             <v-col cols="2" v-if="gcpModel.status">
               <v-list-item two-line>
                 <v-list-item-content>
@@ -240,10 +248,17 @@
             </v-btn>
             <v-btn
               text outlined color="green darken-1" 
-              v-if="!gcpForm.readOnly"
+              v-if="!gcpForm.readOnly && !gcpForm.setupAll"
               :loading="loading" 
               @click="handleAttachSubmit">
               Attach
+            </v-btn>
+            <v-btn
+              text outlined color="green darken-1" 
+              v-if="gcpForm.setupAll"
+              :loading="loading" 
+              @click="handleAttachAll">
+              Attach All
             </v-btn>
           </v-card-actions>
         </v-card-text>
@@ -311,6 +326,7 @@ export default {
       googleDataSourceList: [],
       gcpForm: {
         readOnly: false,
+        setupAll: false,
         valid: false,
         google_data_source_id: { label: 'Google Data Source ID', placeholder: '-', validator: []},
         name: { label: 'Data Source', placeholder: '-', validator: []},
@@ -472,6 +488,17 @@ export default {
       this.finishSuccess('Success: Detach GCP Data Source.')
     },
     async attachDataSource() {
+      await this.execAttachDataSource()
+      this.finishSuccess('Success: Attach GCP Data Source.')
+    },
+    async attachAllDataSource() {
+      this.table.items.forEach( async ds => {
+        this.gcpModel.google_data_source_id = ds.google_data_source_id
+        await this.execAttachDataSource()
+      })
+      this.finishSuccess('Success: Attach all GCP Data Source.')
+    },
+    async execAttachDataSource() {
       let scan_at = 0
       if (this.gcpModel.scan_at > 0 ) {
         scan_at = this.gcpModel.scan_at
@@ -491,7 +518,6 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Attach GCP Data Source.')
     },
     async scanDataSource() {
       const param = {
@@ -517,6 +543,11 @@ export default {
       this.gcpForm.readOnly = true
       this.editDialog  = true
     },
+    handleSetupAll() {
+      this.gcpForm.readOnly = false
+      this.gcpForm.setupAll = true
+      this.editDialog  = true
+    },
     handleAttachItem(item) {
       this.assignDataModel(item)
       this.gcpForm.readOnly = false
@@ -525,6 +556,10 @@ export default {
     handleAttachSubmit() {
       this.loading = true
       this.attachDataSource()
+    },
+    handleAttachAll() {
+      this.loading = true
+      this.attachAllDataSource()
     },
     handleDetachItem(item) {
       this.assignDataModel(item)

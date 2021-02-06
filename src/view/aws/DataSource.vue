@@ -33,6 +33,14 @@
         >
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
+        <v-btn
+          class="mt-3 mr-4" dense medium dark
+          :loading="loading"
+          color="light-blue darken-2"
+          @click="handleSetupAll"
+        >
+          Setup all
+        </v-btn>
       </v-row>
       <v-row>
         <v-col cols="12">
@@ -130,7 +138,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="3" v-if="!awsForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ awsForm.aws_data_source_id.label }}</v-list-item-subtitle>
@@ -140,7 +148,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="6" v-if="!awsForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>{{ awsForm.data_source.label }}</v-list-item-subtitle>
@@ -151,7 +159,7 @@
               </v-list-item>
             </v-col>
           </v-row>
-          <v-row dense>
+          <v-row dense v-if="!awsForm.setupAll">
             <v-col cols="3" v-if="awsModel.status">
               <v-list-item two-line>
                 <v-list-item-content>
@@ -222,7 +230,12 @@
               :placeholder="awsForm.external_id.placeholder"
               :disabled="awsForm.readOnly"
               :filled="awsForm.readOnly"
-            ></v-text-field>   
+            ></v-text-field>
+            <v-checkbox
+              v-if="awsForm.setupAll"
+              v-model="awsModel.overrideDataSource"
+              label="Override the already attaced datasources"
+            ></v-checkbox> 
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -240,10 +253,17 @@
               </v-btn>
               <v-btn
                 text outlined color="green darken-1" 
-                v-if="!awsForm.readOnly"
+                v-if="!awsForm.readOnly && !awsForm.setupAll"
                 :loading="loading" 
                 @click="handleAttachSubmit">
                 Attach
+              </v-btn>
+              <v-btn
+                text outlined color="green darken-1" 
+                v-if="awsForm.setupAll"
+                :loading="loading" 
+                @click="handleAttachAll">
+                Attach All
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -318,6 +338,7 @@ export default {
       awsList: [],
       awsForm: {
         readOnly: false,
+        setupAll: false,
         valid: false,
         aws_data_source_id: { label: 'Data Source ID', placeholder: '-', validator: []},
         data_source: { label: 'Data Source', placeholder: '-', validator: []},
@@ -328,10 +349,10 @@ export default {
         ]},
         assume_role_arn: { label: 'Assume Role', placeholder: '-', validator: [
             v => !!v || 'Assume Role is required',
-            v => v.length <= 255 || 'Assume Role must be less than 255 characters',
+            v => !v || v.length <= 255 || 'Assume Role must be less than 255 characters',
         ]},
         external_id: { label: 'External ID', placeholder: '-', validator: [
-            v => v.length <= 255 || 'External ID must be less than 255 characters',
+            v => !v || v.length <= 255 || 'External ID must be less than 255 characters',
         ]},
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
@@ -459,6 +480,19 @@ export default {
       this.finishSuccess('Success: Detach AWS Data Source.')
     },
     async attachDataSource() {
+      await this.execAttachDataSource()
+      this.finishSuccess('Success: Attach AWS Data Source.')
+    },
+    async attachAllDataSource() {
+      this.table.items.forEach( async ds => {
+        if ( this.awsModel.overrideDataSource || ds.assume_role_arn == "") {
+          this.awsModel.aws_data_source_id = ds.aws_data_source_id
+          await this.execAttachDataSource()
+        }
+      })
+      this.finishSuccess('Success: Attach all AWS Data Source.')
+    },
+    async execAttachDataSource() {
       let scan_at = 0
       if (this.awsModel.scan_at > 0 ) {
         scan_at = this.awsModel.scan_at
@@ -480,7 +514,6 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Attach AWS Data Source.')
     },
     async scanDataSource() {
       const param = {
@@ -501,6 +534,11 @@ export default {
       this.refleshList()
       this.finishInfo('Reflesh list')
     },
+    handleSetupAll() {
+      this.awsForm.readOnly = false
+      this.awsForm.setupAll = true
+      this.editDialog  = true
+    },
     handleViewItem(item) {
       this.assignDataModel(item)
       this.awsForm.readOnly = true
@@ -517,6 +555,13 @@ export default {
       }
       this.loading = true
       this.attachDataSource()
+    },
+    handleAttachAll() {
+      if ( !this.$refs.form.validate() ) {
+        return
+      }
+      this.loading = true
+      this.attachAllDataSource()
     },
     handleDetachItem(item) {
       this.assignDataModel(item)
