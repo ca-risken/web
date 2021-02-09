@@ -336,6 +336,26 @@ export const appRoute = [
         ]
       },
       {
+        path: '/report',
+        component: RouteWrapper,
+        redirect: '/report/finding',
+        meta: {
+          title: 'Report',
+          icon: 'mdi-file-chart',
+          group: 'report'
+        },
+        children: [
+          {
+            path: '/report/finding',
+            name: 'ReportFinding',
+            meta: {
+              title: 'Finding',
+            },
+            component: () => import('@/view/report/Finding.vue')
+          },
+        ]
+      },
+      {
         path: '/403',
         name: 'Forbidden',
         meta: {
