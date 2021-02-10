@@ -191,6 +191,14 @@
             </v-data-table>
 
             <v-divider class="mt-3 mb-3"></v-divider>
+            <v-alert
+              v-if="roleTable.selected.length == 0"
+              dense
+              outlined
+              type="error"
+            >
+              The selected user will be <strong>removed</strong> from the project, if you do not select any <strong>role</strong>, 
+            </v-alert>
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
@@ -422,10 +430,6 @@ export default {
       this.editDialog  = true
     },
     handleEditSubmit() {
-      if( this.roleTable.selected.length < 1 ) {
-        this.$refs.snackbar.notifyError('Error: Select one or more roles.')
-        return false
-      }
       this.putItem()
     },
     handleSearch() {

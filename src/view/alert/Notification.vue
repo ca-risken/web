@@ -130,7 +130,22 @@
               :placeholder="form.webhook_url.placeholder"
               outlined required
             ></v-text-field>
-
+            <v-text-field
+              v-model="dataModel.channel"
+              :counter="60"
+              :rules="form.channel.validator"
+              :label="form.channel.label"
+              :placeholder="form.channel.placeholder"
+              outlined required
+            ></v-text-field>
+            <v-alert
+              v-if="dataModel.channel != '' && dataModel.channel != null"
+              dense
+              outlined
+              type="error"
+            >
+              The specific channel setting is <strong>deprecated</strong>... It is recommended to use the default channels.
+            </v-alert>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
@@ -208,7 +223,7 @@ export default {
         notification_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
-            v => v.length <= 200 || 'Name must be less than 200 characters',
+            v => !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
         type: { label: 'Type *', placeholder: 'slack',
@@ -222,8 +237,10 @@ export default {
             v => !!v || 'Webhook is required',
           ]
         },
+        channel: { label: 'Channel', placeholder: '#your-channel', validator:[],
+        },
       },
-      dataModel: { notification_id:0, name:'', type:'', notify_setting: {}, webhook_url:'', updated_at:'' },
+      dataModel: { notification_id:0, name:'', type:'', notify_setting: {}, webhook_url:'', channel:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
@@ -305,7 +322,10 @@ export default {
           type: this.dataModel.type,
           name: this.dataModel.name,
           notify_setting: JSON.stringify({
-            webhook_url: this.dataModel.webhook_url
+            webhook_url: this.dataModel.webhook_url,
+            data: {
+              channel: this.dataModel.channel,
+            },
           }), 
         },
       }
@@ -321,7 +341,7 @@ export default {
     },
 
     handleNewItem() {
-      this.dataModel = { notification_id:0, name:'', type:'', webhook_url:'', updated_at:'' }
+      this.dataModel = { notification_id:0, name:'', type:'', webhook_url:'', channel: '', updated_at:'' }
       this.form.new = true
       this.editDialog  = true
     },
@@ -354,9 +374,14 @@ export default {
 
       const setting = JSON.parse(this.dataModel.notify_setting)
       // slack
-      if (this.dataModel.type === 'slack' && setting.webhook_url) {
-        this.dataModel.webhook_url = setting.webhook_url
-      }
+      if (this.dataModel.type === 'slack'){
+        if (setting.webhook_url) {
+          this.dataModel.webhook_url = setting.webhook_url
+        }
+        if (setting.data && setting.data.channel) {
+          this.dataModel.channel = setting.data.channel
+        }
+      } 
     },
 
     // finish process

@@ -2,13 +2,15 @@
   <v-fab-transition>
     <v-btn
       fab="fab"
-      small
+      medium
+      class="mb-8"
       dark="dark"
       fixed="fixed"
       bottom="bottom"
       right="right"
-      color="red"
+      color="pink lighten-2"
       v-show="fab"
+      v-scroll="onScroll"
       @click="toTop"
     >
       <v-icon>keyboard_arrow_up</v-icon>
@@ -21,14 +23,14 @@ export default {
   name: 'AppFab',
   data() {
     return {
-      fab: true
+      fab: false
     }
   },
   methods: {
     onScroll() {
       if (typeof window === 'undefined') return
       const top = window.pageYOffset || document.documentElement.offsetTop || 0
-      this.fab = top > 300
+      this.fab = top > 40
     },
     toTop() {
       this.$router.push({ hash: '' })

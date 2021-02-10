@@ -7,9 +7,9 @@
     :width="drawerWidth"
   >
     <v-toolbar color="primary darken-2" dark>
-      <img :src="computeLogo" height="36" alt="RISKEN" />
+      <img :src="computeLogo" height="36" alt="RISKEN" @click="toTop" />
       <v-toolbar-title class="ml-0 pl-3">
-        <span class="hidden-sm-and-down">RISKEN</span>
+        <span class="hidden-sm-and-down" @click="toTop">RISKEN</span>
       </v-toolbar-title>
     </v-toolbar>
     <v-list class="pa-0" >
@@ -151,7 +151,10 @@ export default {
   methods: {
     handleDrawerCollapse() {
       this.drawerWidth = this.drawerWidth === 256 ? 64 : 256
-    }
+    },
+    toTop() {
+      this.$router.push('/')
+    },
   }
 }
 </script>

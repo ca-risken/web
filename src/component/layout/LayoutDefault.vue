@@ -9,11 +9,11 @@
       </v-card>
     </v-main>
     <!-- App Footer -->
-    <!-- <v-footer height="auto" class="pa-3 app--footer" dark color="primary lighten-1">
-      <span>RISKEN @ {{ new Date().getFullYear() }}</span>
+    <v-footer height="auto" class="pa-3 app--footer" dark color="primary lighten-1">
       <v-spacer />
-      <v-icon color="red" small>favorite</v-icon>
-    </v-footer> -->
+      <span class="mr-2">RISKEN @ {{ new Date().getFullYear() }}</span>
+      <v-icon class="mr-8" color="grey lighten-2">mdi-magnify</v-icon>
+    </v-footer>
 
     <!-- Go to top -->
     <app-fab />
@@ -39,7 +39,7 @@ export default {
   methods: {
     handleDrawerVisiable() {
       this.showDrawer = !this.showDrawer
-    }
+    },
   },
   created() {}
 }
