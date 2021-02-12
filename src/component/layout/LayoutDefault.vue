@@ -11,8 +11,10 @@
     <!-- App Footer -->
     <v-footer height="auto" class="pa-3 app--footer" dark color="primary lighten-1">
       <v-spacer />
-      <v-icon class="mr-2" color="grey lighten-2">mdi-magnify</v-icon>
-      <span class="mr-8">RISKEN @ {{ new Date().getFullYear() }}</span>
+      <div class="mt-3">
+        <v-icon class="mr-2" color="grey lighten-2">mdi-magnify</v-icon>
+        <span class="mr-4 font-weight-bold">RISKEN @ {{ new Date().getFullYear() }}</span>
+      </div>
     </v-footer>
 
     <!-- Go to top -->
