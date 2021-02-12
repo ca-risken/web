@@ -9,7 +9,7 @@
     <v-toolbar color="primary darken-2" dark>
       <img :src="computeLogo" height="36" alt="RISKEN" @click="toTop" />
       <v-toolbar-title class="ml-0 pl-3">
-        <span class="hidden-sm-and-down" @click="toTop">RISKEN</span>
+        <span class="hidden-sm-and-down font-weight-bold headline" @click="toTop">RISKEN</span>
       </v-toolbar-title>
     </v-toolbar>
     <v-list class="pa-0" >
