@@ -255,7 +255,7 @@ export default {
         ],
         options: {
           page: 1,
-          itemsPerPage: 8,
+          itemsPerPage: 5,
           sortBy: ['id'],
         },
         actions: [
@@ -377,7 +377,7 @@ export default {
       for( let id of ids ) {
         const resource = await this.getResource(id)
         const findingIDs = await this.listFindingByResouceName(resource.resource_name)
-        await this.setResourceMap(resource, findingIDs, this.map, 10)
+        await this.setResourceMap(resource, findingIDs, this.map, 5)
         this.table.items.push({
           resource_id:   resource.resource_id,
           resource_name: resource.resource_name,
@@ -413,7 +413,21 @@ export default {
       let count = 0
       for( let id of findingIDs ) {
         count++
-        if ( count > nodeLimits ) { break } // limit
+        if ( count > nodeLimits ) {
+          const targetID = srcID + '-more...'
+          map.nodes.push({
+            id:     targetID,
+            name:   'and more...',
+            _color: '#616161',
+          })
+          map.links.push({
+            sid: srcID,
+            tid: targetID,
+            _svgAttrs:{'stroke-width':3, opacity:2},
+            _color: '#E0E0E0',
+          })
+          break // limit
+        }
         const finding = await this.getFinding(id)
         const targetID = 'f-' + finding.finding_id
         map.nodes.push({

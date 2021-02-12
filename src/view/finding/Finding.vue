@@ -604,9 +604,7 @@ export default {
       this.viewDialog = true
     },
     parseQuery() {
-      if (!this.$route.query) {
-        return false
-      }
+      if (!this.$route.query) return
       if ( this.$route.query.data_source ) {
         this.searchModel.dataSource = this.$route.query.data_source.split(',')
       }
