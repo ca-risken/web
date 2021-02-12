@@ -376,7 +376,7 @@ export default {
         subTitle: 'High score findings ',
         icon: 'mdi-file-find-outline',
         color: 'blue darken-1',
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8',
       })
       this.status.riskFactor.push({
         title: this.status.compSettingRate,
@@ -452,7 +452,7 @@ export default {
         icon: 'mdi-aws',
         color: 'orange darken-1',
         dark: true,
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8&data_source=aws:',
       })
       this.category.push({
         category: 'Diagnosis',
@@ -461,7 +461,7 @@ export default {
         icon: 'mdi-bug-check-outline',
         color: 'indigo darken-1',
         dark: true,
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8&data_source=diagnosis:',
       })
       this.category.push({
         category: 'OSINT',
@@ -470,7 +470,7 @@ export default {
         icon: 'http',
         color: 'green darken-1',
         dark: true,
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8&data_source=osint:',
       })
       this.category.push({
         category: 'Code',
@@ -479,7 +479,7 @@ export default {
         icon: 'mdi-github',
         color: 'black',
         dark: true,
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8&data_source=code:',
       })
       this.category.push({
         category: 'Google',
@@ -488,7 +488,7 @@ export default {
         icon: 'mdi-google',
         color: 'light-blue darken-1',
         dark: true,
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8&data_source=google:',
       })
       this.category.push({
         category: 'Azure',
@@ -497,7 +497,7 @@ export default {
         icon: 'mdi-microsoft-azure',
         color: 'blue darken-1',
         dark: true,
-        link: '/finding/finding/',
+        link: '/finding/finding/?from_score=0.8&data_source=azure:',
       })
     },
 
