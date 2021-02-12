@@ -125,7 +125,7 @@
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
-                        v-for="action in table.actions"
+                        v-for="action in getActionList(item)"
                         :key="action.text"
                         @click="action.click(item)"
                       >
@@ -440,12 +440,6 @@ export default {
           itemsPerPage: 20,
           sortBy: ['id'],
         },
-        actions: [
-          { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewItem },
-          { text: 'Activate Finding', icon: 'mdi-check-circle', click: this.handleActivateItem },
-          { text: 'Pend Finding', icon: 'mdi-check-circle-outline', click: this.handlePendItem },
-          { text: 'Delete Finding', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
-        ],
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -596,6 +590,20 @@ export default {
         return Promise.reject(err)
       })
       this.finishSuccess('Success: Delete.')
+    },
+
+    getActionList( item ) {
+      let list = [
+          { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewItem },
+      ]
+      if ( !item.status ) return list
+      if ( item.status === 'ACTIVE' ) {
+        list.push({ text: 'Pend Finding', icon: 'mdi-check-circle-outline', click: this.handlePendItem })
+      } else {
+        list.push({ text: 'Activate Finding', icon: 'mdi-check-circle', click: this.handleActivateItem })
+      }
+      list.push({ text: 'Delete Finding', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem })
+      return list
     },
 
     // handler

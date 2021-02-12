@@ -90,7 +90,7 @@
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
-                        v-for="action in table.actions"
+                        v-for="action in getActionList(item)"
                         :key="action.text"
                         @click="action.click( item )"
                       >
@@ -268,11 +268,6 @@ export default {
           { text: 'Action', align: 'center', width: '10%', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
-        actions: [
-          { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
-          { text: 'Pending', icon: 'mdi-trash-can-outline', click: this.handlePendItem },
-          { text: 'Activate', icon: 'mdi-check-circle-outline', click: this.handleActiveItem },
-        ],
         footer: {
           itemsPerPageOptions: [10],
           showCurrentPage: true,
@@ -409,6 +404,18 @@ export default {
         result = resources
       }
       return result
+    },
+    getActionList( item ) {
+      let list = [
+          { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
+      ]
+      if ( !item.status ) return list
+      if ( this.getAlertStatusText(item.status)=='ACTIVE' ) {
+        list.push({ text: 'Pending', icon: 'mdi-trash-can-outline', click: this.handlePendItem })
+      } else {
+        list.push({ text: 'Activate', icon: 'mdi-check-circle-outline', click: this.handleActiveItem })
+      }
+      return list
     },
 
     // Pending alert
