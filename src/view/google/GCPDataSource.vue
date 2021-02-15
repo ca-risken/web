@@ -545,7 +545,7 @@ export default {
       this.editDialog  = true
     },
     handleSetupAll() {
-      this.gcpModel = {}
+      this.gcpModel = { gcp_id: this.gcpModel.gcp_id }
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = true
       this.editDialog  = true
