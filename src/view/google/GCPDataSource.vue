@@ -541,9 +541,11 @@ export default {
     handleViewItem(item) {
       this.assignDataModel(item)
       this.gcpForm.readOnly = true
+      this.gcpForm.setupAll = false
       this.editDialog  = true
     },
     handleSetupAll() {
+      this.gcpModel = {}
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = true
       this.editDialog  = true
@@ -551,6 +553,7 @@ export default {
     handleAttachItem(item) {
       this.assignDataModel(item)
       this.gcpForm.readOnly = false
+      this.gcpForm.setupAll = false
       this.editDialog  = true
     },
     handleAttachSubmit() {

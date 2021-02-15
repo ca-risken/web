@@ -485,7 +485,7 @@ export default {
     },
     async attachAllDataSource() {
       this.table.items.forEach( async ds => {
-        if ( this.awsModel.overrideDataSource || ds.assume_role_arn == "") {
+        if ( this.awsModel.overrideDataSource || ds.assume_role_arn == undefined || ds.assume_role_arn == "" ) {
           this.awsModel.aws_data_source_id = ds.aws_data_source_id
           await this.execAttachDataSource()
         }
@@ -535,6 +535,7 @@ export default {
       this.finishInfo('Reflesh list')
     },
     handleSetupAll() {
+      this.awsModel = {aws_id: this.awsModel.aws_id}
       this.awsForm.readOnly = false
       this.awsForm.setupAll = true
       this.editDialog  = true
@@ -542,11 +543,13 @@ export default {
     handleViewItem(item) {
       this.assignDataModel(item)
       this.awsForm.readOnly = true
+      this.awsForm.setupAll = false
       this.editDialog  = true
     },
     handleAttachItem(item) {
       this.assignDataModel(item)
       this.awsForm.readOnly = false
+      this.awsForm.setupAll = false
       this.editDialog  = true
     },
     handleAttachSubmit() {
