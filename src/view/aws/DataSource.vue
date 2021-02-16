@@ -442,7 +442,6 @@ export default {
       }
       this.table.total = res.data.data.data_source.length
       this.table.items = res.data.data.data_source
-      this.loading = false
     },
     clearList() {
       this.table.total = 0
@@ -529,9 +528,9 @@ export default {
     },
 
     // handler method
-    handleList() {
+    async handleList() {
       this.loading = true
-      this.refleshList()
+      await this.refleshList()
       this.finishInfo('Reflesh list')
     },
     handleSetupAll() {
@@ -591,17 +590,17 @@ export default {
       this.awsModel = Object.assign(this.awsModel, item)
     },
     async finishInfo(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyInfo(msg)
       this.finish(true)
     },
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(true)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },
