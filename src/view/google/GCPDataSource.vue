@@ -456,7 +456,6 @@ export default {
         this.table.items.push(item)
       })
       this.table.total = this.googleDataSourceList.length
-      this.loading = false
     },
     clearList() {
       this.table.total = 0
@@ -533,10 +532,10 @@ export default {
     },
 
     // handler method
-    handleList() {
+    async handleList() {
       this.loading = true
-      this.refleshList()
-      this.finishInfo('Reflesh list')
+      await this.refleshList()
+      await this.finishInfo('Reflesh list')
     },
     handleViewItem(item) {
       this.assignDataModel(item)
@@ -589,17 +588,17 @@ export default {
       this.gcpModel = Object.assign(this.gcpModel, item)
     },
     async finishInfo(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       await this.finish(false)
       this.$refs.snackbar.notifyInfo(msg)
     },
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       await this.finish(true)
       this.$refs.snackbar.notifySuccess(msg)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       await this.finish(false)
       this.$refs.snackbar.notifyError(msg)
     },
