@@ -247,6 +247,7 @@ export default {
       this.$router.go(-1)
     },
     handleProjectClick(project)  {
+      this.clearProjectParam()
       store.commit('updateProject', project)
       this.reload()
     },
@@ -258,7 +259,11 @@ export default {
       this.projectDialog = true
       this.listProject()
     },
-
+    clearProjectParam() {
+      let query = Object.assign({}, this.$router.query)
+      delete query["project_id"]
+      this.$router.push({query: query})
+    },
   },
   created() {}
 }
