@@ -55,7 +55,6 @@ export default {
       const admin = await this.$axios.get('/iam/is-admin/?user_id=' + store.state.user.user_id ).catch((err) =>  {
         return Promise.reject(err)
       })
-      console.log(admin)
       let listUserID = store.state.user.user_id
       if (admin.data.data.ok) {
         listUserID = ''

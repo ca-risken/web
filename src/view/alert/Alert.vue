@@ -412,7 +412,7 @@ export default {
       if ( !item.status ) return list
       if ( this.getAlertStatusText(item.status)=='ACTIVE' ) {
         list.push({ text: 'Pending', icon: 'mdi-trash-can-outline', click: this.handlePendItem })
-      } else {
+      } else if (this.getAlertStatusText(item.status)=='PENDING' ) {
         list.push({ text: 'Activate', icon: 'mdi-check-circle-outline', click: this.handleActiveItem })
       }
       return list
