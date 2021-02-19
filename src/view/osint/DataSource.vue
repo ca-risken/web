@@ -74,6 +74,10 @@
                     dark
                   >Not configured</v-chip>
                 </template>
+                <template v-slot:[`item.scan_at`]="{ item }">
+                  <v-chip v-if="item.scan_at">{{ item.scan_at | formatTime }}</v-chip>
+                  <v-chip v-else>Not yet scan...</v-chip>
+                </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
@@ -233,8 +237,8 @@
             </v-col>
           </v-row>
           <!-- detect words -->
-          <v-divider />
-          <v-row class="mx-4">
+          <v-divider v-if="dataModel.rel_osint_data_source_id" />
+          <v-row v-if="dataModel.rel_osint_data_source_id" class="mx-4">
             <v-col cols="6">
               <v-list-item-title>
                 <v-icon left>mdi-label</v-icon>
@@ -323,7 +327,7 @@
     <v-dialog v-model="deleteDialog" max-width="400px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">連携解除しますか?</span>
+          <span class="mx-4">Do you really want to detach this?</span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
@@ -395,7 +399,7 @@ export default {
         rel_osint_data_source_id: { label: 'Relation ID', placeholder: '-', validator: [] },
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
-        scan_at: { label: 'Scaned', placeholder: '-', validator: [] },
+        scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
 
         detect_word: { label: 'Detect word', placeholder: '-', validator: [] },
 
@@ -424,6 +428,7 @@ export default {
           { text: 'Description', align: 'start', sortable: false, value: 'description' },
           { text: 'MAX Score', align: 'center', sortable: false, value: 'max_score' },
           { text: 'Status', align: 'center', width: '12%', sortable: false, value: 'status' },
+          { text: 'ScanAt', align: 'center', sortable: true, value: 'scan_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['osint_id'] },
@@ -534,6 +539,7 @@ export default {
           item.rel_osint_data_source_id = rel.data.data.rel_osint_data_source[0].rel_osint_data_source_id
           item.status                   = rel.data.data.rel_osint_data_source[0].status
           item.status_detail            = rel.data.data.rel_osint_data_source[0].status_detail
+          item.scan_at                  = rel.data.data.rel_osint_data_source[0].scan_at
         }
         this.table.items.push(item)
       })
