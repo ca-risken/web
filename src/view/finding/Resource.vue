@@ -217,6 +217,119 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="findingDialog" max-width="60%">
+      <v-card>
+        <v-toolbar>
+          <v-card-title>Finding Detail</v-card-title>
+        </v-toolbar>
+        <v-container fluid>
+          <v-row dense class="mx-2">
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon color="black" dark left>mdi-identifier</v-icon>
+                    Finding ID
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.finding_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
+                    Score
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    <v-chip dark :color="getColorByScore(findingModel.score)">{{ findingModel.score | formatScore }}</v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left
+                      v-text="getDataSourceIcon(findingModel.data_source)"
+                      :color="getDataSourceIconColor(findingModel.data_source)"
+                    />
+                    Data Source
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.data_source }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense class="mx-2">
+            <v-col cols="10">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-file-find-outline</v-icon>
+                    Resource Name
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.resource_name }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense class="mx-2">
+            <v-col cols="10">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-image-text</v-icon>
+                    Description
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ findingModel.description }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row class="ma-2">
+            <v-col cols="4">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-clock-outline</v-icon>
+                Created At
+              </v-list-item-subtitle>
+              <v-list-item-title>
+                <v-chip>{{ findingModel.created_at | formatTime }}</v-chip>
+              </v-list-item-title>
+            </v-col>
+            <v-col cols="4">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-clock-outline</v-icon>
+                Updated At
+              </v-list-item-subtitle>
+              <v-list-item-title>
+                <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
+              </v-list-item-title>
+            </v-col>
+          </v-row>        
+        </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn dark outlined color="light-blue darken-4" @click="handleViewFindingFromNode">
+            VIEW FINDING
+          </v-btn>
+          <v-btn text outlined color="grey darken-1" @click="findingDialog = false">
+            CANCEL
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -298,11 +411,30 @@ export default {
           fontSize: 20,
         }
       },
+      findingDialog: false,
+      findingModel: {
+        finding_id:'',
+        status: '',
+        score:'',
+        original_score:'',
+        data_source:'',
+        resource_name:'',
+        description:'',
+        tags: [],
+        data: '',
+        created_at:'',
+        updated_at:'',
+        new_tag: '',
+      },
     }
   },
   filters: {
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+    formatScore: (score) => {
+      if (!Number.isInteger(score)){return score}
+      return score.toFixed(2)
     },
   },
   async mounted() {
@@ -331,6 +463,13 @@ export default {
     // Handler
     handleViewFinding(item) {
       this.$router.push('/finding/finding?resource_name=' + item.resource_name)
+    },
+    handleViewFindingFromNode() {
+      this.$router.push('/finding/finding/' + 
+        '?resource_name=' + this.findingModel.resource_name +
+        '&data_source='   + this.findingModel.data_source +
+        '&from_score='    + this.findingModel.from_score +
+        '&to_score='      + this.findingModel.to_score)
     },
     handleViewItem(item) {
       this.resourceMap.nodes = []
@@ -431,8 +570,9 @@ export default {
         const finding = await this.getFinding(id)
         const targetID = 'f-' + finding.finding_id
         map.nodes.push({
-          id:     targetID,
-          name:   finding.data_source,
+          id:      targetID,
+          name:    finding.score + 'pt (' + finding.data_source + ')',
+          finding: finding,
           _color: this.getColorRGBByScore(finding.score),
         })
         map.links.push({
@@ -444,8 +584,10 @@ export default {
       }
     },
     clickNode(event, node) {
-      console.log('event: ' + event)
-      console.log('node: ' + node)
+      if ( !node.finding ) return
+      // console.log('event: ' + event)
+      this.findingModel = Object.assign(this.findingModel, node.finding)
+      this.findingDialog = true
     },
   }
 }
