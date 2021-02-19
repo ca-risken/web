@@ -17,9 +17,10 @@ const router = new Router({
 // Navigation guards
 router.beforeEach( async (to, from, next) => {
   NProgress.start()
-  var project_id = to.query.project_id
+  const project_id = to.query.project_id
+  const current_project_id = store.state.project.project_id 
   const user_id = store.state.user.user_id
-  if ( typeof project_id != 'undefined' && typeof user_id != 'undefined' ) {
+  if ( typeof project_id != 'undefined' && typeof user_id != 'undefined' && project_id !== current_project_id ) {
     const admin = await axios.get('/iam/is-admin/?user_id=' + user_id )
     let q = 'project_id=' + project_id
     if ( !admin.data.data.ok ) {
