@@ -376,7 +376,7 @@ export default {
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'Data Source', align: 'start', sortable: false, value: 'data_source' },
           { text: 'MAX Score', align: 'center', sortable: false, value: 'max_score' },
-          { text: 'status', align: 'center', width: '12%', sortable: false, value: 'status' },
+          { text: 'status', align: 'start', width: '12%', sortable: false, value: 'status' },
           { text: 'AWS ID',  align: 'start', sortable: false, value: 'aws_id' },
           { text: 'Assume Role', align: 'start', sortable: false, value: 'assume_role_arn' },
           { text: 'ScanAt', align: 'center', sortable: false, value: 'scan_at' },

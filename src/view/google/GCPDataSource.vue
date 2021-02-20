@@ -76,7 +76,17 @@
                     v-if="item.gcp_id"
                     :color="getDataSourceStatusColor(item.status)"
                     dark
-                  >{{ getDataSourceStatusText(item.status) }}</v-chip>
+                  >
+                    <v-progress-circular
+                      v-if="isInProgressDataSourceStatus(item.status)"
+                      indeterminate
+                      size="20"
+                      width="2"
+                      color="white"
+                      class="mr-2"
+                    ></v-progress-circular>
+                  {{ getDataSourceStatusText(item.status) }}
+                  </v-chip>
                   <v-chip
                     v-else
                     color="grey"
@@ -347,7 +357,7 @@ export default {
           { text: 'ID', align: 'start', sortable: true, value: 'google_data_source_id' },
           { text: 'Google Data Source', align: 'start', sortable: true, value: 'name' },
           { text: 'MAX Score', align: 'center', sortable: true, value: 'max_score' },
-          { text: 'status', align: 'center', width: '12%', sortable: true, value: 'status' },
+          { text: 'status', align: 'start', width: '12%', sortable: true, value: 'status' },
           { text: 'GCP ID',  align: 'start', sortable: true, value: 'gcp_id' },
           { text: 'GCP Organization', align: 'start', sortable: true, value: 'gcp_organization_id' },
           { text: 'GCP Project', align: 'start', sortable: true, value: 'gcp_project_id' },
