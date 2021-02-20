@@ -64,7 +64,7 @@
                 @click:row="handleViewItem"
               >
                 <template v-slot:[`item.avator`]="{ item }">
-                  <v-avatar tile class="ma-2">
+                  <v-avatar tile class="ma-3" size="76%">
                     <img :src="getAWSDataSourceIcon(item.data_source)" :alt="item.data_source" />
                   </v-avatar>
                 </template>
