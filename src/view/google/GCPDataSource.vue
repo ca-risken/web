@@ -379,6 +379,11 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
+  created () {
+    this.$setInterval( async () => {
+      await this.refleshList()
+    }, 6000)
+  },
   async mounted() {
     this.loading = true
     await this.listGoogleDataSource()
@@ -419,11 +424,11 @@ export default {
       this.loading = false
     },
     async refleshList() {
-      this.table.items = []
       if ( !this.gcpModel.gcp_id ) {
         this.clearList()
         return
       }
+      let items = []
       this.googleDataSourceList.forEach( async ds => {
         const res = await this.$axios.get(
           '/google/get-gcp-datasource/?project_id='+ this.$store.state.project.project_id +
@@ -453,8 +458,9 @@ export default {
           item.status_detail = res.data.data.gcp_data_source.status_detail
           item.scan_at = res.data.data.gcp_data_source.scan_at
         }
-        this.table.items.push(item)
+        items.push(item)
       })
+      this.table.items = items
       this.table.total = this.googleDataSourceList.length
     },
     clearList() {

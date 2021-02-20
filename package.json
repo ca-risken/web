@@ -17,7 +17,7 @@
     "vue-chartjs": "^3.5.1",
     "vue-d3-network": "^0.1.28",
     "vue-router": "^3.4.3",
-    "vuetify": "^2.3.10",
+    "vuetify": "^2.4.4",
     "vuex": "^3.5.1",
     "vuex-persist": "^2.2.0"
   },

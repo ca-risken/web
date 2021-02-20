@@ -5,9 +5,11 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from '@/store'
 import axios from '@/axios'
+import interval from '@/plugin/interval'
 const routes = commonRoute.concat(appRoute)
 
 Vue.use(Router)
+Vue.use(interval)
 const router = new Router({
   mode: 'hash',
   linkActiveClass: 'active',
@@ -36,7 +38,11 @@ router.beforeEach( async (to, from, next) => {
 })
 
 // Global after hook
-router.afterEach(()=>{
+router.afterEach(() => {
+  if ( store.state.interval.id ) {
+    clearInterval(store.state.interval.id)
+  }
+  store.commit('updateInterval', {}) // clear set interval
   NProgress.done()
 })
 

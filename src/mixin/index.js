@@ -124,12 +124,16 @@ let mixin = {
         case 2:
           return 'Configured'
         case 3:
-          return 'Not configured'
+          return 'InProgress'
         case 4:
           return 'Error'
         default:
           return 'Unknown'
       }
+    },
+    isInProgressDataSourceStatus: (status) => {
+      if ( status === 3) return true
+      return false
     },
     getAlertStatus: (statusText) => {
       switch (statusText) {
@@ -162,7 +166,7 @@ let mixin = {
         case 2:
           return 'blue'
         case 3:
-          return 'grey'
+          return 'cyan'
         case 4:
           return 'red'
         default:
