@@ -70,7 +70,17 @@
                     v-if="item.status"
                     :color="getDataSourceStatusColor(item.status)"
                     dark
-                  >{{ getDataSourceStatusText(item.status) }}</v-chip>
+                  >
+                    <v-progress-circular
+                      v-if="isInProgressDataSourceStatus(item.status)"
+                      indeterminate
+                      size="20"
+                      width="2"
+                      color="white"
+                      class="mr-2"
+                    ></v-progress-circular>
+                    {{ getDataSourceStatusText(item.status) }}
+                  </v-chip>
                   <v-chip
                     v-else
                     color="grey"

@@ -67,7 +67,17 @@
                     v-if="item.osint_id"
                     :color="getDataSourceStatusColor(item.status)"
                     dark
-                  >{{ getDataSourceStatusText(item.status) }}</v-chip>
+                  >
+                    <v-progress-circular
+                      v-if="isInProgressDataSourceStatus(item.status)"
+                      indeterminate
+                      size="20"
+                      width="2"
+                      color="white"
+                      class="mr-2"
+                    ></v-progress-circular>
+                    {{ getDataSourceStatusText(item.status) }}
+                  </v-chip>
                   <v-chip
                     v-else
                     color="grey"
@@ -427,7 +437,7 @@ export default {
           { text: 'Data Source', align: 'start', sortable: false, value: 'name' },
           { text: 'Description', align: 'start', sortable: false, value: 'description' },
           { text: 'MAX Score', align: 'center', sortable: false, value: 'max_score' },
-          { text: 'Status', align: 'center', width: '12%', sortable: false, value: 'status' },
+          { text: 'Status', align: 'start', width: '12%', sortable: false, value: 'status' },
           { text: 'ScanAt', align: 'center', sortable: true, value: 'scan_at' },
           { text: 'Action', align: 'center', sortable: false, value: 'action' }
         ],
