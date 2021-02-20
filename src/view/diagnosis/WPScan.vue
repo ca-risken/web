@@ -366,6 +366,11 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
+  created () {
+    this.$setInterval( async () => {
+      await this.listWPScanSetting()
+    }, 3000)
+  },
   async mounted() {
     this.loading = true
     await this.getWPScan()

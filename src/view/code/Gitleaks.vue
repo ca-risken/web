@@ -506,6 +506,11 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
+  created () {
+    this.$setInterval( async () => {
+      await this.listGitleaks()
+    }, 3000)
+  },
   async mounted() {
     this.loading = true
     await this.getGitleaksDataSource()
@@ -529,7 +534,6 @@ export default {
       this.loading = false
     },
     async listGitleaks() {
-      this.table.items = []
       const res = await this.$axios.get(
         '/code/list-gitleaks/'
           + '?code_data_source_id=' + this.gitleaks_datasource_id
@@ -544,6 +548,7 @@ export default {
         return false
       }
       // this.table.items = res.data.data.gitleaks
+      let items = []
       res.data.data.gitleaks.forEach( async gitleaks => {
         const item = {
           gitleaks_id:           gitleaks.gitleaks_id,
@@ -564,9 +569,9 @@ export default {
           scan_at:               gitleaks.scan_at,
           updated_at:            gitleaks.updated_at,
         }
-        this.table.items.push(item)
+        items.push(item)
       })
-
+      this.table.items = items
     },
     clearList() {
       this.table.items = []

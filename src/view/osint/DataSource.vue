@@ -456,6 +456,11 @@ export default {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
   },
+  created () {
+    this.$setInterval( async () => {
+      await this.listDataSource()
+    }, 5000)
+  },
   async mounted() {
     this.loading = true
     await this.listOSINT()
@@ -485,8 +490,6 @@ export default {
       this.osintList = osint
     },
     async listDataSource() {
-      this.table.total = 0
-      this.table.items = []
       this.dataModel.detectWords = []
       if ( !this.dataModel.osint_id ) {
         this.clearList()
@@ -516,6 +519,7 @@ export default {
         return false
       }
       this.table.total = resListDS.length
+      let items = []
       listDS.forEach( async ds => {
         let item = {
           osint_id:      osint.osint_id,
@@ -541,9 +545,9 @@ export default {
           item.status_detail            = rel.data.data.rel_osint_data_source[0].status_detail
           item.scan_at                  = rel.data.data.rel_osint_data_source[0].scan_at
         }
-        this.table.items.push(item)
+        items.push(item)
       })
-      this.loading = false
+      this.table.items = items
     },
     clearList() {
       this.table.total = 0

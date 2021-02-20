@@ -76,7 +76,17 @@
                     v-if="item.aws_id"
                     :color="getDataSourceStatusColor(item.status)"
                     dark
-                  >{{ getDataSourceStatusText(item.status) }}</v-chip>
+                  >
+                    <v-progress-circular
+                      v-if="isInProgressDataSourceStatus(item.status)"
+                      indeterminate
+                      size="20"
+                      width="2"
+                      color="white"
+                      class="mr-2"
+                    ></v-progress-circular>
+                    {{ getDataSourceStatusText(item.status) }}
+                  </v-chip>
                   <v-chip
                     v-else
                     color="grey"
@@ -396,6 +406,11 @@ export default {
     formatTime: (unix) => {
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
+  },
+  created () {
+    this.$setInterval( async () => {
+      await this.refleshList()
+    }, 3000)
   },
   async mounted() {
     this.loading = true
