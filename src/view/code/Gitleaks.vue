@@ -79,6 +79,12 @@
                       color="white"
                       class="mr-2"
                     ></v-progress-circular>
+                    <v-icon
+                      v-else
+                      small               
+                      color="white"
+                      class="mr-2"
+                    >{{ getDataSourceStatusIcon(item.status) }}</v-icon>
                     {{ getDataSourceStatusText(item.status) }}
                   </v-chip>
                   <v-chip
