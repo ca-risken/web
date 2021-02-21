@@ -135,6 +135,34 @@ let mixin = {
       if ( status === 3) return true
       return false
     },
+    getDataSourceStatusColor: (status) => {
+      switch (status) {
+        case 1:
+          return 'green'
+        case 2:
+          return 'blue'
+        case 3:
+          return 'cyan'
+        case 4:
+          return 'red'
+        default:
+          return 'grey'
+      }
+    },
+    getDataSourceStatusIcon: (status) => {
+      switch (status) {
+        case 1:
+          return 'mdi-check-circle-outline'
+        case 2:
+          return 'mdi-wrench'
+        case 3:
+          return ''
+        case 4:
+          return 'mdi-alert-circle-outline'
+        default:
+          return ''
+      }
+    },
     getAlertStatus: (statusText) => {
       switch (statusText) {
         case 'ACTIVE':
@@ -157,20 +185,6 @@ let mixin = {
           return 'DEACTIVE'
         default:
           return 'UNKNOWN'
-      }
-    },
-    getDataSourceStatusColor: (status) => {
-      switch (status) {
-        case 1:
-          return 'green'
-        case 2:
-          return 'blue'
-        case 3:
-          return 'cyan'
-        case 4:
-          return 'red'
-        default:
-          return 'grey'
       }
     },
     cutLongText: (str, cutNum) => {
