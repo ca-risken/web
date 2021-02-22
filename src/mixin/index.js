@@ -4,7 +4,7 @@ let mixin = {
       dataSourceList: [
         'aws:guard-duty',
         'aws:access-analyzer',
-        'aws:iam-checker',
+        'aws:admin-checker',
         'aws:cloudsploit',
         'diagnosis:jira',
         'diagnosis:wpscan',
