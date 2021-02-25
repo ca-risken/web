@@ -519,7 +519,6 @@ export default {
       this.table.total = 0
       this.table.items = []
       this.searchForm.resourceNameList = []
-      this.searchForm.tagList = []
     },
 
     async getTag() {
