@@ -529,10 +529,8 @@ export default {
 
     // Service
     async refleshList() {
-      this.loading = true
       this.table.options.page = 1
       await this.loadList()
-      this.loading = false
     },
     async loadList() {
       this.loading = true

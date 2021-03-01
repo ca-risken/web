@@ -285,12 +285,20 @@ export default {
     // Findings
     async setHighScoreFinding() {
       // await this.getFindingReport(this.oneMonthAgoDate, this.nowDate, 0.79)
-      this.raw.highScoreFinding          = await this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, '')
-      this.raw.highScoreFindingAWS       = await this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:')
-      this.raw.highScoreFindingDiagnosis = await this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:')
-      this.raw.highScoreFindingOsint     = await this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:')
-      this.raw.highScoreFindingCode      = await this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:')
-      this.raw.highScoreFindingGoogle    = await this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'google:')
+      const [all, aws, diagnosis, osint, code, google ] = await Promise.all([
+         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, ''),
+         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:'),
+         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:'),
+         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:'),
+         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:'),
+         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'google:'),
+      ])
+      this.raw.highScoreFinding          = all
+      this.raw.highScoreFindingAWS       = aws
+      this.raw.highScoreFindingDiagnosis = diagnosis
+      this.raw.highScoreFindingOsint     = osint
+      this.raw.highScoreFindingCode      = code
+      this.raw.highScoreFindingGoogle    = google
     },
     async setStoreFinding() {
       this.raw.storeFinding = await this.getFindings(0, this.nowUnix, 0, '')
@@ -306,7 +314,7 @@ export default {
     },
     getFindingCountText(findings) {
       if ( !findings ) return '0'
-      if ( findings.length > 1 ) {
+      if ( findings.length > 100 ) {
         return findings.length.toString() + ' +'
       }
       return findings.length.toString()
