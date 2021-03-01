@@ -486,12 +486,12 @@ export default {
   },
   methods: {
     async refleshList() {
-      this.clearList()
       this.table.options.page = 1
       this.loadList()
     },
     async loadList() {
       this.loading = true
+      this.clearList()
       let items = []
       let resources = []
       const list = await this.listFinding(this.getSearchCondition())
