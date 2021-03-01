@@ -497,9 +497,12 @@ export default {
       const list = await this.listFinding(this.getSearchCondition())
       this.table.total = list.total
       for ( const id of list.finding_id) {
-        const finding = await this.getFinding(id)
-        const tag = await this.listFindingTag(id)
-        const pend = await this.getPendFinding(id)
+        // parallel API call
+        const [finding, tag, pend ] = await Promise.all([
+          this.getFinding(id),
+          this.listFindingTag(id),
+          this.getPendFinding(id),
+        ])
         const item = {
           finding_id:     finding.finding_id,
           status:         !pend.finding_id ? 'ACTIVE' : 'PENDING',

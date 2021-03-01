@@ -3,7 +3,7 @@
     <v-btn
       fab="fab"
       medium
-      class="mb-8"
+      class="mb-1"
       dark="dark"
       fixed="fixed"
       bottom="bottom"
