@@ -336,12 +336,12 @@ export default {
 
     // finish
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish()
     },
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish()
     },

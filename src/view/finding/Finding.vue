@@ -82,6 +82,13 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
+                <!-- Sortable Header -->
+                <template v-slot:[`header.finding_id`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.score`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.data_source`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.resource_name`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.description`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.updated_at`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
                 <template v-slot:[`item.resource_name`]="{ item }">
                   {{ cutLongText(item.resource_name, 64) }}
                 </template>
@@ -383,9 +390,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin],
+  mixins: [mixin, finding],
   components: {
     BottomSnackBar,
   },
@@ -426,19 +434,22 @@ export default {
       table: {
         selected: [],
         headers: [
-          { text: 'ID',  align: 'center', width: '5%', sortable: false, value: 'finding_id' },
-          { text: 'Active', align: 'center', width: '5%', sortable: false, value: 'status' },
-          { text: 'Score', align: 'center', width: '5%', sortable: false, value: 'score' },
-          { text: 'Data Source', align: 'center', width: '10%', sortable: false, value: 'data_source' },
-          { text: 'Resource', align: 'start', width: '10%', sortable: false, value: 'resource_name' },
-          { text: 'Description', align: 'start', width: '30%', sortable: false, value: 'description' },
-          { text: 'Tags', align: 'start', width: '5%', sortable: false, value: 'tags' },
-          { text: 'Action', align: 'center', width: '5%', sortable: false, value: 'action' },
+          { text: 'ID',          align: 'center', width: '5%',  value: 'finding_id' },
+          { text: 'Active',      align: 'center', width: '5%',  value: 'status', sortable: false },
+          { text: 'Score',       align: 'center', width: '5%',  value: 'score' },
+          { text: 'Data Source', align: 'center', width: '10%', value: 'data_source' },
+          { text: 'Resource',    align: 'start',  width: '10%', value: 'resource_name' },
+          { text: 'Description', align: 'start',  width: '30%', value: 'description' },
+          { text: 'Tags',        align: 'start',  width: '5%',  value: 'tags', sortable: false },
+          { text: 'Action',      align: 'center', width: '5%',  value: 'action', sortable: false },
         ],
         options: {
           page: 1,
           itemsPerPage: 20,
-          sortBy: ['id'],
+        },
+        sort: {
+          key: 'finding_id',
+          direction: 'asc',
         },
         total: 0,
         footer: {
@@ -449,7 +460,6 @@ export default {
         },
         items: []
       },
-      findings: [],
     }
   },
   filters: {
@@ -475,22 +485,18 @@ export default {
     this.handleSearch()
   },
   methods: {
-    async refleshList(searchCond) {
+    async refleshList() {
       this.clearList()
-      const ids = await this.listFinding(searchCond)
-      this.table.total = ids.length
       this.table.options.page = 1
-      this.findings = ids
       this.loadList()
     },
     async loadList() {
       this.loading = true
       let items = []
       let resources = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.findings.slice(from, to)
-      ids.forEach( async id => {
+      const list = await this.listFinding(this.getSearchCondition())
+      this.table.total = list.total
+      for ( const id of list.finding_id) {
         const finding = await this.getFinding(id)
         const tag = await this.listFindingTag(id)
         const pend = await this.getPendFinding(id)
@@ -509,7 +515,7 @@ export default {
         }
         items.push(item)
         resources.push(finding.resource_name)
-      })
+      }
       this.table.items = items
       this.searchForm.resourceNameList = resources
       this.loading = false
@@ -526,71 +532,6 @@ export default {
       const tag = await this.listFindingTagName()
       this.searchForm.tagList = tag
     },
-    // Finding Tag
-    async tagFinding( findingID, tag ) {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        tag: {
-          project_id: this.$store.state.project.project_id,
-          finding_id: findingID,
-          tag: tag,
-        }
-      }
-      await this.$axios.post('/finding/tag-finding/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-    },
-    async untagFinding( findingTagID ) {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        finding_tag_id: findingTagID,
-      }
-      await this.$axios.post('/finding/untag-finding/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-    },
-    // Activate Finding
-    async activateItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          finding_id: this.findingModel.finding_id,
-      }
-      await this.$axios.post('/finding/delete-pend-finding/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.finishSuccess('Success: Activated.')
-    },
-    // Pend Finding
-    async pendItem() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        pend_finding: {
-          finding_id: this.findingModel.finding_id,
-          project_id: this.$store.state.project.project_id,
-        }
-      }
-      await this.$axios.post('/finding/put-pend-finding/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.finishSuccess('Success: Pending.')
-    },
-    // Delete Finding
-    async deleteItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          finding_id: this.findingModel.finding_id,
-      }
-      await this.$axios.post('/finding/delete-finding/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.finishSuccess('Success: Delete.')
-    },
-
     getActionList( item ) {
       let list = [
           { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewItem },
@@ -630,7 +571,7 @@ export default {
         this.searchModel.score[1] = this.$route.query.to_score
       }
     },
-    handleSearch() {
+    getSearchCondition() {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
@@ -654,24 +595,44 @@ export default {
         searchCond += '&to_score=' + this.searchModel.score[1]
         queryNew.to_score = this.searchModel.score[1]
       }
+      const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const limit = this.table.options.itemsPerPage
+      searchCond += '&offset=' + offset + '&limit=' + limit
+      const sort = this.table.sort.key
+      const direction = this.table.sort.direction
+      searchCond += '&sort=' + sort + '&direction=' + direction
       if (Object.entries(queryNew).sort().toString() != Object.entries(queryOld).sort().toString() ){
         this.$router.push({query: queryNew})
       }
-      this.refleshList(searchCond)
+      return searchCond
+    },
+    handleSort(newSortKey) {
+      const oldKey =this.table.sort.key
+      const oldDirection = this.table.sort.direction
+      if (oldKey === newSortKey) {
+        this.table.sort.direction = oldDirection === 'asc' ? 'desc' : 'asc' // reverse direction
+      } else {
+        this.table.sort.key = newSortKey
+        this.table.sort.direction = 'asc'
+      }
+      this.refleshList()
+    },
+    handleSearch() {
+      this.refleshList()
     },
     handleDeleteItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
       this.deleteDialog  = true
     },
-    handleActivateItem(row) {
+    async handleActivateItem(row) {
       this.loading = true
-      this.findingModel = Object.assign(this.findingModel, row)
-      this.activateItem()
+      await this.deletePendFinding(this.$store.state.project.project_id, row.finding_id)
+      this.finishSuccess('Success: Activated.')
     },
-    handlePendItem(row) {
+    async handlePendItem(row) {
       this.loading = true
-      this.findingModel = Object.assign(this.findingModel, row)
-      this.pendItem()
+      await this.putPendFinding(row.finding_id)
+      this.finishSuccess('Success: Pending.')
     },
     handleNewTag(){
       this.findingModel.new_tag = '' // clear
@@ -695,19 +656,20 @@ export default {
       this.viewDialog = false
       this.loading = false
     },
-    handleDeleteSubmit() {
+    async handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem()
+      await this.deleteFinding(this.findingModel.finding_id)
+      this.finishSuccess('Success: Delete.')
     },
 
     // finish
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(true)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },

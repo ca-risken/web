@@ -480,7 +480,7 @@ export default {
       this.finishUpdated('Success: Deleted role.')
     },
     async finishUpdated(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
       this.deleteDialog  = false

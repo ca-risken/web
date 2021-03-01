@@ -784,16 +784,16 @@ export default {
     // finish process
     async finishAnalyze(msg) {
       this.$refs.snackbar.notifyInfo(msg)
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise(resolve => setTimeout(resolve, 750))
       this.$router.push('/alert/alert/')
     },
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(true)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },
