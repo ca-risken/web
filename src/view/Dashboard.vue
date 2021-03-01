@@ -306,7 +306,7 @@ export default {
     },
     getFindingCountText(findings) {
       if ( !findings ) return '0'
-      if ( findings.length > 1 ) {
+      if ( findings.length > 100 ) {
         return findings.length.toString() + ' +'
       }
       return findings.length.toString()
