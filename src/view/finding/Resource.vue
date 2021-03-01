@@ -109,6 +109,10 @@
                 @update:page="loadList"
                 v-model="table.selected"
               >
+                <!-- Sortable Header -->
+                <template v-slot:[`header.resource_id`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.resource_name`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.updated_at`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
                 <template v-slot:[`item.resource_name`]="{ item }">
                   {{ cutLongText(item.resource_name, 80) }}
                 </template>
@@ -336,9 +340,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import finding from '@/mixin/api/finding'
 import D3Network from 'vue-d3-network'
 export default {
-  mixins: [mixin],
+  mixins: [mixin, finding],
   components: {
     D3Network,
   },
@@ -360,16 +365,20 @@ export default {
       table: {
         selected: [],
         headers: [
-          { text: 'ID',  align: 'center', width: '5%', sortable: false, value: 'resource_id' },
-          { text: 'Resource', align: 'start', width: '20%', sortable: false, value: 'resource_name' },
-          { text: 'Findings', align: 'center', width: '5%', sortable: false, value: 'findings' },
-          { text: 'Updated', align: 'start', width: '10%', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', width: '10%', sortable: false, value: 'action' }
+          { text: 'ID',       align: 'center', width: '5%',  value: 'resource_id' },
+          { text: 'Resource', align: 'start',  width: '20%', value: 'resource_name' },
+          { text: 'Findings', align: 'center', width: '5%',  value: 'findings', sortable: false },
+          { text: 'Updated',  align: 'start',  width: '10%', value: 'updated_at' },
+          { text: 'Action',   align: 'center', width: '10%', value: 'action', sortable: false }
         ],
         options: {
           page: 1,
           itemsPerPage: 5,
           sortBy: ['id'],
+        },
+        sort: {
+          key: 'resource_id',
+          direction: 'asc',
         },
         actions: [
           { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewFinding },
@@ -384,7 +393,7 @@ export default {
         },
         items: []
       },
-      resourceIDs: [],
+      // resourceIDs: [],
       map: {
         nodes: [],
         links: [],
@@ -438,7 +447,7 @@ export default {
     },
   },
   async mounted() {
-    await this.refleshList('')
+    await this.refleshList()
   },
   computed: {
     dateRangeText () {
@@ -478,6 +487,21 @@ export default {
       this.resourceMapDialog = true
     },
     handleSearch() {
+      this.refleshList()
+    },
+    handleSort(newSortKey) {
+      const oldKey =this.table.sort.key
+      const oldDirection = this.table.sort.direction
+      if (oldKey === newSortKey) {
+        this.table.sort.direction = oldDirection === 'asc' ? 'desc' : 'asc' // reverse direction
+      } else {
+        this.table.sort.key = newSortKey
+        this.table.sort.direction = 'asc'
+      }
+      this.refleshList()
+    },
+
+    getSearchCondition() {
       let searchCond = ''
       if (this.searchModel.resourceName) {
         searchCond += '&resource_name=' + this.searchModel.resourceName
@@ -494,26 +518,28 @@ export default {
       if (this.searchModel.score[1]) {
         searchCond += '&to_sum_score=' + this.searchModel.score[1]
       }
-      this.refleshList(searchCond)
+      const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const limit = this.table.options.itemsPerPage
+      searchCond += '&offset=' + offset + '&limit=' + limit
+      const sort = this.table.sort.key
+      const direction = this.table.sort.direction
+      searchCond += '&sort=' + sort + '&direction=' + direction
+      return searchCond
     },
 
     // Service
-    async refleshList(searchCond) {
+    async refleshList() {
       this.loading = true
-      const resourceIDs = await this.listResourceID(searchCond)
-      this.table.total = resourceIDs.length
       this.table.options.page = 1
-      this.resourceIDs = resourceIDs
       await this.loadList()
       this.loading = false
     },
     async loadList() {
       this.loading = true
       this.clearList()
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.resourceIDs.slice(from, to)
-      for( let id of ids ) {
+      const list = await this.listResourceID(this.getSearchCondition())
+      this.table.total = list.total
+      for( const id of list.resource_id ) {
         const resource = await this.getResource(id)
         const findingIDs = await this.listFindingByResouceName(resource.resource_name)
         await this.setResourceMap(resource, findingIDs, this.map, 5)
