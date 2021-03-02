@@ -117,35 +117,35 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                1. User invited: <span class="headline">{{ raw.invitedUser.length }}</span>
+                1. User invited: <span class="headline">{{ status.tutorial.invitedUsers }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                2, Setting data sources(≒ Store some findings): <span class="headline">{{ raw.storeFinding.length }}</span>
+                2, Setting data sources(≒ Store some findings): <span class="headline">{{ status.tutorial.storeFindings }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                3. Setting alert condition: <span class="headline">{{ raw.alertCondition.length }}</span>
+                3. Setting alert condition: <span class="headline">{{ status.tutorial.alertConditions }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                4. Setting alert rule: <span class="headline">{{ raw.alertRule.length }}</span>
+                4. Setting alert rule: <span class="headline">{{ status.tutorial.alertRules }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                5. Setting alert notification: <span class="headline">{{ raw.notification.length }}</span>
+                5. Setting alert notification: <span class="headline">{{ status.tutorial.notifications }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -165,6 +165,7 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
+import alert from '@/mixin/api/alert'
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
@@ -172,7 +173,7 @@ import TimeLineChart from '@/component/widget/chart/TimeLineChart'
 import DoughnutChart from '@/component/widget/chart/DoughnutChart'
 export default {
   name: 'PageDashboard',
-  mixins: [mixin, finding],
+  mixins: [mixin, finding, alert],
   components: {
     StatusStatistic,
     MiniStatistic,
@@ -208,7 +209,14 @@ export default {
           color: 'grey',
           description: 'There is nothing to display.',
           detail: 'Please reload after selecting the project.',
-        }
+        },
+        tutorial: {           // [Total 5 setting steps]
+          invitedUsers:    0, // 1. User invited, 
+          storeFindings:   0, // 2, Setting DataSources ( = Store some Findings),
+          alertConditions: 0, // 3. Setting Alert Condition,
+          alertRules:      0, // 4. Setting Alert Rule,
+          notifications:   0, // 5. Setting Alert Notification
+        },
       },
 
       category: [],
@@ -272,15 +280,8 @@ export default {
     },
     // alert list
     async setActiveAlert() {
-      const res = await this.$axios.get(
-        '/alert/list-alert/?status='+this.getAlertStatus('ACTIVE')+'&project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        return Promise.reject(err)
-      })
-      if ( !res.data || !res.data.data || !res.data.data.alert ) {
-        return []
-      }
-      this.raw.activeAlert = res.data.data.alert
+      const list = await this.listAlert('&status=' + this.getAlertStatus('ACTIVE'))
+      this.raw.activeAlert = list
     },
     // Findings
     async setHighScoreFinding() {
@@ -301,7 +302,11 @@ export default {
       this.raw.highScoreFindingGoogle    = google
     },
     async setStoreFinding() {
-      this.raw.storeFinding = await this.getFindings(0, this.nowUnix, 0, '')
+      const storeFindings= await this.getFindings(0, this.nowUnix, 0, '')
+      this.raw.storeFinding = storeFindings
+      if (storeFindings && storeFindings.length){
+        this.status.tutorial.storeFindings = storeFindings.length
+      }
     },
     async getFindings(fromAt, toAt, fromScore, dataSource) {
       const searceCondition = '&from_at=' + fromAt
@@ -313,23 +318,13 @@ export default {
       return res.finding_id
     },
     getFindingCountText(findings) {
-      if ( !findings ) return '0'
+      if ( !findings || !findings.length ) return '0'
       if ( findings.length > 100 ) {
         return findings.length.toString() + ' +'
       }
       return findings.length.toString()
     },
-    async getFindingReport(fromAt, toAt, fromScore) {
-      const res = await this.$axios.get(
-        '/report/get-report/?project_id=' + this.$store.state.project.project_id
-          + '&from_date=' + fromAt
-          + '&to_date=' + toAt
-          + '&score=' + fromScore
-      ).catch((err) =>  {
-        return Promise.reject(err)
-      })
-      console.log(res.data.data)
-    },
+
     // User
     async setUser() {
       this.raw.invitedUser = []
@@ -339,48 +334,37 @@ export default {
         return Promise.reject(err)
       })
       if ( !res.data || !res.data.data || !res.data.data.user_id ) {
-        return []
+        return
       }
+      this.status.tutorial.invitedUsers = res.data.data.user_id.length
       this.raw.invitedUser = res.data.data.user_id
     },
     // Alert condition
     async setAlertCondition() {
       this.raw.alertCondition = []
-      const res = await this.$axios.get(
-        '/alert/list-condition/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const alert_condition = await this.listAlertCondition(true).catch((err) =>  {
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.alert_condition ) {
-        return []
-      }
-      this.raw.alertCondition = res.data.data.alert_condition
+      this.status.tutorial.alertConditions = alert_condition.length
+      this.raw.alertCondition = alert_condition
     },
     // Alert condition
     async setAlertRule() {
       this.raw.alertRule = []
-      const res = await this.$axios.get(
-        '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const alert_rule = await this.listAlertRule().catch((err) =>  {
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.alert_rule ) {
-        return []
-      }
-      this.raw.alertRule = res.data.data.alert_rule
+      this.status.tutorial.alertRules = alert_rule.length
+      this.raw.alertRule = alert_rule
     },
     // Notification
     async setAlertNotification() {
       this.raw.notification = []
-      const res = await this.$axios.get(
-        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const notification = await this.listAlertNotification().catch((err) =>  {
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.notification ) {
-        return []
-      }
-      this.raw.notification = res.data.data.notification
+      this.status.tutorial.notifications = notification.length
+      this.raw.notification = notification
     },
 
     // -- Status ---------------------------------
@@ -416,19 +400,19 @@ export default {
     // Setting Status
     setSettingStatus() {
       let completed = 0
-      if (this.raw.invitedUser.length > 0) {
+      if (this.raw.invitedUser && this.raw.invitedUser.length > 0) {
         completed++
       }
-      if (this.raw.storeFinding.length > 0) {
+      if (this.raw.storeFinding && this.raw.storeFinding.length > 0) {
         completed++
       }
-      if (this.raw.alertCondition.length > 0) {
+      if (this.raw.alertCondition && this.raw.alertCondition.length > 0) {
         completed++
       }
-      if (this.raw.alertRule.length > 0) {
+      if (this.raw.alertRule && this.raw.alertRule.length > 0) {
         completed++
       }
-      if (this.raw.notification.length > 0) {
+      if (this.raw.notification && this.raw.notification.length > 0) {
         completed++
       }
       this.status.imcompSetting = this.raw.settingStep - completed
@@ -436,12 +420,23 @@ export default {
     },
     // Total Status
     setTotalStatus() {
-      const totalRisk = Number(this.status.alert.length) + Number(this.status.finding.length) + Number(this.status.imcompSetting)
-      this.status.risk.detail =
+      // const totalRisk = Number(this.status.alert.length) + Number(this.status.finding.length) + Number(this.status.imcompSetting)
+      let totalRisk = 0
+      if (this.status.alert && this.status.alert.length) {
+        totalRisk += Number(this.status.alert.length)
+      }
+      if (this.status.finding && this.status.finding.length) {
+        totalRisk += Number(this.status.finding.length)
+      }
+      this.status.risk.detail = 
         '  Active alerts: ' + this.status.alert.length +
         ', High score findings: ' + this.getFindingCountText(this.status.finding) +
         ', Imcompleted settings: ' + this.status.imcompSetting + ' / ' + this.raw.settingStep
-      if ( totalRisk === 0 ) {
+      if ( this.status.imcompSetting === this.raw.settingStep ) {
+        this.status.risk.icon = 'mdi-message-settings'
+        this.status.risk.color = 'cyan'
+        this.status.risk.description = 'You need to configure some settings 🔜'
+      } else if ( totalRisk === 0 ) {
         this.status.risk.icon = 'mdi-check-circle-outline'
         this.status.risk.color = 'green'
         this.status.risk.description = 'No problem. 👌'
