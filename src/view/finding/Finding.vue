@@ -80,6 +80,7 @@
                 item-key="finding_id"
                 @click:row="handleViewItem"
                 @update:page="loadList"
+                @update:options="loadList"
                 v-model="table.selected"
               >
                 <!-- Sortable Header -->
@@ -453,8 +454,9 @@ export default {
         },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageText: 'Rows/Page', 
           showCurrentPage: true,
           showFirstLastPage: true,
         },
