@@ -221,13 +221,13 @@ export default {
         aws_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
-            v => v.length <= 200 || 'Name must be less than 200 characters',
+            v =>  !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
         aws_account_id: { label: 'AWS Account ID *', placeholder: '123456789012', validator:[
             v => !!v || 'AWS Account ID is required',
-            v => v.length === 12 || 'AWS Account ID must be 12 characters',
-            v => this.isNewAccountID(v) || 'AWS Account ID is already exist.',
+            v =>  !v || v.length === 12 || 'AWS Account ID must be 12 characters',
+            v =>  !v || !this.awsForm.newAWS || this.isNewAccountID(v) || 'AWS Account ID is already exist.',
           ]
         },
       },
@@ -322,7 +322,7 @@ export default {
       this.table.items.some( item => {
         if(item.aws_account_id == accountID){
           isNew = false
-          return true
+          return
         }
       })
       return isNew
