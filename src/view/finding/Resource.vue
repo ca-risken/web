@@ -520,10 +520,9 @@ export default {
       }
       const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const limit = this.table.options.itemsPerPage
-      searchCond += '&offset=' + offset + '&limit=' + limit
       const sort = this.table.sort.key
       const direction = this.table.sort.direction
-      searchCond += '&sort=' + sort + '&direction=' + direction
+      searchCond += '&offset=' + offset + '&limit=' + limit + '&sort=' + sort + '&direction=' + direction
       return searchCond
     },
 
@@ -536,6 +535,10 @@ export default {
       this.loading = true
       this.clearList()
       const list = await this.listResourceID(this.getSearchCondition())
+      if ( !list.resource_id || list.resource_id.length == 0 ) {
+        this.loading = false
+        return 
+      }
       this.table.total = list.total
       for( const id of list.resource_id ) {
         const resource = await this.getResource(id)

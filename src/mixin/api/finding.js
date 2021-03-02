@@ -10,7 +10,7 @@ const finding = {
         return Promise.reject(err)
       })
       if ( !res.data.data ) {
-        return {finding_id: []} // empty list
+        return {total:0, finding_id: []} // empty list
       }
       return res.data.data
     },
