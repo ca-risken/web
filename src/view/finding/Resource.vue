@@ -535,6 +535,10 @@ export default {
       this.loading = true
       this.clearList()
       const list = await this.listResourceID(this.getSearchCondition())
+      if ( !list.resource_id || list.resource_id.length == 0 ) {
+        this.loading = false
+        return 
+      }
       this.table.total = list.total
       for( const id of list.resource_id ) {
         const resource = await this.getResource(id)

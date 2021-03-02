@@ -499,6 +499,10 @@ export default {
         this.parseQuery()
       }
       const list = await this.listFinding(this.getSearchCondition())
+      if ( !list.finding_id || list.finding_id.length == 0 ) {
+        this.loading = false
+        return 
+      }
       this.table.total = list.total
       for ( const id of list.finding_id) {
         // parallel API call
@@ -562,13 +566,13 @@ export default {
       if (!this.$route.query) return
       const query = this.$route.query
       if ( query.data_source && query.data_source != "") {
-        this.searchModel.dataSource = query.data_source.split(',')
+        this.searchModel.dataSource = String(query.data_source).split(',')
       }
       if ( query.tag && query.tag != "" ) {
-        this.searchModel.tag = query.tag.split(',')
+        this.searchModel.tag = String(query.tag).split(',')
       }
       if ( query.resource_name && query.resource_name  != "" ) {
-        this.searchModel.resourceName = query.resource_name.split(',')
+        this.searchModel.resourceName = String(query.resource_name).split(',')
       }
       this.searchModel.score[0] = 0.0
       this.searchModel.score[1] = 1.0
