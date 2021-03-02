@@ -520,10 +520,9 @@ export default {
       }
       const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const limit = this.table.options.itemsPerPage
-      searchCond += '&offset=' + offset + '&limit=' + limit
       const sort = this.table.sort.key
       const direction = this.table.sort.direction
-      searchCond += '&sort=' + sort + '&direction=' + direction
+      searchCond += '&offset=' + offset + '&limit=' + limit + '&sort=' + sort + '&direction=' + direction
       return searchCond
     },
 

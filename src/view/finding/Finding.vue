@@ -483,19 +483,21 @@ export default {
   },
   async mounted() {
     this.getTag()
-    await this.parseQuery()
-    this.handleSearch()
+    this.refleshList(true)
   },
   methods: {
-    async refleshList() {
+    refleshList(parse) {
       this.table.options.page = 1
-      this.loadList()
+      this.loadList(parse)
     },
-    async loadList() {
+    async loadList(parse) {
       this.loading = true
       this.clearList()
       let items = []
       let resources = []
+      if (parse) {
+        this.parseQuery()
+      }
       const list = await this.listFinding(this.getSearchCondition())
       this.table.total = list.total
       for ( const id of list.finding_id) {
@@ -558,22 +560,23 @@ export default {
     },
     parseQuery() {
       if (!this.$route.query) return
-      if ( this.$route.query.data_source ) {
-        this.searchModel.dataSource = String(this.$route.query.data_source).split(',')
+      const query = this.$route.query
+      if ( query.data_source && query.data_source != "") {
+        this.searchModel.dataSource = query.data_source.split(',')
       }
-      if ( this.$route.query.tag ) {
-        this.searchModel.tag = String(this.$route.query.tag).split(',')
+      if ( query.tag && query.tag != "" ) {
+        this.searchModel.tag = query.tag.split(',')
       }
-      if ( this.$route.query.resource_name ) {
-        this.searchModel.resourceName = String(this.$route.query.resource_name).split(',')
+      if ( query.resource_name && query.resource_name  != "" ) {
+        this.searchModel.resourceName = query.resource_name.split(',')
       }
       this.searchModel.score[0] = 0.0
       this.searchModel.score[1] = 1.0
-      if ( this.$route.query.from_score ) {
-        this.searchModel.score[0] = this.$route.query.from_score
+      if ( query.from_score ) {
+        this.searchModel.score[0] = query.from_score
       }
-      if ( this.$route.query.to_score ) {
-        this.searchModel.score[1] = this.$route.query.to_score
+      if ( query.to_score ) {
+        this.searchModel.score[1] = query.to_score
       }
     },
     getSearchCondition() {
@@ -602,10 +605,9 @@ export default {
       }
       const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const limit = this.table.options.itemsPerPage
-      searchCond += '&offset=' + offset + '&limit=' + limit
       const sort = this.table.sort.key
       const direction = this.table.sort.direction
-      searchCond += '&sort=' + sort + '&direction=' + direction
+      searchCond += '&offset=' + offset + '&limit=' + limit + '&sort=' + sort + '&direction=' + direction
       if (Object.entries(queryNew).sort().toString() != Object.entries(queryOld).sort().toString() ){
         this.$router.push({query: queryNew})
       }
