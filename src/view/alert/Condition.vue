@@ -143,7 +143,7 @@
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-row>
-              <v-col cols="10">
+              <v-col cols="8">
                 <v-text-field
                   v-model="dataModel.description"
                   :counter="200"
@@ -153,8 +153,6 @@
                   outlined required
                 ></v-text-field>
               </v-col>
-            </v-row>
-            <v-row>
               <v-col cols="4">
                 <v-combobox
                   outlined required clearable
@@ -165,6 +163,8 @@
                   :items="form.severity.list"
                 />
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="4">
                 <v-combobox
                   outlined required clearable
@@ -173,6 +173,16 @@
                   :label="form.and_or.label"
                   :placeholder="form.and_or.placeholder"
                   :items="form.and_or.list"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-combobox
+                  outlined required clearable
+                  v-model="dataModel.noti_cache"
+                  :rules="form.noti_cache.validator"
+                  :label="form.noti_cache.label"
+                  :placeholder="form.noti_cache.placeholder"
+                  :items="form.noti_cache.list"
                 />
               </v-col>
               <v-col cols="4">
@@ -405,6 +415,13 @@ export default {
             v => !v || v === 'and' || v === 'or' || 'AND/OR is invalid',
           ]
         },
+        noti_cache: { label: 'Notification cache term *', placeholder: '1 hour',
+          list: ['No Cache', '1 hour', '1 day', '1 week', '1 month'],
+          validator:[
+            v => !!v || 'Notification cache term is required',
+            v => !v || v === 'No Cache' || v === '1 hour' || v === '1 day' || v === '1 week' || v === '1 month' || 'Notification cache term is invalid',
+          ]
+        },
         enabled: { label: 'Enabled *', placeholder: 'true'},
       },
       dataModel: {
@@ -412,6 +429,7 @@ export default {
         description:'', 
         severity:'', 
         and_or:'and',
+        noti_cache: '1 hour',
         enabled:false,
         rules: [],
         notifications: [],
@@ -509,19 +527,23 @@ export default {
         return Promise.reject(err)
       })
       alert_condition.forEach( async cond => {
-        const rules = await this.listAlertConditionRule(cond.alert_condition_id).catch((err) =>  {
+        const [rules, notis] = await Promise.all([
+          this.listAlertConditionRule(cond.alert_condition_id),
+          this.listAlertConditionNotification(cond.alert_condition_id)
+        ]).catch((err) =>  {
           this.clearList()
           return Promise.reject(err)
         })
-        const notis = await this.listAlertConditionNotification(cond.alert_condition_id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        let noti_cache = ''
+        if ( notis[0] ) {
+          noti_cache = this.getNotiCacheText(notis[0].cache_second)
+        }
         const item = {
           alert_condition_id: cond.alert_condition_id,
           description: cond.description, 
           severity: cond.severity, 
           and_or: cond.and_or,
+          noti_cache: noti_cache,
           enabled: cond.enabled,
           rules: rules.map(item => item.alert_rule_id),
           notifications: notis.map(item => item.notification_id),
@@ -660,7 +682,7 @@ export default {
                 project_id: this.$store.state.project.project_id,
                 alert_condition_id: this.dataModel.alert_condition_id,
                 notification_id: item.notification_id,
-                cache_second: 60 * 60, // an hour 
+                cache_second: this.getNotiCacheSecound(this.dataModel.noti_cache),
                 notified_at: 0,
               },
             }
@@ -694,6 +716,7 @@ export default {
         description:'', 
         severity:'medium', 
         and_or:'and',
+        noti_cache:'1 hour',
         enabled:true,
         rules: [],
         notifications: [],
@@ -743,6 +766,36 @@ export default {
     assignDataModel(item) {
       this.dataModel = {}
       this.dataModel = Object.assign(this.dataModel, item)
+    },
+
+    // Notification Cache
+    getNotiCacheText(sec) {
+      switch (sec) {
+        case 60 * 60:
+          return '1 hour'
+        case 60 * 60 * 24:
+          return '1 day'
+        case 60 * 60 * 24 * 7:
+          return '1 week'
+        case 60 * 60 * 24 * 7 * 30:
+          return '1 month'
+        default:
+          return ''
+      }
+    },
+    getNotiCacheSecound(text) {
+      switch (text) {
+        case '1 hour':
+          return 60 * 60
+        case '1 day':
+          return 60 * 60 * 24
+        case '1 week':
+          return 60 * 60 * 24 * 7
+        case '1 month':
+          return 60 * 60 * 24 * 7 * 30
+        default:
+          return 60 * 60
+      }
     },
 
     // finish process
