@@ -207,10 +207,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, alert],
   components: {
     BottomSnackBar,
   },
@@ -274,38 +274,27 @@ export default {
     },
   },
   mounted() {
-    this.loading = true
-    this.refleshList('')
+    this.refleshList()
   },
   methods: {
     // list
     async refleshList() {
-      const res = await this.$axios.get(
-        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
+      this.loading = true
+      this.clearList()
+      const notification = await this.listAlertNotification().catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.notification ) {
-        this.clearList()
-        return false
-      }
-      this.table.items = res.data.data.notification
+      this.table.items = notification
       this.loading = false
     },
     clearList() {
       this.table.items = []
-      this.loading = false
     },
 
     // delete
     async deleteItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          notification_id: this.dataModel.notification_id,
-      }
-      await this.$axios.post('/alert/delete-notification/', param).catch((err) =>  {
+      await this.deleteAlertNotification(this.dataModel.notification_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -329,7 +318,7 @@ export default {
           }), 
         },
       }
-      await this.$axios.post('/alert/put-notification/', param).catch((err) =>  {
+      await this.putAlertNotification(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })

@@ -143,7 +143,7 @@
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-row>
-              <v-col cols="10">
+              <v-col cols="8">
                 <v-text-field
                   v-model="dataModel.description"
                   :counter="200"
@@ -153,8 +153,6 @@
                   outlined required
                 ></v-text-field>
               </v-col>
-            </v-row>
-            <v-row>
               <v-col cols="4">
                 <v-combobox
                   outlined required clearable
@@ -165,6 +163,8 @@
                   :items="form.severity.list"
                 />
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="4">
                 <v-combobox
                   outlined required clearable
@@ -173,6 +173,16 @@
                   :label="form.and_or.label"
                   :placeholder="form.and_or.placeholder"
                   :items="form.and_or.list"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-combobox
+                  outlined required clearable
+                  v-model="dataModel.noti_cache"
+                  :rules="form.noti_cache.validator"
+                  :label="form.noti_cache.label"
+                  :placeholder="form.noti_cache.placeholder"
+                  :items="form.noti_cache.list"
                 />
               </v-col>
               <v-col cols="4">
@@ -371,10 +381,11 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 
 export default {
-  mixins: [mixin],
+  mixins: [mixin, alert],
   components: {
     BottomSnackBar,
   },
@@ -397,11 +408,18 @@ export default {
             v => !v || v === 'high' || v === 'medium' || v === 'low' || 'Serverity is invalid',
           ]
         },
-        and_or: { label: 'And or Or *', placeholder: 'and',
+        and_or: { label: 'AND or OR *', placeholder: 'and',
           list: ['and', 'or'],
           validator:[
-            v => !!v || 'And Or is required',
-            v => !v || v === 'and' || v === 'or' || 'And_Or is invalid',
+            v => !!v || 'AND/OR is required',
+            v => !v || v === 'and' || v === 'or' || 'AND/OR is invalid',
+          ]
+        },
+        noti_cache: { label: 'Notification cache term *', placeholder: '1 hour',
+          list: ['No Cache', '1 hour', '1 day', '1 week', '1 month'],
+          validator:[
+            v => !!v || 'Notification cache term is required',
+            v => !v || v === 'No Cache' || v === '1 hour' || v === '1 day' || v === '1 week' || v === '1 month' || 'Notification cache term is invalid',
           ]
         },
         enabled: { label: 'Enabled *', placeholder: 'true'},
@@ -411,6 +429,7 @@ export default {
         description:'', 
         severity:'', 
         and_or:'and',
+        noti_cache: '1 hour',
         enabled:false,
         rules: [],
         notifications: [],
@@ -503,46 +522,31 @@ export default {
     // List Condition
     async searchCondition() {
       this.clearList()
-      let enabledParam = ''
-      if (this.table.enabledOnly) {
-        enabledParam = '&enabled=true'
-      }
-      const res = await this.$axios.get(
-        '/alert/list-condition/?project_id=' + this.$store.state.project.project_id + enabledParam
-      ).catch((err) =>  {
-        this.clearList()
+      const alert_condition = await this.listAlertCondition(this.table.enabledOnly).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.alert_condition ) {
-        this.clearList()
-        return false
-      }
-      res.data.data.alert_condition.forEach( async cond => {
-        const rules = await this.$axios.get(
-          '/alert/list-condition_rule/?project_id=' + this.$store.state.project.project_id
-            + '&alert_condition_id=' + cond.alert_condition_id
-        ).catch((err) =>  {
+      alert_condition.forEach( async cond => {
+        const [rules, notis] = await Promise.all([
+          this.listAlertConditionRule(cond.alert_condition_id),
+          this.listAlertConditionNotification(cond.alert_condition_id)
+        ]).catch((err) =>  {
           this.clearList()
           return Promise.reject(err)
         })
-        const notis = await this.$axios.get(
-          '/alert/list-condition_notification/?project_id=' + this.$store.state.project.project_id
-            + '&alert_condition_id=' + cond.alert_condition_id
-        ).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        let noti_cache = ''
+        if ( notis[0] ) {
+          noti_cache = this.getNotiCacheText(notis[0].cache_second)
+        }
         const item = {
           alert_condition_id: cond.alert_condition_id,
           description: cond.description, 
           severity: cond.severity, 
           and_or: cond.and_or,
+          noti_cache: noti_cache,
           enabled: cond.enabled,
-          rules: rules.data.data.alert_cond_rule ?
-            rules.data.data.alert_cond_rule.map(item => item.alert_rule_id) : [],
-          notifications: notis.data.data.alert_cond_notification ?
-            notis.data.data.alert_cond_notification.map(item => item.notification_id) : [],
+          rules: rules.map(item => item.alert_rule_id),
+          notifications: notis.map(item => item.notification_id),
           updated_at: cond.updated_at,
         }
         this.table.items.push(item)
@@ -556,11 +560,7 @@ export default {
 
     // Delete Condition
     async deleteItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          alert_condition_id: this.dataModel.alert_condition_id,
-      }
-      await this.$axios.post('/alert/delete-condition/', param).catch((err) =>  {
+      await this.deleteAlertCondition(this.dataModel.alert_condition_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -577,32 +577,27 @@ export default {
           description: this.dataModel.description,
           severity: this.dataModel.severity,
           and_or: this.dataModel.and_or,
-          enabled: this.dataModel.enabled,  // falase をセットしても正しく反映されない？
+          enabled: this.dataModel.enabled,
         },
       }
-      const res = await this.$axios.post('/alert/put-condition/', param).catch((err) =>  {
+      const res = await this.putAlertCondition(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if (res && res.data && res.data.data && res.data.data.alert_condition) {
+      if (res) {
         // update `alert_condition_id` for NEW condition data
-        this.dataModel.alert_condition_id = res.data.data.alert_condition.alert_condition_id
+        this.dataModel.alert_condition_id = res.alert_condition_id
       }
     },
 
     // List Rule
     async listRule() {
       this.clearRuleList()
-      const res = await this.$axios.get(
-        '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const alert_rule = await this.listAlertRule().catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.alert_rule	 ) {
-        return false
-      }
-      res.data.data.alert_rule.forEach( async rule => {
+      alert_rule.forEach( async rule => {
         this.ruleTable.items.push(rule)
         if (this.dataModel.rules.indexOf(rule.alert_rule_id) !== -1 ){
           this.ruleTable.selected.push(rule)
@@ -641,7 +636,7 @@ export default {
           }
         })
         await this.$axios.post(uri, param).catch((err) =>  {
-          this.$refs.snackbar.notifyError(err.response.data)
+          this.finishError(err)
           return Promise.reject(err)
         })
       })
@@ -651,15 +646,10 @@ export default {
     async listNotification() {
       this.clearNotiList()
 
-      const res = await this.$axios.get(
-        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const notification = await this.listAlertNotification().catch((err) =>  {
         return Promise.reject(err)
       })
-      if ( !res.data.data.notification ) {
-        return false
-      }
-      res.data.data.notification.forEach( async noti => {
+      notification.forEach( async noti => {
         this.notiTable.items.push(noti)
         if (this.dataModel.notifications.indexOf(noti.notification_id) !== -1 ){
           this.notiTable.selected.push(noti)
@@ -692,7 +682,7 @@ export default {
                 project_id: this.$store.state.project.project_id,
                 alert_condition_id: this.dataModel.alert_condition_id,
                 notification_id: item.notification_id,
-                cache_second: 60 * 60, // an hour 
+                cache_second: this.getNotiCacheSecound(this.dataModel.noti_cache),
                 notified_at: 0,
               },
             }
@@ -707,12 +697,8 @@ export default {
     },
 
     // Analyze Alert
-    async analyzeAlert(alertConditionID) {
-      const param = { 
-        project_id: this.$store.state.project.project_id,
-        alert_condition_id: alertConditionID,
-      }
-      await this.$axios.post('/alert/analyze-alert/', param).catch((err) =>  {
+    async analyze(alertConditionID) {
+      await this.analyzeAlert(alertConditionID).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -722,7 +708,7 @@ export default {
     // handler
     handleSearchList() {
       this.loading = true
-      this.searchCondition('')
+      this.searchCondition()
     },
     async handleNewItem() {
       this.dataModel = {
@@ -730,6 +716,7 @@ export default {
         description:'', 
         severity:'medium', 
         and_or:'and',
+        noti_cache:'1 hour',
         enabled:true,
         rules: [],
         notifications: [],
@@ -774,11 +761,41 @@ export default {
       if (item.alert_condition_id) {
         alertConditionID = item.alert_condition_id
       }
-      this.analyzeAlert(alertConditionID)
+      this.analyze(alertConditionID)
     },
     assignDataModel(item) {
       this.dataModel = {}
       this.dataModel = Object.assign(this.dataModel, item)
+    },
+
+    // Notification Cache
+    getNotiCacheText(sec) {
+      switch (sec) {
+        case 60 * 60:
+          return '1 hour'
+        case 60 * 60 * 24:
+          return '1 day'
+        case 60 * 60 * 24 * 7:
+          return '1 week'
+        case 60 * 60 * 24 * 7 * 30:
+          return '1 month'
+        default:
+          return ''
+      }
+    },
+    getNotiCacheSecound(text) {
+      switch (text) {
+        case '1 hour':
+          return 60 * 60
+        case '1 day':
+          return 60 * 60 * 24
+        case '1 week':
+          return 60 * 60 * 24 * 7
+        case '1 month':
+          return 60 * 60 * 24 * 7 * 30
+        default:
+          return 60 * 60
+      }
     },
 
     // finish process

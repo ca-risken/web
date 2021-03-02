@@ -242,9 +242,11 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin],
+  mixins: [mixin, alert, finding],
   components: {
     BottomSnackBar,
   },
@@ -298,17 +300,8 @@ export default {
       if (this.table.activeOnly) {
         statusParam = '&status=' + this.getAlertStatus('ACTIVE')
       }
-      const res = await this.$axios.get(
-        '/alert/list-alert/?project_id=' + this.$store.state.project.project_id + statusParam
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.alert ) {
-        this.clearList()
-        return false
-      }
-      this.table.items = res.data.data.alert
+      const list = await this.listAlert(statusParam)
+      this.table.items = list
       this.loading = false
     },
     clearList() {
@@ -319,18 +312,8 @@ export default {
     // alert history list
     async getHistory() {
       this.alertHistoryModel = []
-      const res = await this.$axios.get(
-        '/alert/list-history/?alert_id=' + this.alertModel.alert_id + '&project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.alert_history ) {
-        this.clearHistory()
-        return false
-      }
-      // this.alertHistoryModel = list.data.alert_history
-      res.data.data.alert_history.forEach(async history => {
+      const alertHistory = await this.listAlertHistory(this.alertModel.alert_id)
+      alertHistory.forEach(async history => {
         const json = JSON.parse(history.finding_history)
         let findingsIDs = ""
         if (json && json.finding_id) {
@@ -361,31 +344,14 @@ export default {
       formated.push('...')
       return formated
     },
-    clearHistory() {
-      this.alertHistoryModel = []
-      this.loading = false
-    },
 
     // alert finding list
-    async getFinding() {
+    async getRelAlertFinding() {
       this.clearFinding()
-      const res = await this.$axios.get(
-        '/alert/list-rel_alert_finding/?alert_id=' + this.alertModel.alert_id + '&project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.rel_alert_finding ) {
-        this.clearFinding()
-        return false
-      }
-      res.data.data.rel_alert_finding.forEach( async finding => {
-        const res = await this.$axios.get(
-          '/finding/get-finding/?finding_id=' + finding.finding_id + '&project_id=' + this.$store.state.project.project_id
-        ).catch((err) =>  {
-          return Promise.reject(err)
-        })
-        this.alertResource.push(res.data.data.finding.resource_name)
+      const rel_alert_finding = await this.listRelAlertFinding(this.alertModel.alert_id)
+      rel_alert_finding.forEach( async finding => {
+        const f = await this.getFinding(finding.finding_id )
+        this.alertResource.push(f.resource_name)
       })
     },
     clearFinding() {
@@ -431,7 +397,7 @@ export default {
           status: Number(this.getAlertStatus(status)),
         },
       }
-      await this.$axios.post('/alert/put-alert/', param).catch((err) =>  {
+      await this.putAlert(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -449,7 +415,7 @@ export default {
     handleViewItem(item) {
       this.loading = true
       this.assignDataModel(item)
-      this.getFinding()
+      this.getRelAlertFinding()
       this.getHistory()
       this.viewDialog  = true
       this.loading = false

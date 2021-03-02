@@ -1,4 +1,4 @@
-let finding = {
+const finding = {
   data: () => {
     return {}
   },
@@ -49,7 +49,6 @@ let finding = {
       const res = await this.$axios.get(
         '/finding/list-finding-tag-name/?project_id=' + this.$store.state.project.project_id
       ).catch((err) =>  {
-        this.clearList()
         return Promise.reject(err)
       })
       if ( !res.data.data.tag ) {
@@ -71,7 +70,6 @@ let finding = {
       const res = await this.$axios.get(
         '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
       ).catch((err) =>  {
-        this.clearList()
         return Promise.reject(err)
       })
       if ( !res.data.data ) {
@@ -81,7 +79,6 @@ let finding = {
     },
     async getResource(id) {
       const res = await this.$axios.get('/finding/get-resource/?project_id='+ this.$store.state.project.project_id +'&resource_id=' + id).catch((err) =>  {
-        this.clearList()
         return Promise.reject(err)
       })
       if ( !res.data.data.resource ) {

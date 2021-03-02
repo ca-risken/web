@@ -80,6 +80,7 @@
                 item-key="finding_id"
                 @click:row="handleViewItem"
                 @update:page="loadList"
+                @update:options="loadList"
                 v-model="table.selected"
               >
                 <!-- Sortable Header -->
@@ -453,8 +454,9 @@ export default {
         },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageText: 'Rows/Page', 
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -557,13 +559,13 @@ export default {
     parseQuery() {
       if (!this.$route.query) return
       if ( this.$route.query.data_source ) {
-        this.searchModel.dataSource = this.$route.query.data_source.split(',')
+        this.searchModel.dataSource = String(this.$route.query.data_source).split(',')
       }
       if ( this.$route.query.tag ) {
-        this.searchModel.tag = this.$route.query.tag.split(',')
+        this.searchModel.tag = String(this.$route.query.tag).split(',')
       }
       if ( this.$route.query.resource_name ) {
-        this.searchModel.resourceName = this.$route.query.resource_name.split(',')
+        this.searchModel.resourceName = String(this.$route.query.resource_name).split(',')
       }
       this.searchModel.score[0] = 0.0
       this.searchModel.score[1] = 1.0
