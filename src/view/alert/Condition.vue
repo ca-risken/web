@@ -371,10 +371,11 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 
 export default {
-  mixins: [mixin],
+  mixins: [mixin, alert],
   components: {
     BottomSnackBar,
   },
@@ -397,11 +398,11 @@ export default {
             v => !v || v === 'high' || v === 'medium' || v === 'low' || 'Serverity is invalid',
           ]
         },
-        and_or: { label: 'And or Or *', placeholder: 'and',
+        and_or: { label: 'AND or OR *', placeholder: 'and',
           list: ['and', 'or'],
           validator:[
-            v => !!v || 'And Or is required',
-            v => !v || v === 'and' || v === 'or' || 'And_Or is invalid',
+            v => !!v || 'AND/OR is required',
+            v => !v || v === 'and' || v === 'or' || 'AND/OR is invalid',
           ]
         },
         enabled: { label: 'Enabled *', placeholder: 'true'},
@@ -503,33 +504,16 @@ export default {
     // List Condition
     async searchCondition() {
       this.clearList()
-      let enabledParam = ''
-      if (this.table.enabledOnly) {
-        enabledParam = '&enabled=true'
-      }
-      const res = await this.$axios.get(
-        '/alert/list-condition/?project_id=' + this.$store.state.project.project_id + enabledParam
-      ).catch((err) =>  {
-        this.clearList()
+      const alert_condition = await this.listAlertCondition(this.table.enabledOnly).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.alert_condition ) {
-        this.clearList()
-        return false
-      }
-      res.data.data.alert_condition.forEach( async cond => {
-        const rules = await this.$axios.get(
-          '/alert/list-condition_rule/?project_id=' + this.$store.state.project.project_id
-            + '&alert_condition_id=' + cond.alert_condition_id
-        ).catch((err) =>  {
+      alert_condition.forEach( async cond => {
+        const rules = await this.listAlertConditionRule(cond.alert_condition_id).catch((err) =>  {
           this.clearList()
           return Promise.reject(err)
         })
-        const notis = await this.$axios.get(
-          '/alert/list-condition_notification/?project_id=' + this.$store.state.project.project_id
-            + '&alert_condition_id=' + cond.alert_condition_id
-        ).catch((err) =>  {
+        const notis = await this.listAlertConditionNotification(cond.alert_condition_id).catch((err) =>  {
           this.clearList()
           return Promise.reject(err)
         })
@@ -539,10 +523,8 @@ export default {
           severity: cond.severity, 
           and_or: cond.and_or,
           enabled: cond.enabled,
-          rules: rules.data.data.alert_cond_rule ?
-            rules.data.data.alert_cond_rule.map(item => item.alert_rule_id) : [],
-          notifications: notis.data.data.alert_cond_notification ?
-            notis.data.data.alert_cond_notification.map(item => item.notification_id) : [],
+          rules: rules.map(item => item.alert_rule_id),
+          notifications: notis.map(item => item.notification_id),
           updated_at: cond.updated_at,
         }
         this.table.items.push(item)
@@ -556,11 +538,7 @@ export default {
 
     // Delete Condition
     async deleteItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          alert_condition_id: this.dataModel.alert_condition_id,
-      }
-      await this.$axios.post('/alert/delete-condition/', param).catch((err) =>  {
+      await this.deleteAlertCondition(this.dataModel.alert_condition_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -577,32 +555,27 @@ export default {
           description: this.dataModel.description,
           severity: this.dataModel.severity,
           and_or: this.dataModel.and_or,
-          enabled: this.dataModel.enabled,  // falase をセットしても正しく反映されない？
+          enabled: this.dataModel.enabled,
         },
       }
-      const res = await this.$axios.post('/alert/put-condition/', param).catch((err) =>  {
+      const res = await this.putAlertCondition(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if (res && res.data && res.data.data && res.data.data.alert_condition) {
+      if (res) {
         // update `alert_condition_id` for NEW condition data
-        this.dataModel.alert_condition_id = res.data.data.alert_condition.alert_condition_id
+        this.dataModel.alert_condition_id = res.alert_condition_id
       }
     },
 
     // List Rule
     async listRule() {
       this.clearRuleList()
-      const res = await this.$axios.get(
-        '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const alert_rule = await this.listAlertRule().catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.alert_rule	 ) {
-        return false
-      }
-      res.data.data.alert_rule.forEach( async rule => {
+      alert_rule.forEach( async rule => {
         this.ruleTable.items.push(rule)
         if (this.dataModel.rules.indexOf(rule.alert_rule_id) !== -1 ){
           this.ruleTable.selected.push(rule)
@@ -641,7 +614,7 @@ export default {
           }
         })
         await this.$axios.post(uri, param).catch((err) =>  {
-          this.$refs.snackbar.notifyError(err.response.data)
+          this.finishError(err)
           return Promise.reject(err)
         })
       })
@@ -651,15 +624,10 @@ export default {
     async listNotification() {
       this.clearNotiList()
 
-      const res = await this.$axios.get(
-        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const notification = await this.listAlertNotification().catch((err) =>  {
         return Promise.reject(err)
       })
-      if ( !res.data.data.notification ) {
-        return false
-      }
-      res.data.data.notification.forEach( async noti => {
+      notification.forEach( async noti => {
         this.notiTable.items.push(noti)
         if (this.dataModel.notifications.indexOf(noti.notification_id) !== -1 ){
           this.notiTable.selected.push(noti)
@@ -707,12 +675,8 @@ export default {
     },
 
     // Analyze Alert
-    async analyzeAlert(alertConditionID) {
-      const param = { 
-        project_id: this.$store.state.project.project_id,
-        alert_condition_id: alertConditionID,
-      }
-      await this.$axios.post('/alert/analyze-alert/', param).catch((err) =>  {
+    async analyze(alertConditionID) {
+      await this.analyzeAlert(alertConditionID).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -722,7 +686,7 @@ export default {
     // handler
     handleSearchList() {
       this.loading = true
-      this.searchCondition('')
+      this.searchCondition()
     },
     async handleNewItem() {
       this.dataModel = {
@@ -774,7 +738,7 @@ export default {
       if (item.alert_condition_id) {
         alertConditionID = item.alert_condition_id
       }
-      this.analyzeAlert(alertConditionID)
+      this.analyze(alertConditionID)
     },
     assignDataModel(item) {
       this.dataModel = {}

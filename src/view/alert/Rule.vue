@@ -202,7 +202,7 @@
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.alert_rule_id"></v-list-item-title>
-              <v-list-item-subtitle>Notification ID</v-list-item-subtitle>
+              <v-list-item-subtitle>Alert Rule ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -237,10 +237,11 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, alert, finding],
   components: {
     BottomSnackBar,
   },
@@ -317,42 +318,32 @@ export default {
     },
   },
   mounted() {
-    this.loading = true
     this.tagList()
     this.refleshList()
   },
   methods: {
     // list
     async tagList() {
-      const res = await this.$axios.get(
-        '/finding/list-finding-tag/?finding_id=1001&project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
+      this.loading = true
+      this.form.tag.list = []
+      const tags = await this.listFindingTagName().catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.tag ) {
-        this.form.tag.list = []
-        return false
-      }
-      res.data.data.tag.forEach( async tag => {
-        this.form.tag.list.push(tag.tag)
+      tags.forEach( async tag => {
+        this.form.tag.list.push(tag)
       })
       this.loading = false
     },
     async refleshList() {
-      const res = await this.$axios.get(
-        '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      this.loading = true
+      this.table.items = []
+      const alert_rule = await this.listAlertRule().catch((err) =>  {
         this.clearList()
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data.data.alert_rule ) {
-        this.clearList()
-        return false
-      }
-      this.table.items = res.data.data.alert_rule
+      this.table.items = alert_rule
       this.loading = false
     },
     clearList() {
@@ -362,11 +353,7 @@ export default {
 
     // delete
     async deleteItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          alert_rule_id: this.dataModel.alert_rule_id,
-      }
-      await this.$axios.post('/alert/delete-rule/', param).catch((err) =>  {
+      await this.deleteAlertRule(this.dataModel.alert_rule_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -387,7 +374,7 @@ export default {
           finding_cnt: Number(this.dataModel.finding_cnt),
         },
       }
-      await this.$axios.post('/alert/put-rule/', param).catch((err) =>  {
+      await this.putAlertRule(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
