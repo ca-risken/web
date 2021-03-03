@@ -2,14 +2,38 @@
   <div>
     <v-container>
       <v-row dense>
-        <v-col cols="12">
+        <v-col cols="10">
           <v-toolbar color="background" flat>
             <v-toolbar-title  class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-file-find-outline</v-icon>Finding
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
-      </v-row>
+        <v-col cols="2" align-self="end" class="text-right">
+          <v-btn class="ml-2" fab dense small @click="handleSearch">
+            <v-icon>search</v-icon>
+          </v-btn>
+          <v-menu :disabled="!table.selected || table.selected.length <= 0">
+            <template v-slot:activator="{ attrs, on }">
+              <v-btn class="ml-2" fab dense small v-bind="attrs" v-on="on">
+                <v-icon>mdi-format-list-bulleted-square</v-icon>
+              </v-btn>
+            </template>
+            <v-list dense>
+              <v-list-item
+                v-for="action in table.selectedActions"
+                :key="action.text"
+                @click="action.click"
+              >
+                <v-list-item-icon class="ml-1 mr-1">
+                  <v-icon small>{{ action.icon }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title class="ma-1">{{ action.text }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
+        </v-row>
       <v-form ref="searchForm">
         <v-row>
           <v-col cols="3">
@@ -22,7 +46,7 @@
               v-model="searchModel.resourceName"
             />
           </v-col>
-          <v-col cols="2">
+          <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               background-color="white"
@@ -32,7 +56,7 @@
               v-model="searchModel.tag"
             />
           </v-col>
-          <v-col cols="2">
+          <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               background-color="white"
@@ -53,31 +77,6 @@
               :label="searchForm.score.label"
               v-model="searchModel.score"
             ></v-range-slider>
-          </v-col>
-          <v-spacer />
-          <v-col cols="2" align-self="end">
-            <v-btn class="ml-8 mb-5" fab dense small @click="handleSearch">
-              <v-icon>search</v-icon>
-            </v-btn>
-            <v-menu :disabled="!table.selected || table.selected.length <= 0">
-              <template v-slot:activator="{ attrs, on }">
-                <v-btn class="ml-2 mb-5" fab dense small v-bind="attrs" v-on="on">
-                  <v-icon>mdi-format-list-bulleted-square</v-icon>
-                </v-btn>
-              </template>
-              <v-list dense>
-                <v-list-item
-                  v-for="action in table.selectedActions"
-                  :key="action.text"
-                  @click="action.click"
-                >
-                  <v-list-item-icon class="ml-1 mr-1">
-                    <v-icon small>{{ action.icon }}</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title class="ma-1">{{ action.text }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
           </v-col>
         </v-row>
       </v-form>
