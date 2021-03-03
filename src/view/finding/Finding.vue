@@ -11,7 +11,7 @@
         </v-col>
       </v-row>
       <v-form ref="searchForm">
-        <v-row dense>
+        <v-row>
           <v-col cols="3">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
@@ -22,7 +22,7 @@
               v-model="searchModel.resourceName"
             />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="2">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               background-color="white"
@@ -32,7 +32,7 @@
               v-model="searchModel.tag"
             />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="2">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               background-color="white"
@@ -42,7 +42,7 @@
               v-model="searchModel.dataSource"
             />
           </v-col>
-          <v-col cols="2">
+          <v-col cols="3">
             <v-range-slider
               outlined
               dense
@@ -51,14 +51,34 @@
               max="1.0"
               step="0.1"
               :label="searchForm.score.label"
-              :messages="searchForm.score.placeholder"
               v-model="searchModel.score"
             ></v-range-slider>
           </v-col>
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
-            <v-icon>search</v-icon>
-          </v-btn>
+          <v-col cols="2" align-self="end">
+            <v-btn class="ml-8 mb-5" fab dense small @click="handleSearch">
+              <v-icon>search</v-icon>
+            </v-btn>
+            <v-menu :disabled="!table.selected || table.selected.length <= 0">
+              <template v-slot:activator="{ attrs, on }">
+                <v-btn class="ml-2 mb-5" fab dense small v-bind="attrs" v-on="on">
+                  <v-icon>mdi-format-list-bulleted-square</v-icon>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item
+                  v-for="action in table.selectedActions"
+                  :key="action.text"
+                  @click="action.click"
+                >
+                  <v-list-item-icon class="ml-1 mr-1">
+                    <v-icon small>{{ action.icon }}</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="ma-1">{{ action.text }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
         </v-row>
       </v-form>
       <v-row dense>
@@ -82,6 +102,7 @@
                 @update:page="loadList"
                 @update:options="loadList"
                 v-model="table.selected"
+                show-select
               >
                 <!-- Sortable Header -->
                 <template v-slot:[`header.finding_id`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
@@ -439,8 +460,8 @@ export default {
           { text: 'Active',      align: 'center', width: '5%',  value: 'status', sortable: false },
           { text: 'Score',       align: 'center', width: '5%',  value: 'score' },
           { text: 'Data Source', align: 'center', width: '10%', value: 'data_source' },
-          { text: 'Resource',    align: 'start',  width: '10%', value: 'resource_name' },
-          { text: 'Description', align: 'start',  width: '30%', value: 'description' },
+          { text: 'Resource',    align: 'start',  width: '30%', value: 'resource_name' },
+          { text: 'Description', align: 'start',  width: '35%', value: 'description' },
           { text: 'Tags',        align: 'start',  width: '5%',  value: 'tags', sortable: false },
           { text: 'Action',      align: 'center', width: '5%',  value: 'action', sortable: false },
         ],
@@ -452,6 +473,10 @@ export default {
           key: 'finding_id',
           direction: 'asc',
         },
+        selectedActions: [
+          { text: 'Pend selected findings', icon: 'mdi-check-circle-outline', click: this.handlePendSelected },
+          { text: 'Delete selected findings', icon: 'mdi-trash-can-outline', click: this.handleDeleteSelected },
+        ],
         total: 0,
         footer: {
           disableItemsPerPage: false,
@@ -671,6 +696,24 @@ export default {
       this.loading = true
       await this.deleteFinding(this.findingModel.finding_id)
       this.finishSuccess('Success: Delete.')
+    },
+    async handlePendSelected() {
+      this.loading = true
+      const count = this.table.selected.length
+      this.table.selected.forEach(async item => {
+        if (!item.finding_id) return
+        await this.putPendFinding(item.finding_id)
+      })
+      this.finishSuccess('Success: Pend ' + count + ' findings.')
+    },
+    async handleDeleteSelected() {
+      this.loading = true
+      const count = this.table.selected.length
+      this.table.selected.forEach(async item => {
+        if (!item.finding_id) return
+        await this.deleteFinding(item.finding_id)
+      })
+      this.finishSuccess('Success: Delete ' + count + ' findings.')
     },
 
     // finish
