@@ -313,7 +313,7 @@ export default {
           + '&to_at=' + toAt
           + '&from_score=' + fromScore
           + '&data_source=' + dataSource
-          + '&offset=0&limit=200'
+          + '&status=1&offset=0&limit=200'
       const res = await this.listFinding(searceCondition)
       return res.finding_id
     },
