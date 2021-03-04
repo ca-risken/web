@@ -33,12 +33,12 @@
             </v-list>
           </v-menu>
         </v-col>
-        </v-row>
-      <v-form ref="searchForm">
-        <v-row>
+      </v-row>
+      <v-form ref="searchForm" >
+        <v-row dense justify="center" align-content="center">
           <v-col cols="3">
             <v-combobox
-              multiple outlined dense clearable small-chips deletable-chips
+              multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
@@ -48,7 +48,7 @@
           </v-col>
           <v-col cols="3">
             <v-combobox
-              multiple outlined dense clearable small-chips deletable-chips
+              multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
               :label="searchForm.tag.label"
               :placeholder="searchForm.tag.placeholder"
@@ -58,7 +58,7 @@
           </v-col>
           <v-col cols="3">
             <v-combobox
-              multiple outlined dense clearable small-chips deletable-chips
+              multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
               :label="searchForm.dataSource.label"
               :placeholder="searchForm.dataSource.placeholder"
@@ -71,6 +71,7 @@
               outlined
               dense
               thumb-label
+              hide-details
               min="0.0"
               max="1.0"
               step="0.1"
@@ -80,6 +81,19 @@
           </v-col>
         </v-row>
       </v-form>
+      <v-row dense>
+        <v-tabs
+          v-model="searchModel.tab"
+          background-color="background"
+          color="cyan darken-3 accent-4"
+          fixed-tabs
+          @change="handleChangeStatus"
+        >
+          <v-tab class="mx-0 px-0">Active</v-tab>
+          <v-tab class="mx-0 px-0">Pending</v-tab>
+          <v-tab class="mx-0 px-0">ALL</v-tab>
+        </v-tabs>
+      </v-row>
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -426,6 +440,8 @@ export default {
         resourceName: [],
         tag: [],
         score: [0.0, 1.0],
+        tab: 0,
+        status: 1,
       },
       searchForm: {
         dataSource: { label: 'Data Source', placeholder: 'Filter data sources' },
@@ -505,7 +521,7 @@ export default {
       return items.length
     },
   },
-  async mounted() {
+  mounted() {
     this.getTag()
     this.refleshList(true)
   },
@@ -606,6 +622,11 @@ export default {
       if ( query.to_score ) {
         this.searchModel.score[1] = query.to_score
       }
+      this.searchModel.status = this.getFindingStatus('ACTIVE')
+      if ( query.status ) {
+        this.searchModel.status = query.status
+      }
+      this.setStatusTab()
     },
     getSearchCondition() {
       let searchCond = ''
@@ -630,6 +651,10 @@ export default {
       if (this.searchModel.score[1]) {
         searchCond += '&to_score=' + this.searchModel.score[1]
         queryNew.to_score = this.searchModel.score[1]
+      }
+      if (this.searchModel.status) {
+        searchCond += '&status=' + this.searchModel.status
+        queryNew.status = this.searchModel.status
       }
       const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const limit = this.table.options.itemsPerPage
@@ -713,6 +738,40 @@ export default {
         await this.deleteFinding(item.finding_id)
       })
       this.finishSuccess('Success: Delete ' + count + ' findings.')
+    },
+    handleChangeStatus(tabNumber) {
+      switch (tabNumber) {
+        case 0:
+          this.searchModel.status = this.getFindingStatus('ACTIVE')
+          break
+        case 1:
+          this.searchModel.status = this.getFindingStatus('PENDING')
+          break
+        case 2:
+          this.searchModel.status = this.getFindingStatus('ALL')
+          break
+        default:
+          this.searchModel.status = this.getFindingStatus('ACTIVE')
+      }
+      this.loadList()
+    },
+    setStatusTab() {
+      const status = this.getFindingStatusText(this.searchModel.status)
+console.log(this.searchModel.status)
+console.log(status)
+      switch (status) {
+        case 'ACTIVE':
+          this.searchModel.tab = 0
+          break
+        case 'PENDING':
+          this.searchModel.tab = 1
+          break
+        case 'ALL':
+          this.searchModel.tab = 2
+          break
+        default:
+          this.searchModel.tab = 0
+      }
     },
 
     // finish

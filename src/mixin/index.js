@@ -62,7 +62,7 @@ let mixin = {
       }
     },
     getSeverityColor: (severity) => {
-      switch (severity) {
+      switch (severity.toLowerCase()) {
         case 'high':
           return 'red darken-2'
         case 'medium':
@@ -72,7 +72,7 @@ let mixin = {
       }
     },
     getHistoryTypeColor: (type) => {
-      switch (type) {
+      switch (type.toLowerCase()) {
         case 'created':
           return 'teal lighten-2'
         case 'updated':
@@ -85,7 +85,7 @@ let mixin = {
     },
     getDataSourceIcon: (dataSource) => {
       if ( !dataSource.split(':')[0] ) { return 'mdi-help-circle-outline' }
-      switch (dataSource.split(':')[0]) {
+      switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'mdi-aws'
         case 'diagnosis':
@@ -102,7 +102,7 @@ let mixin = {
     },
     getDataSourceIconColor: (dataSource) => {
       if ( !dataSource.split(':')[0] ) { return '' }
-      switch (dataSource.split(':')[0]) {
+      switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'orange'
         case 'diagnosis':
@@ -118,7 +118,7 @@ let mixin = {
       }
     },
     getDataSourceStatusText: (status) => {
-      switch (status) {
+      switch (Number(status)) {
         case 1:
           return 'OK'
         case 2:
@@ -132,11 +132,11 @@ let mixin = {
       }
     },
     isInProgressDataSourceStatus: (status) => {
-      if ( status === 3) return true
+      if ( Number(status) === 3) return true
       return false
     },
     getDataSourceStatusColor: (status) => {
-      switch (status) {
+      switch (Number(status)) {
         case 1:
           return 'green'
         case 2:
@@ -150,7 +150,7 @@ let mixin = {
       }
     },
     getDataSourceStatusIcon: (status) => {
-      switch (status) {
+      switch (Number(status)) {
         case 1:
           return 'mdi-check-circle-outline'
         case 2:
@@ -163,8 +163,32 @@ let mixin = {
           return ''
       }
     },
+    getFindingStatus: (statusText) => {
+      switch (statusText.toUpperCase()) {
+        case 'ALL':
+          return 0
+        case 'ACTIVE':
+          return 1
+        case 'PENDING':
+          return 2
+        default:
+          return 0
+      }
+    },
+    getFindingStatusText: (status) => {
+      switch (Number(status)) {
+        case 0:
+          return 'ALL'
+        case 1:
+          return 'ACTIVE'
+        case 2:
+          return 'PENDING'
+        default:
+          return 'ALL'
+      }
+    },
     getAlertStatus: (statusText) => {
-      switch (statusText) {
+      switch (statusText.toUpperCase()) {
         case 'ACTIVE':
           return 1
         case 'PENDING':
