@@ -483,6 +483,8 @@ export default {
           return '/static/aws/iam.png'
         case 'aws:cloudsploit':
           return '/static/aws/cloudsploit.png'
+        case 'aws:portscan':
+          return '/static/aws/nmap.png'
         default:
           return '/static/aws/default.png'
       }
