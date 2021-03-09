@@ -205,10 +205,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, project],
   components: {
     BottomSnackBar,
   },
@@ -340,20 +340,22 @@ export default {
       this.awsForm.newAWS = false
       this.editDialog  = true
     },
-    handleEditSubmit() {
+    async handleEditSubmit() {
       if ( !this.$refs.form.validate() ) {
         return
       }
       this.loading = true
-      this.putItem()
+      await this.putItem()
+      await this.tagProjectAPI('aws:' + this.awsModel.aws_account_id, 'orange darken-1')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
       this.deleteDialog  = true
     },
-    handleDeleteSubmit() {
+    async handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem(this.awsModel.aws_id)
+      await this.untagProjectAPI('aws:' + this.awsModel.aws_account_id)
+      await this.deleteItem(this.awsModel.aws_id)
     },
     assignDataModel(item) {
       this.awsModel = {}

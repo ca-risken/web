@@ -757,8 +757,6 @@ export default {
     },
     setStatusTab() {
       const status = this.getFindingStatusText(this.searchModel.status)
-console.log(this.searchModel.status)
-console.log(status)
       switch (status) {
         case 'ACTIVE':
           this.searchModel.tab = 0

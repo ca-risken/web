@@ -69,12 +69,21 @@ export const appRoute = [
       },
       {
         path: '/project/new',
+        name: 'NewProject',
+        meta: {
+          title: 'Project',
+          hiddenInMenu: true,
+        },
+        component: () => import('@/view/project/New.vue')
+      },
+      {
+        path: '/project/setting',
         name: 'Project',
         meta: {
           title: 'Project',
           hiddenInMenu: true,
         },
-        component: () => import('@/view/project/Project.vue')
+        component: () => import('@/view/project/Setting.vue')
       },
       {
         path: '/dashboard',
@@ -187,6 +196,34 @@ export const appRoute = [
         ]
       },
       {
+        path: '/google',
+        component: RouteWrapper,
+        redirect: '/google/gcp',
+        meta: {
+          title: 'Google',
+          icon: 'mdi-google',
+          group: 'google'
+        },
+        children: [
+          {
+            path: '/google/gcp',
+            name: 'GCP',
+            meta: {
+              title: 'GCP',
+            },
+            component: () => import('@/view/google/GCP.vue')
+          },
+          {
+            path: '/google/gcp-data-source',
+            name: 'GCP DataSource',
+            meta: {
+              title: 'GCP DataSource',
+            },
+            component: () => import('@/view/google/GCPDataSource.vue')
+          },
+        ]
+      },
+      {
         path: '/diagnosis',
         component: RouteWrapper,
         redirect: '/diagnosis/jira',
@@ -259,34 +296,6 @@ export const appRoute = [
               title: 'Gitleaks',
             },
             component: () => import('@/view/code/Gitleaks.vue')
-          },
-        ]
-      },
-      {
-        path: '/google',
-        component: RouteWrapper,
-        redirect: '/google/gcp',
-        meta: {
-          title: 'Google',
-          icon: 'mdi-google',
-          group: 'google'
-        },
-        children: [
-          {
-            path: '/google/gcp',
-            name: 'GCP',
-            meta: {
-              title: 'GCP',
-            },
-            component: () => import('@/view/google/GCP.vue')
-          },
-          {
-            path: '/google/gcp-data-source',
-            name: 'GCP DataSource',
-            meta: {
-              title: 'GCP DataSource',
-            },
-            component: () => import('@/view/google/GCPDataSource.vue')
           },
         ]
       },

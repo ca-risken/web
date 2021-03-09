@@ -411,10 +411,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, project],
   components: {
     BottomSnackBar,
   },
@@ -702,20 +702,22 @@ export default {
       this.gitleaksForm.readOnly = false
       this.editDialog  = true
     },
-    handleEditSubmit() {
+    async handleEditSubmit() {
       if ( !this.$refs.form.validate() ) {
         return
       }
       this.loading = true
-      this.putItem()
+      await this.putItem()
+      await this.tagProjectAPI('github:' + this.gitleaksModel.target_resource, 'black')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
       this.deleteDialog  = true
     },
-    handleDeleteSubmit() {
+    async handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem()
+      await this.untagProjectAPI('github:' + this.gitleaksModel.target_resource)
+      await this.deleteItem()
     },
     handleScan(item) {
       this.loading = true
