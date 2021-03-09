@@ -26,7 +26,7 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -193,10 +193,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, project],
   components: {
     BottomSnackBar,
   },
@@ -314,20 +314,22 @@ export default {
       this.form.new = false
       this.editDialog  = true
     },
-    handleEditSubmit() {
+    async handleEditSubmit() {
       if ( !this.$refs.form.validate() ) {
         return
       }
       this.loading = true
-      this.putItem()
+      await this.putItem()
+      await this.tagProjectAPI(this.dataModel.resource_type.toLowerCase() + ':' + this.dataModel.resource_name, 'green darken-1')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
       this.deleteDialog  = true
     },
-    handleDeleteSubmit() {
+    async handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem(this.dataModel.osint_id)
+      await this.untagProjectAPI(this.dataModel.resource_type.toLowerCase() + ':' + this.dataModel.resource_name)
+      await this.deleteItem(this.dataModel.osint_id)
     },
     assignDataModel(item) {
       this.dataModel = {}

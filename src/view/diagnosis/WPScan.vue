@@ -26,13 +26,13 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
+          <v-btn class="mt-1 mr-4" color="grey darken-2" dense small icon fab outlined
             :loading="loading"
             @click="handleList"
           >
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -319,10 +319,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, project],
   components: {
     BottomSnackBar,
   },
@@ -499,20 +499,22 @@ export default {
       this.wpscanForm.readOnly = false
       this.editDialog  = true
     },
-    handleEditSubmit() {
+    async handleEditSubmit() {
       if ( !this.$refs.form.validate() ) {
         return
       }
       this.loading = true
-      this.putItem()
+      await this.putItem()
+      await this.tagProjectAPI('wpscan:' + this.wpscanModel.target_url, 'indigo darken-1')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
       this.deleteDialog  = true
     },
-    handleDeleteSubmit() {
+    async handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem()
+      await this.untagProjectAPI('wpscan:' + this.wpscanModel.target_url)
+      await this.deleteItem()
     },
     handleScan(item) {
       this.loading = true

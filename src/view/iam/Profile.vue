@@ -24,25 +24,25 @@
         <v-text-field
           v-model="userForm.data.id"
           label="ID"
-          filled disabled
+          outlined filled disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.sub"
           label="Sub"
-          filled disabled
+          outlined filled disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.name"
           :counter="64"
           :rules="userForm.validator.name"
           label="Name"
-          required
+          outlined required
         ></v-text-field>
         <v-text-field
           :value="userForm.data.updated_at | formatTime"
           label="Updated"
           @input="value => userForm.data.updated_at = value"
-          filled disabled
+          outlined filled disabled
         >
           <pre>{{ userForm.data.updated_at | formatTime }}</pre>
         </v-text-field>
@@ -132,7 +132,7 @@ export default {
       this.$refs.snackbar.notifySuccess('Success: Your profile updated.')
     },
     handleSubmit() {
-      if (this.$refs.form.validate()) {
+      if (!this.$refs.form.validate()) {
         this.putUser()
       }
     },

@@ -20,8 +20,8 @@
           >
             <v-card color="primary" elevation="0">
               <v-card-title>
-                <v-avatar tile color="primary darken-2" size="42">
-                  <span class="whie--text text-h6 font-weight-black">PJ</span>
+                <v-avatar tile size="42">
+                  <v-icon x-large>mdi-alpha-p-box</v-icon>
                 </v-avatar>
                 <v-layout align-center justify-center
                   class="text-h5 ml-4 font-weight-black"
@@ -33,7 +33,6 @@
             </v-card>
           </v-btn>
         </template>
-        <!-- <project-list></project-list> -->
       </v-menu>
     </v-toolbar-items>
     <v-spacer />
@@ -45,7 +44,7 @@
         <template v-slot:activator="{ on }">
           <v-btn icon large text slot="activator" v-on="on">
             <v-avatar size="30px">
-              <v-icon dark>mdi-account-circle</v-icon>
+              <v-icon dark>settings</v-icon>
             </v-avatar>
           </v-btn>
         </template>
@@ -61,7 +60,7 @@
             rel="noopener"
             :key="index"
           >
-            <v-list-item-action v-if="item.icon">
+            <v-list-item-action v-if="item.icon"  class="mr-4">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
             <v-list-item-content>
@@ -81,7 +80,7 @@
     </v-toolbar>
 
     <!-- Project dialog -->
-    <v-dialog max-width="60%" v-model="projectDialog" @click:outside="projectDialog = false">
+    <v-dialog max-width="75%" v-model="projectDialog" @click:outside="projectDialog = false">
       <v-card>
         <v-card-title>
           <span class="mx-2"> Project </span>
@@ -108,14 +107,26 @@
             no-data-text="No data."
             class="elevation-1"
             item-key="project_id"
+            :custom-filter="customFilter"
             @click:row="handleProjectClick"
           >
-            <template v-slot:[`item.updated_at`]="{ item }">
-              <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+            <template v-slot:[`item.tag`]="{ item }">
+              <v-chip
+                v-for="t in item.tag"
+                :key="t.tag"
+                :color="t.color"
+                class="ma-1"
+                dark link
+              >
+                {{ t.tag }}
+              </v-chip>
             </template>
           </v-data-table>
         </v-card-text>
         <v-card-actions>
+          <v-btn text outlined color="blue darken-1" @click="$router.push('/project/setting/'); projectDialog = false">
+            EDIT PROJECT
+          </v-btn>
           <v-spacer />
           <v-btn text outlined color="grey darken-1" @click="projectDialog = false">
             CANCEL
@@ -134,13 +145,14 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import Util from '@/util'
 import store from '@/store'
 import mixin from '@/mixin'
+import project from '@/mixin/api/project'
 export default {
   name: 'AppToolbar',
   components: {
     // ProjectList,
     BottomSnackBar,
   },
-  mixins: [mixin],
+  mixins: [mixin, project],
   data() {
     return {
       loading: false,
@@ -148,10 +160,10 @@ export default {
       projectTable: {
         search: '',
         headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'project_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
+          // { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
+          { text: 'ID',   align: 'start',  width: '5%',  sortable: true, value: 'project_id' },
+          { text: 'Name', align: 'start',  width: '25%', sortable: true, value: 'name' },
+          { text: 'Tag',  align: 'start', width: '70%',  sortable: true, value: 'tag' },
         ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         footer: {
@@ -164,16 +176,22 @@ export default {
 
       profileMenus: [
         {
-          icon: 'settings',
+          icon: 'mdi-account-circle',
           href: '#',
-          title: 'Profile',
-          click: this.handleSetting
+          title: 'Account',
+          click: this.handleAccountSetting,
+        },
+        {
+          icon: 'mdi-alpha-p-box',
+          href: '#',
+          title: 'My Project',
+          click: this.handleProjectSetting,
         },
         {
           icon: 'mdi-logout',
           href: '#',
           title: 'Signout',
-          click: this.handleLogut
+          click: this.handleLogut,
         },
       ]
     }
@@ -207,6 +225,13 @@ export default {
     },
   },
   methods: {
+    customFilter (value, search) {
+      return value != null &&
+        search != null &&
+        typeof value !== 'boolean' &&
+        (typeof value === 'object' ? value.map(v => v.tag).join(',') : value)
+          .toString().toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1;
+    },
     async listProject() {
       this.clearProjectList()
       if ( !store.state.user || !store.state.user.user_id ) {
@@ -216,15 +241,14 @@ export default {
       const admin = await this.$axios.get('/iam/is-admin/?user_id=' + store.state.user.user_id ).catch((err) =>  {
         return Promise.reject(err)
       })
-      let listUserID = store.state.user.user_id
+      let listProjectParam = '?user_id=' + store.state.user.user_id
       if (admin.data.data.ok) {
-        listUserID = ''
+        listProjectParam = ''
       }
-      const res = await this.$axios.get('/project/list-project/?user_id=' + listUserID ).catch((err) =>  {
+      this.projectTable.item = await this.listProjectAPI(listProjectParam).catch((err) =>  {
         return Promise.reject(err)
       })
       this.loading = false
-      this.projectTable.item = res.data.data.project
     },
     clearProjectList() {
       this.projectTable.item = []
@@ -238,10 +262,13 @@ export default {
       Util.toggleFullScreen()
     },
     handleLogut() {
-      this.$router.push('/auth/signin')
+      this.$router.push('/auth/signin/')
     },
-    handleSetting() {
-      this.$router.push('/iam/profile')
+    handleAccountSetting() {
+      this.$router.push('/iam/profile/')
+    },
+    handleProjectSetting() {
+      this.$router.push('/project/setting/')
     },
     handleGoBack() {
       this.$router.go(-1)

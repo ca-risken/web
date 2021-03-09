@@ -26,13 +26,13 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
+          <v-btn class="mt-1 mr-4" color="grey darken-2" dense small icon fab outlined
             :loading="loading"
             @click="handleList"
           >
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -234,8 +234,8 @@
         <v-card-text>
           <v-form v-model="jiraForm.valid" ref="form">
             <v-row>
-              <v-col cols="12">
-                <v-text-field
+              <v-col cols="6">
+                <v-text-field outlined
                   v-model="jiraModel.name"
                   :counter="255"
                   :rules="jiraForm.name.validator"
@@ -245,10 +245,8 @@
                   :filled="jiraForm.readOnly"
                 ></v-text-field>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-text-field
+              <!-- <v-col cols="4">
+                <v-text-field 
                   v-model="jiraModel.jira_id"
                   :counter="50"
                   :rules="jiraForm.jira_id.validator"
@@ -257,9 +255,9 @@
                   :disabled="jiraForm.readOnly"
                   :filled="jiraForm.readOnly"
                 ></v-text-field>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field
+              </v-col> -->
+              <v-col cols="6">
+                <v-text-field outlined
                   v-model="jiraModel.jira_key"
                   :counter="50"
                   :rules="jiraForm.jira_key.validator"
@@ -343,10 +341,10 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
-  mixins: [mixin],
+  mixins: [mixin, project],
   components: {
     BottomSnackBar,
   },
@@ -373,8 +371,8 @@ export default {
             v => !v || v.length <= 50 || 'JIRA ID must be less than 50 characters',
           ]
         },
-        jira_key: { label: 'JIRA Key(JIRA Project Key)', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'JIRA Key must be less than 50 characters',
+        jira_key: { label: 'JIRA Project Key', placeholder: '-', validator:[
+            v => !v || v.length <= 50 || 'JIRA Project Key must be less than 50 characters',
           ]
         },
       },
@@ -399,8 +397,7 @@ export default {
           { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
           { text: 'ID',  align: 'start', sortable: true, value: 'jira_setting_id' },
           { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'JIRA ID', align: 'start', sortable: true, value: 'jira_id' },
-          { text: 'JIRA Key', align: 'start', sortable: true, value: 'jira_key' },
+          { text: 'JIRA Project', align: 'start', sortable: true, value: 'jira_key' },
           { text: 'Status', align: 'start', sortable: true, value: 'status' },
           { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
           { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
@@ -550,20 +547,34 @@ export default {
       this.jiraForm.readOnly = false
       this.editDialog  = true
     },
-    handleEditSubmit() {
+    getJiraTag() {
+      if (this.jiraModel.jira_key !== '') {
+        return 'jira:' + this.jiraModel.jira_key
+      } else if (this.jiraModel.jira_id !== '') {
+        return 'jira:' + this.jiraModel.jira_id
+      }
+      return ''
+    },
+    async handleEditSubmit() {
       if ( !this.$refs.form.validate() ) {
         return
       }
       this.loading = true
-      this.putItem()
+      await this.putItem()
+      if (this.getJiraTag() !== '') {
+        await this.tagProjectAPI(this.getJiraTag(), 'indigo darken-1')
+      }
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
       this.deleteDialog  = true
     },
-    handleDeleteSubmit() {
+    async handleDeleteSubmit() {
       this.loading = true
-      this.deleteItem()
+      if (this.getJiraTag() !== '') {
+        await this.untagProjectAPI(this.getJiraTag())
+      }
+      await this.deleteItem()
     },
     handleScan(item) {
       this.loading = true
