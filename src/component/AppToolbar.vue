@@ -80,7 +80,7 @@
     </v-toolbar>
 
     <!-- Project dialog -->
-    <v-dialog max-width="75%" v-model="projectDialog" @click:outside="projectDialog = false">
+    <v-dialog max-width="64%" v-model="projectDialog" @click:outside="projectDialog = false">
       <v-card>
         <v-card-title>
           <span class="mx-2"> Project </span>
