@@ -188,21 +188,18 @@ export default {
         this.$refs.snackbar.notifyError('Failed to get new porject.')
       }
       store.commit('updateProject', res.data.data.project)
-      this.$refs.snackbar.notifySuccess( 'Success: Updated project.' )
     },
     async tagProject() {
       await this.tagProjectAPI(this.projectTagModel.tag, this.projectTagModel.color.hexa).catch((err) =>  {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess( 'Success: tag project.' )
     },
     async untagProject() {
       await this.untagProjectAPI(this.projectTagModel.tag).catch((err) =>  {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess( 'Success: untag project.' )
     },
 
     // Handler
@@ -212,6 +209,7 @@ export default {
       }
       this.loading = true
       this.editProject()
+      this.$refs.snackbar.notifySuccess( 'Success: updated.' )
       this.loading = false
     },
     handleTag(tag) {
@@ -229,16 +227,20 @@ export default {
       await this.tagProject()
       await new Promise(resolve => setTimeout(resolve, 1000))
       await this.setProject()
+      this.$refs.snackbar.notifySuccess( 'Success: Tag project.' )
       this.loading = false
       this.tagDialog = false
     },
     async handleDeleteTag(tag) {
+      this.loading = true
       this.projectTagModel = {
-        project_id:this.projectModel.project_id,
-        tag:tag.tag,
+        project_id: this.projectModel.project_id,
+        tag:        tag.tag,
       }
       await this.untagProject()
+      await new Promise(resolve => setTimeout(resolve, 1000))
       await this.setProject()
+      this.$refs.snackbar.notifySuccess( 'Success: Untag project.' )
       this.loading = false
     }
   }
