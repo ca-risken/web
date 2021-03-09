@@ -227,6 +227,7 @@ export default {
       }
       this.loading = true
       await this.tagProject()
+      await new Promise(resolve => setTimeout(resolve, 1000))
       await this.setProject()
       this.loading = false
       this.tagDialog = false
