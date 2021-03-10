@@ -63,6 +63,7 @@ let mixin = {
       }
     },
     getSeverityColor: (severity) => {
+      if (typeof severity !== 'string' || severity ===  '') return ''
       switch (severity.toLowerCase()) {
         case 'high':
           return 'red darken-2'
@@ -73,6 +74,7 @@ let mixin = {
       }
     },
     getHistoryTypeColor: (type) => {
+      if (typeof type !== 'string' || type ===  '') return ''
       switch (type.toLowerCase()) {
         case 'created':
           return 'teal lighten-2'
@@ -165,6 +167,7 @@ let mixin = {
       }
     },
     getFindingStatus: (statusText) => {
+      if (typeof statusText !== 'string' || statusText ===  '') return 0
       switch (statusText.toUpperCase()) {
         case 'ALL':
           return 0
@@ -189,6 +192,7 @@ let mixin = {
       }
     },
     getAlertStatus: (statusText) => {
+      if (typeof statusText !== 'string' || statusText ===  '') return 0
       switch (statusText.toUpperCase()) {
         case 'ACTIVE':
           return 1
