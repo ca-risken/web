@@ -26,7 +26,7 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -130,15 +130,32 @@
               :placeholder="form.webhook_url.placeholder"
               outlined required
             ></v-text-field>
+
+            <v-checkbox
+              v-model="form.show_option"
+              label="Show custom options"
+            />
+
             <v-text-field
+              v-show="form.show_option"
+              v-model="dataModel.custom_message"
+              :counter="128"
+              :rules="form.custom_message.validator"
+              :label="form.custom_message.label"
+              :placeholder="form.custom_message.placeholder"
+              outlined
+            ></v-text-field>
+            <v-text-field
+              v-show="form.show_option"
               v-model="dataModel.channel"
               :counter="60"
               :rules="form.channel.validator"
               :label="form.channel.label"
               :placeholder="form.channel.placeholder"
-              outlined required
+              outlined
             ></v-text-field>
             <v-alert
+              v-show="form.show_option"
               v-if="dataModel.channel != '' && dataModel.channel != null"
               dense
               outlined
@@ -220,6 +237,7 @@ export default {
       form: {
         new: false,
         valid: false,
+        show_option: false,
         notification_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name *', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
@@ -237,10 +255,10 @@ export default {
             v => !!v || 'Webhook is required',
           ]
         },
-        channel: { label: 'Channel', placeholder: '#your-channel', validator:[],
-        },
+        custom_message: { label: 'Custom Message (Optional)', placeholder: '<!here> <@user_id> Hello user!', validator:[]},
+        channel: { label: 'Channel (Optional)', placeholder: '#your-channel', validator:[]},
       },
-      dataModel: { notification_id:0, name:'', type:'', notify_setting: {}, webhook_url:'', channel:'', updated_at:'' },
+      dataModel: { notification_id:0, name:'', type:'slack', notify_setting: {}, webhook_url:'', custom_message:'', channel:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
@@ -314,6 +332,7 @@ export default {
             webhook_url: this.dataModel.webhook_url,
             data: {
               channel: this.dataModel.channel,
+              message: this.dataModel.custom_message,
             },
           }), 
         },
@@ -330,7 +349,7 @@ export default {
     },
 
     handleNewItem() {
-      this.dataModel = { notification_id:0, name:'', type:'', webhook_url:'', channel: '', updated_at:'' }
+      this.dataModel = { notification_id:0, name:'', type:'slack', webhook_url:'', custom_message:'' ,channel: '', updated_at:'' }
       this.form.new = true
       this.editDialog  = true
     },
@@ -339,6 +358,7 @@ export default {
     },
     handleEditItem(item) {
       this.assignDataModel(item)
+      this.dataModel.webhook_url = ''
       this.form.new = false
       this.editDialog  = true
     },
@@ -369,6 +389,9 @@ export default {
         }
         if (setting.data && setting.data.channel) {
           this.dataModel.channel = setting.data.channel
+        }
+        if (setting.data && setting.data.message) {
+          this.dataModel.custom_message = setting.data.message
         }
       } 
     },
