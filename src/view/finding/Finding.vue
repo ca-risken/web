@@ -136,8 +136,7 @@
                   </v-layout>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
-                  <v-icon v-if="item.status === 'ACTIVE'" color="success">mdi-check-circle</v-icon>
-                  <v-icon v-else-if="item.status === 'PENDING'" color="grey">mdi-check-circle</v-icon>
+                  <v-icon v-if="item.status" :color="getColorByFindingStatus(item.status)">mdi-check-circle</v-icon>
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
                 <template v-slot:[`item.score`]="{ item }">
@@ -533,8 +532,6 @@ export default {
     async loadList(parse) {
       this.loading = true
       this.clearList()
-      let items = []
-      let resources = []
       if (parse) {
         this.parseQuery()
       }
@@ -543,33 +540,34 @@ export default {
         this.loading = false
         return 
       }
+
       this.table.total = list.total
+      let findings = []
       for ( const id of list.finding_id) {
-        // parallel API call
-        const [finding, tag, pend ] = await Promise.all([
-          this.getFinding(id),
-          this.listFindingTag(id),
-          this.getPendFinding(id),
-        ])
-        const item = {
-          finding_id:     finding.finding_id,
-          status:         !pend.finding_id ? 'ACTIVE' : 'PENDING',
-          score:          finding.score,
-          original_score: finding.original_score,
-          data_source:    finding.data_source,
-          resource_name:  finding.resource_name,
-          description:    finding.description,
-          tags:           tag,
-          data:           finding.data,
-          updated_at:     finding.updated_at,
-          created_at:     finding.created_at,
-        }
-        items.push(item)
-        resources.push(finding.resource_name)
+        findings.push(this.getFindingDetail(id))
       }
-      this.table.items = items
-      this.searchForm.resourceNameList = resources
+      this.table.items = await Promise.all(findings) // Parallel API call
       this.loading = false
+    },
+    async getFindingDetail(id) {
+      const [finding, tag, pend ] = await Promise.all([
+        this.getFinding(id),
+        this.listFindingTag(id),
+        this.getPendFinding(id),
+      ])
+      return {
+        finding_id:     id,
+        status:         !pend.finding_id ? 'ACTIVE' : 'PENDING',
+        score:          finding.score,
+        original_score: finding.original_score,
+        data_source:    finding.data_source,
+        resource_name:  finding.resource_name,
+        description:    finding.description,
+        tags:           tag,
+        data:           finding.data,
+        updated_at:     finding.updated_at,
+        created_at:     finding.created_at,
+      }
     },
     clearList() {
       this.findings = []
