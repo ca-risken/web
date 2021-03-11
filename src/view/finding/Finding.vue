@@ -144,9 +144,25 @@
                 </template>
                 <template v-slot:[`item.tags`]="{ item }">
                   <v-chip>
-                    <v-icon left>mdi-label</v-icon>
+                    <v-tooltip top color="grey lighten-4">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn icon v-bind="attrs" v-on="on">
+                          <v-icon>mdi-label</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-chip
+                        v-for="t in item.tags"
+                        :key="t.finding_tag_id"
+                        class="ma-1"
+                        color="grey darken-3"
+                        dark
+                      >
+                        {{ t.tag }}
+                      </v-chip>
+                    </v-tooltip>
                     {{ item.tags | itemCount }}
                   </v-chip>
+
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -499,7 +515,7 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
     }
   },
@@ -516,8 +532,10 @@ export default {
       return score.toFixed(2)
     },
     itemCount: (items) => {
-      if (!items){return 0}
-      return items.length
+      if ( items && items.length ){
+        return items.length
+      }
+      return 0
     },
   },
   mounted() {
