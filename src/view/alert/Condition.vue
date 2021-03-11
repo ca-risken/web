@@ -771,6 +771,8 @@ export default {
     // Notification Cache
     getNotiCacheText(sec) {
       switch (sec) {
+        case 1:
+          return 'No Cache'
         case 60 * 60:
           return '1 hour'
         case 60 * 60 * 24:
@@ -785,6 +787,8 @@ export default {
     },
     getNotiCacheSecound(text) {
       switch (text) {
+        case 'No Cache':
+          return 1
         case '1 hour':
           return 60 * 60
         case '1 day':
