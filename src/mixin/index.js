@@ -61,6 +61,17 @@ let mixin = {
         return '#D32F2F'
       }
     },
+    getColorByFindingStatus(status) {
+      if (typeof status !== 'string' || status ===  '') return 'grey'
+      switch (status.toLocaleUpperCase()) {
+        case 'ACTIVE':
+          return 'success'
+        case 'PENDING':
+          return 'grey'
+        default:
+          return 'grey'
+      }
+    },
     getSeverityColor: (severity) => {
       if (typeof severity !== 'string' || severity ===  '') return ''
       switch (severity.toLowerCase()) {
@@ -86,7 +97,7 @@ let mixin = {
       }
     },
     getDataSourceIcon: (dataSource) => {
-      if ( !dataSource.split(':')[0] ) { return 'mdi-help-circle-outline' }
+      if ( typeof dataSource !== 'string' || !dataSource.split(':')[0] ) { return 'mdi-help-circle-outline' }
       switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'mdi-aws'
@@ -103,7 +114,7 @@ let mixin = {
       }
     },
     getDataSourceIconColor: (dataSource) => {
-      if ( !dataSource.split(':')[0] ) { return '' }
+      if ( typeof dataSource !== 'string' || !dataSource.split(':')[0] ) { return '' }
       switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'orange'
@@ -216,6 +227,7 @@ let mixin = {
       }
     },
     cutLongText: (str, cutNum) => {
+      if (typeof str !== 'string' ) return '' 
       if (str.length < cutNum || cutNum < 1 ) {
         return str
       }
