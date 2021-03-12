@@ -379,11 +379,9 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
   mixins: [mixin, alert],
   components: {
@@ -506,14 +504,6 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
-    cutString: (str) => {
-      return Util.cutLongString(str, 10)
-    },
   },
   mounted() {
     this.handleSearchList()

@@ -121,6 +121,14 @@ export const appRoute = [
             },
             component: () => import('@/view/finding/Finding.vue')
           },
+          {
+            path: '/finding/setting',
+            name: 'Setting',
+            meta: {
+              title: 'Setting'
+            },
+            component: () => import('@/view/finding/Setting.vue')
+          },
         ]
       },
       {

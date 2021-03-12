@@ -5,7 +5,7 @@
         <v-col cols="10">
           <v-toolbar color="background" flat>
             <v-toolbar-title  class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-file-find-outline</v-icon>Finding
+              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>Finding
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -438,7 +438,6 @@
 </template>
 
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
@@ -523,9 +522,6 @@ export default {
     pretty: (v) => {
       if (!v){return false}
       return JSON.stringify(JSON.parse(v), null, 2)
-    },
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
     },
     formatScore: (score) => {
       if (!Number.isInteger(score)){return score}

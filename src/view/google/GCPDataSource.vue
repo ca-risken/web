@@ -390,11 +390,6 @@ export default {
       editDialog: false,
     }
   },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
-  },
   created () {
     this.$setInterval( async () => {
       await this.refleshList()

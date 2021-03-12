@@ -135,6 +135,35 @@ const finding = {
         return Promise.reject(err)
       })
     },
+
+    // FindingSetting API
+    async listFindingSettingAPI(statusParam){
+      const res = await this.$axios.get(
+        '/finding/list-finding-setting/?project_id=' + this.$store.state.project.project_id + statusParam
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.finding_setting ) {
+        return []
+      }
+      return res.data.data.finding_setting
+    },
+    async putFindingSettingAPI(param) {
+      await this.$axios.post(
+        '/finding/put-finding-setting/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+    },
+    async deleteFindingSettingAPI(finding_setting_id) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        finding_setting_id: finding_setting_id,
+      }
+      await this.$axios.post('/finding/delete-finding-setting/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+    },
+
   },
 }
 

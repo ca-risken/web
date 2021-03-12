@@ -1,3 +1,4 @@
+import Util from '@/util'
 let mixin = {
   data: () => {
     return {
@@ -19,6 +20,20 @@ let mixin = {
       wpscan_datasource_id: 1002,
       gitleaks_datasource_id: 1001,
     }
+  },
+  filters: {
+    formatTime: (unix) => {
+      if (unix === '0' ) {
+        return '-'
+      }
+      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+    elapsedTimeText: (unix) => {
+      return Util.elapsedTimeText(new Date(unix * 1000))
+    },
+    cutString: (str) => {
+      return Util.cutLongString(str, 10)
+    },
   },
   methods: {
     async signin() {
@@ -200,6 +215,27 @@ let mixin = {
           return 'PENDING'
         default:
           return 'ALL'
+      }
+    },
+    getFindingSettingStatus: (statusText) => {
+      if (typeof statusText !== 'string' || statusText ===  '') return 0
+      switch (statusText.toUpperCase()) {
+        case 'ACTIVE':
+          return 1
+        case 'DEACTIVATE':
+          return 2
+        default:
+          return 0 // Unknown
+      }
+    },
+    getFindingSettingStatusText: (status) => {
+      switch (status) {
+        case 1:
+          return 'ACTIVE'
+        case 2:
+          return 'DEACTIVE'
+        default:
+          return 'UNKNOWN'
       }
     },
     getAlertStatus: (statusText) => {

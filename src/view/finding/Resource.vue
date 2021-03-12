@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-file-find-outline</v-icon>Resource
+              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>Resource
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -336,9 +336,7 @@
     </v-dialog>
   </div>
 </template>
-
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import D3Network from 'vue-d3-network'
@@ -438,9 +436,6 @@ export default {
     }
   },
   filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
     formatScore: (score) => {
       if (!Number.isInteger(score)){return score}
       return score.toFixed(2)

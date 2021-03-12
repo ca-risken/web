@@ -49,8 +49,9 @@
 
 
 <script>
-import Util from '@/util'
+import mixin from '@/mixin'
 export default {
+  mixins: [mixin],
   props: {
     userDialog: Boolean,
   },
@@ -82,11 +83,6 @@ export default {
       },
       users: [],
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
   },
   mounted() {
     this.refleshList('')
