@@ -240,7 +240,6 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import finding from '@/mixin/api/finding'
@@ -280,14 +279,6 @@ export default {
       viewDialog: false,
       pendDialog: false,
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
-    elapsedTimeText: (unix) => {
-      return Util.elapsedTimeText(new Date(unix * 1000))
-    },
   },
   mounted() {
     this.handleRefleshList()

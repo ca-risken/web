@@ -235,7 +235,6 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import finding from '@/mixin/api/finding'
@@ -308,14 +307,6 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
-    cutString: (str) => {
-      return Util.cutLongString(str, 15)
-    },
   },
   mounted() {
     this.tagList()

@@ -125,11 +125,9 @@
 </template>
 
 <script>
-import Util from '@/util'
 import store from '@/store'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
   mixins: [mixin],
   components: {
@@ -159,11 +157,6 @@ export default {
         toDate: { label: 'toDate', placeholder: 'Filter date( to )' },
       },
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
   },
   mounted() {
       this.setFlagAdmin()

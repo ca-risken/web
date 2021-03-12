@@ -385,7 +385,6 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
 export default {
   mixins: [mixin],
   components: {
@@ -466,11 +465,6 @@ export default {
       editDialog: false,
       detectWordDialog: false,
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
   },
   created () {
     this.$setInterval( async () => {

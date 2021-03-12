@@ -42,7 +42,6 @@ const alert = {
 
     async putAlert( param ) {
       await this.$axios.post('/alert/put-alert/', param).catch((err) =>  {
-        this.finishError(err.response.data)
         return Promise.reject(err)
       })
     },

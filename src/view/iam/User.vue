@@ -218,11 +218,9 @@
 </template>
 
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import User from '@/component/widget/list/User'
-
 export default {
   mixins: [mixin],
   components: {
@@ -288,11 +286,6 @@ export default {
         items: []
       },
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
   },
   mounted() {
     this.refleshList('')

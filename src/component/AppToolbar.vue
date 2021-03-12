@@ -219,11 +219,6 @@ export default {
       return store.state.project.name
     },
   },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
-  },
   methods: {
     customFilter (value, search) {
       return value != null &&

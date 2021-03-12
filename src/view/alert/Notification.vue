@@ -222,7 +222,6 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
@@ -285,11 +284,6 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
-  },
-  filters: {
-    formatTime: (unix) => {
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
   },
   mounted() {
     this.refleshList()
