@@ -40,10 +40,13 @@
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
+              v-model="searchModel.resourceName"
+              :loading="loading"
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
-              :items="searchForm.resourceNameList"
-              v-model="searchModel.resourceName"
+              :items="resourceNameCombobox"
+              @keydown="listResourceNameForCombobox"
+              persistent-hint
             />
           </v-col>
           <v-col cols="3">
@@ -536,6 +539,7 @@ export default {
   },
   mounted() {
     this.getTag()
+    this.listResourceNameForCombobox()
     this.refleshList(true)
   },
   methods: {

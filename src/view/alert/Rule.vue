@@ -129,14 +129,18 @@
               :placeholder="form.name.placeholder"
               outlined required
             ></v-text-field>
-            <v-text-field
+            <v-combobox
               v-model="dataModel.resource_name"
+              :loading="loading"
               :counter="255"
               :rules="form.resource_name.validator"
               :label="form.resource_name.label"
               :placeholder="form.resource_name.placeholder"
-              outlined required
-            ></v-text-field>
+              :items="resourceNameCombobox"
+              @keydown="listResourceNameForCombobox"
+              persistent-hint outlined required
+            />
+
             <v-combobox
               outlined clearable small-chips
               :label="form.tag.label"
@@ -309,6 +313,7 @@ export default {
     }
   },
   mounted() {
+    this.listResourceNameForCombobox()
     this.tagList()
     this.refleshList()
   },
