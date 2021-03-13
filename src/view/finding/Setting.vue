@@ -63,13 +63,13 @@
                 <template v-slot:[`item.score_coefficient`]="{ item }">
                   <v-chip 
                     class="ma-2"
-                    color="deep-purple accent-4"
+                    :color="getCoefficientColor(item.score_coefficient)"
                     outlined
                   >
                     <v-icon left>
                       mdi-calculator
                     </v-icon>
-                    {{ item.score_coefficient }}
+                    x {{ item.score_coefficient }}
                   </v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
@@ -130,13 +130,12 @@
               :rules="form.resource_name.validator"
               :label="form.resource_name.label"
               :placeholder="form.resource_name.placeholder"
-              :items="form.resourceNameList"
-              persistent-hint
-              @keydown="listResourceName"
-              outlined clearable
+              :items="resourceNameCombobox"
+              @keydown="listResourceNameForCombobox"
+              persistent-hint outlined clearable
             />
             <v-text-field
-              v-else
+              v-if="!form.new"
               v-model="dataModel.resource_name"
               :label="form.resource_name.label"
               :placeholder="form.resource_name.placeholder"
@@ -285,35 +284,11 @@ export default {
     }
   },
   async mounted() {
-    await this.listResourceName()
+    this.listResourceNameForCombobox()
     await this.handleRefleshList()
   },
   methods: {
     // list
-    async listResourceName(event) {
-      let input = ''
-      if (event && event.target && event.target._value) {
-        input = event.target._value
-      }
-      if (event && event.key) {
-        input += event.key
-      }
-      // console.log(input)
-      this.loading = true
-      const list = await this.listResourceID('&resource_name=' + input + '&offset=0&limit=10&sort=resource_name&direction=asc')
-      if ( !list.resource_id || list.resource_id.length == 0 ) {
-        this.form.resourceNameList = []
-        this.loading = false
-        return 
-      }
-      let rnList = []
-      list.resource_id.forEach(async id => {
-        const resource = await this.getResource(id)
-        rnList.push(resource.resource_name)
-      })
-      this.form.resourceNameList = rnList
-      this.loading = false
-    },
     async listFindingSetting() {
       this.table.items = []
       let statusParam = ''
@@ -353,6 +328,12 @@ export default {
       }
       list.push({ text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem })
       return list
+    },
+    getCoefficientColor( coefficient ) {
+      if ( !coefficient ) return 'grey'
+      if ( coefficient > 1.0 ) return 'green'
+      if ( coefficient < 1.0 ) return 'blue'
+      return 'grey' // 1.0
     },
 
     // Update
@@ -429,8 +410,9 @@ export default {
       this.loading = true
       this.deleteFindingSetting()
     },
-    handleDeactivateItem() {
+    handleDeactivateItem(item) {
       this.loading = true
+      this.assignDataModel(item)
       this.putFindingSettingStatus('DEACTIVE')
     },
     handleActivateItem(item) {

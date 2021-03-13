@@ -14,12 +14,15 @@
         <v-row dense>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
-              multiple outlined dense clearable small-chips deletable-chips
+              multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
+              v-model="searchModel.resourceName"
+              :loading="loading"
               :label="searchForm.resourceName.label"
               :placeholder="searchForm.resourceName.placeholder"
-              :items="resourceNameList"
-              v-model="searchModel.resourceName"
+              :items="resourceNameCombobox"
+              @keydown="listResourceNameForCombobox"
+              persistent-hint
             />
           </v-col>
           <v-col cols="12" sm="4" md="4">
@@ -442,6 +445,7 @@ export default {
     },
   },
   async mounted() {
+    this.listResourceNameForCombobox()
     await this.refleshList()
   },
   computed: {

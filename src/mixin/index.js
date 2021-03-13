@@ -18,6 +18,7 @@ let mixin = {
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,
       gitleaks_datasource_id: 1001,
+      resourceNameCombobox: [],
     }
   },
   filters: {
@@ -282,6 +283,30 @@ let mixin = {
         return slashSplited[slashSplited.length -1]
       }
       return slashSplited[slashSplited.length -2] + '/' + slashSplited[slashSplited.length -1]
+    },
+    async listResourceNameForCombobox(event) {
+      let input = ''
+      if (event && event.target && event.target._value) {
+        input = event.target._value
+      }
+      if (event && event.key) {
+        input += event.key
+      }
+      // console.log(input)
+      this.loading = true
+      const list = await this.listResourceID('&resource_name=' + input + '&offset=0&limit=10&sort=resource_name&direction=asc')
+      if ( !list.resource_id || list.resource_id.length == 0 ) {
+        this.resourceNameCombobox = []
+        this.loading = false
+        return 
+      }
+      let rnList = []
+      list.resource_id.forEach(async id => {
+        const resource = await this.getResource(id)
+        rnList.push(resource.resource_name)
+      })
+      this.resourceNameCombobox = rnList
+      this.loading = false
     },
   },
 }
