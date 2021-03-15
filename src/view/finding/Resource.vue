@@ -5,7 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>Resource
+              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
+              {{ $t(`submenu['Resource']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -18,7 +19,7 @@
               background-color="white"
               v-model="searchModel.resourceName"
               :loading="loading"
-              :label="searchForm.resourceName.label"
+              :label="$t(`item['`+searchForm.resourceName.label+`']`)"
               :placeholder="searchForm.resourceName.placeholder"
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
@@ -40,7 +41,7 @@
                   outlined dense readonly
                   background-color="white"
                   v-model="dateRangeText"
-                  :label="searchForm.dates.label"
+                  :label="$t(`item['`+searchForm.dates.label+`']`)"
                   prepend-icon="event"
                   v-bind="attrs"
                   v-on="on"
@@ -66,7 +67,7 @@
               min="0.0"
               max="100.0"
               step="0.1"
-              :label="searchForm.score.label"
+              :label="$t(`item['`+searchForm.score.label+`']`)"
               :messages="searchForm.score.placeholder"
               v-model="searchModel.score"
             ></v-range-slider>
@@ -97,7 +98,7 @@
             <v-divider></v-divider>
             <v-card-text class="pa-0">
               <v-data-table
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -146,7 +147,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -162,7 +163,7 @@
       <v-card>
         <v-card-title class="headline">
           <v-icon large color="teal darken-2">mdi-file-tree-outline</v-icon>
-          <span class="mx-4">Resource Map</span>
+          <span class="mx-4">{{ $t(`view.finding["ResourceMap"]`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -216,7 +217,7 @@
               </v-col>
               <v-col cols="1">
                 <v-btn text outlined color="grey darken-1" @click="resourceMapDialog = false">
-                  CANCEL
+                  {{ $t(`btn['CANCEL']`) }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -329,10 +330,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn dark outlined color="light-blue darken-4" @click="handleViewFindingFromNode">
-            VIEW FINDING
+            {{ $t(`btn['VIEW FINDING']`) }}
           </v-btn>
           <v-btn text outlined color="grey darken-1" @click="findingDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -365,13 +366,6 @@ export default {
       search: '',
       table: {
         selected: [],
-        headers: [
-          { text: 'ID',       align: 'center', width: '5%',  value: 'resource_id' },
-          { text: 'Resource', align: 'start',  width: '20%', value: 'resource_name' },
-          { text: 'Findings', align: 'center', width: '5%',  value: 'findings', sortable: false },
-          { text: 'Updated',  align: 'start',  width: '10%', value: 'updated_at' },
-          { text: 'Action',   align: 'center', width: '10%', value: 'action', sortable: false }
-        ],
         options: {
           page: 1,
           itemsPerPage: 5,
@@ -449,6 +443,15 @@ export default {
     await this.refleshList()
   },
   computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),       align: 'center', width: '5%',  value: 'resource_id' },
+        { text: this.$i18n.t('item["Resource"]'), align: 'start',  width: '20%', value: 'resource_name' },
+        { text: this.$i18n.t('item["Findings"]'), align: 'center', width: '5%',  value: 'findings', sortable: false },
+        { text: this.$i18n.t('item["Updated"]'),  align: 'start',  width: '10%', value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'),   align: 'center', width: '10%', value: 'action', sortable: false },
+      ]
+    },
     dateRangeText () {
       if ( this.searchModel.dates.length < 1 || this.searchModel.dates[0] === '' || this.searchModel.dates[1] === '' ) {
         return ''

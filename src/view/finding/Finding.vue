@@ -5,7 +5,8 @@
         <v-col cols="10">
           <v-toolbar color="background" flat>
             <v-toolbar-title  class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>Finding
+              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
+              {{ $t(`submenu['Finding']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -28,7 +29,7 @@
                 <v-list-item-icon class="ml-1 mr-1">
                   <v-icon small>{{ action.icon }}</v-icon>
                 </v-list-item-icon>
-                <v-list-item-title class="ma-1">{{ action.text }}</v-list-item-title>
+                <v-list-item-title class="ma-1">{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -42,7 +43,7 @@
               background-color="white"
               v-model="searchModel.resourceName"
               :loading="loading"
-              :label="searchForm.resourceName.label"
+              :label="$t(`item['`+searchForm.resourceName.label+`']`)"
               :placeholder="searchForm.resourceName.placeholder"
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
@@ -53,7 +54,7 @@
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
-              :label="searchForm.tag.label"
+              :label="$t(`item['`+searchForm.tag.label+`']`)"
               :placeholder="searchForm.tag.placeholder"
               :items="searchForm.tagList"
               v-model="searchModel.tag"
@@ -63,7 +64,7 @@
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
-              :label="searchForm.dataSource.label"
+              :label="$t(`item['`+searchForm.dataSource.label+`']`)"
               :placeholder="searchForm.dataSource.placeholder"
               :items="dataSourceList"
               v-model="searchModel.dataSource"
@@ -78,7 +79,7 @@
               min="0.0"
               max="1.0"
               step="0.1"
-              :label="searchForm.score.label"
+              :label="$t(`item['`+searchForm.score.label+`']`)"
               v-model="searchModel.score"
             ></v-range-slider>
           </v-col>
@@ -92,9 +93,9 @@
           fixed-tabs
           @change="handleChangeStatus"
         >
-          <v-tab class="mx-0 px-0">Active</v-tab>
-          <v-tab class="mx-0 px-0">Pending</v-tab>
-          <v-tab class="mx-0 px-0">ALL</v-tab>
+          <v-tab class="mx-0 px-0">{{ $t(`view.finding['ACTIVE']`) }}</v-tab>
+          <v-tab class="mx-0 px-0">{{ $t(`view.finding['PENDING']`) }}</v-tab>
+          <v-tab class="mx-0 px-0">{{ $t(`view.finding['ALL']`) }}</v-tab>
         </v-tabs>
       </v-row>
       <v-row dense>
@@ -103,7 +104,7 @@
             <v-divider></v-divider>
             <v-card-text class="pa-0">
               <v-data-table
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -192,7 +193,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -207,7 +208,7 @@
     <v-dialog v-model="viewDialog" max-width="70%">
       <v-card>
         <v-toolbar>
-          <v-card-title>Finding Detail</v-card-title>
+          <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
         </v-toolbar>
         <v-container fluid>
           <v-row dense class="mx-2">
@@ -232,7 +233,7 @@
                       v-text="getDataSourceIcon(findingModel.data_source)"
                       :color="getDataSourceIconColor(findingModel.data_source)"
                     />
-                    Data Source
+                    {{ $t(`item['Data Source']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.data_source }}
@@ -245,7 +246,7 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     <v-icon left>mdi-file-find-outline</v-icon>
-                    Resource Name
+                    {{ $t(`item['Resource Name']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.resource_name }}
@@ -260,7 +261,7 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     <v-icon left>mdi-image-text</v-icon>
-                    Description
+                    {{ $t(`item['Description']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.description }}
@@ -273,7 +274,7 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
-                    Score
+                    {{ $t(`item['Score']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip dark :color="getColorByScore(findingModel.score)">{{ findingModel.score | formatScore }}</v-chip>
@@ -286,7 +287,7 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     <v-icon outlined>mdi-scoreboard</v-icon>
-                    Original Score
+                    {{ $t(`item['Original Score']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.original_score }}
@@ -299,8 +300,10 @@
             <v-col cols="12">
               <v-list-item-subtitle>
                 <v-icon left>mdi-label</v-icon>
-                Tag
-                <v-btn text outlined dense color="black lighten-1" class="ma-4" :loading="loading" @click="handleNewTag">New Tag</v-btn>
+                {{ $t(`item['Tag']`) }}
+                <v-btn text outlined dense color="black lighten-1" class="ma-4" :loading="loading" @click="handleNewTag">
+                  {{ $t(`btn['NEW TAG']`) }}
+                </v-btn>
               </v-list-item-subtitle>
               <v-list-item-title>
                 <v-chip
@@ -332,7 +335,7 @@
             <v-col cols="4">
               <v-list-item-subtitle>
                 <v-icon left>mdi-clock-outline</v-icon>
-                Created At
+                {{ $t(`item['Created']`) }}
               </v-list-item-subtitle>
               <v-list-item-title>
                 <v-chip>{{ findingModel.created_at | formatTime }}</v-chip>
@@ -341,7 +344,7 @@
             <v-col cols="4">
               <v-list-item-subtitle>
                 <v-icon left>mdi-clock-outline</v-icon>
-                Updated At
+                {{ $t(`item['Updated']`) }}
               </v-list-item-subtitle>
               <v-list-item-title>
                 <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
@@ -352,7 +355,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined  color="grey darken-1" @click="viewDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -374,7 +377,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="tagDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="blue darken-1"
@@ -382,23 +385,27 @@
             :loading="loading"
             @click="handleNewTagSubmit"
           >
-            TAG
+            {{ $t(`btn['TAG']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.finding_id"></v-list-item-title>
-              <v-list-item-subtitle>Finding ID</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['Finding ID']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -407,7 +414,9 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.resource_name"></v-list-item-title>
-              <v-list-item-subtitle>Resource</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['Resource Name']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -416,14 +425,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="findingModel.description"></v-list-item-title>
-              <v-list-item-subtitle>Description</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Description']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -431,7 +440,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -487,16 +496,6 @@ export default {
       deleteDialog: false,
       table: {
         selected: [],
-        headers: [
-          { text: 'ID',          align: 'center', width: '5%',  value: 'finding_id' },
-          { text: 'Active',      align: 'center', width: '5%',  value: 'status', sortable: false },
-          { text: 'Score',       align: 'center', width: '5%',  value: 'score' },
-          { text: 'Data Source', align: 'center', width: '10%', value: 'data_source' },
-          { text: 'Resource',    align: 'start',  width: '30%', value: 'resource_name' },
-          { text: 'Description', align: 'start',  width: '35%', value: 'description' },
-          { text: 'Tags',        align: 'start',  width: '5%',  value: 'tags', sortable: false },
-          { text: 'Action',      align: 'center', width: '5%',  value: 'action', sortable: false },
-        ],
         options: {
           page: 1,
           itemsPerPage: 20,
@@ -535,6 +534,20 @@ export default {
         return items.length
       }
       return 0
+    },
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),          align: 'center', width: '5%',  value: 'finding_id' },
+        { text: this.$i18n.t('item["Status"]'),      align: 'center', width: '10%',  value: 'status', sortable: false },
+        { text: this.$i18n.t('item["Score"]'),       align: 'center', width: '5%',  value: 'score' },
+        { text: this.$i18n.t('item["Data Source"]'), align: 'center', width: '10%', value: 'data_source' },
+        { text: this.$i18n.t('item["Resource"]'),    align: 'start',  width: '30%', value: 'resource_name' },
+        { text: this.$i18n.t('item["Description"]'), align: 'start',  width: '30%', value: 'description' },
+        { text: this.$i18n.t('item["Tags"]'),        align: 'start',  width: '5%',  value: 'tags', sortable: false },
+        { text: this.$i18n.t('item["Action"]'),      align: 'center', width: '5%',  value: 'action', sortable: false },
+      ]
     },
   },
   mounted() {

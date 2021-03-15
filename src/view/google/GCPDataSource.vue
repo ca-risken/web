@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue darken-1">mdi-google-cloud</v-icon>
-              GCP Data Source
+              {{ $t(`submenu['GCP DataSource']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -50,7 +50,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -124,7 +124,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -136,38 +136,46 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="56%">
+    <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
           <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
-          <span class="mx-4 headline">GCP</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['GCP DataSource']`) }}
+          </span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
             <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.gcp_id.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.gcp_id.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.gcp_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="2" v-if="!gcpForm.setupAll">
+            <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.google_data_source_id.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.google_data_source_id.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.google_data_source_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="4" v-if="!gcpForm.setupAll">
+            <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.name.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.name.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.name }}
                   </v-list-item-title>
@@ -177,7 +185,9 @@
             <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.max_score.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.max_score.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ gcpModel.max_score }}
@@ -192,7 +202,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
-                    <v-list-item-subtitle>{{ gcpForm.status.label }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ $t(`item['`+gcpForm.status.label+`']`) }}
+                    </v-list-item-subtitle>
                     <v-chip dark :color="getDataSourceStatusColor(gcpModel.status)">
                       {{ getDataSourceStatusText(gcpModel.status) }}
                     </v-chip>
@@ -203,7 +215,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.gcp_organization_id.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.gcp_organization_id.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.gcp_organization_id }}
                   </v-list-item-title>
@@ -213,7 +227,9 @@
             <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.gcp_project_id.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.gcp_project_id.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.gcp_project_id }}
                   </v-list-item-title>
@@ -223,7 +239,9 @@
             <v-col cols="3" v-if="gcpModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ gcpForm.scan_at.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+gcpForm.scan_at.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ gcpModel.scan_at | formatTime }}
@@ -238,7 +256,9 @@
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
-                  <span class="font-weight-light">{{ gcpForm.status_detail.label}}</span>
+                  <span class="font-weight-light">
+                    {{ $t(`item['`+gcpForm.status_detail.label+`']`) }}
+                  </span>
                 </v-card-title>
                 <v-card-text>
                   {{ gcpModel.status_detail }}
@@ -256,35 +276,37 @@
               :loading="loading" 
               @click="handleScan"
             >
-              SCAN
+              {{ $t(`btn['SCAN']`) }}
             </v-btn>
             <v-spacer />
             <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-              CANCEL
+              {{ $t(`btn['CANCEL']`) }}
             </v-btn>
             <v-btn
               text outlined color="green darken-1" 
               v-if="!gcpForm.readOnly && !gcpForm.setupAll"
               :loading="loading" 
               @click="handleAttachSubmit">
-              Attach
+              {{ $t(`btn['ATTACH']`) }}
             </v-btn>
             <v-btn
               text outlined color="green darken-1" 
               v-if="gcpForm.setupAll"
               :loading="loading" 
               @click="handleAttachAll">
-              Attach All
+              {{ $t(`btn['ATTACH ALL']`) }}
             </v-btn>
           </v-card-actions>
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to detach this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to detach this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
@@ -293,7 +315,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gcpModel.google_data_source_id"></v-list-item-title>
-              <v-list-item-subtitle>Data Source ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Data Source ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -302,14 +324,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gcpModel.gcp_project_id"></v-list-item-title>
-              <v-list-item-subtitle>GCP Project</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['GCP ProjectID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -317,7 +339,7 @@
             :loading="loading"
             @click="handleDetachSubmit"
           >
-            Detach
+            {{ $t(`btn['DETACH']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -348,28 +370,16 @@ export default {
         name: { label: 'Data Source', placeholder: '-', validator: []},
         max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
         gcp_id: { label: 'GCP ID', placeholder: '-', validator: []},
-        gcp_project_id: { label: 'Project ID', placeholder: '-', validator: []},
-        gcp_organization_id: { label: 'Organization ID', placeholder: '-', validator: []},
+        gcp_project_id: { label: 'GCP ProjectID', placeholder: '-', validator: []},
+        gcp_organization_id: { label: 'GCP OrganizationID', placeholder: '-', validator: []},
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
-        scan_at: { label: 'Scaned', placeholder: '-', validator: [] },
+        scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
       },
       gcpModel: { gcp_id:'', gcp_project_id:'',  google_data_source_id:'', name:'', max_score:'', status: 0, status_detail:'', scan_at: 0},
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '8%', sortable: false, value: 'avator' },
-          { text: 'ID', align: 'start', sortable: true, value: 'google_data_source_id' },
-          { text: 'Google Data Source', align: 'start', sortable: true, value: 'name' },
-          { text: 'MAX Score', align: 'center', sortable: true, value: 'max_score' },
-          { text: 'status', align: 'start', width: '12%', sortable: true, value: 'status' },
-          { text: 'GCP ID',  align: 'start', sortable: true, value: 'gcp_id' },
-          { text: 'GCP Organization', align: 'start', sortable: true, value: 'gcp_organization_id' },
-          { text: 'GCP Project', align: 'start', sortable: true, value: 'gcp_project_id' },
-          { text: 'ScanAt', align: 'center', sortable: true, value: 'scan_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['gcp_id'] },
         actions: [
           { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
@@ -394,6 +404,22 @@ export default {
     this.$setInterval( async () => {
       await this.refleshList()
     }, 6000)
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '8%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'), align: 'start', sortable: true, value: 'google_data_source_id' },
+        { text: this.$i18n.t('item["Google Data Source"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["MAX Score"]'), align: 'center', sortable: true, value: 'max_score' },
+        { text: this.$i18n.t('item["Status"]'), align: 'start', width: '12%', sortable: true, value: 'status' },
+        { text: this.$i18n.t('item["GCP ID"]'),  align: 'start', sortable: true, value: 'gcp_id' },
+        { text: this.$i18n.t('item["GCP Organization"]'), align: 'start', sortable: true, value: 'gcp_organization_id' },
+        { text: this.$i18n.t('item["GCP Project"]'), align: 'start', sortable: true, value: 'gcp_project_id' },
+        { text: this.$i18n.t('item["ScanAt"]'), align: 'center', sortable: true, value: 'scan_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   async mounted() {
     this.loading = true

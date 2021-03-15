@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="green">http</v-icon>
-              Data Source
+              {{ $t(`submenu['OSINT DataSource']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -41,7 +41,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -115,7 +115,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -131,7 +131,9 @@
       <v-card>
         <v-card-title>
           <v-icon large color="green">http</v-icon>
-          <span class="mx-4 headline">OSINT</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['OSINT DataSource']`) }}
+          </span>
         </v-card-title>
         <v-container fluid>
           <!-- osint -->
@@ -139,7 +141,9 @@
             <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.osint_id.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.osint_id.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ dataModel.osint_id }}
                   </v-list-item-title>
@@ -149,7 +153,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.resource_type.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.resource_type.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ dataModel.resource_type }}
                   </v-list-item-title>
@@ -159,7 +165,9 @@
             <v-col cols="7">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.resource_name.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.resource_name.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ dataModel.resource_name }}
                   </v-list-item-title>
@@ -172,7 +180,9 @@
             <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.max_score.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.max_score.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ dataModel.max_score }}
@@ -184,7 +194,9 @@
             <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.name.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.name.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ dataModel.name }}
                   </v-list-item-title>
@@ -194,7 +206,9 @@
             <v-col cols="6">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.description.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.description.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ dataModel.description }}
                   </v-list-item-title>
@@ -207,7 +221,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.rel_osint_data_source_id.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.rel_osint_data_source_id.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ dataModel.rel_osint_data_source_id }}
                   </v-list-item-title>
@@ -218,7 +234,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
-                    <v-list-item-subtitle>{{ form.status.label }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ $t(`item['`+form.status.label+`']`) }}
+                    </v-list-item-subtitle>
                     <v-chip dark :color="getDataSourceStatusColor(dataModel.status)">
                       {{ getDataSourceStatusText(dataModel.status) }}
                     </v-chip>
@@ -229,7 +247,9 @@
             <v-col cols="4" v-if="dataModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>{{ form.scan_at.label }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+form.scan_at.label+`']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ dataModel.scan_at | formatTime }}
@@ -244,7 +264,9 @@
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
-                  <span class="font-weight-light">{{ form.status_detail.label}}</span>
+                  <span class="font-weight-light">
+                    {{ $t(`item['`+form.status_detail.label+`']`) }}
+                  </span>
                 </v-card-title>
                 <v-card-text>
                   {{ dataModel.status_detail }}
@@ -254,16 +276,18 @@
           </v-row>
           <!-- detect words -->
           <v-divider v-if="dataModel.rel_osint_data_source_id" />
-          <v-row v-if="dataModel.rel_osint_data_source_id" class="mx-4">
+          <v-row v-if="dataModel.rel_osint_data_source_id" class="mx-4 my-2">
             <v-col cols="6">
               <v-list-item-title>
                 <v-icon left>mdi-label</v-icon>
-                Detect Word
+                {{ $t(`item['Detect Word']`) }}
               </v-list-item-title>
             </v-col>
             <v-spacer />
             <v-col cals="3">
-              <v-btn text outlined color="black lighten-1" @click="handleNewWord">New word</v-btn>
+              <v-btn text outlined color="black lighten-1" @click="handleNewWord">
+                {{ $t(`btn['NEW WORD']`) }}
+              </v-btn>
             </v-col>
           </v-row>
           <v-row class="mx-4" v-if="dataModel.detectWords">
@@ -293,17 +317,17 @@
               :loading="loading" 
               @click="handleScan"
             >
-              SCAN
+              {{ $t(`btn['SCAN']`) }}
             </v-btn>
             <v-spacer />
             <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-              CANCEL
+              {{ $t(`btn['CANCEL']`) }}
             </v-btn>
             <v-btn
               text outlined color="green darken-1" 
               :loading="loading" 
               @click="handleAttachSubmit">
-              Attach
+              {{ $t(`btn['ATTACH']`) }}
             </v-btn>
           </v-card-actions>
         </v-card-text>
@@ -313,12 +337,12 @@
     <v-dialog v-model="detectWordDialog" max-width="400px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">New detect word</span>
+          <span class="mx-4">{{ $t(`item['Detect Word']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-text-field
             v-model="dataModel.new_word"
-            :label="form.detect_word.label"
+            :label="$t(`item['`+form.detect_word.label+`']`) + ' *'"
             :placeholder="form.detect_word.placeholder"
             outlined
           ></v-text-field>
@@ -326,7 +350,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="detectWordDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="blue darken-1"
@@ -334,37 +358,39 @@
             :loading="loading"
             @click="handleNewWordSubmit"
           >
-            REGIST
+            {{ $t(`btn['REGIST']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to detach this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to detach this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>http</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.resource_name"></v-list-item-title>
-              <v-list-item-subtitle>Resource</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Resource Name']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-dns-outline</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Data Souce </v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Data Source']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -372,7 +398,7 @@
             :loading="loading"
             @click="handleDetachSubmit"
           >
-            Detach
+            {{ $t(`btn['DETACH']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -403,20 +429,20 @@ export default {
       form: {
         valid: false,
         osint_id: { label: 'OSINT ID', placeholder: '-', validator: []},
-        resource_type: { label: 'Resource Type', placeholder: '-', validator: []},
-        resource_name: { label: 'Resource Name', placeholder: '-', validator: []},
+        resource_type: { label: 'ResourceType', placeholder: '-', validator: []},
+        resource_name: { label: 'ResourceName', placeholder: '-', validator: []},
 
         osint_data_source_id: { label: 'Data Source ID', placeholder: '-', validator: []},
         name: { label: 'Data Source', placeholder: '-', validator: []},
         description: { label: 'Description', placeholder: '-', validator: []},
         max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
 
-        rel_osint_data_source_id: { label: 'Relation ID', placeholder: '-', validator: [] },
+        rel_osint_data_source_id: { label: 'OSINT Relation ID', placeholder: '-', validator: [] },
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
         scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
 
-        detect_word: { label: 'Detect word', placeholder: '-', validator: [] },
+        detect_word: { label: 'Detect Word', placeholder: '-', validator: [] },
 
       },
       dataModel: {
@@ -437,15 +463,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'Data Source', align: 'start', sortable: false, value: 'name' },
-          { text: 'Description', align: 'start', sortable: false, value: 'description' },
-          { text: 'MAX Score', align: 'center', sortable: false, value: 'max_score' },
-          { text: 'Status', align: 'start', width: '12%', sortable: false, value: 'status' },
-          { text: 'ScanAt', align: 'center', sortable: true, value: 'scan_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['osint_id'] },
         actions: [
           { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
@@ -468,8 +485,22 @@ export default {
   },
   created () {
     this.$setInterval( async () => {
-      await this.listDataSource()
+      this.listDataSource()
+      this.listWord()
     }, 5000)
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["Data Source"]'), align: 'start', sortable: false, value: 'name' },
+        { text: this.$i18n.t('item["Description"]'), align: 'start', sortable: false, value: 'description' },
+        { text: this.$i18n.t('item["MAX Score"]'), align: 'center', sortable: false, value: 'max_score' },
+        { text: this.$i18n.t('item["Status"]'), align: 'start', width: '12%', sortable: false, value: 'status' },
+        { text: this.$i18n.t('item["ScanAt"]'), align: 'center', sortable: true, value: 'scan_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   async mounted() {
     this.loading = true

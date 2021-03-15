@@ -197,7 +197,7 @@ export const appRoute = [
             path: '/aws/data-source',
             name: 'AWS DataSource',
             meta: {
-              title: 'DataSource',
+              title: 'AWS DataSource',
             },
             component: () => import('@/view/aws/DataSource.vue')
           },
@@ -281,7 +281,7 @@ export const appRoute = [
             path: '/osint/data-source',
             name: 'OSINT DataSource',
             meta: {
-              title: 'DataSource',
+              title: 'OSINT DataSource',
             },
             component: () => import('@/view/osint/DataSource.vue')
           },
@@ -366,7 +366,7 @@ export const appRoute = [
             path: '/report/finding',
             name: 'ReportFinding',
             meta: {
-              title: 'Finding',
+              title: 'ReportFinding',
             },
             component: () => import('@/view/report/Finding.vue')
           },

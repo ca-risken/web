@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="green">http</v-icon>
-              OSINT
+              {{ $t(`submenu['OSINT']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -39,7 +39,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -80,7 +80,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -96,20 +96,22 @@
       <v-card>
         <v-card-title>
           <v-icon large color="green">http</v-icon>
-          <span class="mx-4 headline">OSINT</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['OSINT']`) }}
+          </span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-text-field
               v-model="dataModel.osint_id"
-              :label="form.osint_id.label"
+              :label="$t(`item['`+form.osint_id.label+`']`)"
               :placeholder="form.osint_id.placeholder"
               outlined filled disabled
             ></v-text-field>
             <v-combobox
               v-model="dataModel.resource_type"
               :rules="form.resource_type.validator"
-              :label="form.resource_type.label"
+              :label="$t(`item['`+form.resource_type.label+`']`) + ' *'"
               :placeholder="form.resource_type.placeholder"
               :items="form.resource_type.list"
               outlined required clearable
@@ -118,7 +120,7 @@
               v-model="dataModel.resource_name"
               :counter="200"
               :rules="form.resource_name.validator"
-              :label="form.resource_name.label"
+              :label="$t(`item['`+form.resource_name.label+`']`) + ' *'"
               :placeholder="form.resource_name.placeholder"
               outlined required
             ></v-text-field>
@@ -127,11 +129,15 @@
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="form.new">Regist</template>
-                <template v-else>Edit</template>
+                <template v-if="form.new">
+                  {{ $t(`btn['REGIST']`) }}
+                </template>
+                <template v-else>
+                  {{ $t(`btn['EDIT']`) }}
+                </template>
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -139,17 +145,21 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.osint_id"></v-list-item-title>
-              <v-list-item-subtitle>OSINT ID</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['ID']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -158,7 +168,9 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.resource_type"></v-list-item-title>
-              <v-list-item-subtitle>Resource Type</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['ResourceType']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -167,14 +179,16 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.resource_name"></v-list-item-title>
-              <v-list-item-subtitle>Resource Name</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['ResourceName']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -182,7 +196,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -206,12 +220,12 @@ export default {
         new: false,
         valid: false,
         osint_id: { label: 'ID', placeholder: '-' },
-        resource_type: { label: 'ResourceType *', placeholder: 'something', list: ['Domain'], validator:[
+        resource_type: { label: 'ResourceType', placeholder: 'something', list: ['Domain'], validator:[
             v => !!v || 'ResourceType is required',
             v => !v  || v == 'Domain' || 'ResourceType is not valid type',
           ]
         },
-        resource_name: { label: 'ResourceName *', placeholder: 'something', validator:[
+        resource_name: { label: 'ResourceName', placeholder: 'something', validator:[
             v => !!v || 'ResourceName is required',
             v => !v  || v.length <= 200 || 'ResourceName must be less than 200 characters',
           ]
@@ -221,14 +235,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'osint_id' },
-          { text: 'ResourceType', align: 'start', sortable: false, value: 'resource_type' },
-          { text: 'ResourceName', align: 'start', sortable: false, value: 'resource_name' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['osint_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -244,6 +250,18 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'osint_id' },
+        { text: this.$i18n.t('item["ResourceType"]'), align: 'start', sortable: false, value: 'resource_type' },
+        { text: this.$i18n.t('item["ResourceName"]'), align: 'start', sortable: false, value: 'resource_name' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' }
+      ]
+    },
   },
   mounted() {
     this.loading = true

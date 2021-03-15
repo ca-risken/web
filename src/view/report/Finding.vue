@@ -17,7 +17,7 @@
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips
               background-color="white"
-              :label="searchForm.dataSource.label"
+              :label="$t(`item['`+searchForm.dataSource.label+`']`)"
               :placeholder="searchForm.dataSource.placeholder"
               :items="dataSourceList"
               v-model="searchModel.dataSource"
@@ -29,7 +29,7 @@
               min="0.0"
               max="1.0"
               step="0.1"
-              :label="searchForm.score.label"
+              :label="$t(`item['`+searchForm.score.label+`']`)"
               :messages="searchForm.score.placeholder"
               v-model="searchModel.score"
             ></v-slider>
@@ -48,7 +48,7 @@
                 <template v-slot:activator="{ on, attrs }">
                 <v-text-field outlined dense clearable
                     v-model="searchModel.fromDate"
-                    :label="searchForm.fromDate.label"
+                    :label="$t(`item['`+searchForm.fromDate.label+`']`)"
                     readonly
                     background-color="white"
                     v-bind="attrs"
@@ -74,7 +74,7 @@
                 <v-text-field outlined dense clearable
                     v-model="searchModel.toDate"
                     :placeholder="searchForm.toDate.placeholder"
-                    :label="searchForm.toDate.label"
+                    :label="$t(`item['`+searchForm.toDate.label+`']`)"
                     readonly
                     background-color="white"
                     v-bind="attrs"
@@ -91,7 +91,7 @@
             <v-select
               outlined dense clearable
               background-color="white"
-              :label="searchForm.format.label"
+              :label="$t(`item['`+searchForm.format.label+`']`)"
               :items="availableFormat"
               v-model="searchModel.format"
             />
@@ -104,7 +104,7 @@
                 color="primary"
                 class="ma-4"
                 @click="handleGet('')">
-                Download Report (Project)
+                {{ $t(`btn['DOWNLOAD REPORT (PROJECT)']`) }}
             </v-btn>
         </v-row>
         <v-row v-if="flagAdmin" dense justify="center" align-content="center">
@@ -114,7 +114,7 @@
                 color="primary"
                 class="ma-4"
                 @click="handleGet('all')">
-                Download Report (All)
+                {{ $t(`btn['DOWNLOAD REPORT (ALL)']`) }}
             </v-btn>
         </v-row>
       </v-form>
@@ -153,8 +153,8 @@ export default {
         dataSource: { label: 'Data Source', placeholder: 'Filter data sources' },
         score: { label: 'Score', placeholder: 'Filter score( from )' },
         format: { label: 'Format', placeholder: 'select format' },
-        fromDate: { label: 'fromDate', placeholder: 'Filter date( from )' },
-        toDate: { label: 'toDate', placeholder: 'Filter date( to )' },
+        fromDate: { label: 'FromDate', placeholder: 'Filter date( from )' },
+        toDate: { label: 'ToDate', placeholder: 'Filter date( to )' },
       },
     }
   },

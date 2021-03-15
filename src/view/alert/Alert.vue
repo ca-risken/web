@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
-              Alert
+              {{ $t(`submenu['Alert']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -27,7 +27,7 @@
           <v-checkbox
             required
             v-model="table.activeOnly"
-            label="Active only"
+            :label="$t(`view.alert['Active Only']`)"
             @change="handleRefleshList"
           ></v-checkbox>
         </v-col>
@@ -50,7 +50,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -97,7 +97,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -113,7 +113,7 @@
       <!-- Finding -->
       <v-card>
         <v-card-title>
-          <span class="mx-4 headline">Alert Findings</span>
+          <span class="mx-4 headline">{{ $t(`view.alert['Alert Findings']`) }}</span>
           <v-chip dark label color="primary darken-3">
             <v-icon left>mdi-label</v-icon>
             {{ alertModel.alert_id }}
@@ -138,7 +138,9 @@
       <!-- History -->
       <v-card>
         <v-card-title>
-          <span class="mx-4 headline">AlertHistory</span>
+          <span class="mx-4 headline">
+            {{ $t(`view.alert['AlertHistory']`) }}
+          </span>
         </v-card-title>
         <v-card-text class="py-0">
           <v-timeline align-top dense>
@@ -166,7 +168,7 @@
                     dark
                     :color="getHistoryTypeColor(item.history_type)"
                   >
-                    {{ item.history_type }}
+                    {{ $t(`view.alert['`+item.history_type+`']`) }}
                   </v-chip>
                 </v-col>
               </v-row>
@@ -178,7 +180,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn text outlined color="grey darken-1" @click="viewDialog = false">
-              CANCEL
+              {{ $t(`btn['CANCEL']`) }}
             </v-btn>
           </v-card-actions>
         </v-card-text>
@@ -188,14 +190,18 @@
     <v-dialog v-model="pendDialog" max-width="600px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you want to update PENDING this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you want to update PENDING this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="alertModel.alert_id"></v-list-item-title>
-              <v-list-item-subtitle>Alert ID</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['Alert ID']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -206,7 +212,7 @@
               <v-list-item-title>
                 <v-chip  class="ma-1" dark :color="getSeverityColor(alertModel.severity)">{{ alertModel.severity }}</v-chip>
               </v-list-item-title>
-              <v-list-item-subtitle>Serverity</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Severity']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -215,14 +221,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="alertModel.description"></v-list-item-title>
-              <v-list-item-subtitle>Description</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Description']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="pendDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -230,7 +236,7 @@
             :loading="loading"
             @click="handlePendSubmit"
           >
-            PEND
+            {{ $t(`btn['PEND']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -259,15 +265,6 @@ export default {
         selected: [],
         search: '',
         activeOnly: true,
-        headers: [
-          { text: 'Status', align: 'center', width: '10%', sortable: true, value: 'status' },
-          { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
-          { text: 'Severity', align: 'center', width: '10%', sortable: true, value: 'severity' },
-          { text: 'Description', align: 'start', width: '40%', sortable: true, value: 'description' },
-          { text: 'Passed', align: 'center', width: '10%', sortable: true, value: 'created_at' },
-          { text: 'Updated', align: 'center', width: '10%', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', width: '10%', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
         footer: {
           itemsPerPageOptions: [10],
@@ -279,6 +276,19 @@ export default {
       viewDialog: false,
       pendDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item["Status"]'), align: 'center', width: '10%', sortable: true, value: 'status' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'center', width: '10%', sortable: true, value: 'alert_id' },
+        { text: this.$i18n.t('item["Severity"]'), align: 'center', width: '10%', sortable: true, value: 'severity' },
+        { text: this.$i18n.t('item["Description"]'), align: 'start', width: '40%', sortable: true, value: 'description' },
+        { text: this.$i18n.t('item["Passed"]'), align: 'center', width: '10%', sortable: true, value: 'created_at' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', width: '10%', sortable: true, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', width: '10%', sortable: false, value: 'action' }
+      ]
+    },
   },
   mounted() {
     this.handleRefleshList()

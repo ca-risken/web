@@ -26,12 +26,12 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon v-bind="attrs" v-on="on" v-text="item.meta.icon" />
                 </template>
-                <span>{{ item.meta.title }}</span>
+                <span>{{ $t(`menu['`+ item.meta.title +`']`) }}</span>
               </v-tooltip>
             </template>
             <template v-slot:activator>
               <v-list-item-content>
-                <v-list-item-title v-text="item.meta.title"></v-list-item-title>
+                <v-list-item-title v-text="$t(`menu['`+ item.meta.title +`']`)" />
               </v-list-item-content>
             </template>
             <v-list-item
@@ -51,13 +51,13 @@
                         v-text="subItem.meta.icon"
                       />
                     </template>
-                    <span>{{ subItem.meta.title }}</span>
+                    <span>{{ $t(`submenu['`+ subItem.meta.title +`']`) }}</span>
                   </v-tooltip>
                 </v-list-item-icon>
               </template>
               <template v-else>
                 <v-list-item-content>
-                  <v-list-item-title v-text="subItem.meta.title" />
+                  <v-list-item-title v-text="$t(`submenu['`+ subItem.meta.title +`']`)" />
                 </v-list-item-content>
               </template>
             </v-list-item>
@@ -74,11 +74,11 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon v-bind="attrs" v-on="on" v-text="item.meta.icon" />
                 </template>
-                <span>{{ item.meta.title }}</span>
+                <span>{{ $t(`menu['`+ item.meta.title +`']`) }}</span>
               </v-tooltip>
             </v-list-item-icon>
             <v-list-item-content v-if="drawerWidth !== 64">
-              <v-list-item-title v-text="item.meta.title"></v-list-item-title>
+              <v-list-item-title v-text="$t(`menu['`+ item.meta.title +`']`)"></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>

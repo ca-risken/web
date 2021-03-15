@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
-              Rule
+              {{ $t(`submenu['Rule']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -39,7 +39,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -95,7 +95,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -111,13 +111,13 @@
       <v-card>
         <v-card-title>
           <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
-          <span class="mx-4 headline">Rule</span>
+          <span class="mx-4 headline">{{ $t(`submenu['Rule']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-text-field
               v-model="dataModel.alert_rule_id"
-              :label="form.alert_rule_id.label"
+              :label="$t(`item['`+form.alert_rule_id.label+`']`)"
               :placeholder="form.alert_rule_id.placeholder"
               outlined filled disabled
             ></v-text-field>
@@ -125,7 +125,7 @@
               v-model="dataModel.name"
               :counter="200"
               :rules="form.name.validator"
-              :label="form.name.label"
+              :label="$t(`item['`+form.name.label+`']`) + ' *'"
               :placeholder="form.name.placeholder"
               outlined required
             ></v-text-field>
@@ -134,7 +134,7 @@
               :loading="loading"
               :counter="255"
               :rules="form.resource_name.validator"
-              :label="form.resource_name.label"
+              :label="$t(`item['`+form.resource_name.label+`']`)"
               :placeholder="form.resource_name.placeholder"
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
@@ -143,7 +143,7 @@
 
             <v-combobox
               outlined clearable small-chips
-              :label="form.tag.label"
+              :label="$t(`item['`+form.tag.label+`']`)"
               :placeholder="form.tag.placeholder"
               :items="form.tag.list"
               item-text="tag"
@@ -153,7 +153,7 @@
             <v-text-field
               v-model="dataModel.finding_cnt"
               :rules="form.finding_cnt.validator"
-              :label="form.finding_cnt.label"
+              :label="$t(`item['`+form.finding_cnt.label+`']`)"
               :placeholder="form.finding_cnt.placeholder"
               type="number"
               outlined required
@@ -172,7 +172,7 @@
                   v-model="dataModel.score"
                   min="0.0" max="1.0" step="0.1"
                   :rules="form.score.validator"
-                  :label="form.score.label"
+                  :label="$t(`item['`+form.score.label+`']`)"
                   :messages="form.score.placeholder"
                   thumb-label="always"
                   thumb-color="red"
@@ -184,11 +184,11 @@
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="form.new">Regist</template>
-                <template v-else>Edit</template>
+                <template v-if="form.new">{{ $t(`btn['REGIST']`) }}</template>
+                <template v-else>{{ $t(`btn['EDIT']`) }}</template>
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -196,17 +196,19 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.alert_rule_id"></v-list-item-title>
-              <v-list-item-subtitle>Alert Rule ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Alert Rule ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -215,14 +217,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Name</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Name']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -230,7 +232,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -255,12 +257,12 @@ export default {
         new: false,
         valid: false,
         alert_rule_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name *', placeholder: 'something', validator:[
+        name: { label: 'Name', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        score: { label: 'Score *', placeholder: 'Select score ( 0.0 ~ 1.0 )',
+        score: { label: 'Score', placeholder: 'Select score ( 0.0 ~ 1.0 )',
           validator:[
             v => !!v || 'Score is required',
             v => !v || 0.0 <= v && v <= 1.0 || 'Score is must between 0.0 and 1.0',
@@ -276,7 +278,7 @@ export default {
             v => !v || v.length <= 64 || 'Tag must be less than 64 characters',
           ]
         },
-        finding_cnt: { label: 'Finding Count *', placeholder: '1', validator:[
+        finding_cnt: { label: 'Finding Count', placeholder: '1', validator:[
             v => !!v || 'Finding Count is required',
             v => !v || 1 <= v  || 'finding_cnt must be 1 or more',
           ]
@@ -286,16 +288,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'alert_rule_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'Resource Name', align: 'start', sortable: true, value: 'resource_name' },
-          { text: 'Tag', align: 'start', sortable: true, value: 'tag' },
-          { text: 'Finding Count', align: 'center', sortable: true, value: 'finding_cnt' },
-          { text: 'Score', align: 'center', sortable: true, value: 'score' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -311,6 +303,20 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'alert_rule_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["Resource Name"]'), align: 'start', sortable: true, value: 'resource_name' },
+        { text: this.$i18n.t('item["Tag"]'), align: 'start', sortable: true, value: 'tag' },
+        { text: this.$i18n.t('item["Finding Count"]'), align: 'center', sortable: true, value: 'finding_cnt' },
+        { text: this.$i18n.t('item["Score"]'), align: 'center', sortable: true, value: 'score' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   mounted() {
     this.listResourceNameForCombobox()

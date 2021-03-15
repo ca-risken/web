@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue">mdi-bug-check-outline</v-icon>
-              WPScan
+              {{ $t(`submenu['WPScan']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -45,7 +45,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -118,7 +118,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -130,18 +130,22 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="60%">
+    <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
           <v-icon large color="blue">mdi-wpscan</v-icon>
-          <span class="mx-4 headline">WPScan</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['WPScan']`) }}
+          </span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Diagnosis DataSouce ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Data Source ID']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ diagnosisModel.diagnosis_data_source_id }}
                   </v-list-item-title>
@@ -151,7 +155,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>DataSource</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Name']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ diagnosisModel.name }}
                   </v-list-item-title>
@@ -161,7 +167,9 @@
             <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Description</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Description']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ diagnosisModel.description }}
                   </v-list-item-title>
@@ -171,7 +179,9 @@
             <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>MAX Score</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['MAX Score']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ diagnosisModel.max_score }}
@@ -185,7 +195,9 @@
             <v-col cols="3" v-if="wpscanModel.wpscan_setting_id">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>WPScan Setting ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['WPScan Setting ID']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ wpscanModel.wpscan_setting_id }}
                   </v-list-item-title>
@@ -196,7 +208,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
-                    <v-list-item-subtitle>Status</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ $t(`item['Status']`) }}
+                    </v-list-item-subtitle>
                     <v-chip dark :color="getDataSourceStatusColor(wpscanModel.status)">
                       {{ getDataSourceStatusText(wpscanModel.status) }}
                     </v-chip>
@@ -207,7 +221,9 @@
             <v-col cols="4" v-if="wpscanModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Scan At</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['ScanAt']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ wpscanModel.scan_at | formatTime }}
@@ -222,7 +238,9 @@
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
-                  <span class="font-weight-light">Status Detail</span>
+                  <span class="font-weight-light">
+                    {{ $t(`item['Status Detail']`) }}
+                  </span>
                 </v-card-title>
                 <v-card-text>
                   {{ wpscanModel.status_detail }}
@@ -239,7 +257,7 @@
                   v-model="wpscanModel.target_url"
                   :counter="255"
                   :rules="wpscanForm.target_url.validator"
-                  :label="wpscanForm.target_url.label"
+                  :label="$t(`item['`+wpscanForm.target_url.label+`']`) + ' *'"
                   :placeholder="wpscanForm.target_url.placeholder"
                   :disabled="wpscanForm.readOnly"
                   :filled="wpscanForm.readOnly"
@@ -255,18 +273,18 @@
                 :loading="loading" 
                 @click="handleScan"
               >
-                SCAN
+                {{ $t(`btn['SCAN']`) }}
               </v-btn>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text outlined color="green darken-1" 
                 v-if="!wpscanForm.readOnly"
                 :loading="loading" 
                 @click="handleEditSubmit">
-                EDIT
+                {{ $t(`btn['EDIT']`) }}
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -274,17 +292,19 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="diagnosisModel.wpscan_setting_id"></v-list-item-title>
-              <v-list-item-subtitle>WPScan Setting ID</v-list-item-subtitle>
+              <v-list-item-title v-text="wpscanModel.wpscan_setting_id"></v-list-item-title>
+              <v-list-item-subtitle>{{ $t(`item['WPScan Setting ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -292,15 +312,15 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="diagnosisModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Name</v-list-item-subtitle>
+              <v-list-item-title v-text="wpscanModel.target_url"></v-list-item-title>
+              <v-list-item-subtitle>{{ $t(`item['Target URL']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -308,7 +328,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -350,15 +370,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'wpscan_setting_id' },
-          { text: 'TARGET URL', align: 'start', sortable: true, value: 'target_url' },
-          { text: 'Status', align: 'start', sortable: true, value: 'status' },
-          { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['diagnosis_data_source_id'] },
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
@@ -381,6 +392,19 @@ export default {
     this.$setInterval( async () => {
       await this.listWPScanSetting()
     }, 3000)
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'wpscan_setting_id' },
+        { text: this.$i18n.t('item["Target URL"]'), align: 'start', sortable: true, value: 'target_url' },
+        { text: this.$i18n.t('item["Status"]'), align: 'start', sortable: true, value: 'status' },
+        { text: this.$i18n.t('item["ScanAt"]'), align: 'start', sortable: true, value: 'scan_at' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: true, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   async mounted() {
     this.loading = true

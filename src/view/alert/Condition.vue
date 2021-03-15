@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
-              Condition
+              {{ $t(`submenu['Condition']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -28,7 +28,7 @@
             <v-checkbox
               required
               v-model="table.enabledOnly"
-              label="Enabled only"
+              :label="$t(`view.alert['Ebabled Only']`)"
               @change="searchCondition"
             ></v-checkbox>
           </v-col>
@@ -37,7 +37,7 @@
             fab dense outlined small 
             color="blue darken-3" 
             class="mt-3 mr-4"
-            :loading="loading" 
+            :loading="loading"
             @click="handleAnalyze"
           >
             <v-icon>mdi-magnify-scan</v-icon>
@@ -55,7 +55,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -117,7 +117,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -134,7 +134,7 @@
         <!-- Alert Condition -->
         <v-card-title>
           <v-icon large class="pr-2" color="grey darken-2">mdi-cog</v-icon>
-          <span class="mx-4 headline">Alert Condition</span>
+          <span class="mx-4 headline">{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Condition']`) }}</span>
           <v-chip dark label color="primary darken-3">
             <v-icon left>mdi-identifier</v-icon>
             {{ dataModel.alert_condition_id }}
@@ -148,7 +148,7 @@
                   v-model="dataModel.description"
                   :counter="200"
                   :rules="form.description.validator"
-                  :label="form.description.label"
+                  :label="$t(`item['`+form.description.label+`']`) + ' *'"
                   :placeholder="form.description.placeholder"
                   outlined required
                 ></v-text-field>
@@ -158,7 +158,7 @@
                   outlined required clearable
                   v-model="dataModel.severity"
                   :rules="form.severity.validator"
-                  :label="form.severity.label"
+                  :label="$t(`item['`+form.severity.label+`']`) + ' *'"
                   :placeholder="form.severity.placeholder"
                   :items="form.severity.list"
                 />
@@ -170,7 +170,7 @@
                   outlined required clearable
                   v-model="dataModel.and_or"
                   :rules="form.and_or.validator"
-                  :label="form.and_or.label"
+                  :label="$t(`item['`+form.and_or.label+`']`) + ' *'"
                   :placeholder="form.and_or.placeholder"
                   :items="form.and_or.list"
                 />
@@ -180,7 +180,7 @@
                   outlined required clearable
                   v-model="dataModel.noti_cache"
                   :rules="form.noti_cache.validator"
-                  :label="form.noti_cache.label"
+                  :label="$t(`item['`+form.noti_cache.label+`']`) + ' *'"
                   :placeholder="form.noti_cache.placeholder"
                   :items="form.noti_cache.list"
                 />
@@ -190,7 +190,7 @@
                   required
                   v-model="dataModel.enabled"
                   :rules="form.enabled.validator"
-                  :label="form.enabled.label"
+                  :label="$t(`item['`+form.enabled.label+`']`) + ' *'"
                 ></v-checkbox>
               </v-col>
             </v-row>
@@ -203,7 +203,7 @@
         <!-- Alert Rule -->
         <v-card-title>
           <v-icon large color="brown darken-2">mdi-book-open-variant</v-icon>
-          <span class="mx-4 headline">Alert Rule</span>
+          <span class="mx-4 headline">{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Rule']`) }}</span>
           <v-chip outliend class="mx-4" v-if="dataModel.and_or=='and'">
             <v-icon left color="teal lighten-2">mdi-set-center</v-icon>
             AND
@@ -217,7 +217,7 @@
             text outlined link
             to="/alert/rule/"
           >
-            create new rule
+            {{ $t(`btn['CREATE NEW RULE']`) }}
           </v-btn>
         </v-card-title>
         <v-card-text>
@@ -239,7 +239,7 @@
           <v-data-table
             v-model="ruleTable.selected"
             :search="ruleTable.search"
-            :headers="ruleTable.headers"
+            :headers="ruleHeaders"
             :footer-props="ruleTable.footer"
             :items="ruleTable.items"
             :options.sync="ruleTable.options"
@@ -276,13 +276,13 @@
         <!-- Alert Notification -->
         <v-card-title>
           <v-icon large color="brown darken-2">mdi-email</v-icon>
-          <span class="mx-4 headline">Alert Notification</span>
+          <span class="mx-4 headline">{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Notification']`) }}</span>
           <v-spacer />
           <v-btn
             text outlined link
             to="/alert/notification/"
           >
-            create new Notification
+            {{ $t(`btn['CREATE NEW NOTIFICATION']`) }}
           </v-btn>
         </v-card-title>
         <v-card-text>
@@ -304,7 +304,7 @@
           <v-data-table
             v-model="notiTable.selected"
             :search="notiTable.search"
-            :headers="notiTable.headers"
+            :headers="notiHeaders"
             :footer-props="notiTable.footer"
             :items="notiTable.items"
             :options.sync="notiTable.options"
@@ -324,28 +324,30 @@
           <v-card-actions>
             <v-spacer />
             <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-              CANCEL
+              {{ $t(`btn['CANCEL']`) }}
             </v-btn>
             <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-              <template v-if="form.new">Regist</template>
-              <template v-else>Edit</template>
+              <template v-if="form.new">{{ $t(`btn['REGIST']`) }}</template>
+              <template v-else>{{ $t(`btn['EDIT']`) }}</template>
             </v-btn>
           </v-card-actions>
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.alert_condition_id"></v-list-item-title>
-              <v-list-item-subtitle>Alert Condition ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Alert Condition ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -354,14 +356,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="dataModel.description"></v-list-item-title>
-              <v-list-item-subtitle>Description</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Description']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -369,7 +371,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -394,33 +396,33 @@ export default {
         new: false,
         valid: false,
         alert_condition_id: { label: 'ID', placeholder: '-' },
-        description: { label: 'Description *', placeholder: 'description', validator:[
+        description: { label: 'Description', placeholder: 'description', validator:[
             v => !!v || 'Description is required',
             v => v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        severity: { label: 'Serverity *', placeholder: 'high',
+        severity: { label: 'Severity', placeholder: 'high',
           list: ['high', 'medium', 'low'],
           validator:[
-            v => !!v || 'Serverity is required',
-            v => !v || v === 'high' || v === 'medium' || v === 'low' || 'Serverity is invalid',
+            v => !!v || 'Severity is required',
+            v => !v || v === 'high' || v === 'medium' || v === 'low' || 'Severity is invalid',
           ]
         },
-        and_or: { label: 'AND or OR *', placeholder: 'and',
+        and_or: { label: 'And Or', placeholder: 'and',
           list: ['and', 'or'],
           validator:[
             v => !!v || 'AND/OR is required',
             v => !v || v === 'and' || v === 'or' || 'AND/OR is invalid',
           ]
         },
-        noti_cache: { label: 'Notification cache term *', placeholder: '1 hour',
+        noti_cache: { label: 'Notification cache term', placeholder: '1 hour',
           list: ['No Cache', '1 hour', '1 day', '1 week', '1 month'],
           validator:[
             v => !!v || 'Notification cache term is required',
             v => !v || v === 'No Cache' || v === '1 hour' || v === '1 day' || v === '1 week' || v === '1 month' || 'Notification cache term is invalid',
           ]
         },
-        enabled: { label: 'Enabled *', placeholder: 'true'},
+        enabled: { label: 'Enabled', placeholder: 'true'},
       },
       dataModel: {
         alert_condition_id:0,
@@ -437,18 +439,6 @@ export default {
         selected: [],
         search: '',
         enabledOnly: true,
-        headers: [
-          { text: '', align: 'center', width: '5%', sortable: false, value: 'avator' },
-          { text: 'Enabled', align: 'start', sortable: true, value: 'enabled' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'alert_condition_id' },
-          { text: 'Description', align: 'start', sortable: true, value: 'description' },
-          { text: 'Serverity', align: 'center', sortable: true, value: 'severity' },
-          { text: 'And Or', align: 'start', sortable: true, value: 'and_or' },
-          { text: 'Rules', align: 'center', sortable: true, value: 'rules' },
-          { text: 'Notificationns', align: 'center', sortable: true, value: 'notifications' },
-          // { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_condition_id'] },
         actions: [
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
@@ -465,14 +455,6 @@ export default {
       ruleTable: {
         selected: [],
         search: '',
-        headers: [
-          { text: 'ID',  align: 'start', sortable: true, value: 'alert_rule_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'Resource Name', align: 'start', sortable: true, value: 'resource_name' },
-          { text: 'Tag', align: 'start', sortable: true, value: 'tag' },
-          { text: 'Finding Count', align: 'center', sortable: true, value: 'finding_cnt' },
-          { text: 'Score', align: 'center', sortable: true, value: 'score' },
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
@@ -486,11 +468,6 @@ export default {
       notiTable: {
         selected: [],
         search: '',
-        headers: [
-          { text: 'ID',  align: 'start', sortable: true, value: 'notification_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'type', align: 'start', sortable: true, value: 'type' },
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
@@ -504,6 +481,38 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '5%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["Enabled"]'), align: 'start', sortable: true, value: 'enabled' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'alert_condition_id' },
+        { text: this.$i18n.t('item["Description"]'), align: 'start', sortable: true, value: 'description' },
+        { text: this.$i18n.t('item["Severity"]'), align: 'center', sortable: true, value: 'severity' },
+        { text: this.$i18n.t('item["And Or"]'), align: 'start', sortable: true, value: 'and_or' },
+        { text: this.$i18n.t('item["Rules"]'), align: 'center', sortable: true, value: 'rules' },
+        { text: this.$i18n.t('item["Notificationns"]'), align: 'center', sortable: true, value: 'notifications' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
+    ruleHeaders() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'alert_rule_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["Resource Name"]'), align: 'start', sortable: true, value: 'resource_name' },
+        { text: this.$i18n.t('item["Tag"]'), align: 'start', sortable: true, value: 'tag' },
+        { text: this.$i18n.t('item["Finding Count"]'), align: 'center', sortable: true, value: 'finding_cnt' },
+        { text: this.$i18n.t('item["Score"]'), align: 'center', sortable: true, value: 'score' },
+      ]
+    },
+    notiHeaders() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'notification_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["Type"]'), align: 'start', sortable: true, value: 'type' },
+      ]
+    },
   },
   mounted() {
     this.handleSearchList()

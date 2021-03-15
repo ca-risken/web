@@ -5,6 +5,7 @@ import store from '@/store/'
 import axios from '@/axios/'
 import vuetify from '@/plugin/vuetify'
 import interval from '@/plugin/interval'
+import i18n from "@/i18n";
 
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
@@ -15,5 +16,6 @@ new Vue({
   store,
   vuetify,
   interval,
+  i18n,
   render: h => h(App)
 }).$mount('#app')

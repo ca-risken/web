@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              User
+              {{ $t(`submenu['User']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -17,7 +17,7 @@
             <v-combobox
               outlined dense clearable
               background-color="white"
-              :label="searchForm.userName.label"
+              :label="$t(`item['`+searchForm.userName.label+`']`)"
               :placeholder="searchForm.userName.placeholder"
               :items="userNameList"
               v-model="searchModel.userName"
@@ -39,7 +39,7 @@
             <v-divider></v-divider>
             <v-card-text class="pa-0">
               <v-data-table
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -85,7 +85,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -102,7 +102,9 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-account-multiple</v-icon>
-          <span class="mx-4 headline">User</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['User']`) }}
+          </span>
           <v-spacer />
           <template v-if="userForm.clickNew">
             <v-btn outlined  color="primary darken-3" dark @click="userDialog = true">
@@ -117,7 +119,7 @@
         <v-card-text>
           <v-text-field
             v-model="userModel.user_id"
-            :label="userForm.user_id.label"
+            :label="$t(`item['`+userForm.user_id.label+`']`)"
             :placeholder="userForm.user_id.placeholder"
             filled disabled
           ></v-text-field>
@@ -125,7 +127,7 @@
             v-model="userModel.name"
             :counter="64"
             :rules="userForm.name.validator"
-            :label="userForm.name.label"
+            :label="$t(`item['`+userForm.name.label+`']`) + ' *'"
             :placeholder="userForm.name.placeholder"
             filled disabled
           ></v-text-field>
@@ -134,7 +136,9 @@
             <v-toolbar flat color="white" v-show="userModel.user_id">
               <v-toolbar-title class="grey--text text--darken-4">
                 <v-icon large>mdi-alpha-r-circle</v-icon>
-                <span class="mx-4">Role</span>
+                <span class="mx-4">
+                  {{ $t(`submenu['Role']`) }}
+                </span>
               </v-toolbar-title>
               <v-text-field text solo flat
                 prepend-icon="mdi-magnify"
@@ -152,7 +156,7 @@
             <v-data-table
               v-model="roleTable.selected"
               :search="roleTable.search"
-              :headers="roleTable.headers"
+              :headers="roleHeaders"
               :footer-props="roleTable.footer"
               :items="roleTable.items"
               :options.sync="roleTable.options"
@@ -197,15 +201,18 @@
               outlined
               type="error"
             >
-              The selected user will be <strong>removed</strong> from the project, if you do not select any <strong>role</strong>, 
+              {{ $t(`view.iam['Please select one or more roles. If you do not select any role, the user will be ']`) }}
+              <strong>{{ $t(`view.iam['removed']`) }}</strong>
+              {{ $t(`view.iam['from the project.']`) }}
+              <!-- The selected user will be <strong>removed</strong> from the project, if you do not select any <strong>role</strong>,  -->
             </v-alert>
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                Edit
+                {{ $t(`btn['EDIT']`) }}
               </v-btn>
             </v-card-actions>
           </div>
@@ -232,7 +239,7 @@ export default {
       loading: false,
       searchModel: { userName: null },
       searchForm: {
-        userName: { label: 'User Name', placeholder: 'Filter for user name' },
+        userName: { label: 'Name', placeholder: 'Filter for user name' },
       },
       userForm: {
         clickNew: false,
@@ -243,14 +250,6 @@ export default {
       userNameList: [],
       userModel: { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' },
       table: {
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'user_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'Roles', align: 'center', sortable: false, value: 'role_cnt' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEdit },
@@ -271,10 +270,6 @@ export default {
       roleTable: {
         selected: [],
         search: '',
-        headers: [
-          { text: 'ID',  align: 'start', sortable: true, value: 'role_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
@@ -286,6 +281,24 @@ export default {
         items: []
       },
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'user_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
+        { text: this.$i18n.t('item["Roles"]'), align: 'center', sortable: false, value: 'role_cnt' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
+    roleHeaders() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'role_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+      ]
+    },
   },
   mounted() {
     this.refleshList('')

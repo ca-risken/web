@@ -2,7 +2,9 @@
   <v-card max-width="600" class="mx-auto" >
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="headline">Profile</v-list-item-title>
+        <v-list-item-title class="headline">
+          {{ $t(`submenu['Profile']`) }}
+        </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-img

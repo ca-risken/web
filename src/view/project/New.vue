@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-alpha-p-box</v-icon>
-              Project
+              {{ $t(`menu['Project']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -18,7 +18,7 @@
               <v-form v-model="projectForm.valid" ref="form">
                 <v-text-field
                   v-model="projectModel.name"
-                  :label="projectForm.name.label"
+                  :label="$t(`item['`+projectForm.name.label+`']`) + ' *'"
                   :placeholder="projectForm.name.placeholder"
                   :counter="64"
                   :rules="projectForm.name.validator"
@@ -55,7 +55,7 @@ export default {
       projectModel: {project_id:'', name:'', created_at:'', updated_at:'' },
       projectForm: {
         valid: false,
-        name: { label: 'Name *', placeholder: 'your-project', validator:[
+        name: { label: 'Name', placeholder: 'your-project', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 64 || 'Name must be less than 64 characters',
           ]
