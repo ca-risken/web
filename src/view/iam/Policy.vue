@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              Policy
+              {{ $t(`submenu['Policy']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -17,7 +17,7 @@
             <v-combobox
               outlined clearable dense
               background-color="white"
-              :label="searchForm.policyName.label"
+              :label="$t(`item['`+searchForm.policyName.label+`']`)"
               :placeholder="searchForm.policyName.placeholder"
               :items="policyNameList"
               v-model="searchModel.policyName"
@@ -39,7 +39,7 @@
             <v-divider></v-divider>
             <v-card-text class="pa-0">
               <v-data-table
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -106,7 +106,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -122,13 +122,15 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-certificate-outline</v-icon>
-          <span class="mx-4 headline">Policy</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['Policy']`) }}
+          </span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="policyForm.valid" ref="form">
             <v-text-field
               v-model="policyModel.policy_id"
-              :label="policyForm.policy_id.label"
+              :label="$t(`item['`+policyForm.policy_id.label+`']`)"
               :placeholder="policyForm.policy_id.placeholder"
               filled disabled
             ></v-text-field>
@@ -137,7 +139,7 @@
                 v-model="policyModel.name"
                 :counter="64"
                 :rules="policyForm.name.validator"
-                :label="policyForm.name.label"
+                :label="$t(`item['`+policyForm.name.label+`']`) + ' *'"
                 :placeholder="policyForm.name.placeholder"
                 required
               ></v-text-field>
@@ -147,7 +149,7 @@
                 v-model="policyModel.name"
                 :counter="64"
                 :rules="policyForm.name.validator"
-                :label="policyForm.name.label"
+                :label="$t(`item['`+policyForm.name.label+`']`)"
                 :placeholder="policyForm.name.placeholder"
                 filled disabled
               ></v-text-field>   
@@ -156,14 +158,14 @@
             <v-text-field
               v-model="policyModel.action_ptn"
               :rules="policyForm.action_ptn.validator"
-              :label="policyForm.action_ptn.label"
+              :label="$t(`item['`+policyForm.action_ptn.label+`']`) + ' *'"
               :placeholder="policyForm.action_ptn.placeholder"
               required
             ></v-text-field>
             <v-text-field
               v-model="policyModel.resource_ptn"
               :rules="policyForm.resource_ptn.validator"
-              :label="policyForm.resource_ptn.label"
+              :label="$t(`item['`+policyForm.resource_ptn.label+`']`) + ' *'"
               :placeholder="policyForm.resource_ptn.placeholder"
               required
             ></v-text-field>
@@ -171,7 +173,7 @@
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
                 <template v-if="policyForm.newPolicy">Regist</template>
@@ -183,17 +185,21 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="300px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="policyModel.policy_id"></v-list-item-title>
-              <v-list-item-subtitle>Policy ID</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['ID']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -202,21 +208,23 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="policyModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Policy Name</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['Name']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
             text outlined
             @click="deleteItem(policyModel.policy_id)"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -244,17 +252,17 @@ export default {
         newPolicy: false,
         valid: false,
         policy_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name *', placeholder: 'something-policy', validator:[
+        name: { label: 'Name', placeholder: 'something-policy', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 64 || 'Name must be less than 64 characters',
           ]
         },
-        action_ptn: { label: 'Action Pattern *', placeholder: '`.*` for all aciotns', validator:[
+        action_ptn: { label: 'Action Pattern', placeholder: '`.*` for all aciotns', validator:[
             v => !!v || 'Action Pattern is required',
             v => this.compilableRegexp(v) || 'Action Pattern must be compilable regular expression',
           ]
         },
-        resource_ptn: { label: 'Resource Pattern *', placeholder: '`.*` for all resources', validator:[
+        resource_ptn: { label: 'Resource Pattern', placeholder: '`.*` for all resources', validator:[
             v => !!v || 'Resource Pattern is required',
             v => this.compilableRegexp(v) || 'Resource Pattern must be compilable regular expression',
           ]
@@ -263,15 +271,6 @@ export default {
       policyNameList: [],
       policyModel: { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' },
       table: {
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'policy_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'Action Pattern', align: 'start', sortable: false, value: 'action_ptn' },
-          { text: 'Resource Pattern', align: 'start', sortable: false, value: 'resource_ptn' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: {
           page: 1,
           itemsPerPage: 10,
@@ -294,6 +293,19 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'policy_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
+        { text: this.$i18n.t('item["Action Pattern"]'), align: 'start', sortable: false, value: 'action_ptn' },
+        { text: this.$i18n.t('item["Resource Pattern"]'), align: 'start', sortable: false, value: 'resource_ptn' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   mounted() {
     this.refleshList('')

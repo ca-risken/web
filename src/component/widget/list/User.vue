@@ -18,7 +18,7 @@
       <v-divider></v-divider>
       <v-card-text class="pa-0">
         <v-data-table
-          :headers="table.headers"
+          :headers="headers"
           :items="table.items"
           :options.sync="table.options"
           :server-items-length="table.total"
@@ -40,13 +40,12 @@
       <v-card-actions>
         <v-spacer />
         <v-btn text outlined color="grey darken-1" @click="handleCancel">
-          CANCEL
+          {{ $t(`btn['CANCEL']`) }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
-
 
 <script>
 import mixin from '@/mixin'
@@ -66,11 +65,6 @@ export default {
       },
       userNameList: [],
       table: {
-        headers: [
-          { text: 'ID',  align: 'start', sortable: false, value: 'user_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
-        ],
         options: { page: 1, itemsPerPage: 20, sortBy: ['user_id'] },
         total: 0,
         footer: {
@@ -83,6 +77,15 @@ export default {
       },
       users: [],
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'user_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+      ]
+    },
   },
   mounted() {
     this.refleshList('')

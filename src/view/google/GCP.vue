@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue darken-1">mdi-google-cloud</v-icon>
-              GCP
+              {{ $t(`submenu['GCP']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -39,7 +39,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -80,7 +80,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -96,13 +96,15 @@
       <v-card>
         <v-card-title>
           <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
-          <span class="mx-4 headline">GCP</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['GCP']`) }}
+          </span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="gcpForm.valid" ref="form">
             <v-text-field
               v-model="gcpModel.gcp_id"
-              :label="gcpForm.gcp_id.label"
+              :label="$t(`item['`+gcpForm.gcp_id.label+`']`)"
               :placeholder="gcpForm.gcp_id.placeholder"
               outlined filled disabled
             ></v-text-field>
@@ -110,7 +112,7 @@
               v-model="gcpModel.name"
               :counter="200"
               :rules="gcpForm.name.validator"
-              :label="gcpForm.name.label"
+              :label="$t(`item['`+gcpForm.name.label+`']`) + ' *'"
               :placeholder="gcpForm.name.placeholder"
               outlined required
             ></v-text-field>
@@ -119,7 +121,7 @@
                 v-model="gcpModel.gcp_organization_id"
                 :counter="128"
                 :rules="gcpForm.gcp_organization_id.validator"
-                :label="gcpForm.gcp_organization_id.label"
+                :label="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
                 :placeholder="gcpForm.gcp_organization_id.placeholder"
                 outlined required
               ></v-text-field>
@@ -127,7 +129,7 @@
                 v-model="gcpModel.gcp_project_id"
                 :counter="128"
                 :rules="gcpForm.gcp_project_id.validator"
-                :label="gcpForm.gcp_project_id.label"
+                :label="$t(`item['`+gcpForm.gcp_project_id.label+`']`) + ' *'"
                 :placeholder="gcpForm.gcp_project_id.placeholder"
                 outlined required
               ></v-text-field>
@@ -136,14 +138,14 @@
               <v-text-field
                 v-model="gcpModel.gcp_organization_id"
                 :counter="128"
-                :label="gcpForm.gcp_organization_id.label"
+                :label="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
                 :placeholder="gcpForm.gcp_organization_id.placeholder"
                 outlined filled disabled
               ></v-text-field>   
               <v-text-field
                 v-model="gcpModel.gcp_project_id"
                 :counter="128"
-                :label="gcpForm.gcp_project_id.label"
+                :label="$t(`item['`+gcpForm.gcp_project_id.label+`']`) + ' *'"
                 :placeholder="gcpForm.gcp_project_id.placeholder"
                 outlined filled disabled
               ></v-text-field>   
@@ -153,11 +155,15 @@
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="gcpForm.newGCP">Regist</template>
-                <template v-else>Edit</template>
+                <template v-if="gcpForm.newGCP">
+                  {{ $t(`btn['REGIST']`) }}
+                </template>
+                <template v-else>
+                  {{ $t(`btn['EDIT']`) }}
+                </template>
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -165,17 +171,19 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gcpModel.gcp_id"></v-list-item-title>
-              <v-list-item-subtitle>GCP ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['GCP ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -184,7 +192,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gcpModel.name"></v-list-item-title>
-              <v-list-item-subtitle>GCP Name</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Name']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -193,14 +201,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gcpModel.gcp_project_id"></v-list-item-title>
-              <v-list-item-subtitle>GCP Project ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['GCP ProjectID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -208,7 +216,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -232,16 +240,16 @@ export default {
         newGCP: false,
         valid: false,
         gcp_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name *', placeholder: 'something', validator:[
+        name: { label: 'Name', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v => !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        gcp_organization_id: { label: 'GCP Organization ID', placeholder: 'your-org', validator:[
+        gcp_organization_id: { label: 'GCP OrganizationID', placeholder: 'your-org', validator:[
             v => !v || v.length <= 128 || 'GCP Organization ID must be less than 128 characters',
           ]
         },
-        gcp_project_id: { label: 'GCP Project ID *', placeholder: 'your-project', validator:[
+        gcp_project_id: { label: 'GCP ProjectID', placeholder: 'your-project', validator:[
             v => !!v || 'GCP Project ID is required',
             v => !v || v.length <= 128 || 'GCP Project ID must be less than 128 characters',
             v => this.isNewGCPProjectID(v) || 'GCP Project ID is already exist.',
@@ -252,15 +260,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'gcp_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'GCP OrganizationID', align: 'start', sortable: true, value: 'gcp_organization_id' },
-          { text: 'GCP ProjectID', align: 'start', sortable: true, value: 'gcp_project_id' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['gcp_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -276,6 +275,19 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'gcp_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["GCP OrganizationID"]'), align: 'start', sortable: true, value: 'gcp_organization_id' },
+        { text: this.$i18n.t('item["GCP ProjectID"]'), align: 'start', sortable: true, value: 'gcp_project_id' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: true, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   mounted() {
     this.loading = true

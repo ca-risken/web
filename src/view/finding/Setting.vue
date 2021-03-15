@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
-              Setting
+              {{ $t(`submenu['Setting']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -27,7 +27,7 @@
           <v-checkbox
             required
             v-model="table.activeOnly"
-            label="Active only"
+            :label="$t(`view.finding['Active Only']`)"
             @change="handleRefleshList"
           ></v-checkbox>
         </v-col>
@@ -44,7 +44,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -96,7 +96,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -112,13 +112,13 @@
       <v-card>
         <v-card-title>
           <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
-          <span class="mx-4 headline">Setting</span>
+          <span class="mx-4 headline">{{ $t(`submenu['Setting']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-text-field
               v-model="dataModel.finding_setting_id"
-              :label="form.finding_setting_id.label"
+              :label="$t(`item['`+form.finding_setting_id.label+`']`)"
               :placeholder="form.finding_setting_id.placeholder"
               outlined filled disabled
             ></v-text-field>
@@ -128,7 +128,7 @@
               :loading="loading"
               :counter="255"
               :rules="form.resource_name.validator"
-              :label="form.resource_name.label"
+              :label="$t(`item['`+form.resource_name.label+`']`) + ' *'"
               :placeholder="form.resource_name.placeholder"
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
@@ -137,7 +137,7 @@
             <v-text-field
               v-if="!form.new"
               v-model="dataModel.resource_name"
-              :label="form.resource_name.label"
+              :label="$t(`item['`+form.resource_name.label+`']`)"
               :placeholder="form.resource_name.placeholder"
               outlined filled disabled
             ></v-text-field>
@@ -145,7 +145,7 @@
               v-model.number="dataModel.score_coefficient"
               :counter="3"
               :rules="form.score_coefficient.validator"
-              :label="form.score_coefficient.label"
+              :label="$t(`item['`+form.score_coefficient.label+`']`) + ' *'"
               :placeholder="form.score_coefficient.placeholder"
               outlined required
             ></v-text-field>
@@ -154,17 +154,19 @@
               outlined
               type="info"
             >
-              If you set a `Score Coefficient`, the score will be <strong>recalculated</strong> against the Resource Name's Base Score.
+              {{ $t("view.finding['If you set a `Score Coefficient`, the score will be ']") }}
+              <strong>{{ $t("view.finding['recalculated']") }}</strong>
+              {{ $t("view.finding[' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.']") }}
             </v-alert>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
                 <template v-if="form.new">Regist</template>
-                <template v-else>Edit</template>
+                <template v-else>{{ $t(`btn['EDIT']`) }}</template>
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -172,7 +174,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
           <span class="mx-4">Do you really want to delete this?</span>
@@ -205,7 +207,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -213,7 +215,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -237,12 +239,12 @@ export default {
         new: false,
         valid: false,
         finding_setting_id: { label: 'ID', placeholder: '-' },
-        resource_name: { label: 'Resource Name *', placeholder: 'name', validator:[
+        resource_name: { label: 'Resource Name', placeholder: 'name', validator:[
             v => !!v || 'Resource Name is required',
             v => !v || v.length <= 255 || 'Resource Name must be less than 255 characters',
           ]
         },
-        score_coefficient: { label: 'Score Coefficient *', placeholder: '1.5', validator:[
+        score_coefficient: { label: 'Score Coefficient', placeholder: '1.5', validator:[
             v => !!v || 'Score Coefficient is required',
             v => !v || -1 <= v && v <= 100 || 'Score Coefficient must be between -1 and 100',
           ]
@@ -263,14 +265,6 @@ export default {
         selected: [],
         search: '',
         activeOnly: true,
-        headers: [
-          { text: 'ID',  align: 'center', width: '10%', sortable: true, value: 'finding_setting_id' },
-          { text: 'Status', align: 'center', width: '10%', sortable: true, value: 'status' },
-          { text: 'Resource Name', align: 'start', width: '50%', sortable: true, value: 'resource_name' },
-          { text: 'Score Coefficient', align: 'start', width: '10%', sortable: true, value: 'score_coefficient' },
-          { text: 'Updated', align: 'center', width: '10%', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', width: '10%', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['finding_setting_id'] },
         footer: {
           itemsPerPageOptions: [10],
@@ -282,6 +276,18 @@ export default {
       editDialog: false,
       deleteDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),  align: 'center', width: '10%', sortable: true, value: 'finding_setting_id' },
+        { text: this.$i18n.t('item["Status"]'), align: 'center', width: '10%', sortable: true, value: 'status' },
+        { text: this.$i18n.t('item["Resource Name"]'), align: 'start', width: '50%', sortable: true, value: 'resource_name' },
+        { text: this.$i18n.t('item["Score Coefficient"]'), align: 'start', width: '10%', sortable: true, value: 'score_coefficient' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', width: '10%', sortable: true, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', width: '10%', sortable: false, value: 'action' },
+      ]
+    },
   },
   async mounted() {
     this.listResourceNameForCombobox()

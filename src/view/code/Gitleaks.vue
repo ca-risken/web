@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="black">mdi-github</v-icon>
-              Gitleaks
+              {{ $t(`submenu['Gitleaks']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -26,13 +26,13 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
+          <v-btn class="mt-1 mr-4" color="grey darken-2" dense small icon fab outlined
             :loading="loading"
             @click="handleList"
           >
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -45,7 +45,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -121,7 +121,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -137,14 +137,18 @@
       <v-card>
         <v-card-title>
           <v-icon large color="black">mdi-github</v-icon>
-          <span class="mx-4 headline">Gitleaks</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['Gitleaks']`) }}
+          </span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Gitleaks ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Data Source ID']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ codeDataSourceModel.code_data_source_id }}
                   </v-list-item-title>
@@ -154,7 +158,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>DataSource</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Data Source']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ codeDataSourceModel.name }}
                   </v-list-item-title>
@@ -164,7 +170,9 @@
             <v-col cols="6">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Description</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Description']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ codeDataSourceModel.description }}
                   </v-list-item-title>
@@ -176,7 +184,9 @@
             <v-col cols="3" v-if="gitleaksModel.gitleaks_id">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Gitleaks ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Gitleaks ID']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gitleaksModel.gitleaks_id }}
                   </v-list-item-title>
@@ -187,7 +197,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
-                    <v-list-item-subtitle>Status</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ $t(`item['Status']`) }}
+                    </v-list-item-subtitle>
                     <v-chip dark :color="getDataSourceStatusColor(gitleaksModel.status)">
                       {{ getDataSourceStatusText(gitleaksModel.status) }}
                     </v-chip>
@@ -198,7 +210,9 @@
             <v-col cols="4" v-if="gitleaksModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Scan At</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['ScanAt']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ gitleaksModel.scan_at | formatTime }}
@@ -210,7 +224,9 @@
             <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>MAX Score</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['MAX Score']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ codeDataSourceModel.max_score }}
@@ -225,7 +241,9 @@
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
-                  <span class="font-weight-light">Status Detail</span>
+                  <span class="font-weight-light">
+                    {{ $t(`item['Status Detail']`) }}
+                  </span>
                 </v-card-title>
                 <v-card-text>
                   {{ gitleaksModel.status_detail }}
@@ -242,7 +260,7 @@
                   v-model="gitleaksModel.name"
                   :counter="64"
                   :rules="gitleaksForm.name.validator"
-                  :label="gitleaksForm.name.label"
+                  :label="$t(`item['`+gitleaksForm.name.label+`']`) + ' *'"
                   :placeholder="gitleaksForm.name.placeholder"
                   :disabled="gitleaksForm.readOnly || !gitleaksForm.isNew"
                   :filled="gitleaksForm.readOnly || !gitleaksForm.isNew"
@@ -255,7 +273,7 @@
                   required clearable
                   v-model="gitleaksModel.type_text"
                   :rules="gitleaksForm.type.validator"
-                  :label="gitleaksForm.type.label"
+                  :label="$t(`item['`+gitleaksForm.type.label+`']`) + ' *'"
                   :placeholder="gitleaksForm.type.placeholder"
                   :items="gitleaksForm.type.list"
                   :disabled="gitleaksForm.readOnly"
@@ -268,7 +286,7 @@
                   v-model="gitleaksModel.target_resource"
                   :counter="128"
                   :rules="gitleaksForm.target_resource.validator"
-                  :label="gitleaksForm.target_resource.label"
+                  :label="$t(`item['`+gitleaksForm.target_resource.label+`']`) + ' *'"
                   :placeholder="gitleaksForm.target_resource.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -279,7 +297,7 @@
                   v-model="gitleaksModel.repository_pattern"
                   :counter="128"
                   :rules="gitleaksForm.repository_pattern.validator"
-                  :label="gitleaksForm.repository_pattern.label"
+                  :label="$t(`item['`+gitleaksForm.repository_pattern.label+`']`)"
                   :placeholder="gitleaksForm.repository_pattern.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -292,7 +310,7 @@
                   v-model="gitleaksModel.github_user"
                   :counter="64"
                   :rules="gitleaksForm.github_user.validator"
-                  :label="gitleaksForm.github_user.label"
+                  :label="$t(`item['`+gitleaksForm.github_user.label+`']`)"
                   :placeholder="gitleaksForm.github_user.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -303,7 +321,7 @@
                   v-model="gitleaksModel.personal_access_token"
                   :counter="255"
                   :rules="gitleaksForm.personal_access_token.validator"
-                  :label="gitleaksForm.personal_access_token.label"
+                  :label="$t(`item['`+gitleaksForm.personal_access_token.label+`']`)"
                   :placeholder="gitleaksForm.personal_access_token.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -314,7 +332,7 @@
               <v-col cols="3">
                 <v-checkbox
                   v-model="gitleaksModel.scan_public"
-                  :label="gitleaksForm.scan_public.label"
+                  :label="$t(`item['`+gitleaksForm.scan_public.label+`']`)"
                   :placeholder="gitleaksForm.scan_public.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -323,7 +341,7 @@
               <v-col cols="3">
                 <v-checkbox
                   v-model="gitleaksModel.scan_internal"
-                  :label="gitleaksForm.scan_internal.label"
+                  :label="$t(`item['`+gitleaksForm.scan_internal.label+`']`)"
                   :placeholder="gitleaksForm.scan_internal.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -332,7 +350,7 @@
               <v-col cols="3">
                 <v-checkbox
                   v-model="gitleaksModel.scan_private"
-                  :label="gitleaksForm.scan_private.label"
+                  :label="$t(`item['`+gitleaksForm.scan_private.label+`']`)"
                   :placeholder="gitleaksForm.scan_private.placeholder"
                   :disabled="gitleaksForm.readOnly"
                   :filled="gitleaksForm.readOnly"
@@ -347,18 +365,18 @@
                 :loading="loading" 
                 @click="handleScan"
               >
-                SCAN
+                {{ $t(`btn['SCAN']`) }}
               </v-btn>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text outlined color="green darken-1" 
                 v-if="!gitleaksForm.readOnly"
                 :loading="loading" 
                 @click="handleEditSubmit">
-                EDIT
+                {{ $t(`btn['EDIT']`) }}
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -366,17 +384,19 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gitleaksModel.gitleaks_id"></v-list-item-title>
-              <v-list-item-subtitle>Gitleaks ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Gitleaks ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -385,14 +405,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="gitleaksModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Name</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Name']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -400,7 +420,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -425,19 +445,19 @@ export default {
         readOnly: false,
         isNew: false,
         valid: false,
-        name: { label: 'Name *', placeholder: 'Gitleaks setting name', validator:[
+        name: { label: 'Name', placeholder: 'Gitleaks setting name', validator:[
             v => !!v || 'Name is required',
             v => !v || v.length <= 64 || 'Name must be less than 64 characters',
           ]
         },
-        type: { label: 'Type *', placeholder: '-',
+        type: { label: 'Type', placeholder: '-',
           list: ['Organization', 'User'],
           validator:[
             v => !!v || 'Type is required',
             v => !v || v === 'Organization' || v === 'User' || 'Type is invalid',
           ]
         },
-        target_resource: { label: 'TargetResource *', placeholder: 'your organization/user name', validator:[
+        target_resource: { label: 'TargetResource', placeholder: 'your organization/user name', validator:[
             v => !!v || 'TargetResource is required',
             v => !v || v.length <= 128 || 'TargetResource must be less than 128 characters',
           ]
@@ -487,18 +507,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'gitleaks_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'Type', align: 'start', sortable: true, value: 'type_text' },
-          { text: 'Target', align: 'start', sortable: true, value: 'target_resource' },
-          { text: 'Repository', align: 'start', sortable: true, value: 'repository_pattern' },
-          { text: 'Status', align: 'start', sortable: true, value: 'status' },
-          { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
-          // { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['gitleaks_id'] },
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
@@ -521,6 +529,21 @@ export default {
     this.$setInterval( async () => {
       await this.listGitleaks()
     }, 3000)
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'gitleaks_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["Type"]'), align: 'start', sortable: true, value: 'type_text' },
+        { text: this.$i18n.t('item["Target"]'), align: 'start', sortable: true, value: 'target_resource' },
+        { text: this.$i18n.t('item["Repository"]'), align: 'start', sortable: true, value: 'repository_pattern' },
+        { text: this.$i18n.t('item["Status"]'), align: 'start', sortable: true, value: 'status' },
+        { text: this.$i18n.t('item["ScanAt"]'), align: 'start', sortable: true, value: 'scan_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   async mounted() {
     this.loading = true

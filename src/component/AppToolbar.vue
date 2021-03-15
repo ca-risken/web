@@ -40,6 +40,31 @@
       <v-btn icon @click="handleFullScreen()">
         <v-icon>fullscreen</v-icon>
       </v-btn>
+      <v-menu
+        offset-y
+        origin="center center"
+        class="elelvation-1"
+        transition="scale-transition"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn text slot="activator" v-on="on">
+            <v-icon medium>mdi-web</v-icon>
+            <span class="ml-2"> {{ getLocaleText($i18n.locale) }} </span>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item-group v-model="$i18n.locale">
+            <v-list-item
+              @click="handleChangeLocale(item)"
+              v-for="item in availableLanguages"
+              :key="item.value"
+              :value="item.value"
+            >
+              <v-list-item-title v-text="item.text" />
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
       <v-menu offset-y origin="center center" transition="scale-transition">
         <template v-slot:activator="{ on }">
           <v-btn icon large text slot="activator" v-on="on">
@@ -50,7 +75,7 @@
         </template>
         <v-list class="pa-0">
           <v-list-item
-            v-for="(item, index) in profileMenus"
+            v-for="(item, index) in myMenus"
             :to="!item.href ? { name: item.name } : null"
             :href="item.href"
             @click="item.click"
@@ -97,7 +122,7 @@
         <v-card-text class="pa-0">
           <v-data-table
             :search="projectTable.search"
-            :headers="projectTable.headers"
+            :headers="headers"
             :items="projectTable.item"
             :options.sync="projectTable.options"
             :loading="loading"
@@ -125,14 +150,14 @@
         </v-card-text>
         <v-card-actions>
           <v-btn text outlined color="blue darken-1" @click="$router.push('/project/setting/'); projectDialog = false">
-            EDIT PROJECT
+            {{ $t(`btn['EDIT PROJECT']`) }}
           </v-btn>
           <v-spacer />
           <v-btn text outlined color="grey darken-1" @click="projectDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn text outlined color="green darken-1" @click="$router.push('/project/new/'); projectDialog = false">
-            CREATE NEW PROJECT
+            {{ $t(`btn['CREATE NEW PROJECT']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -159,12 +184,6 @@ export default {
       projectDialog:false,
       projectTable: {
         search: '',
-        headers: [
-          // { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',   align: 'start',  width: '5%',  sortable: true, value: 'project_id' },
-          { text: 'Name', align: 'start',  width: '25%', sortable: true, value: 'name' },
-          { text: 'Tag',  align: 'start', width: '70%',  sortable: true, value: 'tag' },
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         footer: {
           itemsPerPageOptions: [10],
@@ -173,8 +192,12 @@ export default {
         },
         item: [],
       },
+      availableLanguages: [
+        {text: "English", value : "en"},
+        {text: "日本語",   value : "ja"},
+      ],
 
-      profileMenus: [
+      myMenus: [
         {
           icon: 'mdi-account-circle',
           href: '#',
@@ -197,6 +220,13 @@ export default {
     }
   },
   computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),   align: 'start',  width: '5%',  sortable: true, value: 'project_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start',  width: '25%', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["Tag"]'),  align: 'start', width: '70%',  sortable: true, value: 'tag' },
+      ]
+    },
     toolbarColor() {
       return this.$vuetify.options.extra.mainNav
     },
@@ -249,12 +279,32 @@ export default {
       this.projectTable.item = []
     },
 
+    getLocaleText(locale) {
+      if (typeof locale !== 'string' || locale ===  '') return '?'
+      switch (locale.toLowerCase()) {
+        case 'en':
+          return 'English'
+        case 'ja':
+          return '日本語'
+        default:
+          return '?'
+      }
+    },
+
     // handler
     handleDrawerToggle() {
       this.$emit('side-icon-click')
     },
     handleFullScreen() {
       Util.toggleFullScreen()
+    },
+    handleChangeLocale(item) {
+      const locale = {
+        lang: item.value,
+        text: item.text,
+      }
+      this.$i18n.locale = item.value
+      store.commit('updateLocale', locale)
     },
     handleLogut() {
       this.$router.push('/auth/signin/')
@@ -287,7 +337,6 @@ export default {
       this.$router.query = query
     },
   },
-  created() {}
 }
 </script>
 

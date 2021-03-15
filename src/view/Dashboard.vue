@@ -7,7 +7,7 @@
           <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 headline">
               <v-icon x-large class="pr-2" color="indigo darken-2">mdi-thermometer</v-icon>
-              Status
+              {{ $t(`view.dashboard['Status']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -18,7 +18,7 @@
           <status-statistic
             :icon="status.risk.icon"
             :color="status.risk.color"
-            :description="status.risk.description"
+            :description="$t(`view.dashboard['`+status.risk.description+`']`)"
             :detail="status.risk.detail"
             class="mx-2"
           />
@@ -34,7 +34,7 @@
             <mini-statistic
               :icon="factor.icon"
               :title="factor.title"
-              :sub-title="factor.subTitle"
+              :sub-title="$t(`view.dashboard['`+factor.subTitle+`']`)"
               :color="factor.color"
             class="mb-2"
             />
@@ -48,7 +48,7 @@
           <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 headline">
               <v-icon x-large class="pr-2" color="indigo darken-2">mdi-shape</v-icon>
-              Category
+              {{ $t(`view.dashboard['Category']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -77,7 +77,7 @@
           <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 headline">
               <v-icon x-large class="pr-2" color="indigo darken-2">mdi-chart-areaspline</v-icon>
-              Chart
+              {{ $t(`view.dashboard['Chart']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -111,41 +111,41 @@
     <v-dialog v-model="settingDialog" max-width="600px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-2">SETTING TUTORIAL</span>
+          <span class="mx-2">{{ $t(`view.dashboard['SETTING TUTORIAL']`) }}</span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                1. User invited: <span class="headline">{{ status.tutorial.invitedUsers }}</span>
+                {{ $t(`view.dashboard['1. User invited']`) }}: <span class="headline">{{ status.tutorial.invitedUsers }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                2, Setting data sources(≒ Store some findings): <span class="headline">{{ status.tutorial.storeFindings }}</span>
+                {{ $t(`view.dashboard['2. Setting data sources(≒ Store some findings)']`) }}: <span class="headline">{{ status.tutorial.storeFindings }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                3. Setting alert condition: <span class="headline">{{ status.tutorial.alertConditions }}</span>
+                {{ $t(`view.dashboard['3. Setting alert condition']`) }}: <span class="headline">{{ status.tutorial.alertConditions }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                4. Setting alert rule: <span class="headline">{{ status.tutorial.alertRules }}</span>
+                {{ $t(`view.dashboard['4. Setting alert rule']`) }}: <span class="headline">{{ status.tutorial.alertRules }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-subtitle>
-                5. Setting alert notification: <span class="headline">{{ status.tutorial.notifications }}</span>
+                {{ $t(`view.dashboard['5. Setting alert notification']`) }}: <span class="headline">{{ status.tutorial.notifications }}</span>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -153,7 +153,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="settingDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>

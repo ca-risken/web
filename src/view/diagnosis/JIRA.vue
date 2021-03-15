@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue">mdi-bug-check-outline</v-icon>
-              JIRA
+              {{ $t(`submenu['JIRA']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -45,7 +45,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -118,7 +118,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -130,18 +130,22 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="60%">
+    <v-dialog v-model="editDialog" max-width="64%">
       <v-card>
         <v-card-title>
           <v-icon large color="blue">mdi-jira</v-icon>
-          <span class="mx-4 headline">JIRA</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['JIRA']`) }}
+          </span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Diagnosis DataSouce ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Data Source ID']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ diagnosisModel.diagnosis_data_source_id }}
                   </v-list-item-title>
@@ -151,7 +155,9 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>DataSource</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Name']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ diagnosisModel.name }}
                   </v-list-item-title>
@@ -161,7 +167,9 @@
             <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Description</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Description']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ diagnosisModel.description }}
                   </v-list-item-title>
@@ -171,7 +179,9 @@
             <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>MAX Score</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['MAX Score']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
                       {{ diagnosisModel.max_score }}
@@ -185,7 +195,9 @@
             <v-col cols="3" v-if="jiraModel.jira_setting_id">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>JIRA Setting ID</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['JIRA Setting ID']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ jiraModel.jira_setting_id }}
                   </v-list-item-title>
@@ -196,7 +208,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
-                    <v-list-item-subtitle>Status</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{ $t(`item['Status']`) }}
+                    </v-list-item-subtitle>
                     <v-chip dark :color="getDataSourceStatusColor(jiraModel.status)">
                       {{ getDataSourceStatusText(jiraModel.status) }}
                     </v-chip>
@@ -207,7 +221,9 @@
             <v-col cols="4" v-if="jiraModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
-                  <v-list-item-subtitle>Scan At</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['ScanAt']`) }}
+                  </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
                       {{ jiraModel.scan_at | formatTime }}
@@ -222,7 +238,9 @@
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
-                  <span class="font-weight-light">Status Detail</span>
+                  <span class="font-weight-light">
+                    {{ $t(`item['Status Detail']`) }}
+                  </span>
                 </v-card-title>
                 <v-card-text>
                   {{ jiraModel.status_detail }}
@@ -239,7 +257,7 @@
                   v-model="jiraModel.name"
                   :counter="255"
                   :rules="jiraForm.name.validator"
-                  :label="jiraForm.name.label"
+                  :label="$t(`item['`+jiraForm.name.label+`']`) + ' *'"
                   :placeholder="jiraForm.name.placeholder"
                   :disabled="jiraForm.readOnly"
                   :filled="jiraForm.readOnly"
@@ -261,7 +279,7 @@
                   v-model="jiraModel.jira_key"
                   :counter="50"
                   :rules="jiraForm.jira_key.validator"
-                  :label="jiraForm.jira_key.label"
+                  :label="$t(`item['`+jiraForm.jira_key.label+`']`) + ' *'"
                   :placeholder="jiraForm.jira_key.placeholder"
                   :disabled="jiraForm.readOnly"
                   :filled="jiraForm.readOnly"
@@ -277,18 +295,18 @@
                 :loading="loading" 
                 @click="handleScan"
               >
-                SCAN
+                {{ $t(`btn['SCAN']`) }}
               </v-btn>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text outlined color="green darken-1" 
                 v-if="!jiraForm.readOnly"
                 :loading="loading" 
                 @click="handleEditSubmit">
-                EDIT
+                {{ $t(`btn['EDIT']`) }}
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -296,7 +314,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
           <span class="mx-4">Do you really want to delete this?</span>
@@ -322,7 +340,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -330,7 +348,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -354,7 +372,7 @@ export default {
       jiraForm: {
         readOnly: false,
         valid: false,
-        name: { label: 'Name *', placeholder: 'something', validator:[
+        name: { label: 'Name', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v => !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
@@ -371,8 +389,9 @@ export default {
             v => !v || v.length <= 50 || 'JIRA ID must be less than 50 characters',
           ]
         },
-        jira_key: { label: 'JIRA Project Key', placeholder: '-', validator:[
-            v => !v || v.length <= 50 || 'JIRA Project Key must be less than 50 characters',
+        jira_key: { label: 'JIRA Project', placeholder: '-', validator:[
+            v => !!v || 'JIRA Project is required',
+            v => !v || v.length <= 50 || 'JIRA Project must be less than 50 characters',
           ]
         },
       },
@@ -393,16 +412,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: true, value: 'jira_setting_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'JIRA Project', align: 'start', sortable: true, value: 'jira_key' },
-          { text: 'Status', align: 'start', sortable: true, value: 'status' },
-          { text: 'Scaned', align: 'start', sortable: true, value: 'scan_at' },
-          { text: 'Updated', align: 'center', sortable: true, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['diagnosis_data_source_id'] },
         actions: [
           { text: 'View Item',  icon: 'mdi-eye', click: this.handleViewItem },
@@ -425,6 +434,20 @@ export default {
     this.$setInterval( async () => {
       await this.listJiraSetting()
     }, 3000)
+  },
+  computed: {
+    headers() {
+      return [
+          { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+          { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'jira_setting_id' },
+          { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+          { text: this.$i18n.t('item["JIRA Project"]'), align: 'start', sortable: true, value: 'jira_key' },
+          { text: this.$i18n.t('item["Status"]'), align: 'start', sortable: true, value: 'status' },
+          { text: this.$i18n.t('item["ScanAt"]'), align: 'start', sortable: true, value: 'scan_at' },
+          { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: true, value: 'updated_at' },
+          { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' }
+      ]
+    },
   },
   async mounted() {
     this.loading = true

@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="orange">mdi-aws</v-icon>
-              AWS
+              {{ $t(`submenu['AWS']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -26,7 +26,7 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -39,7 +39,7 @@
               <v-data-table
                 v-model="table.selected"
                 :search="table.search"
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :loading="loading"
@@ -80,7 +80,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -96,13 +96,15 @@
       <v-card>
         <v-card-title>
           <v-icon large color="orange darken-1">mdi-aws</v-icon>
-          <span class="mx-4 headline">AWS</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['AWS']`) }}
+          </span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="awsForm.valid" ref="form">
             <v-text-field
               v-model="awsModel.aws_id"
-              :label="awsForm.aws_id.label"
+              :label="$t(`item['`+awsForm.aws_id.label+`']`)"
               :placeholder="awsForm.aws_id.placeholder"
               outlined filled disabled
             ></v-text-field>
@@ -110,7 +112,7 @@
               v-model="awsModel.name"
               :counter="200"
               :rules="awsForm.name.validator"
-              :label="awsForm.name.label"
+              :label="$t(`item['`+awsForm.name.label+`']`) + ' *'"
               :placeholder="awsForm.name.placeholder"
               outlined required
             ></v-text-field>
@@ -119,7 +121,7 @@
                 v-model="awsModel.aws_account_id"
                 :counter="12"
                 :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
+                :label="$t(`item['`+awsForm.aws_account_id.label+`']`) + ' *'"
                 :placeholder="awsForm.aws_account_id.placeholder"
                 outlined required
               ></v-text-field>
@@ -129,7 +131,7 @@
                 v-model="awsModel.aws_account_id"
                 :counter="12"
                 :rules="awsForm.aws_account_id.validator"
-                :label="awsForm.aws_account_id.label"
+                :label="$t(`item['`+awsForm.aws_account_id.label+`']`) + ' *'"
                 :placeholder="awsForm.aws_account_id.placeholder"
                 outlined filled disabled
               ></v-text-field>   
@@ -139,11 +141,11 @@
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
-                <template v-if="awsForm.newAWS">Regist</template>
-                <template v-else>Edit</template>
+                <template v-if="awsForm.newAWS">{{ $t(`btn['REGIST']`) }}</template>
+                <template v-else>{{ $t(`btn['EDIT']`) }}</template>
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -151,17 +153,19 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="awsModel.aws_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS ID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['AWS ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -170,7 +174,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="awsModel.name"></v-list-item-title>
-              <v-list-item-subtitle>AWS Name</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['Name']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -179,14 +183,14 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="awsModel.aws_account_id"></v-list-item-title>
-              <v-list-item-subtitle>AWS AccountID</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ $t(`item['AWS Account ID']`) }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
@@ -194,7 +198,7 @@
             :loading="loading"
             @click="handleDeleteSubmit"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -218,12 +222,12 @@ export default {
         newAWS: false,
         valid: false,
         aws_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name *', placeholder: 'something', validator:[
+        name: { label: 'Name', placeholder: 'something', validator:[
             v => !!v || 'Name is required',
             v =>  !v || v.length <= 200 || 'Name must be less than 200 characters',
           ]
         },
-        aws_account_id: { label: 'AWS Account ID *', placeholder: '123456789012', validator:[
+        aws_account_id: { label: 'AWS Account ID', placeholder: '123456789012', validator:[
             v => !!v || 'AWS Account ID is required',
             v =>  !v || v.length === 12 || 'AWS Account ID must be 12 characters',
             v =>  !v || !this.awsForm.newAWS || this.isNewAccountID(v) || 'AWS Account ID is already exist.',
@@ -234,14 +238,6 @@ export default {
       table: {
         selected: [],
         search: '',
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'aws_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'AccountID', align: 'start', sortable: false, value: 'aws_account_id' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['aws_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -257,6 +253,18 @@ export default {
       deleteDialog: false,
       editDialog: false,
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'aws_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
+        { text: this.$i18n.t('item["AccountID"]'), align: 'start', sortable: false, value: 'aws_account_id' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
   },
   mounted() {
     this.loading = true

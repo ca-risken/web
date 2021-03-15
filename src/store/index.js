@@ -14,6 +14,7 @@ const store = new Vuex.Store({
     user: {},
     project: {},
     interval: {},
+    locale: {},
   },
   mutations: {
     storeUser: (state, payload) => {
@@ -24,7 +25,10 @@ const store = new Vuex.Store({
     },
     updateInterval: (state, payload) => {
       state.interval = payload
-    }
+    },
+    updateLocale: (state, payload) => {
+      state.locale = payload
+    },
   },
   plugins: [vuexLocal.plugin],
 })

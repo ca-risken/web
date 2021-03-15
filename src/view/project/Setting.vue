@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-alpha-p-box</v-icon>
-              Project
+              {{ $t(`menu['Project']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -18,13 +18,13 @@
               <v-form v-model="projectForm.valid" ref="form">
                 <v-text-field
                   v-model="projectModel.project_id"
-                  :label="projectForm.ID.label"
+                  :label="$t(`item['`+projectForm.ID.label+`']`)"
                   :placeholder="projectForm.ID.placeholder"
                   filled disabled outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="projectModel.name"
-                  :label="projectForm.name.label"
+                  :label="$t(`item['`+projectForm.name.label+`']`) + ' *'"
                   :placeholder="projectForm.name.placeholder"
                   :counter="64"
                   :rules="projectForm.name.validator"
@@ -32,7 +32,9 @@
                 ></v-text-field>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEdit">Edit</v-btn>
+                  <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEdit">
+                    {{ $t(`btn['EDIT']`) }}
+                  </v-btn>
                 </v-card-actions>
               </v-form>
             </v-card-text>
@@ -51,7 +53,9 @@
               </v-chip>
               <v-card-actions>
                 <v-spacer />
-                <v-btn text outlined color="blue darken-1" :loading="loading" @click="handleTag">ADD TAG</v-btn>
+                <v-btn text outlined color="blue darken-1" :loading="loading" @click="handleTag">
+                  {{ $t(`btn['NEW TAG']`) }}
+                </v-btn>
               </v-card-actions>
             </v-card-text>
             <bottom-snack-bar ref="snackbar" />
@@ -64,13 +68,13 @@
     <v-dialog v-model="tagDialog" max-width="400px">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Project Tag</span>
+          <span class="mx-4">{{ $t(`view.project['Project Tag']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="projectTagForm.valid" ref="tagForm">
             <v-text-field
               v-model="projectTagModel.tag"
-              :label="projectTagForm.tag.label"
+              :label="$t(`item['`+projectTagForm.tag.label+`']`) + ' *'"
               :placeholder="projectTagForm.tag.placeholder"
               :counter="64"
               :rules="projectTagForm.tag.validator"
@@ -91,7 +95,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="tagDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="blue darken-1"
@@ -99,7 +103,7 @@
             :loading="loading"
             @click="handleTagSubmit"
           >
-            TAG
+            {{ $t(`btn['TAG']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -125,7 +129,7 @@ export default {
       projectForm: {
         valid: false,
         ID : { label: 'ID', placeholder: '-', validator:[]},
-        name: { label: 'Name *', placeholder: 'your-project', validator:[
+        name: { label: 'Name', placeholder: 'your-project', validator:[
             v => !!v || 'Name is required',
             v => !v || v.length <= 64 || 'Name must be less than 64 characters',
           ]
@@ -145,7 +149,7 @@ export default {
       },
       projectTagForm: {
         valid: false,
-        tag: { label: 'Tag *', placeholder: 'key:value', validator:[
+        tag: { label: 'Tag', placeholder: 'key:value', validator:[
             v => !!v || 'Tag is required',
             v => !v || v.length <= 64 || 'Tag must be less than 64 characters',
           ]

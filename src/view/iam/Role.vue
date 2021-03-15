@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              Role
+              {{ $t(`submenu['Role']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -17,7 +17,7 @@
             <v-combobox
               outlined dense clearable
               background-color="white"
-              :label="searchForm.roleName.label"
+              :label="$t(`item['`+searchForm.roleName.label+`']`)"
               :placeholder="searchForm.roleName.placeholder"
               :items="roleNameList"
               v-model="searchModel.roleName"
@@ -39,7 +39,7 @@
             <v-divider></v-divider>
             <v-card-text class="pa-0">
               <v-data-table
-                :headers="table.headers"
+                :headers="headers"
                 :items="table.items"
                 :options.sync="table.options"
                 :server-items-length="table.total"
@@ -85,7 +85,7 @@
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -102,13 +102,15 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-alpha-r-circle</v-icon>
-          <span class="mx-4 headline">Role</span>
+          <span class="mx-4 headline">
+            {{ $t(`submenu['Role']`) }}
+          </span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="roleForm.valid" ref="form">
             <v-text-field
               v-model="roleModel.role_id"
-              :label="roleForm.role_id.label"
+              :label="$t(`item['`+roleForm.role_id.label+`']`)"
               :placeholder="roleForm.role_id.placeholder"
               filled disabled
             ></v-text-field>
@@ -117,7 +119,7 @@
                 v-model="roleModel.name"
                 :counter="64"
                 :rules="roleForm.name.validator"
-                :label="roleForm.name.label"
+                :label="$t(`item['`+roleForm.name.label+`']`) + ' *'"
                 :placeholder="roleForm.name.placeholder"
                 required
               ></v-text-field>
@@ -127,7 +129,7 @@
                 v-model="roleModel.name"
                 :counter="64"
                 :rules="roleForm.name.validator"
-                :label="roleForm.name.label"
+                :label="$t(`item['`+roleForm.name.label+`']`) + ' *'"
                 :placeholder="roleForm.name.placeholder"
                 filled disabled
               ></v-text-field>   
@@ -136,7 +138,9 @@
             <v-toolbar flat color="white">
               <v-toolbar-title class="grey--text text--darken-4">
                 <v-icon large>mdi-certificate-outline</v-icon>
-                <span class="mx-4">Policy</span>
+                <span class="mx-4">
+                  {{ $t(`submenu['Policy']`) }}
+                </span>
               </v-toolbar-title>
               <v-text-field text solo flat
                 prepend-icon="mdi-magnify"
@@ -154,7 +158,7 @@
             <v-data-table
               v-model="policyTable.selected"
               :search="policyTable.search"
-              :headers="policyTable.headers"
+              :headers="policyHeaders"
               :footer-props="policyTable.footer"
               :items="policyTable.items"
               :options.sync="policyTable.options"
@@ -196,7 +200,7 @@
             <v-card-actions>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
-                CANCEL
+                {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
                 <template v-if="roleForm.newRole">Regist</template>
@@ -209,17 +213,21 @@
     </v-dialog>
 
     <!-- Delete Dialog -->
-    <v-dialog v-model="deleteDialog" max-width="300px">
+    <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="roleModel.role_id"></v-list-item-title>
-              <v-list-item-subtitle>Role ID</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['ID']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -228,14 +236,16 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title v-text="roleModel.name"></v-list-item-title>
-              <v-list-item-subtitle>Role Name</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ $t(`item['Name']`) }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
-            CANCEL
+            {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
@@ -243,7 +253,7 @@
             text outlined
             @click="deleteItem(roleModel.role_id)"
           >
-            DELETE
+            {{ $t(`btn['DELETE']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -266,13 +276,13 @@ export default {
       loading: false,
       searchModel: { roleName: null },
       searchForm: {
-        roleName: { label: 'Role Name', placeholder: 'Filter for role name' },
+        roleName: { label: 'Name', placeholder: 'Filter for role name' },
       },
       roleForm: {
         newRole: false,
         valid: false,
         role_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name *', placeholder: 'something-policy', validator:[
+        name: { label: 'Name', placeholder: 'something-policy', validator:[
             v => !!v || 'Name is required',
             v => v.length <= 64 || 'Name must be less than 64 characters',
           ]
@@ -282,14 +292,6 @@ export default {
       roleNameList: [],
       roleModel: { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' },
       table: {
-        headers: [
-          { text: '', align: 'center', width: '10%', sortable: false, value: 'avator' },
-          { text: 'ID',  align: 'start', sortable: false, value: 'role_id' },
-          { text: 'Name', align: 'start', sortable: false, value: 'name' },
-          { text: 'Policies', align: 'center', sortable: false, value: 'policy_cnt' },
-          { text: 'Updated', align: 'center', sortable: false, value: 'updated_at' },
-          { text: 'Action', align: 'center', sortable: false, value: 'action' }
-        ],
         options: { page: 1, itemsPerPage: 10, sortBy: ['role_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
@@ -310,12 +312,6 @@ export default {
       policyTable: {
         selected: [],
         search: '',
-        headers: [
-          { text: 'ID',  align: 'start', sortable: true, value: 'policy_id' },
-          { text: 'Name', align: 'start', sortable: true, value: 'name' },
-          { text: 'Action Pattern', align: 'start', sortable: true, value: 'action_ptn' },
-          { text: 'Resource Pattern', align: 'start', sortable: true, value: 'resource_ptn' },
-        ],
         options: { page: 1, itemsPerPage: 5, sortBy: ['policy_id'] },
         total: 0,
         footer: {
@@ -327,6 +323,26 @@ export default {
         items: []
       },
     }
+  },
+  computed: {
+    headers() {
+      return [
+        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'role_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
+        { text: this.$i18n.t('item["Policies"]'), align: 'center', sortable: false, value: 'policy_cnt' },
+        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+      ]
+    },
+    policyHeaders() {
+      return [
+        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'policy_id' },
+        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        { text: this.$i18n.t('item["Action Pattern"]'), align: 'start', sortable: true, value: 'action_ptn' },
+        { text: this.$i18n.t('item["Resource Pattern"]'), align: 'start', sortable: true, value: 'resource_ptn' },
+      ]
+    },
   },
   mounted() {
     this.refleshList('')
