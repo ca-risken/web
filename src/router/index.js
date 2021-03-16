@@ -31,9 +31,10 @@ router.beforeEach( async (to, from, next) => {
     const res = await axios.get('/project/list-project/?' + q )
     if ( res.data.data.project ) {
       await store.commit('updateProject', res.data.data.project[0])
-      // let query = Object.assign({}, to.query)
+      let query = await Object.assign({}, to.query)
       // delete query["project_id"]
-      // router.push({query: query}) // Edit query parameter
+      query.project_id = store.state.project.project_id 
+      router.push({query: query}) // Edit query parameter
       router.go({path: to.currentRoute})
       next(false)
     }
