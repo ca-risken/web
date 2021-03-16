@@ -249,6 +249,15 @@ export default {
       return store.state.project.name
     },
   },
+  mounted() {
+    if ( !this.$i18n.locale ) {
+      const browserLocale = Util.getNavigatorLanguage()
+      this.handleChangeLocale({
+        value: browserLocale,
+        text: this.getLocaleText(browserLocale)
+      })
+    }
+  },
   methods: {
     customFilter (value, search) {
       return value != null &&
