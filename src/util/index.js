@@ -73,6 +73,21 @@ const elapsedTimeText = (from) => {
   }
 }
 
+const getNavigatorLanguage = () => {
+  let lang = ''
+  if (navigator.languages && navigator.languages.length) {
+    lang = navigator.languages[0];
+  } else {
+    lang = navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en';
+  }
+  if (lang && (lang === 'en' || lang === 'ja' ) ) {
+    return lang
+  } else {
+    console.log('Unsupported language, lang=' + lang)
+    return 'en'
+  }
+}
+
 export default {
   randomElement,
   toggleFullScreen,
@@ -80,4 +95,5 @@ export default {
   formatDate,
   cutLongString,
   elapsedTimeText,
+  getNavigatorLanguage,
 }

@@ -6,7 +6,6 @@ import 'nprogress/nprogress.css'
 import store from '@/store'
 import axios from '@/axios'
 import interval from '@/plugin/interval'
-import i18n from '@/i18n'
 const routes = commonRoute.concat(appRoute)
 
 Vue.use(Router)
@@ -20,9 +19,6 @@ const router = new Router({
 // Navigation guards
 router.beforeEach( async (to, from, next) => {
   NProgress.start()
-  if ( store.state.locale ) {
-    i18n.locale = store.state.locale.lang
-  }
   const project_id = to.query.project_id
   const current_project_id = store.state.project.project_id 
   const user_id = store.state.user.user_id
