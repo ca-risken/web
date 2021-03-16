@@ -327,9 +327,9 @@ export default {
     handleGoBack() {
       this.$router.go(-1)
     },
-    handleProjectClick(project)  {
-      this.clearProjectQueryParam()
-      store.commit('updateProject', project)
+    async handleProjectClick(project)  {
+      await this.setProjectQueryParam(project.project_id)
+      await store.commit('updateProject', project)
       this.reload()
     },
     handleNewProject() {
@@ -340,10 +340,11 @@ export default {
       this.projectDialog = true
       this.listProject()
     },
-    clearProjectQueryParam() {
-      let query = Object.assign({}, this.$router.query)
-      delete query["project_id"]
-      this.$router.query = query
+    async setProjectQueryParam(project_id) {
+      let query = await Object.assign({}, this.$router.query)
+      // delete query["project_id"]
+      query.project_id = project_id
+      await this.$router.push({query: query})
     },
   },
 }
