@@ -79,6 +79,7 @@ const ja = {
     "Data Source ID": "データソースID",
     "Detect Word": "検知キーワード",
     "Description": "説明",
+    "Duration": "期間",
     "Enabled": "有効",
     "External ID": "外部ID",
     "Finding Count": "Finding数",
@@ -209,6 +210,14 @@ const ja = {
       "updated": "更新",
       "deleted": "削除",
       "Show options": "オプション表示",
+    },
+    "report": {
+      "Download Finding Report": "レポートのダウンロード",
+      "Finding Changes": "昨日との差分",
+      "Number of Finding": "ファインディング数",
+      "Finding Transition": "Finding推移",
+      "Per Category": "カテゴリ別",
+      "Per Severity": "重大度別",
     },
     "project": {
       "Project Tag": "プロジェクトタグ",

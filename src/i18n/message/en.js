@@ -79,6 +79,7 @@ const en = {
     "Data Source ID": "DataSource ID",
     "Detect Word": "Detect Word",
     "Description": "Description",
+    "Duration": "Duration",
     "Enabled": "Enabled",
     "External ID": "External ID",
     "Finding Count": "Finding Count",
@@ -209,6 +210,14 @@ const en = {
       "updated": "updated",
       "deleted": "deleted",
       "Show options": "Show options",
+    },
+    "report": {
+      "Download Finding Report": "Download Finding Report",
+      "Finding Changes": "Finding Changes",
+      "Number of Finding": "Number of Finding",
+      "Finding Transition": "Finding Transition",
+      "Per Category": "Per Category",
+      "Per Severity": "Per Severity",
     },
     "project": {
       "Project Tag": "Project Tag",
