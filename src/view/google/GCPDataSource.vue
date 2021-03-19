@@ -151,6 +151,10 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+gcpForm.gcp_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+gcpForm.gcp_id.label+`']`)"
+                      :text="String(gcpModel.gcp_id)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.gcp_id }}
@@ -163,6 +167,10 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+gcpForm.google_data_source_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+gcpForm.google_data_source_id.label+`']`)"
+                      :text="String(gcpModel.google_data_source_id)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.google_data_source_id }}
@@ -175,6 +183,10 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+gcpForm.name.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+gcpForm.name.label+`']`)"
+                      :text="String(gcpModel.name)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.name }}
@@ -217,6 +229,10 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+gcpForm.gcp_organization_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
+                      :text="String(gcpModel.gcp_organization_id)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.gcp_organization_id }}
@@ -229,6 +245,10 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+gcpForm.gcp_project_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+gcpForm.gcp_project_id.label+`']`)"
+                      :text="String(gcpModel.gcp_project_id)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ gcpModel.gcp_project_id }}
@@ -258,6 +278,10 @@
                   <v-icon left>mdi-pin-outline</v-icon>
                   <span class="font-weight-light">
                     {{ $t(`item['`+gcpForm.status_detail.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+gcpForm.status_detail.label+`']`)"
+                      :text="String(gcpModel.status_detail)"
+                    />
                   </span>
                 </v-card-title>
                 <v-card-text>
@@ -351,11 +375,12 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin],
   components: {
     BottomSnackBar,
+    ClipBoard,
   },
   data() {
     return {

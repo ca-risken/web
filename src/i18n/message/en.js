@@ -19,7 +19,8 @@ const en = {
     "CREATE NEW RULE": "CREATE NEW RULE",
     "CREATE NEW NOTIFICATION": "CREATE NEW NOTIFICATION",
     "DOWNLOAD REPORT (PROJECT)": "DOWNLOAD REPORT (PROJECT)",
-    "DOWNLOAD REPORT (ALL)": "DOWNLOAD REPORT (ALL)"
+    "DOWNLOAD REPORT (ALL)": "DOWNLOAD REPORT (ALL)",
+    "AUTO GENERATE EXTERNAL ID": "AUTO GENERATE EXTERNAL ID",
   },
   "menu": {
     "Home": "Home",
@@ -155,7 +156,7 @@ const en = {
     "Detach DataSource": "Detach DataSource",
     "Edit Item": "Edit Item",
     "Pend Finding": "Pend Finding",
-    "Pend selected findings'": "Pend selected findings'",
+    "Pend selected findings": "Pend selected findings",
     "Pending": "Pending",
     "Resource Map": "Resource Map",
     "Scan": "Scan",

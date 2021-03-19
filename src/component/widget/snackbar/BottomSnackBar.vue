@@ -35,7 +35,7 @@ export default {
     notifyInfo(text) {
       this.snackbar.color = 'info'
       this.snackbar.text = text
-      this.snackbar.timeout = 1000
+      this.snackbar.timeout = 2000
       this.snackbar.show = true
     },
     notifySuccess(text) {
