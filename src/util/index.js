@@ -88,6 +88,18 @@ const getNavigatorLanguage = () => {
   }
 }
 
+const generateRandomPassword = () => {
+  const letters = 'abcdefghijklmnopqrstuvwxyz'
+  const numbers = '0123456789'
+  const len = 64
+  const string  = letters + letters.toUpperCase() + numbers
+
+  let password=''
+  for (var i = 0; i < len; i++) {
+    password += string.charAt(Math.floor(Math.random() * string.length))
+  }
+  return password
+}
 export default {
   randomElement,
   toggleFullScreen,
@@ -96,4 +108,5 @@ export default {
   cutLongString,
   elapsedTimeText,
   getNavigatorLanguage,
+  generateRandomPassword,
 }

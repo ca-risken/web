@@ -218,6 +218,10 @@
                   <v-list-item-subtitle>
                     <v-icon color="black" dark left>mdi-identifier</v-icon>
                     Finding ID
+                    <clip-board
+                      name="Finding ID"
+                      :text="findingModel.finding_id"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.finding_id }}
@@ -234,6 +238,10 @@
                       :color="getDataSourceIconColor(findingModel.data_source)"
                     />
                     {{ $t(`item['Data Source']`) }}
+                    <clip-board
+                      :name="$t(`item['Data Source']`)"
+                      :text="findingModel.data_source"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.data_source }}
@@ -247,6 +255,10 @@
                   <v-list-item-subtitle>
                     <v-icon left>mdi-file-find-outline</v-icon>
                     {{ $t(`item['Resource Name']`) }}
+                    <clip-board
+                      :name="$t(`item['Resource Name']`)"
+                      :text="findingModel.resource_name"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.resource_name }}
@@ -262,6 +274,10 @@
                   <v-list-item-subtitle>
                     <v-icon left>mdi-image-text</v-icon>
                     {{ $t(`item['Description']`) }}
+                    <clip-board
+                      :name="$t(`item['Description']`)"
+                      :text="findingModel.description"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.description }}
@@ -323,6 +339,10 @@
               <v-list-item-subtitle>
                 <v-icon left>mdi-code-json</v-icon>
                 JSON Data
+                <clip-board
+                  name="JSON Data"
+                  :text="findingModel.data | pretty"
+                />
               </v-list-item-subtitle>
               <v-card dark color="grey darken-3" class="ma-4">
                 <v-card-text class="title font-weight-bold">
@@ -453,10 +473,12 @@
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin, finding],
   components: {
     BottomSnackBar,
+    ClipBoard,
   },
   data() {
     return {

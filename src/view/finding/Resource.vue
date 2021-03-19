@@ -239,6 +239,10 @@
                   <v-list-item-subtitle>
                     <v-icon color="black" dark left>mdi-identifier</v-icon>
                     Finding ID
+                    <clip-board
+                      name="Finding ID"
+                      :text="findingModel.finding_id"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.finding_id }}
@@ -268,6 +272,10 @@
                       :color="getDataSourceIconColor(findingModel.data_source)"
                     />
                     Data Source
+                    <clip-board
+                      name="Data Source"
+                      :text="findingModel.data_source"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.data_source }}
@@ -283,6 +291,10 @@
                   <v-list-item-subtitle>
                     <v-icon left>mdi-file-find-outline</v-icon>
                     Resource Name
+                    <clip-board
+                      name="Resource Name"
+                      :text="findingModel.resource_name"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.resource_name }}
@@ -298,6 +310,10 @@
                   <v-list-item-subtitle>
                     <v-icon left>mdi-image-text</v-icon>
                     Description
+                    <clip-board
+                      name="Description"
+                      :text="findingModel.description"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ findingModel.description }}
@@ -344,10 +360,12 @@
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import D3Network from 'vue-d3-network'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin, finding],
   components: {
     D3Network,
+    ClipBoard,
   },
   data() {
     return {

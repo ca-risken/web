@@ -136,7 +136,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="600px">
+    <v-dialog v-model="editDialog" max-width="58%">
       <v-card>
         <v-card-title>
           <v-icon large color="orange darken-1">mdi-aws</v-icon>
@@ -144,14 +144,34 @@
         </v-card-title>
         <v-container fluid>
           <v-row dense>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+awsForm.aws_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+awsForm.aws_id.label+`']`)"
+                      :text="String(awsModel.aws_id)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ awsModel.aws_id }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="3">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['`+awsForm.aws_account_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+awsForm.aws_account_id.label+`']`)"
+                      :text="awsModel.aws_account_id"
+                    />
+                  </v-list-item-subtitle>
+                  <v-list-item-title class="headline">
+                    {{ awsModel.aws_account_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -161,6 +181,10 @@
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+awsForm.aws_data_source_id.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+awsForm.aws_data_source_id.label+`']`)"
+                      :text="String(awsModel.aws_data_source_id)"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ awsModel.aws_data_source_id }}
@@ -168,11 +192,15 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="6" v-if="!awsForm.setupAll">
+            <v-col cols="4" v-if="!awsForm.setupAll">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
                     {{ $t(`item['`+awsForm.data_source.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+awsForm.data_source.label+`']`)"
+                      :text="awsModel.data_source"
+                    />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     {{ awsModel.data_source }}
@@ -225,6 +253,7 @@
               </v-list-item>
             </v-col>
           </v-row>
+
           <v-row dense>
             <v-col cols="12" v-if="awsModel.status_detail">
               <v-card>
@@ -232,6 +261,10 @@
                   <v-icon left>mdi-pin-outline</v-icon>
                   <span class="font-weight-light">
                     {{ $t(`item['`+awsForm.status_detail.label+`']`) }}
+                    <clip-board
+                      :name="$t(`item['`+awsForm.status_detail.label+`']`)"
+                      :text="String(awsModel.status_detail)"
+                    />
                   </span>
                 </v-card-title>
                 <v-card-text>
@@ -243,24 +276,62 @@
         </v-container>
         <v-card-text>
           <v-form v-model="awsForm.valid" ref="form">
-            <v-text-field
-              v-model="awsModel.assume_role_arn"
-              :counter="255"
-              :rules="awsForm.assume_role_arn.validator"
-              :label="$t(`item['`+awsForm.assume_role_arn.label+`']`)"
-              :placeholder="awsForm.assume_role_arn.placeholder"
-              :disabled="awsForm.readOnly"
-              :filled="awsForm.readOnly"
-            ></v-text-field> 
-            <v-text-field
-              v-model="awsModel.external_id"
-              :counter="255"
-              :rules="awsForm.external_id.validator"
-              :label="$t(`item['`+awsForm.external_id.label+`']`)"
-              :placeholder="awsForm.external_id.placeholder"
-              :disabled="awsForm.readOnly"
-              :filled="awsForm.readOnly"
-            ></v-text-field>
+            <v-row class="mt-1">
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+awsForm.assume_role_arn.label+`']`)"
+                  :text="String(awsModel.assume_role_arn)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-model="awsModel.assume_role_arn"
+                  :counter="255"
+                  :rules="awsForm.assume_role_arn.validator"
+                  :label="$t(`item['`+awsForm.assume_role_arn.label+`']`)"
+                  :placeholder="awsForm.assume_role_arn.placeholder"
+                  :disabled="awsForm.readOnly"
+                  :filled="awsForm.readOnly"
+                  outlined
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+awsForm.external_id.label+`']`)"
+                  :text="String(awsModel.external_id)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-model="awsModel.external_id"
+                  :counter="255"
+                  :rules="awsForm.external_id.validator"
+                  :label="$t(`item['`+awsForm.external_id.label+`']`)"
+                  :placeholder="awsForm.external_id.placeholder"
+                  :disabled="awsForm.readOnly"
+                  :filled="awsForm.readOnly"
+                  outlined
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense class="my-0">
+              <v-col cols="1" />
+              <v-col cols="2">
+                <v-btn
+                  text dense
+                  color="purple darken-2" 
+                  :disabled="awsForm.readOnly"
+                  @click="handleGenerateID">
+                  {{ $t(`btn['AUTO GENERATE EXTERNAL ID']`) }}
+                </v-btn>
+              </v-col>
+            </v-row>
             <v-checkbox
               v-if="awsForm.setupAll"
               v-model="awsModel.overrideDataSource"
@@ -362,10 +433,12 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin],
   components: {
     BottomSnackBar,
+    ClipBoard,
   },
   data() {
     return {
@@ -378,22 +451,21 @@ export default {
         aws_data_source_id: { label: 'Data Source ID', placeholder: '-', validator: []},
         data_source: { label: 'Data Source', placeholder: '-', validator: []},
         max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
-        aws_id: { label: 'AWS ID', placeholder: '-', validator: [
-          v => !!v || 'AWS ID is required',
-          v => /^\d+$/.test(v) || 'AWS ID must be number',
-        ]},
+        aws_id: { label: 'AWS ID', placeholder: '-', validator: []},
+        aws_account_id: { label: 'AWS Account ID', placeholder: '-', validator: []},
         assume_role_arn: { label: 'Assume Role', placeholder: '-', validator: [
             v => !!v || 'Assume Role is required',
             v => !v || v.length <= 255 || 'Assume Role must be less than 255 characters',
         ]},
         external_id: { label: 'External ID', placeholder: '-', validator: [
-            v => !v || v.length <= 255 || 'External ID must be less than 255 characters',
+            v => !!v || 'External ID is required',
+            v => !v || (v.length >= 8 && v.length <= 255) || 'External ID must be between 8 and 255 characters',
         ]},
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
         scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
       },
-      awsModel: { aws_id:'', aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'', status: 0, status_detail:'', scan_at: 0},
+      awsModel: { aws_id:'', aws_account_id:'', aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'', status: 0, status_detail:'', scan_at: 0},
       table: {
         selected: [],
         search: '',
@@ -575,7 +647,15 @@ export default {
       this.finishInfo('Reflesh list')
     },
     handleSetupAll() {
-      this.awsModel = {aws_id: this.awsModel.aws_id}
+      this.awsModel = {
+        aws_id: this.awsModel.aws_id,
+        aws_account_id: this.awsModel.aws_account_id,
+        aws_data_source_id:'',
+        data_source:'',
+        max_score:'',
+        assume_role_arn:'',
+        external_id:''
+      }
       this.awsForm.readOnly = false
       this.awsForm.setupAll = true
       this.editDialog  = true
@@ -626,8 +706,19 @@ export default {
       }
       this.scanDataSource()
     },
+    handleGenerateID() {
+      this.awsModel.external_id = Util.generateRandomPassword()
+    },
     assignDataModel(item) {
-      this.awsModel = { aws_id: this.awsModel.aws_id, aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'' }
+      this.awsModel = {
+        aws_id: this.awsModel.aws_id,
+        aws_account_id: this.awsModel.aws_account_id,
+        aws_data_source_id:'',
+        data_source:'',
+        max_score:'',
+        assume_role_arn:'',
+        external_id:''
+      }
       this.awsModel = Object.assign(this.awsModel, item)
     },
     async finishInfo(msg) {
