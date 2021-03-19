@@ -28,7 +28,7 @@
             <v-checkbox
               required
               v-model="table.enabledOnly"
-              :label="$t(`view.alert['Ebabled Only']`)"
+              :label="$t(`view.alert['Enabled Only']`)"
               @change="searchCondition"
             ></v-checkbox>
           </v-col>

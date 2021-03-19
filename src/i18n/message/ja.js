@@ -202,7 +202,7 @@ const ja = {
     },
     "alert": {
       "Active Only": "アクティブのみ",
-      "Ebabled Only": "有効な設定のみ",
+      "Enabled Only": "有効な設定のみ",
       "Alert Findings": "アラートFinding",
       "AlertHistory": "アラート履歴",
       "created": "作成",
