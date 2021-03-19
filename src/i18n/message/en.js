@@ -154,7 +154,7 @@ const en = {
     "Detach DataSource": "Detach DataSource",
     "Edit Item": "Edit Item",
     "Pend Finding": "Pend Finding",
-    "Pend selected findings'": "Pend selected findings'",
+    "Pend selected findings": "Pend selected findings",
     "Pending": "Pending",
     "Resource Map": "Resource Map",
     "Scan": "Scan",
