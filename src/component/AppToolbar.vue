@@ -250,13 +250,19 @@ export default {
     },
   },
   mounted() {
-    if ( !this.$i18n.locale ) {
-      const browserLocale = Util.getNavigatorLanguage()
+    const userLocale = store.state.locale
+    if (userLocale.lang && userLocale.text) {
       this.handleChangeLocale({
-        value: browserLocale,
-        text: this.getLocaleText(browserLocale)
+        value: userLocale.lang,
+        text:  userLocale.text
       })
+      return
     }
+    const browserLocale = Util.getNavigatorLanguage()
+    this.handleChangeLocale({
+      value: browserLocale,
+      text:  this.getLocaleText(browserLocale)
+    })
   },
   methods: {
     customFilter (value, search) {
