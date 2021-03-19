@@ -202,7 +202,7 @@ const en = {
     },
     "alert": {
       "Active Only": "Active Only",
-      "Ebabled Only": "Ebabled Only",
+      "Enabled Only": "Enabled Only",
       "Alert Findings": "Alert Findings",
       "AlertHistory": "AlertHistory",
       "created": "created",
