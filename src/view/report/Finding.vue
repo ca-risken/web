@@ -378,7 +378,7 @@ export default {
         datasets: [],
       },
       // BarChart
-      visibleDuration: "month",
+      visibleDuration: "week",
       visibleDurationList: ["week", "month"],
       labelBarChart: [],
       dataSourceBarChart: {
@@ -689,15 +689,15 @@ export default {
       category = category.toLowerCase()
       switch (category) {
         case "aws":
-          return colors.orange.darken1
+          return colors.orange.lighten3
         case "diagnosis":
-          return colors.indigo.darken1
+          return colors.indigo.lighten3
         case "osint":
-          return colors.green.darken1
+          return colors.green.lighten3
         case "code":
-          return colors.shades.black
+          return colors.grey.darken1
         case "google":
-          return colors.lightBlue.darken1
+          return colors.lightBlue.lighten3
         default:
           return colors.gray
       }
@@ -706,9 +706,9 @@ export default {
       severity = severity.toLowerCase()
       switch (severity) {
         case "high":
-          return colors.red.darken2
+          return colors.red.lighten2
         case "medium":
-          return colors.yellow.darken3
+          return colors.yellow.lighten2
         case "low":
           return colors.teal.lighten2
         default:
