@@ -4,8 +4,8 @@
       <v-layout align-center justify-center>
         <div class="text-md-center">
           <h1>403</h1>
-          <h2 class="my-3 headline ">Sorry, access denied or time out your session... Please retry after signin.</h2>
-          <div><v-btn color="primary" @click="goHome">Signin</v-btn></div>
+          <h2 class="my-3 headline ">{{ $t(`error['Sorry, access denied or time out your session... Please retry after signin.']`) }}</h2>
+          <div><v-btn color="primary" @click="goHome">{{ $t(`btn['SIGNIN']`) }}</v-btn></div>
         </div>
       </v-layout>
     </v-container>

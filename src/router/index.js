@@ -16,6 +16,11 @@ const router = new Router({
   routes: routes,
 })
 
+const handleAPIError = (error) => {
+  console.log('Error: statu=' + error.response.status + ', reponse=' + error.response)
+  router.push({path: '/'})
+}
+
 // Navigation guards
 router.beforeEach( async (to, from, next) => {
   NProgress.start()
@@ -23,12 +28,18 @@ router.beforeEach( async (to, from, next) => {
   const current_project_id = store.state.project.project_id 
   const user_id = store.state.user.user_id
   if ( typeof project_id != 'undefined' && typeof user_id != 'undefined' && project_id != current_project_id ) {
-    const admin = await axios.get('/iam/is-admin/?user_id=' + user_id )
+    const admin = await axios.get('/iam/is-admin/?user_id=' + user_id ).catch((err) =>  {
+      handleAPIError(err)
+      return
+    })
     let q = 'project_id=' + project_id
     if ( !admin.data.data.ok ) {
       q += '&user_id=' + user_id
     }
-    const res = await axios.get('/project/list-project/?' + q )
+    const res = await axios.get('/project/list-project/?' + q ).catch((err) =>  {
+      handleAPIError(err)
+      return 
+    })
     if ( res.data.data.project ) {
       await store.commit('updateProject', res.data.data.project[0])
       let query = await Object.assign({}, to.query)

@@ -1,5 +1,7 @@
 const ja = {
   "btn": {
+    "SIGNIN": "サインイン",
+    "HOME": "ホーム",
     "CANCEL": "キャンセル",
     "EDIT PROJECT": "プロジェクト編集",
     "CREATE NEW PROJECT": "新規プロジェクト作成",
@@ -167,6 +169,11 @@ const ja = {
     "Do you really want to delete this?": "本当に削除してよろしいですか？",
     "Do you want to update PENDING this?": "ペンディング状態に更新しますか？",
     "Do you really want to detach this?": "設定解除しますか?",
+  },
+  "error": {
+    "Sorry, the server is down.... Please access again after a while.": "申し訳ありません。サーバーダウン中です。しばらく経ってからアクセスしてください。",
+    "Sorry, access denied or time out your session... Please retry after signin.": "申し訳ありません。アクセス権限エラーまたはセッション有効期限が切れました。お手数ですがサインインし直してからアクセスしてください。",
+    "Sorry, page not found": "ページが見つかりませんでした。",
   },
   "view": {
     "dashboard":{

@@ -6,8 +6,6 @@ const axios = Axios.create({
 })
 axios.interceptors.request.use(
   config => {
-    // for local
-    // config.headers.common['x-amzn-oidc-identity'] = 'alice'
     return config
   },
   error => Promise.reject(error)
@@ -21,11 +19,16 @@ axios.interceptors.response.use(
       console.log('303')
       router.push({path: '/'})
     } else if (status === 401) {
-      console.log('401認証エラー')
+      console.log('401 Authn error')
       router.push({path: '/iam/profile', query: { url: router.currentRoute.fullPath }})
     } else if (status === 403) {
-      console.log('403認可エラー')
+      console.log('403 Authz error')
       router.push({path: '/403', query: { url: router.currentRoute.fullPath }})
+    // } else if (status === 404) {
+    //   console.log('404 Not found')
+    //   router.push({path: '/404', query: { url: router.currentRoute.fullPath }})
+    // // } else if (status >= 500 ) {
+    //   router.push({path: '/500', query: { url: router.currentRoute.fullPath }})
     }
     return Promise.reject(error)
   }
