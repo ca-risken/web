@@ -1,5 +1,7 @@
 const en = {
   "btn": {
+    "SIGNIN": "SIGNIN",
+    "HOME": "HOME",
     "CANCEL": "CANCEL",
     "EDIT PROJECT": "EDIT PROJECT",
     "CREATE NEW PROJECT": "CREATE NEW PROJECT",
@@ -168,6 +170,11 @@ const en = {
     "Do you really want to delete this?": "Do you really want to delete this?",
     "Do you want to update PENDING this?": "Do you want to update PENDING this?",
     "Do you really want to detach this?": "Do you really want to detach this?",
+  },
+  "error": {
+    "Sorry, the server is down.... Please access again after a while.": "Sorry, the server is down.... Please access again after a while.",
+    "Sorry, access denied or time out your session... Please retry after signin.": "Sorry, access denied or time out your session... Please retry after signin.",
+    "Sorry, page not found": "Sorry, page not found",
   },
   "view": {
     "dashboard":{

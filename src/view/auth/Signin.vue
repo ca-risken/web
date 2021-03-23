@@ -10,7 +10,7 @@
           <v-card-actions>
             <v-spacer />
             <v-btn large tile color="primary" @click="signin" :loading="loading">
-              Signin
+              {{ $t(`btn['SIGNIN']`) }}
             </v-btn>
           </v-card-actions>
         </v-card>

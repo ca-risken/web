@@ -4,8 +4,8 @@
       <v-layout align-center justify-center>
         <div class="text-md-center">
           <h1>404</h1>
-          <h2 class="my-3 headline">Sorry, page not found</h2>
-          <div><v-btn color="primary" @click="goHome">Go Home</v-btn></div>
+          <h2 class="my-3 headline">{{ $t(`error['Sorry, page not found']`) }}</h2>
+          <div><v-btn color="primary" @click="goHome">{{ $t(`btn['HOME']`) }}</v-btn></div>
         </div>
       </v-layout>
     </v-container>
