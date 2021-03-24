@@ -3,8 +3,8 @@
     <v-container fluid fill-height>
       <v-layout align-center justify-center row>
         <div class="text-md-center">
-          <h1>500</h1>
-          <h2 class="my-3 headline">{{ $t(`error['Sorry, the server is down.... Please access again after a while.']`) }}</h2>
+          <h1>Timeout</h1>
+          <h2 class="my-3 headline">{{ $t(`error['Sorry, Please access again after a while.']`) }}</h2>
           <div><v-btn color="primary" @click="goHome">{{ $t(`btn['HOME']`) }}</v-btn></div>
         </div>
       </v-layout>

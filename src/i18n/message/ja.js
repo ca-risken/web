@@ -171,7 +171,7 @@ const ja = {
     "Do you really want to detach this?": "設定解除しますか?",
   },
   "error": {
-    "Sorry, the server is down.... Please access again after a while.": "申し訳ありません。サーバーダウン中です。しばらく経ってからアクセスしてください。",
+    "Sorry, Please access again after a while.": "申し訳ありません。しばらく経ってからアクセスしてください。",
     "Sorry, access denied or time out your session... Please retry after signin.": "申し訳ありません。アクセス権限エラーまたはセッション有効期限が切れました。お手数ですがサインインし直してからアクセスしてください。",
     "Sorry, page not found": "ページが見つかりませんでした。",
   },
