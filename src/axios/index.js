@@ -3,6 +3,7 @@ import router from '../router'
 
 const axios = Axios.create({
   baseURL: '/api/v1',
+  timeout: 10000,
 })
 axios.interceptors.request.use(
   config => {
@@ -14,6 +15,15 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   error => {
+    if (error.code && error.code === 'ECONNABORTED') {
+      // timeout
+      console.log(error)
+      router.push({path: '/timeout'})
+    }
+
+    if (!error.response.status ) {
+      Promise.reject(error)
+    }
     const status = error.response.status
     if (status === 303) {
       console.log('303')

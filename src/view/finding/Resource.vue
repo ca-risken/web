@@ -560,19 +560,24 @@ export default {
         return 
       }
       this.table.total = list.total
+      let resources = []
       for( const id of list.resource_id ) {
-        const resource = await this.getResource(id)
-        const findingIDs = await this.listFindingByResouceName(resource.resource_name)
-        await this.setResourceMap(resource, findingIDs, this.map, 5)
-        this.table.items.push({
+        resources.push(this.getResourceDetail(id))
+      }
+      this.table.items = await Promise.all(resources) // Parallel API call
+      this.loading = false
+    },
+    async getResourceDetail(id) {
+      const resource = await this.getResource(id)
+      const findingIDs = await this.listFindingByResouceName(resource.resource_name)
+      this.setResourceMap(resource, findingIDs, this.map, 5)
+      this.resourceNameList.push(resource.resource_name)
+      return {
           resource_id:   resource.resource_id,
           resource_name: resource.resource_name,
           updated_at:    resource.updated_at,
           findings:      findingIDs.length,
-        })
-        this.resourceNameList.push(resource.resource_name)
       }
-      this.loading = false
     },
     async loadResouceMap( resourceID ) {
       this.loading = true

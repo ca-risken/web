@@ -39,12 +39,12 @@ export const commonRoute = [
   },
 
   {
-    path: '/500',
-    name: '500',
+    path: '/timeout',
+    name: 'timeout',
     meta: {
       title: 'Server Error'
     },
-    component: () => import('@/view/error/Error.vue')
+    component: () => import('@/view/error/Timeout.vue')
   },
 ]
 

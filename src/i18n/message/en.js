@@ -172,7 +172,7 @@ const en = {
     "Do you really want to detach this?": "Do you really want to detach this?",
   },
   "error": {
-    "Sorry, the server is down.... Please access again after a while.": "Sorry, the server is down.... Please access again after a while.",
+    "Sorry, Please access again after a while.": "Sorry, The server is under heavy load... Please access again after a while.",
     "Sorry, access denied or time out your session... Please retry after signin.": "Sorry, access denied or time out your session... Please retry after signin.",
     "Sorry, page not found": "Sorry, page not found",
   },
