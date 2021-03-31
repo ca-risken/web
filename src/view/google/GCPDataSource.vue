@@ -538,6 +538,8 @@ export default {
           return '/static/google/cloudsploit.png'
         case 'google:scc':
           return '/static/google/scc.png'
+        case 'google:portscan':
+          return '/static/google/nmap.png'
         default:
           return '/static/google/default.png'
       }
