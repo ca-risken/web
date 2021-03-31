@@ -149,7 +149,11 @@
           </v-data-table>
         </v-card-text>
         <v-card-actions>
-          <v-btn text outlined color="blue darken-1" @click="$router.push('/project/setting/'); projectDialog = false">
+          <v-btn 
+            text outlined color="blue darken-1"
+            v-if="currentProjectID"
+            @click="$router.push('/project/setting/'); projectDialog = false"
+          >
             {{ $t(`btn['EDIT PROJECT']`) }}
           </v-btn>
           <v-spacer />
@@ -192,6 +196,7 @@ export default {
         },
         item: [],
       },
+      currentProjectID: '',
       availableLanguages: [
         {text: "English", value : "en"},
         {text: "日本語",   value : "ja"},
@@ -250,6 +255,7 @@ export default {
     },
   },
   mounted() {
+    this.currentProjectID = store.state.project.project_id
     const userLocale = store.state.locale
     if (userLocale.lang && userLocale.text) {
       this.handleChangeLocale({
