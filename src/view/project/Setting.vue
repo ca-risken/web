@@ -173,6 +173,9 @@ export default {
   },
   methods: {
     async setProject() {
+      if (!store.state.project.project_id ) {
+        return
+      }
       this.projectModel = store.state.project
       const param = '?project_id=' + this.projectModel.project_id
       const project = await this.listProjectAPI(param).catch((err) =>  {
