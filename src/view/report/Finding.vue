@@ -409,6 +409,10 @@ export default {
   },
   methods: {
     async setFlagAdmin() {
+        if ( !store.state.user || !store.state.user.user_id ) {
+          this.$refs.snackbar.notifyError( 'Error: Try again after signin.' )
+          return
+        }
         const admin = await this.$axios.get('/iam/is-admin/?user_id=' + store.state.user.user_id ).catch((err) =>  {
             return Promise.reject(err)
         })
@@ -614,16 +618,14 @@ export default {
     },
     SetLabelBarChart(){
       var label = []
-      var now = new Date()
-      now.setDate(this.now.getDate() - 1)
-      var day = new Date()
+      var day = new Date(this.now.getTime())
       switch (this.visibleDuration) {
       case "week": 
-        day.setDate(now.getDate() - 6)
+        day.setDate(this.now.getDate() - 6)
         break
       case "month":
       default:
-        day.setMonth(now.getMonth() - 1)
+        day.setMonth(this.now.getMonth() - 1)
         break
       }
       var nowDate = Util.formatDate(this.now,'yyyy-MM-dd')
