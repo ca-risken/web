@@ -56,6 +56,15 @@ const project = {
       })
       return res
     },
+    async deleteProjectAPI() {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+      }
+      const res = await this.$axios.post('/project/delete-project/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      return res
+    },
   },
 }
 
