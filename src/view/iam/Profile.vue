@@ -126,8 +126,9 @@ export default {
     },
     handleSubmit() {
       if (!this.$refs.form.validate()) {
-        this.putUser()
+        return
       }
+      this.putUser()
     },
   }
 }

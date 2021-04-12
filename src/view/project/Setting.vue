@@ -14,6 +14,7 @@
       <v-row dense justify="center" align-content="center">
         <v-col cols="10">
           <v-card>
+            <!-- Profile -->
             <v-card-text>
               <v-form v-model="projectForm.valid" ref="form">
                 <v-text-field
@@ -39,6 +40,8 @@
               </v-form>
             </v-card-text>
             <v-divider />
+
+            <!-- TAG -->
             <v-card-text>
               <v-chip
                 v-for="t in projectModel.tag"
@@ -58,6 +61,18 @@
                 </v-btn>
               </v-card-actions>
             </v-card-text>
+            <v-divider />
+
+            <!-- DELETE -->
+            <v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn text outlined color="red darken-1" :loading="loading" @click="handleDelete">
+                  {{ $t(`btn['DELETE']`) }}
+                </v-btn>
+              </v-card-actions>
+            </v-card-text>
+
             <bottom-snack-bar ref="snackbar" />
           </v-card>
         </v-col>
@@ -109,6 +124,31 @@
       </v-card>
     </v-dialog>
 
+    <!-- Delete Dialog -->
+    <v-dialog v-model="deleteDialog" max-width="40%">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            :loading="loading"
+            color="red darken-1"
+            text outlined
+            @click="handleDeleteSubmit"
+          >
+            {{ $t(`btn['DELETE']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -125,6 +165,8 @@ export default {
   data() {
     return {
       loading: false,
+      tagDialog: false,
+      deleteDialog: false,
       projectModel: {project_id:'', name:'', tag: [], created_at:'', updated_at:'' },
       projectForm: {
         valid: false,
@@ -135,7 +177,6 @@ export default {
           ]
         },
       },
-      tagDialog: false,
       projectTagModel: {project_id:'', tag:'', created_at:'', updated_at:'',
         color: {
           types: ['hex', 'hexa', 'rgba', 'hsla', 'hsva'],
@@ -208,6 +249,12 @@ export default {
         return Promise.reject(err)
       })
     },
+    async deleteProject() {
+      await this.deleteProjectAPI().catch((err) =>  {
+        this.$refs.snackbar.notifyError(err)
+        return Promise.reject(err)
+      })
+    },
 
     // Handler
     handleEdit() {
@@ -249,7 +296,19 @@ export default {
       await this.setProject()
       this.$refs.snackbar.notifySuccess( 'Success: Untag project.' )
       this.loading = false
-    }
+    },
+    handleDelete() {
+      this.deleteDialog  = true
+    },
+    async handleDeleteSubmit() {
+      this.loading = true
+      await this.deleteProject()
+      store.commit('updateProject', {})
+      this.$refs.snackbar.notifySuccess( 'Success: Delete project.' )
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      this.loading = false
+      this.reload()
+    },
   }
 }
 </script>
