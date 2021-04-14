@@ -707,7 +707,7 @@ export default {
       this.scanDataSource()
     },
     handleGenerateID() {
-      this.awsModel.external_id = Util.generateRandomPassword()
+      this.awsModel.external_id = Util.generateExternalID()
     },
     assignDataModel(item) {
       this.awsModel = {

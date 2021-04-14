@@ -23,6 +23,7 @@ const ja = {
     "DOWNLOAD REPORT (PROJECT)": "レポート ダウンロード (現在のプロジェクト)",
     "DOWNLOAD REPORT (ALL)": "レポート ダウンロード (全てのプロジェクト)",
     "AUTO GENERATE EXTERNAL ID": "外部IDを自動生成する",
+    "AUTO GENERATE VERIFICATION CODE": "検証コードを自動生成する",
   },
   "menu": {
     "Home": "ホーム",
@@ -142,6 +143,7 @@ const ja = {
     "Type": "タイプ",
     "Updated": "更新日時",
     "UpdatedAt Range": "更新日（範囲）",
+    "Verification Code": "検証コード",
     "Webhook URL": "ウェブフックURL",
     "WPScan Setting ID": "ワードプレス設定ID",
   },
@@ -218,6 +220,10 @@ const ja = {
       "updated": "更新",
       "deleted": "削除",
       "Show options": "オプション表示",
+      "Currently, the following webhook URL (masked) is registered. Please enter the webhook URL again.": "現在、以下のウェブフックURL（マスク表示）が登録されています。お手数ですが再度ウェブフックURLを入力してください。",
+      "The specific channel setting is ": "特定チャンネル通知への設定は",
+      "deprecated": "現在、非推奨となっています...  ",
+      "... It is recommended to use the default channels.": "特別な理由がない場合はデフォルトチャンネルをご利用ください.",
     },
     "report": {
       "Download Finding Report": "レポートのダウンロード",
@@ -235,6 +241,9 @@ const ja = {
       "removed": "削除",
       "from the project.": "されます.",
     },
+    "gcp": {
+      "Register the verification code in the label of your GCP project with the key `risken`.": "あなたのGCPプロジェクトのラベルに `risken` というキーで検証コードの値を登録してください",
+    }
   },
 }
 export default ja

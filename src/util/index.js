@@ -88,18 +88,32 @@ const getNavigatorLanguage = () => {
   }
 }
 
-const generateRandomPassword = () => {
+const generateExternalID = () => {
   const letters = 'abcdefghijklmnopqrstuvwxyz'
   const numbers = '0123456789'
-  const len = 64
+  const len = 32
   const string  = letters + letters.toUpperCase() + numbers
 
-  let password=''
+  let externalID=''
   for (var i = 0; i < len; i++) {
-    password += string.charAt(Math.floor(Math.random() * string.length))
+    externalID += string.charAt(Math.floor(Math.random() * string.length))
   }
-  return password
+  return externalID
 }
+
+const generateVerificationCode = () => {
+  const letters = 'abcdefghijklmnopqrstuvwxyz-_'
+  const numbers = '0123456789'
+  const len = 32
+  const string  = letters + numbers
+
+  let code=''
+  for (var i = 0; i < len; i++) {
+    code += string.charAt(Math.floor(Math.random() * string.length))
+  }
+  return code
+}
+
 export default {
   randomElement,
   toggleFullScreen,
@@ -108,5 +122,6 @@ export default {
   cutLongString,
   elapsedTimeText,
   getNavigatorLanguage,
-  generateRandomPassword,
+  generateExternalID,
+  generateVerificationCode,
 }
