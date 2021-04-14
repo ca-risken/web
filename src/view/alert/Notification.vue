@@ -130,6 +130,17 @@
               :placeholder="form.webhook_url.placeholder"
               outlined required
             ></v-text-field>
+            <v-alert
+              v-if="dataModel.masked_webhook_url != '' && dataModel.masked_webhook_url != null"
+              dense
+              outlined
+              type="info"
+            >
+              <p class="text-caption">
+                {{ $t(`view.alert['Currently, the following webhook URL (masked) is registered. Please enter the webhook URL again.']`) }}
+              </p>
+              <p>{{ dataModel.masked_webhook_url }}</p>
+            </v-alert>
 
             <v-checkbox
               v-model="form.show_option"
@@ -161,7 +172,9 @@
               outlined
               type="error"
             >
-              The specific channel setting is <strong>deprecated</strong>... It is recommended to use the default channels.
+              {{ $t(`view.alert['The specific channel setting is ']`) }}
+              <strong>{{ $t(`view.alert['deprecated']`) }}</strong>
+              {{ $t(`view.alert['... It is recommended to use the default channels.']`) }}
             </v-alert>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -259,7 +272,7 @@ export default {
         custom_message: { label: 'Custom Message', placeholder: '<!here> <@user_id> Hello user!', validator:[]},
         channel: { label: 'Channel', placeholder: '#your-channel', validator:[]},
       },
-      dataModel: { notification_id:0, name:'', type:'slack', notify_setting: {}, webhook_url:'', custom_message:'', channel:'', updated_at:'' },
+      dataModel: { notification_id:0, name:'', type:'slack', notify_setting: {}, masked_webhook_url: '', webhook_url:'', custom_message:'', channel:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
@@ -349,7 +362,8 @@ export default {
     },
 
     handleNewItem() {
-      this.dataModel = { notification_id:0, name:'', type:'slack', webhook_url:'', custom_message:'' ,channel: '', updated_at:'' }
+      this.dataModel = { notification_id:0, name:'', type:'slack', masked_webhook_url: '', webhook_url:'', custom_message:'' ,channel: '', updated_at:'' }
+      this.form.valid = false
       this.form.new = true
       this.editDialog  = true
     },
@@ -358,7 +372,9 @@ export default {
     },
     handleEditItem(item) {
       this.assignDataModel(item)
+      this.dataModel.masked_webhook_url = this.dataModel.webhook_url
       this.dataModel.webhook_url = ''
+      this.form.valid = false
       this.form.new = false
       this.editDialog  = true
     },
@@ -371,6 +387,7 @@ export default {
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
+      this.form.valid = false
       this.deleteDialog  = true
     },
     handleDeleteSubmit() {

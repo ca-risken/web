@@ -23,6 +23,7 @@ const en = {
     "DOWNLOAD REPORT (PROJECT)": "DOWNLOAD REPORT (PROJECT)",
     "DOWNLOAD REPORT (ALL)": "DOWNLOAD REPORT (ALL)",
     "AUTO GENERATE EXTERNAL ID": "AUTO GENERATE EXTERNAL ID",
+    "AUTO GENERATE VERIFICATION CODE": "AUTO GENERATE VERIFICATION CODE",
   },
   "menu": {
     "Home": "Home",
@@ -142,6 +143,7 @@ const en = {
     "Type": "Type",
     "Updated": "Updated",
     "UpdatedAt Range": "UpdatedAt Range",
+    "Verification Code": "Verification Code",
     "Webhook URL": "Webhook URL",
     "WPScan Setting ID": "WPScan Setting ID",
   },
@@ -218,6 +220,10 @@ const en = {
       "updated": "updated",
       "deleted": "deleted",
       "Show options": "Show options",
+      "Currently, the following webhook URL (masked) is registered. Please enter the webhook URL again.": "Currently, the following webhook URL (masked) is registered. Please enter the webhook URL again.",
+      "The specific channel setting is ": "The specific channel setting is ",
+      "deprecated": "deprecated",
+      "... It is recommended to use the default channels.": "... It is recommended to use the default channels.",
     },
     "report": {
       "Download Finding Report": "Download Finding Report",
@@ -235,6 +241,9 @@ const en = {
       "removed": "removed",
       "from the project.": "from the project.",
     },
+    "gcp": {
+      "Register the verification code in the label of your GCP project with the key `risken`.": "Register the verification code in the label of your GCP project with the key `risken`.",
+    }
   }
 }
 export default en

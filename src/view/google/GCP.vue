@@ -92,7 +92,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="600px">
+    <v-dialog v-model="editDialog" max-width="56%">
       <v-card>
         <v-card-title>
           <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
@@ -102,54 +102,124 @@
         </v-card-title>
         <v-card-text>
           <v-form v-model="gcpForm.valid" ref="form">
-            <v-text-field
-              v-model="gcpModel.gcp_id"
-              :label="$t(`item['`+gcpForm.gcp_id.label+`']`)"
-              :placeholder="gcpForm.gcp_id.placeholder"
-              outlined filled disabled
-            ></v-text-field>
-            <v-text-field
-              v-model="gcpModel.name"
-              :counter="200"
-              :rules="gcpForm.name.validator"
-              :label="$t(`item['`+gcpForm.name.label+`']`) + ' *'"
-              :placeholder="gcpForm.name.placeholder"
-              outlined required
-            ></v-text-field>
-            <template v-if="gcpForm.newGCP">
-              <v-text-field
-                v-model="gcpModel.gcp_organization_id"
-                :counter="128"
-                :rules="gcpForm.gcp_organization_id.validator"
-                :label="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
-                :placeholder="gcpForm.gcp_organization_id.placeholder"
-                outlined required
-              ></v-text-field>
-              <v-text-field
-                v-model="gcpModel.gcp_project_id"
-                :counter="128"
-                :rules="gcpForm.gcp_project_id.validator"
-                :label="$t(`item['`+gcpForm.gcp_project_id.label+`']`) + ' *'"
-                :placeholder="gcpForm.gcp_project_id.placeholder"
-                outlined required
-              ></v-text-field>
-            </template>
-            <template v-else>
-              <v-text-field
-                v-model="gcpModel.gcp_organization_id"
-                :counter="128"
-                :label="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
-                :placeholder="gcpForm.gcp_organization_id.placeholder"
-                outlined filled disabled
-              ></v-text-field>   
-              <v-text-field
-                v-model="gcpModel.gcp_project_id"
-                :counter="128"
-                :label="$t(`item['`+gcpForm.gcp_project_id.label+`']`) + ' *'"
-                :placeholder="gcpForm.gcp_project_id.placeholder"
-                outlined filled disabled
-              ></v-text-field>   
-            </template>
+            <v-row class="mt-1">
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+gcpForm.gcp_id.label+`']`)"
+                  :text="String(gcpModel.gcp_id)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-model="gcpModel.gcp_id"
+                  :label="$t(`item['`+gcpForm.gcp_id.label+`']`)"
+                  :placeholder="gcpForm.gcp_id.placeholder"
+                  outlined filled disabled
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row class="mt-1">
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+gcpForm.name.label+`']`)"
+                  :text="String(gcpModel.name)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-model="gcpModel.name"
+                  :counter="200"
+                  :rules="gcpForm.name.validator"
+                  :label="$t(`item['`+gcpForm.name.label+`']`) + ' *'"
+                  :placeholder="gcpForm.name.placeholder"
+                  outlined required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row class="mt-1">
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
+                  :text="String(gcpModel.gcp_organization_id)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-model="gcpModel.gcp_organization_id"
+                  :counter="128"
+                  :rules="gcpForm.gcp_organization_id.validator"
+                  :label="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
+                  :placeholder="gcpForm.gcp_organization_id.placeholder"
+                  outlined required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row class="mt-1">
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+gcpForm.gcp_project_id.label+`']`)"
+                  :text="String(gcpModel.gcp_project_id)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-model="gcpModel.gcp_project_id"
+                  :counter="128"
+                  :rules="gcpForm.gcp_project_id.validator"
+                  :label="$t(`item['`+gcpForm.gcp_project_id.label+`']`) + ' *'"
+                  :placeholder="gcpForm.gcp_project_id.placeholder"
+                  outlined required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row class="mt-1">
+              <v-col cols="1">
+                <clip-board
+                  class="pt-4 pl-6"
+                  :name="$t(`item['`+gcpForm.verification_code.label+`']`)"
+                  :text="String(gcpModel.verification_code)"
+                  size="x-large"
+                />
+              </v-col>
+              <v-col cols="11">
+                <v-text-field
+                  v-if="gcpForm.verification_code.visible"
+                  v-model="gcpModel.verification_code"
+                  :counter="128"
+                  :rules="gcpForm.verification_code.validator"
+                  :label="$t(`item['`+gcpForm.verification_code.label+`']`) + ' *'"
+                  :placeholder="gcpForm.verification_code.placeholder"
+                  outlined required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense class="my-0">
+              <v-col cols="1" />
+              <v-col cols="11">
+                <v-btn
+                  text dense
+                  color="purple darken-2"
+                  @click="handleGenerateCode">
+                  {{ $t(`btn['AUTO GENERATE VERIFICATION CODE']`) }}
+                </v-btn>
+                <v-alert
+                  outlined
+                  type="info"
+                >
+                  <p class="text-subtitle-2">
+                    {{ $t(`view.gcp['Register the verification code in the label of your GCP project with the key \`risken\`.']`) }}
+                  </p>
+                </v-alert>
+              </v-col>
+            </v-row>
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -225,13 +295,17 @@
   </div>
 </template>
 <script>
+import Util from '@/util'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
+import google from '@/mixin/api/google'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin, project],
+  mixins: [mixin, project, google],
   components: {
     BottomSnackBar,
+    ClipBoard,
   },
   data() {
     return {
@@ -252,11 +326,16 @@ export default {
         gcp_project_id: { label: 'GCP ProjectID', placeholder: 'your-project', validator:[
             v => !!v || 'GCP Project ID is required',
             v => !v || v.length <= 128 || 'GCP Project ID must be less than 128 characters',
-            v => this.isNewGCPProjectID(v) || 'GCP Project ID is already exist.',
           ]
         },
+        verification_code: { label: 'Verification Code', placeholder: '', validator:[
+            v => !!v || 'Verification Code is required',
+            v => !v || (8 <= v.length && v.length <= 128) || 'Verification Code must be between 8 and 128 characters',
+          ],
+          visible: true,
+        },
       },
-      gcpModel: { gcp_id:'', name:'', gcp_organization_id: '',gcp_project_id:'', updated_at:'' },
+      gcpModel: { gcp_id:'', name:'', gcp_organization_id: '',gcp_project_id:'', verification_code:'', updated_at:'' },
       table: {
         selected: [],
         search: '',
@@ -295,17 +374,25 @@ export default {
   },
   methods: {
     async refleshList() {
-      const res = await this.$axios.get(
-        '/google/list-gcp/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const gcp = await this.listGCPAPI().catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.gcp ) {
+      if ( !gcp ) {
         this.clearList()
         return false
       }
-      this.table.items = res.data.data.gcp
+      gcp.forEach(async g => {
+        this.table.items.push({
+          gcp_id:              g.gcp_id,
+          name:                g.name,
+          gcp_organization_id: g.gcp_organization_id,
+          gcp_project_id:      g.gcp_project_id,
+          verification_code:          g.verification_code,
+          updated_at:          g.updated_at,
+        })
+      })
+      // this.table.items = gcp
       this.loading = false
     },
     clearList() {
@@ -313,11 +400,7 @@ export default {
       this.loading = false
     },
     async deleteItem(gcpID) {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          gcp_id: gcpID,
-      }
-      await this.$axios.post('/google/delete-gcp/', param).catch((err) =>  {
+      await this.deleteGCPAPI(gcpID).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
@@ -331,9 +414,10 @@ export default {
           name: this.gcpModel.name,
           gcp_organization_id: this.gcpModel.gcp_organization_id,
           gcp_project_id: this.gcpModel.gcp_project_id,
+          verification_code: this.gcpModel.verification_code,
         },
       }
-      await this.$axios.post('/google/put-gcp/', param).catch((err) =>  {
+      await this.putGCPAPI(param).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
@@ -343,6 +427,7 @@ export default {
       }
       this.finish(msg)
     },
+
     isNewGCPProjectID(pjID) {
       let isNew = true
       this.table.items.some( item => {
@@ -353,11 +438,18 @@ export default {
       })
       return isNew
     },
+
+    handleGenerateCode() {
+      this.gcpModel.verification_code = Util.generateVerificationCode()
+      // v-modelの値を更新してもうまくレンダリングされない時があるため、v-ifを切り替えて強制的にレンダリングさせる
+      this.gcpForm.verification_code.visible = false
+      this.gcpForm.verification_code.visible = true
+    },
     handleRowClick(item) {
       this.$router.push('/google/gcp-data-source?gcp_id=' + item.gcp_id)
     },
     handleNewItem() {
-      this.gcpModel = { gcp_id:'', name:'', gcp_project_id:'', updated_at:'' }
+      this.gcpModel = { gcp_id:'', name:'', gcp_organization_id: '',gcp_project_id:'', verification_code:'', updated_at:'' },
       this.gcpForm.newGCP = true
       this.editDialog  = true
     },
