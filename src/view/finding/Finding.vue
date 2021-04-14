@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-container>
-      <v-row dense>
-        <v-col cols="10">
+      <v-row>
+        <v-col cols="9">
           <v-toolbar color="background" flat>
             <v-toolbar-title  class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
@@ -10,34 +10,31 @@
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
-        <v-col cols="2" align-self="end" class="text-right">
-          <v-btn class="ml-2" fab dense small @click="handleSearch">
-            <v-icon>search</v-icon>
-          </v-btn>
-          <v-menu :disabled="!table.selected || table.selected.length <= 0">
-            <template v-slot:activator="{ attrs, on }">
-              <v-btn class="ml-2" fab dense small v-bind="attrs" v-on="on">
-                <v-icon>mdi-format-list-bulleted-square</v-icon>
-              </v-btn>
-            </template>
-            <v-list dense>
-              <v-list-item
-                v-for="action in table.selectedActions"
-                :key="action.text"
-                @click="action.click"
-              >
-                <v-list-item-icon class="ml-1 mr-1">
-                  <v-icon small>{{ action.icon }}</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title class="ma-1">{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <v-col cols="3" align-self="end" class="text-right">
+          <v-slider
+            outlined hide-details
+            min="0.0"
+            max="1.0"
+            step="0.1"
+            :label="$t(`item['`+searchForm.score.label+`']`)"
+            v-model="searchModel.scoreFrom"
+            thumb-label="always"
+            :thumb-color="getColorByScore(searchModel.scoreFrom)"
+          ></v-slider>
         </v-col>
       </v-row>
       <v-form ref="searchForm" >
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="3">
+        <v-row justify="center" align-content="center">
+          <v-col cols="2" class="px-2">
+            <v-text-field
+              outlined dense clearable 
+              background-color="white"
+              :placeholder="searchForm.findingID.placeholder"
+              v-model="searchModel.findingID"
+              hide-details
+            ></v-text-field>
+          </v-col>
+          <v-col cols="3" class="px-2">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
@@ -50,7 +47,7 @@
               persistent-hint
             />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="2" class="px-2">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
@@ -60,7 +57,7 @@
               v-model="searchModel.tag"
             />
           </v-col>
-          <v-col cols="3">
+          <v-col cols="3" class="px-2">
             <v-combobox
               multiple outlined dense clearable small-chips deletable-chips hide-details
               background-color="white"
@@ -70,22 +67,33 @@
               v-model="searchModel.dataSource"
             />
           </v-col>
-          <v-col cols="3">
-            <v-range-slider
-              outlined
-              dense
-              thumb-label
-              hide-details
-              min="0.0"
-              max="1.0"
-              step="0.1"
-              :label="$t(`item['`+searchForm.score.label+`']`)"
-              v-model="searchModel.score"
-            ></v-range-slider>
+          <v-col cols="2" class="px-1 text-right">
+            <v-btn fab small depressed outlined color="indigo darken-2" @click="handleSearch">
+              <v-icon>search</v-icon>
+            </v-btn>
+            <v-menu :disabled="!table.selected || table.selected.length <= 0">
+              <template v-slot:activator="{ attrs, on }">
+                <v-btn class="ml-2" fab small depressed outlined color="green darken-2" v-bind="attrs" v-on="on">
+                  <v-icon>mdi-format-list-bulleted-square</v-icon>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item
+                  v-for="action in table.selectedActions"
+                  :key="action.text"
+                  @click="action.click"
+                >
+                  <v-list-item-icon class="ml-1 mr-1">
+                    <v-icon small>{{ action.icon }}</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="ma-1">{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-col>
         </v-row>
       </v-form>
-      <v-row dense>
+      <v-row class="mt-2">
         <v-tabs
           v-model="searchModel.tab"
           background-color="background"
@@ -98,7 +106,7 @@
           <v-tab class="mx-0 px-0">{{ $t(`view.finding['ALL']`) }}</v-tab>
         </v-tabs>
       </v-row>
-      <v-row dense>
+      <v-row>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -484,18 +492,22 @@ export default {
     return {
       loading: false,
       searchModel: {
+        findingID: '',
         dataSource: [],
         resourceName: [],
         tag: [],
-        score: [0.0, 1.0],
+        // score: [0.0, 1.0],
+        scoreFrom: 0.5,
+        scoreTo: 1.0,
         tab: 0,
         status: 1,
       },
       searchForm: {
+        findingID: { label: 'ID', placeholder: 'ID' },
         dataSource: { label: 'Data Source', placeholder: 'Filter data sources' },
         resourceName: { label: 'Resource Name', placeholder: 'Filter resource' },
         tag: { label: 'Tag', placeholder: 'Filter tag' },
-        score: { label: 'Score', placeholder: 'Filter score( from - to )' },
+        score: { label: 'Score', placeholder: 'Filter score' },
         resourceNameList: [],
         tagList: [],
       },
@@ -656,6 +668,9 @@ export default {
     parseQuery() {
       if (!this.$route.query) return
       const query = this.$route.query
+      if ( query.finding_id && query.finding_id != "") {
+        this.searchModel.finding_id = query.finding_id
+      }
       if ( query.data_source && query.data_source != "") {
         this.searchModel.dataSource = String(query.data_source).split(',')
       }
@@ -665,14 +680,14 @@ export default {
       if ( query.resource_name && query.resource_name  != "" ) {
         this.searchModel.resourceName = String(query.resource_name).split(',')
       }
-      this.searchModel.score[0] = 0.0
-      this.searchModel.score[1] = 1.0
+      this.searchModel.scoreFrom = 0.5
+      this.searchModel.scoreTo = 1.0
       if ( query.from_score ) {
-        this.searchModel.score[0] = query.from_score
+        this.searchModel.scoreFrom = query.from_score
       }
-      if ( query.to_score ) {
-        this.searchModel.score[1] = query.to_score
-      }
+      // if ( query.to_score ) {
+      //   this.searchModel.score[1] = query.to_score
+      // }
       this.searchModel.status = this.getFindingStatus('ACTIVE')
       if ( query.status ) {
         this.searchModel.status = query.status
@@ -683,6 +698,10 @@ export default {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
+      if (this.searchModel.findingID) {
+        searchCond += '&finding_id=' + this.searchModel.findingID
+        queryNew.finding_id = this.searchModel.findingID
+      }
       if (this.searchModel.dataSource) {
         searchCond += '&data_source=' + this.searchModel.dataSource
         queryNew.data_source = this.searchModel.dataSource
@@ -695,14 +714,14 @@ export default {
         searchCond += '&resource_name=' + this.searchModel.resourceName
         queryNew.resource_name = this.searchModel.resourceName
       }
-      if (this.searchModel.score[0]) {
-        searchCond += '&from_score=' + this.searchModel.score[0]
-        queryNew.from_score = this.searchModel.score[0]
+      if (this.searchModel.scoreFrom) {
+        searchCond += '&from_score=' + this.searchModel.scoreFrom
+        queryNew.from_score = this.searchModel.scoreFrom
       }
-      if (this.searchModel.score[1]) {
-        searchCond += '&to_score=' + this.searchModel.score[1]
-        queryNew.to_score = this.searchModel.score[1]
-      }
+      // if (this.searchModel.score[1]) {
+      //   searchCond += '&to_score=' + this.searchModel.score[1]
+      //   queryNew.to_score = this.searchModel.score[1]
+      // }
       if (this.searchModel.status) {
         searchCond += '&status=' + this.searchModel.status
         queryNew.status = this.searchModel.status
