@@ -139,7 +139,7 @@
               <p class="text-caption">
                 {{ $t(`view.alert['Currently, the following webhook URL (masked) is registered. Please enter the webhook URL again.']`) }}
               </p>
-              <p>{{ dataModel.masked_webhook_url }}</p>
+              <p>{{ dataModel.masked_webhook_url | formatSmartMaskString }}</p>
             </v-alert>
 
             <v-checkbox

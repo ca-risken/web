@@ -1,4 +1,5 @@
 import Util from '@/util'
+const maskedPattern = /\*.*$/
 let mixin = {
   data: () => {
     return {
@@ -35,6 +36,12 @@ let mixin = {
     },
     cutString: (str) => {
       return Util.cutLongString(str, 10)
+    },
+    formatSmartMaskString: (masked) => {
+      if (!masked) {
+        return ''
+      }
+      return masked.replace(maskedPattern, '*****')
     },
   },
   methods: {
