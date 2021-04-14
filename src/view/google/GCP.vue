@@ -382,17 +382,7 @@ export default {
         this.clearList()
         return false
       }
-      gcp.forEach(async g => {
-        this.table.items.push({
-          gcp_id:              g.gcp_id,
-          name:                g.name,
-          gcp_organization_id: g.gcp_organization_id,
-          gcp_project_id:      g.gcp_project_id,
-          verification_code:          g.verification_code,
-          updated_at:          g.updated_at,
-        })
-      })
-      // this.table.items = gcp
+      this.table.items = gcp
       this.loading = false
     },
     clearList() {
