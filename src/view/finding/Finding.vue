@@ -669,7 +669,7 @@ export default {
       if (!this.$route.query) return
       const query = this.$route.query
       if ( query.finding_id && query.finding_id != "") {
-        this.searchModel.finding_id = query.finding_id
+        this.searchModel.findingID = query.finding_id
       }
       if ( query.data_source && query.data_source != "") {
         this.searchModel.dataSource = String(query.data_source).split(',')

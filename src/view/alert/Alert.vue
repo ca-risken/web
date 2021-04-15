@@ -109,7 +109,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="viewDialog" max-width="60%">
+    <v-dialog v-model="viewDialog" max-width="70%">
       <!-- Finding -->
       <v-card>
         <v-card-title>
@@ -161,7 +161,14 @@
                 </v-col>
                 <v-col>
                   <div class="caption">findings</div>
-                  <strong>{{ item.findingsIDs }}</strong>
+                  <v-btn
+                    text
+                    color="indigo"
+                    class="px-1 mx-0"
+                    v-for="id of item.findingsIDs"
+                    :key="id"
+                    @click="handleClickFindingID(id)"
+                  >{{ id }}</v-btn>
                 </v-col>
                 <v-col cols="2">
                   <v-chip
@@ -426,7 +433,14 @@ export default {
       if (resourceName == '...') {
         name = ''
       }
-      this.$router.push('/finding/finding?resource_name=' + name)
+      this.$router.push('/finding/finding?from_score=0&resource_name=' + name)
+    },
+    handleClickFindingID(id) {
+      let param = id
+      if (param == '...') {
+        param = ''
+      }
+      this.$router.push('/finding/finding?from_score=0&finding_id=' + param)
     },
     handlePendItem(item) {
       this.assignDataModel(item)

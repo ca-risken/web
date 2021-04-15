@@ -491,7 +491,7 @@ export default {
   methods: {
     // Handler
     handleViewFinding(item) {
-      this.$router.push('/finding/finding?resource_name=' + item.resource_name)
+      this.$router.push('/finding/finding?from_score=0&resource_name=' + item.resource_name)
     },
     handleViewFindingFromNode() {
       this.$router.push('/finding/finding/' + 
