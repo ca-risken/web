@@ -124,7 +124,10 @@
               :placeholder="form.resource_name.placeholder"
               outlined required
             ></v-text-field>
-
+            <v-checkbox
+              v-model="ActivateDataSource"
+              :label="$t(`view.osint['Activate DataSource']`)"
+            ></v-checkbox>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
@@ -207,9 +210,10 @@
 <script>
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
+import osint from '@/mixin/api/osint'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin, project],
+  mixins: [mixin, project,osint],
   components: {
     BottomSnackBar,
   },
@@ -231,17 +235,20 @@ export default {
           ]
         },
       },
-      dataModel: { osint_id:'', resource_type:'', resource_name:'', updated_at:'' },
+      dataModel: { osint_id:'', resource_type:'', resource_name:'', updated_at:''},
+      ActivateDataSource: true,
       table: {
         selected: [],
         search: '',
-        options: { page: 1, itemsPerPage: 5, sortBy: ['osint_id'] },
+        options: { page: 1, itemsPerPage: 20, sortBy: ['osint_id'] },
         actions: [
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [20,50,100],
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -265,21 +272,22 @@ export default {
   },
   mounted() {
     this.loading = true
-    this.listItem()
+    this.displayList()
   },
   methods: {
-    async listItem() {
-      const res = await this.$axios.get(
-        '/osint/list-osint/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+    async displayList() {
+      var isSuccess = true
+      const list = await this.listOSINT(this.$store.state.project.project_id).catch((err) =>  {
+        this.finishError(err.response.data)
         this.clearList()
-        return Promise.reject(err)
+        isSuccess = false
+        return
       })
-      if ( !res.data.data.osint ) {
+      if ( !isSuccess || !list.osint ) {
         this.clearList()
-        return false
+        return
       }
-      this.table.items = res.data.data.osint
+      this.table.items = list.osint
       this.loading = false
     },
     clearList() {
@@ -287,42 +295,35 @@ export default {
       this.loading = false
     },
     async deleteItem(osintID) {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          osint_id: osintID,
-      }
-      await this.$axios.post('/osint/delete-osint/', param).catch((err) =>  {
+      var isSuccess = true
+      await this.deleteOSINT(this.$store.state.project.project_id,osintID).catch((err) =>  {
         this.finishError(err.response.data)
-        return Promise.reject(err)
+        isSuccess = false
       })
+      if (!isSuccess) {
+        return
+      }
       this.finishSuccess('Success: Delete OSINT.')
     },
     async putItem() {
-      const param = { 
-        project_id: this.$store.state.project.project_id,
-        osint: {
-          osint_id: this.dataModel.osint_id,
-          project_id: this.$store.state.project.project_id,
-          resource_type: this.dataModel.resource_type,
-          resource_name: this.dataModel.resource_name,
-        },
+      const res = await this.putOSINT(this.$store.state.project.project_id,this.dataModel.osint_id,this.dataModel.resource_type,this.dataModel.resource_name)
+      if (!this.ActivateDataSource || !res.osint) {
+        return
       }
-      await this.$axios.post('/osint/put-osint/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.finishSuccess('Success: Updated OSINT.')
+      await this.AttachReferenceDataSource(this.$store.state.project.project_id,res.osint.osint_id,this.dataModel.resource_type)
     },
     handleRowClick(item) {
       this.$router.push('/osint/data-source?osint_id=' + item.osint_id)
     },
     handleNewItem() {
-      this.dataModel = { osint_id:'', resource_type:'', resource_name:'', updated_at:'' }
+      this.dataModel = { osint_id:'', resource_type:'', resource_name:'', updated_at:''}
+      this.ActivateDataSource = true
       this.form.new = true
       this.editDialog  = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
+      this.ActivateDataSource = false
       this.form.new = false
       this.editDialog  = true
     },
@@ -331,8 +332,22 @@ export default {
         return
       }
       this.loading = true
-      await this.putItem()
-      await this.tagProjectAPI(this.dataModel.resource_type.toLowerCase() + ':' + this.dataModel.resource_name, 'green darken-1')
+      var isSuccess = true
+      await this.putItem().catch((err) =>  {
+        this.finishError(err.response.data)
+        isSuccess = false
+      })
+      if (!isSuccess) {
+        return
+      }
+      await this.tagProjectAPI(this.dataModel.resource_type.toLowerCase() + ':' + this.dataModel.resource_name, 'green darken-1').catch((err) =>  {
+        this.finishError(err.response.data)
+        isSuccess = false
+      })
+      if (!isSuccess) {
+        return
+      }
+      this.finishSuccess('Success: Updated OSINT.')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
@@ -363,7 +378,7 @@ export default {
       this.loading = false
       this.editDialog  = false
       this.deleteDialog  = false
-      this.listItem()
+      this.displayList()
     },
   }
 }

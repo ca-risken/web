@@ -243,7 +243,10 @@ const ja = {
     },
     "gcp": {
       "Register the verification code in the label of your GCP project with the key `risken`.": "あなたのGCPプロジェクトのラベルに `risken` というキーで検証コードの値を登録してください",
-    }
+    },
+    "osint": {
+      "Activate DataSource": "登録時にDataSourceを有効化する",
+    },
   },
 }
 export default ja

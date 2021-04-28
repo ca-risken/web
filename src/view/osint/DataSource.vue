@@ -408,11 +408,11 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
+import osint from '@/mixin/api/osint'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin],
+  mixins: [mixin,osint],
   components: {
     BottomSnackBar,
   },
@@ -471,8 +471,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [10,50,100],
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -504,10 +505,10 @@ export default {
   },
   async mounted() {
     this.loading = true
-    await this.listOSINT()
+    await this.displayOSINT()
     if (this.osintList.length < 1) {
       this.loading = false
-      return false
+      return
     }
     this.dataModel = this.osintList[0]
     this.osintList.forEach( async osint => {
@@ -520,44 +521,43 @@ export default {
     this.loading = false
   },
   methods: {
-    async listOSINT() {
-      const res = await this.$axios.get('/osint/list-osint/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
-        return Promise.reject(err)
+    async displayOSINT() {
+      var isSuccess = true
+      const list = await this.listOSINT(this.$store.state.project.project_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        this.clearList()
+        isSuccess = false
       })
-      const osint = res.data.data.osint
-      if ( !osint ) {
-        return false
+      if ( !isSuccess || !list.osint ) {
+        this.osintList = []
+        return
       }
-      this.osintList = osint
+      this.osintList = list.osint
     },
     async listDataSource() {
+      var isSuccess = true
       this.dataModel.detectWords = []
       if ( !this.dataModel.osint_id ) {
         this.clearList()
         return
       }
-      const resOsint = await this.$axios.get(
-        '/osint/get-osint/?project_id=' + this.$store.state.project.project_id +
-        '&osint_id=' + this.dataModel.osint_id
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
+      const resOsint = await this.getOSINT(this.$store.state.project.project_id,this.dataModel.osint_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        isSuccess = false
       })
-      const osint = resOsint.data.data.osint
-      if ( !osint ) {
+      const osint = resOsint.osint
+      if ( !isSuccess || !osint ) {
         this.clearList()
-        return false
+        return
       }
-      const resListDS = await this.$axios.get(
-        '/osint/list-datasource/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
-        return Promise.reject(err)
+      const resListDS = await this.listOSINTDataSource(this.$store.state.project.project_id,this.dataModel.osint_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        isSuccess = false
       })
-      const listDS = resListDS.data.data.osint_data_source
-      if ( !listDS ) {
+      const listDS = resListDS.osint_data_source
+      if ( !isSuccess || !listDS ) {
         this.clearList()
-        return false
+        return
       }
       this.table.total = resListDS.length
       let items = []
@@ -572,19 +572,18 @@ export default {
           description:          ds.description,
           max_score:            ds.max_score,
         }
-        const rel = await this.$axios.get(
-          '/osint/list-rel-datasource/' +
-          '?project_id='+ this.$store.state.project.project_id +
-          '&osint_data_source_id='+ ds.osint_data_source_id +
-          '&osint_id=' + this.dataModel.osint_id).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
+        const rel = await this.listRelOSINTDataSource(this.$store.state.project.project_id,this.dataModel.osint_id,ds.osint_data_source_id).catch((err) =>  {
+          this.finishError(err.response.data)
+          isSuccess = false
         })
-        if ( rel.data.data.rel_osint_data_source && rel.data.data.rel_osint_data_source[0] ) {
-          item.rel_osint_data_source_id = rel.data.data.rel_osint_data_source[0].rel_osint_data_source_id
-          item.status                   = rel.data.data.rel_osint_data_source[0].status
-          item.status_detail            = rel.data.data.rel_osint_data_source[0].status_detail
-          item.scan_at                  = rel.data.data.rel_osint_data_source[0].scan_at
+        if ( !isSuccess) {
+          return
+        }
+        if ( rel.rel_osint_data_source && rel.rel_osint_data_source[0] ) {
+          item.rel_osint_data_source_id = rel.rel_osint_data_source[0].rel_osint_data_source_id
+          item.status                   = rel.rel_osint_data_source[0].status
+          item.status_detail            = rel.rel_osint_data_source[0].status_detail
+          item.scan_at                  = rel.rel_osint_data_source[0].scan_at
         }
         items.push(item)
       })
@@ -596,14 +595,22 @@ export default {
       this.loading = false
     },
     async detachDataSource() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        rel_osint_data_source_id: this.dataModel.rel_osint_data_source_id,
-      }
-      await this.$axios.post('/osint/delete-rel-datasource/', param).catch((err) =>  {
+      var isSuccess = true
+      await this.deleteRelOSINTDataSource(this.$store.state.project.project_id,this.dataModel.rel_osint_data_source_id).catch((err) =>  {
         this.finishError(err.response.data)
-        return Promise.reject(err)
+        isSuccess = false
       })
+      if (!isSuccess) {
+        return
+      }
+      await this.deleteDetectWordByRelOsintDataSourceID(this.$store.state.project.project_id,this.dataModel.rel_osint_data_source_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        isSuccess = false
+      })
+      if (!isSuccess) {
+        return
+      }
+
       this.finishSuccess('Success: Detach Data Source.')
     },
     async attachDataSource() {
@@ -615,68 +622,49 @@ export default {
       if (this.dataModel.scan_at > 0 ) {
         scan_at = this.dataModel.scan_at
       }
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        rel_osint_data_source: {
-          rel_osint_data_source_id: this.dataModel.rel_osint_data_source_id,
-          osint_data_source_id: this.dataModel.osint_data_source_id,
-          osint_id: this.dataModel.osint_id,
-          project_id: this.$store.state.project.project_id,
-          status: 2, // CONFIGURED
-          status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
-          scan_at: scan_at,
-        },
-      }
-      const res = await this.$axios.post('/osint/put-rel-datasource/', param).catch((err) =>  {
+      var isSuccess = true
+      await this.attachRelOSINTDataSource(this.$store.state.project.project_id,
+        this.dataModel.rel_osint_data_source_id,
+        this.dataModel.osint_data_source_id,
+        this.dataModel.osint_id,
+        scan_at,
+        isNew).catch((err) =>  {
         this.finishError(err.response.data)
-        return Promise.reject(err)
+        isSuccess = false
       })
-      const updated = res.data.data.rel_osint_data_source
-      if ( isNew && updated.rel_osint_data_source_id ){
-        this.detectWordDefault.forEach(async word => {
-          await this.putWord(updated.rel_osint_data_source_id, word)
-        })
+      if (!isSuccess) {
+        return
       }
+
       this.finishSuccess('Success: Attach Data Source.')
     },
 
     // Detect Word
     async listWord() {
+      var isSuccess = true
       this.dataModel.detectWords = []
-      const res = await this.$axios.get(
-        '/osint/list-word/?project_id=' + this.$store.state.project.project_id +
-        '&rel_osint_data_source_id=' + this.dataModel.rel_osint_data_source_id
-      ).catch((err) =>  {
-        return Promise.reject(err)
+      const detectWords = await this.listDetectWord(this.$store.state.project.project_id,
+        this.dataModel.rel_osint_data_source_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        isSuccess = false
       })
-      const word = res.data.data.osint_detect_word
-      if ( !word ) {
-        return false
+      const word = detectWords.osint_detect_word
+      if ( !isSuccess || !word ) {
+        return
       }
       this.dataModel.detectWords = word
     },
     async putWord( rel_osint_data_source_id, word ) {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        osint_detect_word: {
-          rel_osint_data_source_id: rel_osint_data_source_id,
-          word: word,
-          project_id: this.$store.state.project.project_id,
-        },
-      }
-      await this.$axios.post('/osint/put-word/', param).catch((err) =>  {
+        await this.putDetectWord(this.$store.state.project.project_id,
+          rel_osint_data_source_id,
+          word).catch((err) =>  {
         this.finishError(err.response.data)
-        return Promise.reject(err)
       })
     },
     async deleteWord( osint_detect_word_id ) {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        osint_detect_word_id: osint_detect_word_id,
-      }
-      await this.$axios.post('/osint/delete-word/', param).catch((err) =>  {
+        await this.deleteDetectWord(this.$store.state.project.project_id,
+          osint_detect_word_id,).catch((err) =>  {
         this.finishError(err.response.data)
-        return Promise.reject(err)
       })
     },
 
@@ -697,6 +685,7 @@ export default {
     handleList() {
       this.loading = true
       this.listDataSource()
+      this.loading = false
     },
     async handleAttachItem(item) {
       this.assignDataModel(item)
@@ -708,6 +697,7 @@ export default {
     handleAttachSubmit() {
       this.loading = true
       this.attachDataSource()
+      this.loading = false
     },
     handleDetachItem(item) {
       this.assignDataModel(item)
@@ -721,6 +711,7 @@ export default {
       }
       this.loading = true
       this.detachDataSource()
+      this.loading = false
     },
     handleNewWord() {
       this.detectWordDialog = true
