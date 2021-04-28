@@ -243,7 +243,10 @@ const en = {
     },
     "gcp": {
       "Register the verification code in the label of your GCP project with the key `risken`.": "Register the verification code in the label of your GCP project with the key `risken`.",
-    }
+    },
+    "osint": {
+      "Activate DataSource": "Activate DataSource",
+    },
   }
 }
 export default en
