@@ -13,7 +13,17 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
-          <v-col cols="12" sm="6" md="6">
+          <v-col cols="4" sm="3" md="3">
+            <v-combobox
+              outlined dense clearable
+              background-color="white"
+              :label="$t(`item['`+searchForm.userID.label+`']`)"
+              :placeholder="searchForm.userID.placeholder"
+              :items="userIDList"
+              v-model="searchModel.userID"
+            />
+          </v-col>
+          <v-col cols="8" sm="4" md="4">
             <v-combobox
               outlined dense clearable
               background-color="white"
@@ -23,7 +33,6 @@
               v-model="searchModel.userName"
             />
           </v-col>
-
           <v-spacer />
           <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
             <v-icon>search</v-icon>
@@ -237,8 +246,12 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: { userName: null },
+      searchModel: { 
+        userID: null,
+        userName: null 
+      },
       searchForm: {
+        userID: { label: 'ID', placeholder: 'Filter for user id' },
         userName: { label: 'Name', placeholder: 'Filter for user name' },
       },
       userForm: {
@@ -246,7 +259,7 @@ export default {
         user_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name', placeholder: 'Please select user...'},
       },
-
+      userIDList: [],
       userNameList: [],
       userModel: { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' },
       table: {
@@ -322,6 +335,7 @@ export default {
     async loadList() {
       this.loading = true
       let items = []
+      let userIDs = []
       let userNames = []
       const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
@@ -343,9 +357,11 @@ export default {
           roles:      roles.data.data.role_id ? roles.data.data.role_id : [],
         }
         items.push(item)
+        userIDs.push(item.user_id)
         userNames.push(item.name)
       })
       this.table.items = items
+      this.userIDList = userIDs
       this.userNameList = userNames
       this.loading = false
     },
@@ -443,6 +459,10 @@ export default {
       if (this.searchModel.userName) {
         searchCond += '&name=' + this.searchModel.userName
       }
+      if (this.searchModel.userID) {
+        searchCond += '&user_id=' + this.searchModel.userID
+      }
+
       this.refleshList(searchCond)
     },
     assignDataModel(item) {

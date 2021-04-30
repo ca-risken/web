@@ -2,18 +2,32 @@
   <v-dialog max-width="50%" v-model="userDialog" @click:outside="handleCancel">
     <v-card>
       <v-card-title>
-          <v-combobox
-            outlined dense clearable
-            :label="searchForm.userName.label"
-            :placeholder="searchForm.userName.placeholder"
-            :items="userNameList"
-            v-model="searchModel.userName"
-            @change="handleSearch"
-          />
+        <v-row justify="center" align="center">
+          <v-col cols="4">
+            <v-text-field
+              outlined dense clearable
+              :label="searchForm.userID.label"
+              :placeholder="searchForm.userID.placeholder"
+              v-model="searchModel.userID"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-combobox
+              outlined dense clearable
+              :label="searchForm.userName.label"
+              :placeholder="searchForm.userName.placeholder"
+              :items="userNameList"
+              v-model="searchModel.userName"
+              @change="handleSearch"
+            />
+          </v-col>
+          <v-col cols="1" offset="1">
+            <v-btn fab small :loading="loading" @click="handleSearch">
+              <v-icon>search</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-spacer />
-        <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
-          <v-icon>search</v-icon>
-        </v-btn>
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pa-0">
@@ -59,8 +73,10 @@ export default {
       loading: false,
       searchModel: {
         userName: null,
+        userID: null,
       },
       searchForm: {
+        userID: { label: 'User ID', placeholder: 'Filter for user id' },
         userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
       userNameList: [],
@@ -136,11 +152,13 @@ export default {
       this.table.items = []
       this.userNameList = []
     },
-
     handleSearch() {
       let searchCond = ''
       if (this.searchModel.userName) {
         searchCond += '&name=' + this.searchModel.userName
+      }
+      if (this.searchModel.userID){
+        searchCond += '&user_id=' + this.searchModel.userID        
       }
       this.refleshList(searchCond)
     },
@@ -149,7 +167,7 @@ export default {
     },
     handleCancel() {
       this.$emit('handleUserDialogResponse', {user_id:'', name:''})
-    }
+    },
   }
 }
 </script>
