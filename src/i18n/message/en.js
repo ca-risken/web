@@ -255,6 +255,9 @@ const en = {
       "Please access to the ": "Please access to the ",
       "No data ...": "No data ...",
     },
+    "osint": {
+      "Activate DataSource": "Activate DataSource",
+    },
   }
 }
 export default en

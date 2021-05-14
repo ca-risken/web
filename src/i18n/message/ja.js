@@ -255,6 +255,9 @@ const ja = {
       "Please access to the ": "次のリンクへアクセスし設定を完了してください。",
       "No data ...": "データがありません",
     },
+    "osint": {
+      "Activate DataSource": "登録時にDataSourceを有効化する",
+    },
   },
 }
 export default ja
