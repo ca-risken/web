@@ -230,6 +230,17 @@
       <v-card>
         <v-toolbar>
           <v-card-title>Finding Detail</v-card-title>
+          <v-spacer />
+          <v-btn
+            text outlined color="info"
+            style="text-transform: none"
+            link
+            :to="getRouterByResource(findingModel.resource_name)"
+            v-if="canDisplayActibityByResource(findingModel.resource_name)"
+          >
+            <v-icon left>mdi-timeline-clock-outline</v-icon>
+            {{ $t(`btn['Check Resource Activity']`) }}
+          </v-btn>
         </v-toolbar>
         <v-container fluid>
           <v-row dense class="mx-2">
@@ -241,7 +252,7 @@
                     Finding ID
                     <clip-board
                       name="Finding ID"
-                      :text="findingModel.finding_id"
+                      :text="String(findingModel.finding_id)"
                     />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
