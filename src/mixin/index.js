@@ -322,7 +322,7 @@ let mixin = {
       return false // others not supported.
     },
     getRouterByResource(resourceName, id) {
-      if (String(resourceName).startsWith('arn:')) return { path: '/aws/actibity', query: { aws_id: id, arn: resourceName }}
+      if (String(resourceName).startsWith('arn:')) return { path: '/aws/activity', query: { aws_id: id, arn: resourceName }}
       return {} // others not supported.
     },
   },
