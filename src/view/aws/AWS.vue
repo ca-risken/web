@@ -208,10 +208,11 @@
 </template>
 <script>
 import mixin from '@/mixin'
+import aws from '@/mixin/api/aws'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin, project],
+  mixins: [mixin, aws, project],
   components: {
     BottomSnackBar,
   },
@@ -272,17 +273,15 @@ export default {
   },
   methods: {
     async refleshList() {
-      const res = await this.$axios.get(
-        '/aws/list-aws/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const aws = await this.listAWSAPI().catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.aws ) {
+      if ( !aws ) {
         this.clearList()
         return false
       }
-      this.table.items = res.data.data.aws
+      this.table.items = aws
       this.loading = false
     },
     clearList() {
@@ -290,26 +289,14 @@ export default {
       this.loading = false
     },
     async deleteItem(awsID) {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          aws_id: awsID,
-      }
-      await this.$axios.post('/aws/delete-aws/', param).catch((err) =>  {
+      await this.deleteAWSAPI(awsID).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
       this.finish('Success: Delete.')
     },
     async putItem() {
-      const param = { 
-        project_id: this.$store.state.project.project_id,
-        aws: {
-          project_id: this.$store.state.project.project_id,
-          name: this.awsModel.name,
-          aws_account_id: this.awsModel.aws_account_id,
-        },
-      }
-      await this.$axios.post('/aws/put-aws/', param).catch((err) =>  {
+      await this.putAWSAPI(this.awsModel.name, this.awsModel.aws_account_id).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })

@@ -1,6 +1,12 @@
 <template>
   <div class="inline-block">
-    <v-icon  class="mx-2" @click="copy" :size="size">mdi-content-copy</v-icon>
+    <v-icon
+      class="mx-2"
+      :size="size"
+      :color="color"
+      @click="copy"
+    >mdi-content-copy
+    </v-icon>
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -14,6 +20,7 @@ export default {
   props: {
     name: String,
     text:  String,
+    color: String,
     size: {
       type: String,
       default: 'lerge',

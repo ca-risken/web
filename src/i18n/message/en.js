@@ -5,6 +5,7 @@ const en = {
     "CANCEL": "CANCEL",
     "EDIT PROJECT": "EDIT PROJECT",
     "CREATE NEW PROJECT": "CREATE NEW PROJECT",
+    "CloudTrail Filter": "CloudTrail Filter",
     "VIEW FINDING": "VIEW FINDING",
     "REGIST": "REGIST",
     "EDIT": "EDIT",
@@ -15,11 +16,14 @@ const en = {
     "NEW WORD": "NEW WORD",
     "TAG": "TAG",
     "SCAN": "SCAN",
+    "Set ARN": "Set ARN",
     "ATTACH": "ATTACH",
     "ATTACH ALL": "ATTACH ALL",
     "DETACH": "DETACH",
+    "LOAD MORE ...": "LOAD MORE ...",
     "CREATE NEW RULE": "CREATE NEW RULE",
     "CREATE NEW NOTIFICATION": "CREATE NEW NOTIFICATION",
+    "Check Resource Activity": "Check Resource Activity",
     "DOWNLOAD REPORT (PROJECT)": "DOWNLOAD REPORT (PROJECT)",
     "DOWNLOAD REPORT (ALL)": "DOWNLOAD REPORT (ALL)",
     "AUTO GENERATE EXTERNAL ID": "AUTO GENERATE EXTERNAL ID",
@@ -51,6 +55,7 @@ const en = {
     "Notification": "Notification", // Alert
     "AWS": "AWS",                       // AWS
     "AWS DataSource": "AWS DataSource", // AWS
+    "AWS Activity": "AWS Activity",     // AWS
     "GCP": "GCP",
     "GCP DataSource": "GCP DataSource",
     "JIRA": "JIRA",     // Diagnosis
@@ -117,6 +122,7 @@ const en = {
     "Policy Name": "Policy Name",
     "Repository": "Repository",
     "RepositoryPattern": "RepositoryPattern",
+    "Region": "Region",
     "Resource Name": "Resource Name",
     "Resource Pattern": "Resource Pattern",
     "Resource": "Resource",
@@ -243,7 +249,12 @@ const en = {
     },
     "gcp": {
       "Register the verification code in the label of your GCP project with the key `risken`.": "Register the verification code in the label of your GCP project with the key `risken`.",
-    }
+    },
+    "aws": {
+      "You must configure the DataSource for `aws:activity`.": "You must configure the DataSource for `aws:activity`.",
+      "Please access to the ": "Please access to the ",
+      "No data ...": "No data ...",
+    },
   }
 }
 export default en
