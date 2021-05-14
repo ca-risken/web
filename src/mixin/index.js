@@ -317,6 +317,14 @@ let mixin = {
       this.resourceNameCombobox = rnList
       this.loading = false
     },
+    canDisplayActibityByResource(resourceName) {
+      if (String(resourceName).startsWith('arn:')) return true
+      return false // others not supported.
+    },
+    getRouterByResource(resourceName, id) {
+      if (String(resourceName).startsWith('arn:')) return { path: '/aws/actibity', query: { aws_id: id, arn: resourceName }}
+      return {} // others not supported.
+    },
   },
 }
 

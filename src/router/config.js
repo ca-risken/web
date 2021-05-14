@@ -201,6 +201,14 @@ export const appRoute = [
             },
             component: () => import('@/view/aws/DataSource.vue')
           },
+          {
+            path: '/aws/activity',
+            name: 'AWS Activity',
+            meta: {
+              title: 'AWS Activity',
+            },
+            component: () => import('@/view/aws/Activity.vue')
+          },
         ]
       },
       {

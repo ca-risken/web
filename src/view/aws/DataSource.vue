@@ -117,7 +117,7 @@
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
-                        v-for="action in table.actions"
+                        v-for="action in getActionList(item.data_source)"
                         :key="action.text"
                         @click="action.click( item )"
                       >
@@ -342,7 +342,7 @@
             <v-card-actions>
               <v-btn 
                 text outlined color="blue darken-1" 
-                v-if="awsForm.readOnly"
+                v-if="awsForm.readOnly && scanSupported(awsModel.data_source)"
                 :loading="loading" 
                 @click="handleScan"
               >
@@ -432,10 +432,11 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
+import aws from '@/mixin/api/aws'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
-  mixins: [mixin],
+  mixins: [mixin, aws],
   components: {
     BottomSnackBar,
     ClipBoard,
@@ -527,13 +528,13 @@ export default {
   },
   methods: {
     async listAWS() {
-      const res = await this.$axios.get('/aws/list-aws/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
+      const aws = await this.listAWSAPI().catch((err) =>  {
         return Promise.reject(err)
       })
-      if ( !res.data.data.aws ) {
+      if ( !aws ) {
         return false
       }
-      this.awsList = res.data.data.aws
+      this.awsList = aws
       this.loading = false
     },
     async refleshList() {
@@ -541,18 +542,16 @@ export default {
         this.clearList()
         return
       }
-      const res = await this.$axios.get(
-        '/aws/list-datasource/?project_id=' + this.$store.state.project.project_id + '&aws_id=' + this.awsModel.aws_id
-      ).catch((err) =>  {
+      const ds = await this.listAWSDataSourceAPI(this.awsModel.aws_id, '').catch((err) =>  {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.data_source ) {
+      if ( !ds ) {
         this.clearList()
         return false
       }
-      this.table.total = res.data.data.data_source.length
-      this.table.items = res.data.data.data_source
+      this.table.total = ds.length
+      this.table.items = ds
     },
     clearList() {
       this.table.total = 0
@@ -575,17 +574,14 @@ export default {
           return '/static/aws/cloudsploit.png'
         case 'aws:portscan':
           return '/static/aws/nmap.png'
+        case 'aws:activity':
+          return '/static/aws/activity.svg'
         default:
           return '/static/aws/default.png'
       }
     },
     async detachDataSource() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        aws_id: this.awsModel.aws_id,
-        aws_data_source_id: this.awsModel.aws_data_source_id
-      }
-      await this.$axios.post('/aws/detach-datasource/', param).catch((err) =>  {
+      await this.detachAWSDataSourceAPI(this.awsModel.aws_id, this.awsModel.aws_data_source_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -622,22 +618,40 @@ export default {
           scan_at: scan_at,
         },
       }
-      await this.$axios.post('/aws/attach-datasource/', param).catch((err) =>  {
+      await this.attachAWSDataSourceAPI(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
     },
     async scanDataSource() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        aws_id: this.awsModel.aws_id,
-        aws_data_source_id: this.awsModel.aws_data_source_id,
+      if (!this.scanSupported(this.awsModel.data_source)) {
+        this.finishError('Unsupported DataSource: data_source='+this.awsModel.data_source)
+        return
       }
-      await this.$axios.post('/aws/invoke-scan/', param).catch((err) =>  {
+      await this.invokeAWSScanAPI(this.awsModel.aws_id, this.awsModel.aws_data_source_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
       this.finishSuccess('Success: Invoke scan for Data Source.')
+    },
+    scanSupported(data_source) {
+      if (data_source === 'aws:activity') {
+        return false
+      }
+      return true
+    },
+
+    getActionList(data_source) {
+      let actions = [
+        { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
+        { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
+        { text: 'Detach DataSource', icon: 'mdi-trash-can-outline', click: this.handleDetachItem },
+        // { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+      ]
+      if (this.scanSupported(data_source)) {
+        actions.push({ text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan })
+      }
+      return actions
     },
 
     // handler method
