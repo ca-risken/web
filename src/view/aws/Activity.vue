@@ -161,7 +161,7 @@
         </v-col>
       </v-row>
 
-      <v-card v-if="customCloudTrailLog"  outlined color="background darken-1" class="pa-1 ma-1">
+      <v-card v-if="customCloudTrailLog"  outlined color="background darken-1" class="pa-1 ma-1" width="90%">
         <v-row dense>
           <v-col cols="3">
             <v-combobox
@@ -172,6 +172,7 @@
               placeholder="-"
               :loading="loading"
               :items="cloudTrailAttrList"
+              @change="handleAttributeKey"
               persistent-hint
             />
           </v-col>
@@ -820,7 +821,12 @@ console.log(config)
     async handleList() {
       this.loading = true
       await this.refleshList()
-      this.finishInfo('Reflesh list')
+      // this.finishInfo('Reflesh list')
+    },
+    handleAttributeKey() {
+      if (this.search.attrKey.toLocaleUpperCase() == 'READ_ONLY') {
+        this.search.attrValue = 'true'
+      }
     },
     async handleSetARN() {
       await this.setARN()

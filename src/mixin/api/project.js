@@ -21,7 +21,10 @@ const project = {
       const res = await this.$axios.post('/project/create-project/', param).catch((err) =>  {
         return Promise.reject(err)
       })
-      return res
+      if ( !res.data.data.project ) {
+        return {}
+      }
+      return res.data.data.project
     },
 
     async updateProjectAPI(name) {
@@ -32,7 +35,10 @@ const project = {
       const res = await this.$axios.post('/project/update-project/', param).catch((err) =>  {
         return Promise.reject(err)
       })
-      return res
+      if ( !res.data.data.project ) {
+        return {}
+      }
+      return res.data.data.project
     },
 
     async tagProjectAPI(tag, color) {
