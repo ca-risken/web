@@ -43,9 +43,10 @@
 import store from '@/store'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
+import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
-  mixins: [mixin, project],
+  mixins: [mixin, project, alert],
   components: {
     BottomSnackBar,
   },
@@ -70,20 +71,40 @@ export default {
         this.loading = false
         return
       }
-      const res = await this.createProjectAPI(this.projectModel.name).catch((err) =>  {
+      const project = await this.createProjectAPI(this.projectModel.name).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         this.loading = false
         return Promise.reject(err)
       })
-      if ( !res.data.data.project ) {
+      if ( !project.project_id ) { 
         this.$refs.snackbar.notifyError('Failed to get new porject.')
       }
-     store.commit('updateProject', res.data.data.project)
+     store.commit('updateProject', project)
       this.$refs.snackbar.notifySuccess( 'Success: Created new project.' )
       setTimeout(() => {
         this.$router.push('/project/setting/')
       }, 1000)
+
+      // Default Alert Setting
+      const rule =await this.putDefaultAlertRule().catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        this.loading = false
+        return Promise.reject(err)
+      })
+console.log(rule)
+      const cond = await this.putDefaultAlertCondition().catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        this.loading = false
+        return Promise.reject(err)
+      })
+console.log(cond)
+      await this.putAlertConditionRule(cond.alert_condition_id, rule.alert_rule_id).catch((err) =>  {
+        this.$refs.snackbar.notifyError(err.response.data)
+        this.loading = false
+        return Promise.reject(err)
+      })
     },
+
     handleCreate() {
       if ( !this.$refs.form.validate() ) {
         return

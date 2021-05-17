@@ -105,6 +105,37 @@ const alert = {
       })
       return res.data.data.alert_condition
     },
+    async putDefaultAlertCondition() {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        alert_condition: {
+          project_id:         this.$store.state.project.project_id,
+          alert_condition_id: '',
+          description:        'RISKEN Alert',
+          severity:           'medium',
+          and_or:             'and',
+          enabled:            true,
+        },
+      }
+      const res = await this.$axios.post('/alert/put-condition/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      return res.data.data.alert_condition
+    },
+    async putAlertConditionRule(alert_condition_id, alert_rule_id){
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        alert_cond_rule: {
+          project_id:         this.$store.state.project.project_id,
+          alert_condition_id: alert_condition_id,
+          alert_rule_id:      alert_rule_id,
+        },
+      }
+      const res = await this.$axios.post('/alert/put-condition_rule/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      return res
+    },
 
     // AlertRule
     async listAlertRule(){
@@ -134,7 +165,27 @@ const alert = {
         return Promise.reject(err)
       })
     },
-
+    async putDefaultAlertRule() {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        alert_rule: {
+          project_id: this.$store.state.project.project_id,
+          alert_rule_id: '',
+          name:          'over0.8',
+          score:         0.8,
+          resource_name: '',
+          tag:           '',
+          finding_cnt:   1,
+        },
+      }
+      const res = await this.$axios.post('/alert/put-rule/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.alert_rule ) {
+        return {}
+      }
+      return res.data.data.alert_rule
+    },
 
     // AlertNotification
     async listAlertNotification(){

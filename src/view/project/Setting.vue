@@ -227,15 +227,15 @@ export default {
       this.projectModel.tag = project[0].tag
     },
     async editProject() {
-      const res = await this.updateProjectAPI(this.projectModel.name).catch((err) =>  {
+      const project = await this.updateProjectAPI(this.projectModel.name).catch((err) =>  {
         this.$refs.snackbar.notifyError(err.response.data)
         this.loading = false
         return Promise.reject(err)
       })
-      if ( !res.data.data.project ) {
+      if ( !project.project_id ) {
         this.$refs.snackbar.notifyError('Failed to get new porject.')
       }
-      store.commit('updateProject', res.data.data.project)
+      store.commit('updateProject', project)
     },
     async tagProject() {
       await this.tagProjectAPI(this.projectTagModel.tag, this.projectTagModel.color.hexa).catch((err) =>  {
