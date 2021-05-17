@@ -130,7 +130,7 @@
             class="pa-2"
             style="text-transform: none"
             :loading="loading"
-            @click="arnDialog = true"
+            @click="handleOpenArnDialog"
           >
             {{ $t(`btn['Set ARN']`) }}
           </v-btn>
@@ -177,7 +177,30 @@
             />
           </v-col>
           <v-col cols="5">
+            <v-combobox
+              v-if="search.attrKey == 'RESOURCE_TYPE'"
+              outlined dense hide-details
+              background-color="white"
+              :loading="loading"
+              label="AttributeValue"
+              placeholder="-"
+              v-model="search.attrValue"
+              :items="types"
+              persistent-hint
+            />
+            <v-combobox
+              v-else-if="search.attrKey == 'READ_ONLY'"
+              outlined dense hide-details
+              background-color="white"
+              :loading="loading"
+              label="AttributeValue"
+              placeholder="-"
+              v-model="search.attrValue"
+              :items="['true', 'false']"
+              persistent-hint
+            />
             <v-text-field
+              v-else
               outlined dense hide-details
               :loading="loading"
               background-color="white"
@@ -291,7 +314,18 @@
           </span>
         </v-card-title>
         <v-card-text>
-          <v-text-field
+          <v-combobox
+            v-model="search.arn"
+            :loading="loading"
+            :counter="255"
+            label="ARN"
+            placeholder="arn:aws:service:region:123456789012:your/resource..."
+            :items="resourceNameCombobox"
+            @keydown="listResourceNameForCombobox"
+            class="hidden-sm-and-down"
+            persistent-hint outlined clearable
+          />
+          <!-- <v-text-field
             outlined clearable dense
             :loading="loading"
             background-color="white"
@@ -300,7 +334,7 @@
             v-model="search.arn"
             hide-details
             class="hidden-sm-and-down"
-          />
+          /> -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -359,11 +393,12 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import aws from '@/mixin/api/aws'
+import finding from '@/mixin/api/finding'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
-  mixins: [mixin, aws, project],
+  mixins: [mixin, aws, project, finding],
   components: {
     BottomSnackBar,
     ClipBoard,
@@ -467,6 +502,7 @@ export default {
     }
   },
   async mounted() {
+    this.listResourceNameForCombobox()
     this.search.readOnly = false
     await this.listAWS()
     if (this.awsList.length < 1) {
@@ -827,6 +863,12 @@ console.log(config)
       if (this.search.attrKey.toLocaleUpperCase() == 'READ_ONLY') {
         this.search.attrValue = 'true'
       }
+    },
+    handleOpenArnDialog() {
+      if (this.search.arn == '') {
+        this.search.arn = 'arn:'
+      }
+      this.arnDialog = true
     },
     async handleSetARN() {
       await this.setARN()
