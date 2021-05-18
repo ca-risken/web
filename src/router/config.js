@@ -68,24 +68,6 @@ export const appRoute = [
         component: () => import('@/view/Home.vue')
       },
       {
-        path: '/project/new',
-        name: 'NewProject',
-        meta: {
-          title: 'Project',
-          hiddenInMenu: true,
-        },
-        component: () => import('@/view/project/New.vue')
-      },
-      {
-        path: '/project/setting',
-        name: 'Project',
-        meta: {
-          title: 'Project',
-          hiddenInMenu: true,
-        },
-        component: () => import('@/view/project/Setting.vue')
-      },
-      {
         path: '/dashboard',
         name: 'Dashboard',
         meta: {
@@ -377,6 +359,34 @@ export const appRoute = [
               title: 'ReportFinding',
             },
             component: () => import('@/view/report/Finding.vue')
+          },
+        ]
+      },
+      {
+        path: '/project/',
+        component: RouteWrapper,
+        redirect: '/project/setting',
+        meta: {
+          title: 'Project',
+          icon: 'mdi-alpha-p-box',
+          group: 'project'
+        },
+        children: [
+          {
+            path: '/project/setting',
+            name: 'ProjectSetting',
+            meta: {
+              title: 'ProjectSetting',
+            },
+            component: () => import('@/view/project/Setting.vue')
+          },    
+          {
+            path: '/project/new',
+            name: 'NewProject',
+            meta: {
+              title: 'NewProject',
+            },
+            component: () => import('@/view/project/New.vue')
           },
         ]
       },

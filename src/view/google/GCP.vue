@@ -26,6 +26,15 @@
           </v-col>
 
           <v-spacer />
+          <v-btn text outlined class="mt-1 mr-4" color="blue darken-1" @click="projectTagDialog = true">
+            {{ $t(`btn['TAG']`) }}
+          </v-btn>
+          <project-tag
+            :tagDialog="projectTagDialog"
+            @projectTagCancel="projectTagDialog = false"
+            @projectTagUpdated="handleProjectTagUpdated"
+          />
+
           <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
@@ -301,11 +310,13 @@ import project from '@/mixin/api/project'
 import google from '@/mixin/api/google'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
   mixins: [mixin, project, google],
   components: {
     BottomSnackBar,
     ClipBoard,
+    ProjectTag,
   },
   data() {
     return {

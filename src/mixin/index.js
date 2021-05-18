@@ -22,6 +22,7 @@ let mixin = {
       wpscan_datasource_id: 1002,
       gitleaks_datasource_id: 1001,
       resourceNameCombobox: [],
+      projectTagDialog: false,
     }
   },
   filters: {
@@ -324,6 +325,10 @@ let mixin = {
     getRouterByResource(resourceName, id) {
       if (String(resourceName).startsWith('arn:')) return { path: '/aws/activity', query: { aws_id: id, arn: resourceName }}
       return {} // others not supported.
+    },
+    handleProjectTagUpdated(message) {
+      this.$refs.snackbar.notifySuccess(message)
+      this.projectTagDialog = false
     },
   },
 }

@@ -26,6 +26,14 @@
           </v-col>
 
           <v-spacer />
+          <v-btn text outlined class="mt-1 mr-4" color="blue darken-1" @click="projectTagDialog = true">
+              {{ $t(`btn['TAG']`) }}
+          </v-btn>
+          <project-tag
+            :tagDialog="projectTagDialog"
+            @projectTagCancel="projectTagDialog = false"
+            @projectTagUpdated="handleProjectTagUpdated"
+          />
           <v-btn class="mt-1 mr-4" color="grey darken-2" dense small icon fab outlined
             :loading="loading"
             @click="handleList"
@@ -263,17 +271,6 @@
                   :filled="jiraForm.readOnly"
                 ></v-text-field>
               </v-col>
-              <!-- <v-col cols="4">
-                <v-text-field 
-                  v-model="jiraModel.jira_id"
-                  :counter="50"
-                  :rules="jiraForm.jira_id.validator"
-                  :label="jiraForm.jira_id.label"
-                  :placeholder="jiraForm.jira_id.placeholder"
-                  :disabled="jiraForm.readOnly"
-                  :filled="jiraForm.readOnly"
-                ></v-text-field>
-              </v-col> -->
               <v-col cols="6">
                 <v-text-field outlined
                   v-model="jiraModel.jira_key"
@@ -361,10 +358,12 @@ import Util from '@/util'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
   mixins: [mixin, project],
   components: {
     BottomSnackBar,
+    ProjectTag,
   },
   data() {
     return {

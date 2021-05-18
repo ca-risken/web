@@ -28,6 +28,7 @@ const en = {
     "DOWNLOAD REPORT (ALL)": "DOWNLOAD REPORT (ALL)",
     "AUTO GENERATE EXTERNAL ID": "AUTO GENERATE EXTERNAL ID",
     "AUTO GENERATE VERIFICATION CODE": "AUTO GENERATE VERIFICATION CODE",
+    "View registerd project tags": "View registerd project tags",
   },
   "menu": {
     "Home": "Home",
@@ -48,7 +49,7 @@ const en = {
     "Dashboard": "Dashboard",
     "Resource": "Resource",  // Finding
     "Finding": "Finding",    // Finding
-    "Setting": "Setting",    // Finding
+    "Setting": "Setting",    // Finding, Project
     "Alert": "Alert",               // Alert
     "Condition": "Condition",       // Alert
     "Rule": "Rule",                 // Alert
@@ -67,6 +68,8 @@ const en = {
     "Role": "Role",     // IAM
     "Policy": "Policy", // IAM
     "ReportFinding": "ReportFinding", // Report
+    "NewProject": "New",         // Project
+    "ProjectSetting": "Setting", // Project
     "Profile": "Profile",
   },
   "item": {
