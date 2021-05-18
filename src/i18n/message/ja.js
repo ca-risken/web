@@ -28,6 +28,7 @@ const ja = {
     "DOWNLOAD REPORT (ALL)": "レポート ダウンロード (全てのプロジェクト)",
     "AUTO GENERATE EXTERNAL ID": "外部IDを自動生成する",
     "AUTO GENERATE VERIFICATION CODE": "検証コードを自動生成する",
+    "View registerd project tags": "登録済みのプロジェクトタグを確認する",
   },
   "menu": {
     "Home": "ホーム",
@@ -67,6 +68,8 @@ const ja = {
     "Role": "ロール",
     "Policy": "ポリシー",
     "ReportFinding": "Findingレポート",
+    "NewProject": "新規プロジェクト",
+    "ProjectSetting": "設定",
     "Profile": "プロフィール",
   },
   "item": {

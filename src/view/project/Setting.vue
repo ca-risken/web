@@ -56,9 +56,14 @@
               </v-chip>
               <v-card-actions>
                 <v-spacer />
-                <v-btn text outlined color="blue darken-1" :loading="loading" @click="handleTag">
+                <v-btn text outlined color="blue darken-1" :loading="loading" @click="projectTagDialog = true">
                   {{ $t(`btn['NEW TAG']`) }}
                 </v-btn>
+                <project-tag
+                  :tagDialog="projectTagDialog"
+                  @projectTagCancel="projectTagDialog = false"
+                  @projectTagUpdated="handleProjectTagUpdated"
+                />
               </v-card-actions>
             </v-card-text>
             <v-divider />
@@ -78,51 +83,6 @@
         </v-col>
       </v-row>
     </v-container>
-
-    <!-- Tag -->
-    <v-dialog v-model="tagDialog" max-width="400px">
-      <v-card>
-        <v-card-title class="headline">
-          <span class="mx-4">{{ $t(`view.project['Project Tag']`) }}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form v-model="projectTagForm.valid" ref="tagForm">
-            <v-text-field
-              v-model="projectTagModel.tag"
-              :label="$t(`item['`+projectTagForm.tag.label+`']`) + ' *'"
-              :placeholder="projectTagForm.tag.placeholder"
-              :counter="64"
-              :rules="projectTagForm.tag.validator"
-              outlined
-            ></v-text-field>
-            <v-color-picker
-              v-model="projectTagModel.color"
-              dot-size="9"
-              hide-sliders
-              mode="hexa"
-              :swatches="projectTagForm.swatches"
-              show-swatches
-              width="500"
-              swatches-max-height="150"
-            ></v-color-picker>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="tagDialog = false">
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="blue darken-1"
-            text outlined
-            :loading="loading"
-            @click="handleTagSubmit"
-          >
-            {{ $t(`btn['TAG']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
@@ -157,10 +117,12 @@ import mixin from '@/mixin'
 import store from '@/store'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
   mixins: [mixin, project],
   components: {
     BottomSnackBar,
+    ProjectTag,
   },
   data() {
     return {
@@ -176,34 +138,6 @@ export default {
             v => !v || v.length <= 64 || 'Name must be less than 64 characters',
           ]
         },
-      },
-      projectTagModel: {project_id:'', tag:'', created_at:'', updated_at:'',
-        color: {
-          types: ['hex', 'hexa', 'rgba', 'hsla', 'hsva'],
-          type: 'hex',
-          hex: '#FF00FF',
-          hexa: '#FF00FFFF',
-          rgba: { r: 255, g: 0, b: 255, a: 1 },
-          hsla: { h: 300, s: 1, l: 0.5, a: 1 },
-          hsva: { h: 300, s: 1, v: 1, a: 1 },
-        },
-      },
-      projectTagForm: {
-        valid: false,
-        tag: { label: 'Tag', placeholder: 'key:value', validator:[
-            v => !!v || 'Tag is required',
-            v => !v || v.length <= 64 || 'Tag must be less than 64 characters',
-          ]
-        },
-        // color: { label: 'Color', placeholder: '#123456', validator:[
-        //     v => !v || v.length <= 32 || 'Color must be less than 32 characters',
-        //   ]
-        // },
-        swatches: [
-          ['#F44336'],['#E91E63'],['#9C27B0'],['#673AB7'],['#3F51B5'],['#2196F3'],
-          ['#03A9F4'],['#00BCD4'],['#009688'],['#4CAF50'],['#8BC34A'],['#CDDC39'],
-          ['#FFEB3B'],['#FFC107'],['#FF9800'],['#FF5722'],['#795548'],['#9E9E9E'],
-        ]
       },
     }
   },
@@ -237,12 +171,6 @@ export default {
       }
       store.commit('updateProject', project)
     },
-    async tagProject() {
-      await this.tagProjectAPI(this.projectTagModel.tag, this.projectTagModel.color.hexa).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err)
-        return Promise.reject(err)
-      })
-    },
     async untagProject() {
       await this.untagProjectAPI(this.projectTagModel.tag).catch((err) =>  {
         this.$refs.snackbar.notifyError(err)
@@ -266,25 +194,7 @@ export default {
       this.$refs.snackbar.notifySuccess( 'Success: updated.' )
       this.loading = false
     },
-    handleTag(tag) {
-      this.projectTagModel = {project_id:this.projectModel.project_id, tag:'', color: '', created_at:'', updated_at:'' }
-      if (tag) {
-        this.projectTagModel = {project_id:this.projectModel.project_id, tag:tag.tag}
-      }
-      this.tagDialog = true
-    },
-    async handleTagSubmit() {
-      if ( !this.$refs.tagForm.validate() ) {
-        return
-      }
-      this.loading = true
-      await this.tagProject()
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      await this.setProject()
-      this.$refs.snackbar.notifySuccess( 'Success: Tag project.' )
-      this.loading = false
-      this.tagDialog = false
-    },
+
     async handleDeleteTag(tag) {
       this.loading = true
       this.projectTagModel = {
@@ -296,6 +206,13 @@ export default {
       await this.setProject()
       this.$refs.snackbar.notifySuccess( 'Success: Untag project.' )
       this.loading = false
+    },
+
+    // Updated method
+    async handleProjectTagUpdated(message) {
+      await this.setProject()
+      this.$refs.snackbar.notifySuccess(message)
+      this.projectTagDialog = false
     },
     handleDelete() {
       this.deleteDialog  = true
