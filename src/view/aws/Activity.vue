@@ -161,7 +161,7 @@
         </v-col>
       </v-row>
 
-      <v-card v-if="customCloudTrailLog"  outlined color="background darken-1" class="pa-1 ma-1" width="90%">
+      <v-card v-if="customCloudTrailLog"  outlined color="background darken-1" class="pa-1 ma-1 mr-10">
         <v-row dense>
           <v-col cols="3">
             <v-combobox
@@ -176,7 +176,7 @@
               persistent-hint
             />
           </v-col>
-          <v-col cols="5">
+          <v-col cols="4">
             <v-combobox
               v-if="search.attrKey == 'RESOURCE_TYPE'"
               outlined dense hide-details
@@ -207,6 +207,17 @@
               label="AttributeValue"
               placeholder="-"
               v-model="search.attrValue"
+              class="hidden-sm-and-down"
+            />
+          </v-col>
+          <v-col cols="4">
+            <v-text-field
+              outlined dense hide-details
+              :loading="loading"
+              background-color="white"
+              label="TextFilter"
+              placeholder="-"
+              v-model="search.cloudTrailFilter"
               class="hidden-sm-and-down"
             />
           </v-col>
@@ -325,16 +336,6 @@
             class="hidden-sm-and-down"
             persistent-hint outlined clearable
           />
-          <!-- <v-text-field
-            outlined clearable dense
-            :loading="loading"
-            background-color="white"
-            label="ARN"
-            placeholder="arn:aws:service:region:123456789012:your/resource..."
-            v-model="search.arn"
-            hide-details
-            class="hidden-sm-and-down"
-          /> -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -395,10 +396,11 @@ import mixin from '@/mixin'
 import aws from '@/mixin/api/aws'
 import finding from '@/mixin/api/finding'
 import project from '@/mixin/api/project'
+import iplocation from '@/mixin/api/iplocation'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
-  mixins: [mixin, aws, project, finding],
+  mixins: [mixin, aws, project, finding, iplocation],
   components: {
     BottomSnackBar,
     ClipBoard,
@@ -420,6 +422,7 @@ export default {
         to: '',
         attrKey: '' ,
         attrValue: '',
+        cloudTrailFilter: '',
       },
       awsList: [],
       cloudTrailAttrList: [
@@ -568,7 +571,6 @@ export default {
         this.noDataSource = true
         return
       }
-
       await this.listCloudTrail('')
       if (!this.search.type || !this.search.resource) {
         await this.sortList()
@@ -596,13 +598,18 @@ export default {
       if (!trail || !trail.cloudtrail) {
         return
       }
+console.log(trail)
       if (trail.next_token && trail.next_token != '') {
         this.cloudtrail.next_token = trail.next_token
         this.more = true
       }
-      trail.cloudtrail.forEach( async t => {
-        this.cloudtrail.list.push(this.parseTrailLog(t))
-      })
+      let putLogFuncs = []
+      for ( const log of trail.cloudtrail) {
+        if (this.filterLog(log)) {
+          putLogFuncs.push(this.parseAndPutTrailLog(log))
+        }
+      }
+      await Promise.all(putLogFuncs) // Parallel API call
     },
     convertAttrKey(key){
       if (Util.isEmptyString(key)) return 0
@@ -625,6 +632,11 @@ export default {
           return 0
       }
     },
+    filterLog(log) {
+      if (Util.isEmptyString(this.search.cloudTrailFilter)) return true
+      const raw = log.cloudtrail_event.replace('\\', '')
+      return raw.toLowerCase().includes(this.search.cloudTrailFilter.toLowerCase())
+    },
 
     // AWS Config API request
     async listConfig(nextToken) {
@@ -645,9 +657,11 @@ console.log(config)
         this.config.next_token = config.next_token
         this.more = true
       }
-      config.configuration.forEach( async c => {
-        this.config.list.push(this.parseConfigLog(c))
-      })
+      let putLogFuncs = []
+      for ( const log of config.configuration) {
+        putLogFuncs.push(this.parseAndPutConfigLog(log))
+      }
+      await Promise.all(putLogFuncs) // Parallel API call
     },
 
     async sortList() {
@@ -676,7 +690,7 @@ console.log(config)
       return false
     },
 
-    parseTrailLog(log) {
+    async parseAndPutTrailLog(log) {
       const parsed = JSON.parse(log.cloudtrail_event)
       const title = log.event_name
       const tag = log.read_only === 'true' ? 'Read' : 'Write'
@@ -686,7 +700,16 @@ console.log(config)
         color = 'error'
         contents = {ID: log.event_id, event_source: log.event_source, username: log.username, error_code: parsed.errorCode, error_message: parsed.errorMessage}
       }
-      return {
+      if (parsed.sourceIPAddress) {
+        contents.location = parsed.sourceIPAddress
+        const res = await this.getIPlocation(parsed.sourceIPAddress).catch((err) =>  {
+          console.log(err)
+        })
+        if (res != {} && res.country_name ) {
+          contents.location = parsed.sourceIPAddress + ' (' + res.country_name + ')'
+        }
+      }
+      this.cloudtrail.list.push({
         type: 'cloudtrail',
         color: color,
         tag: tag,
@@ -695,9 +718,9 @@ console.log(config)
         contents: contents,
         data: log.cloudtrail_event,
         display: false,
-      }
+      })
     },
-    parseConfigLog(log){
+    parseAndPutConfigLog(log){
       if (log.configuration) {
         const parsed = JSON.parse(log.configuration)
         log.configuration = parsed
@@ -725,7 +748,7 @@ console.log(config)
           tag += 'Unknown'
           color = 'grey' // Unknown status
       }
-      return {
+      this.config.list.push({
         type: 'config',
         color: color,
         tag: tag,
@@ -734,7 +757,7 @@ console.log(config)
         contents: {state_id: log.configuration_state_id, aws_account:log.account_id, region: log.aws_region, resource: log.resource_id},
         data: log,
         display: false,
-      }
+      })
     },
 
     async setARN() {
