@@ -233,6 +233,7 @@ const en = {
       "The specific channel setting is ": "The specific channel setting is ",
       "deprecated": "deprecated",
       "... It is recommended to use the default channels.": "... It is recommended to use the default channels.",
+      "The next notification will be after": "The next notification will be after",
     },
     "report": {
       "Download Finding Report": "Download Finding Report",

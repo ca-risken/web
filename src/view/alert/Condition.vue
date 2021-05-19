@@ -143,7 +143,7 @@
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-row>
-              <v-col cols="8">
+              <v-col cols="10">
                 <v-text-field
                   v-model="dataModel.description"
                   :counter="200"
@@ -153,9 +153,11 @@
                   outlined required
                 ></v-text-field>
               </v-col>
+            </v-row>
+            <v-row>
               <v-col cols="4">
                 <v-combobox
-                  outlined required clearable
+                  outlined required
                   v-model="dataModel.severity"
                   :rules="form.severity.validator"
                   :label="$t(`item['`+form.severity.label+`']`) + ' *'"
@@ -163,11 +165,9 @@
                   :items="form.severity.list"
                 />
               </v-col>
-            </v-row>
-            <v-row>
               <v-col cols="4">
                 <v-combobox
-                  outlined required clearable
+                  outlined required
                   v-model="dataModel.and_or"
                   :rules="form.and_or.validator"
                   :label="$t(`item['`+form.and_or.label+`']`) + ' *'"
@@ -175,17 +175,7 @@
                   :items="form.and_or.list"
                 />
               </v-col>
-              <v-col cols="4">
-                <v-combobox
-                  outlined required clearable
-                  v-model="dataModel.noti_cache"
-                  :rules="form.noti_cache.validator"
-                  :label="$t(`item['`+form.noti_cache.label+`']`) + ' *'"
-                  :placeholder="form.noti_cache.placeholder"
-                  :items="form.noti_cache.list"
-                />
-              </v-col>
-              <v-col cols="4">
+              <v-col cols="3">
                 <v-checkbox
                   required
                   v-model="dataModel.enabled"
@@ -287,6 +277,32 @@
         </v-card-title>
         <v-card-text>
           <!-- Notification List -->
+          <v-container class="pb-0 mb-0">
+            <v-row >
+              <v-col cols="4">
+                <v-combobox
+                  outlined required dense
+                  v-model="dataModel.noti_cache"
+                  :rules="form.noti_cache.validator"
+                  :label="$t(`item['`+form.noti_cache.label+`']`) + ' *'"
+                  :placeholder="form.noti_cache.placeholder"
+                  :items="form.noti_cache.list"
+                />
+              </v-col>
+              <v-col cols="8">
+                <v-alert
+                  dense
+                  border="left"
+                  colored-border
+                  type="info"
+                  elevation="2"
+                  v-if="Number(dataModel.next_noti_time) > Number(nowUnix)"
+                >
+                  {{ $t(`view.alert['The next notification will be after']`) }} <strong>{{ dataModel.next_noti_time | formatTime }}</strong> .
+                </v-alert>
+              </v-col>
+            </v-row>
+          </v-container>
           <v-toolbar flat color="white">
             <v-text-field text solo flat
               prepend-icon="mdi-magnify"
@@ -381,6 +397,7 @@
   </div>
 </template>
 <script>
+import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
@@ -424,12 +441,14 @@ export default {
         },
         enabled: { label: 'Enabled', placeholder: 'true'},
       },
+      nowUnix: Math.floor( new Date().getTime() / 1000 ),
       dataModel: {
         alert_condition_id:0,
         description:'', 
         severity:'', 
         and_or:'and',
         noti_cache: '1 hour',
+        next_noti_time: -1,
         enabled:false,
         rules: [],
         notifications: [],
@@ -534,19 +553,27 @@ export default {
           return Promise.reject(err)
         })
         let noti_cache = ''
-        if ( notis[0] ) {
+        if ( notis[0] && notis[0].cache_second ) {
           noti_cache = this.getNotiCacheText(notis[0].cache_second)
+        }
+        if (noti_cache == '') {
+          noti_cache = '1 hour'
+        }
+        let next_noti_time = -1
+        if ( notis[0] && Util.isNumber(notis[0].cache_second) && Util.isNumber(notis[0].notified_at)) {
+          next_noti_time = Number(notis[0].notified_at) + Number(notis[0].cache_second)
         }
         const item = {
           alert_condition_id: cond.alert_condition_id,
-          description: cond.description, 
-          severity: cond.severity, 
-          and_or: cond.and_or,
-          noti_cache: noti_cache,
-          enabled: cond.enabled,
-          rules: rules.map(item => item.alert_rule_id),
-          notifications: notis.map(item => item.notification_id),
-          updated_at: cond.updated_at,
+          description:        cond.description, 
+          severity:           cond.severity, 
+          and_or:             cond.and_or,
+          noti_cache:         noti_cache,
+          next_noti_time:     next_noti_time,
+          enabled:            cond.enabled,
+          rules:              rules.map(item => item.alert_rule_id),
+          notifications:      notis.map(item => item.notification_id),
+          updated_at:         cond.updated_at,
         }
         this.table.items.push(item)
       })

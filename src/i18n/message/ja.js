@@ -233,6 +233,7 @@ const ja = {
       "The specific channel setting is ": "特定チャンネル通知への設定は",
       "deprecated": "現在、非推奨となっています...  ",
       "... It is recommended to use the default channels.": "特別な理由がない場合はデフォルトチャンネルをご利用ください.",
+      "The next notification will be after": "次の日時まで通知はOFFになります: ",
     },
     "report": {
       "Download Finding Report": "レポートのダウンロード",
