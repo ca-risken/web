@@ -118,6 +118,10 @@ const isEmptyString = (str) => {
   return (!str || str.length === 0 || /^\s*$/.test(str) || str === 'null' )
 }
 
+const isNumber = (value) => {
+  return !isNaN(value)
+}
+
 export default {
   randomElement,
   toggleFullScreen,
@@ -129,4 +133,5 @@ export default {
   generateExternalID,
   generateVerificationCode,
   isEmptyString,
+  isNumber,
 }
