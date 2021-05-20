@@ -193,7 +193,7 @@ export default {
 
         settingStep: 5,     // [Total 5 setting steps]
         invitedUser: [],    // 1. User invited, 
-        storeFinding: [],   // 2, Setting DataSources ( = Store some Findings),
+        storeFinding: 0,    // 2, Setting DataSources ( = Store some Findings),
         alertCondition: [], // 3. Setting Alert Condition,
         alertRule: [],      // 4. Setting Alert Rule,
         notification: [],   // 5. Setting Alert Notification
@@ -287,12 +287,12 @@ export default {
     async setHighScoreFinding() {
       // await this.getFindingReport(this.oneMonthAgoDate, this.nowDate, 0.79)
       const [all, aws, diagnosis, osint, code, google ] = await Promise.all([
-         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, ''),
-         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:'),
-         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:'),
-         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:'),
-         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:'),
-         this.getFindings(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'google:'),
+         this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, ''),
+         this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:'),
+         this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'diagnosis:'),
+         this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:'),
+         this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:'),
+         this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'google:'),
       ])
       this.raw.highScoreFinding          = all
       this.raw.highScoreFindingAWS       = aws
@@ -302,27 +302,18 @@ export default {
       this.raw.highScoreFindingGoogle    = google
     },
     async setStoreFinding() {
-      const storeFindings= await this.getFindings(0, this.nowUnix, 0, '')
+      const storeFindings= await this.getFindingCount(0, this.nowUnix, 0, '')
       this.raw.storeFinding = storeFindings
-      if (storeFindings && storeFindings.length){
-        this.status.tutorial.storeFindings = storeFindings.length
-      }
+      this.status.tutorial.storeFindings = storeFindings
     },
-    async getFindings(fromAt, toAt, fromScore, dataSource) {
+    async getFindingCount(fromAt, toAt, fromScore, dataSource) {
       const searceCondition = '&from_at=' + fromAt
           + '&to_at=' + toAt
           + '&from_score=' + fromScore
           + '&data_source=' + dataSource
           + '&status=1&offset=0&limit=200'
-      const res = await this.listFinding(searceCondition)
-      return res.finding_id
-    },
-    getFindingCountText(findings) {
-      if ( !findings || !findings.length ) return '0'
-      if ( findings.length > 100 ) {
-        return findings.length.toString() + ' +'
-      }
-      return findings.length.toString()
+      const count = await this.listFindingCnt(searceCondition)
+      return count
     },
 
     // User
@@ -383,7 +374,7 @@ export default {
         link: '/alert/alert/',
       })
       this.status.riskFactor.push({
-        title: this.getFindingCountText(this.status.finding),
+        title: String(this.status.finding),
         subTitle: 'High score findings ',
         icon: 'mdi-file-find-outline',
         color: 'blue darken-1',
@@ -403,7 +394,7 @@ export default {
       if (this.raw.invitedUser && this.raw.invitedUser.length > 0) {
         completed++
       }
-      if (this.raw.storeFinding && this.raw.storeFinding.length > 0) {
+      if (this.raw.storeFinding > 0) {
         completed++
       }
       if (this.raw.alertCondition && this.raw.alertCondition.length > 0) {
@@ -430,7 +421,7 @@ export default {
       }
       this.status.risk.detail = 
         '  Active alerts: ' + this.status.alert.length +
-        ', High score findings: ' + this.getFindingCountText(this.status.finding) +
+        ', High score findings: ' + this.status.finding +
         ', Imcompleted settings: ' + this.status.imcompSetting + ' / ' + this.raw.settingStep
       if ( this.status.imcompSetting === this.raw.settingStep ) {
         this.status.risk.icon = 'mdi-message-settings'
@@ -469,7 +460,7 @@ export default {
       })
       this.category.push({
         category: 'AWS',
-        title: this.getFindingCountText(this.raw.highScoreFindingAWS),
+        title: String(this.raw.highScoreFindingAWS),
         subTitle: 'High score findings',
         icon: 'mdi-aws',
         color: 'orange darken-1',
@@ -478,7 +469,7 @@ export default {
       })
       this.category.push({
         category: 'Diagnosis',
-        title: this.getFindingCountText(this.raw.highScoreFindingDiagnosis),
+        title: String(this.raw.highScoreFindingDiagnosis),
         subTitle: 'High score findings',
         icon: 'mdi-bug-check-outline',
         color: 'indigo darken-1',
@@ -487,7 +478,7 @@ export default {
       })
       this.category.push({
         category: 'OSINT',
-        title: this.getFindingCountText(this.raw.highScoreFindingOsint),
+        title: String(this.raw.highScoreFindingOsint),
         subTitle: 'High score findings',
         icon: 'http',
         color: 'green darken-1',
@@ -496,7 +487,7 @@ export default {
       })
       this.category.push({
         category: 'Code',
-        title: this.getFindingCountText(this.raw.highScoreFindingCode),
+        title: String(this.raw.highScoreFindingCode),
         subTitle: 'High score findings',
         icon: 'mdi-github',
         color: 'black',
@@ -505,7 +496,7 @@ export default {
       })
       this.category.push({
         category: 'Google',
-        title: this.getFindingCountText(this.raw.highScoreFindingGoogle),
+        title: String(this.raw.highScoreFindingGoogle),
         subTitle: 'High score findings',
         icon: 'mdi-google',
         color: 'light-blue darken-1',
@@ -540,10 +531,9 @@ export default {
     async setFindingChartByDayNumber(from, to){
       const fromUnix = Math.floor(from / 1000)
       const toUnix = Math.floor(to / 1000)
-      let finding = await this.getFindings(fromUnix, toUnix-1, 0, '')
-      if (!finding) finding = []
+      const findingCount = await this.getFindingCount(fromUnix, toUnix-1, 0, '')
       this.chart.finding.data.labels.push(from)
-      this.chart.finding.data.datasets[0].data.push(finding.length.toString())
+      this.chart.finding.data.datasets[0].data.push(findingCount)
     },
     // getDateLabel(dt) {
     //   return dt.getMonth()+1 + '/' + dt.getDate() // `getMonth()` will return 0~11, because need +1 month for display label

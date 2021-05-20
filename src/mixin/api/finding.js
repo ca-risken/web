@@ -14,6 +14,16 @@ const finding = {
       }
       return res.data.data
     },
+    async listFindingCnt(searchCond){
+      const res = await this.$axios.get(
+        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.total ) {
+        return 0
+      }
+      return res.data.data.total
+    },
     async listFindingByResouceName(resource_name){
       const res = await this.$axios.get(
         '/finding/list-finding/?project_id=' + this.$store.state.project.project_id +
