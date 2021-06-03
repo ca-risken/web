@@ -1,4 +1,5 @@
 import Util from '@/util'
+import store from "@/store"
 const maskedPattern = /\*.*$/
 let mixin = {
   data: () => {
@@ -27,7 +28,7 @@ let mixin = {
   },
   filters: {
     formatTime: (unix) => {
-      if (unix === '0' ) {
+      if (unix === '0') {
         return '-'
       }
       return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
@@ -46,8 +47,20 @@ let mixin = {
     },
   },
   methods: {
+    async signinUser() {
+      await store.commit("storeUser", {})
+      const userID = await this.signin().catch((err) => {
+        return Promise.reject(err)
+      })
+      const user = await this.$axios
+        .get("/iam/get-user?user_id=" + userID)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      await store.commit("storeUser", user.data.data.user)
+    },
     async signin() {
-      const res = await this.$axios.get('/signin/').catch((err) =>  {
+      const res = await this.$axios.get('/signin/').catch((err) => {
         return Promise.reject(err)
       })
       if (!res.data.user_id) {
@@ -55,40 +68,40 @@ let mixin = {
       }
       return res.data.user_id
     },
-    reload: function() {
-      this.$router.go({path: this.$router.currentRoute.path, force: true})
+    reload: function () {
+      this.$router.go({ path: this.$router.currentRoute.path, force: true })
     },
     getColorByCount(cnt) {
-      if ( cnt == 0 ) {
+      if (cnt == 0) {
         return 'grey lighten-1'
-      } else if ( cnt <= 10 ) {
+      } else if (cnt <= 10) {
         return 'teal lighten-2'
-      } else if ( cnt <= 30 ) {
+      } else if (cnt <= 30) {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
       }
     },
     getColorByScore: (score) => {
-      if ( score < 0.6 ) {
+      if (score < 0.6) {
         return 'teal lighten-2'
-      } else if ( score < 0.8 ) {
+      } else if (score < 0.8) {
         return 'yellow darken-3'
       } else {
         return 'red darken-2'
       }
     },
     getColorRGBByScore: (score) => {
-      if ( score < 0.6 ) {
+      if (score < 0.6) {
         return '#4DB6AC'
-      } else if ( score < 0.8 ) {
+      } else if (score < 0.8) {
         return '#F9A825'
       } else {
         return '#D32F2F'
       }
     },
     getColorByFindingStatus(status) {
-      if (typeof status !== 'string' || status ===  '') return 'grey'
+      if (typeof status !== 'string' || status === '') return 'grey'
       switch (status.toLocaleUpperCase()) {
         case 'ACTIVE':
           return 'success'
@@ -99,7 +112,7 @@ let mixin = {
       }
     },
     getSeverityColor: (severity) => {
-      if (typeof severity !== 'string' || severity ===  '') return ''
+      if (typeof severity !== 'string' || severity === '') return ''
       switch (severity.toLowerCase()) {
         case 'high':
           return 'red darken-2'
@@ -110,7 +123,7 @@ let mixin = {
       }
     },
     getHistoryTypeColor: (type) => {
-      if (typeof type !== 'string' || type ===  '') return ''
+      if (typeof type !== 'string' || type === '') return ''
       switch (type.toLowerCase()) {
         case 'created':
           return 'teal lighten-2'
@@ -123,7 +136,7 @@ let mixin = {
       }
     },
     getDataSourceIcon: (dataSource) => {
-      if ( typeof dataSource !== 'string' || !dataSource.split(':')[0] ) { return 'mdi-help-circle-outline' }
+      if (typeof dataSource !== 'string' || !dataSource.split(':')[0]) { return 'mdi-help-circle-outline' }
       switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'mdi-aws'
@@ -135,12 +148,12 @@ let mixin = {
           return 'mdi-github'
         case 'google':
           return 'mdi-google-cloud'
-          default:
+        default:
           return 'mdi-help-circle-outline'
       }
     },
     getDataSourceIconColor: (dataSource) => {
-      if ( typeof dataSource !== 'string' || !dataSource.split(':')[0] ) { return '' }
+      if (typeof dataSource !== 'string' || !dataSource.split(':')[0]) { return '' }
       switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'orange'
@@ -171,7 +184,7 @@ let mixin = {
       }
     },
     isInProgressDataSourceStatus: (status) => {
-      if ( Number(status) === 3) return true
+      if (Number(status) === 3) return true
       return false
     },
     getDataSourceStatusColor: (status) => {
@@ -203,7 +216,7 @@ let mixin = {
       }
     },
     getFindingStatus: (statusText) => {
-      if (typeof statusText !== 'string' || statusText ===  '') return 0
+      if (typeof statusText !== 'string' || statusText === '') return 0
       switch (statusText.toUpperCase()) {
         case 'ALL':
           return 0
@@ -228,7 +241,7 @@ let mixin = {
       }
     },
     getFindingSettingStatus: (statusText) => {
-      if (typeof statusText !== 'string' || statusText ===  '') return 0
+      if (typeof statusText !== 'string' || statusText === '') return 0
       switch (statusText.toUpperCase()) {
         case 'ACTIVE':
           return 1
@@ -249,7 +262,7 @@ let mixin = {
       }
     },
     getAlertStatus: (statusText) => {
-      if (typeof statusText !== 'string' || statusText ===  '') return 0
+      if (typeof statusText !== 'string' || statusText === '') return 0
       switch (statusText.toUpperCase()) {
         case 'ACTIVE':
           return 1
@@ -274,25 +287,25 @@ let mixin = {
       }
     },
     cutLongText: (str, cutNum) => {
-      if (typeof str !== 'string' ) return '' 
-      if (str.length < cutNum || cutNum < 1 ) {
+      if (typeof str !== 'string') return ''
+      if (str.length < cutNum || cutNum < 1) {
         return str
       }
       return str.substr(0, cutNum) + ' ...'
     },
     getShortName: (longName) => {
       // colon
-      if ( !longName.split(':').slice(-1)[0] ) { return longName }
+      if (!longName.split(':').slice(-1)[0]) { return longName }
       const endOfColon = longName.split(':').slice(-1)[0]
 
       // slash
-      if ( !endOfColon.split('/') ) { return endOfColon }
+      if (!endOfColon.split('/')) { return endOfColon }
       const slashSplited = endOfColon.split('/')
 
-      if ( slashSplited.length < 2 ) {
-        return slashSplited[slashSplited.length -1]
+      if (slashSplited.length < 2) {
+        return slashSplited[slashSplited.length - 1]
       }
-      return slashSplited[slashSplited.length -2] + '/' + slashSplited[slashSplited.length -1]
+      return slashSplited[slashSplited.length - 2] + '/' + slashSplited[slashSplited.length - 1]
     },
     async listResourceNameForCombobox(event) {
       let input = ''
@@ -305,10 +318,10 @@ let mixin = {
       // console.log(input)
       this.loading = true
       const list = await this.listResourceID('&resource_name=' + input + '&offset=0&limit=10&sort=resource_name&direction=asc')
-      if ( !list.resource_id || list.resource_id.length == 0 ) {
+      if (!list.resource_id || list.resource_id.length == 0) {
         this.resourceNameCombobox = []
         this.loading = false
-        return 
+        return
       }
       let rnList = []
       list.resource_id.forEach(async id => {
@@ -323,7 +336,7 @@ let mixin = {
       return false // others not supported.
     },
     getRouterByResource(resourceName, id) {
-      if (String(resourceName).startsWith('arn:')) return { path: '/aws/activity', query: { aws_id: id, arn: resourceName }}
+      if (String(resourceName).startsWith('arn:')) return { path: '/aws/activity', query: { aws_id: id, arn: resourceName } }
       return {} // others not supported.
     },
     handleProjectTagUpdated(message) {
@@ -333,4 +346,4 @@ let mixin = {
   },
 }
 
-export default mixin 
+export default mixin

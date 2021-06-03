@@ -11,7 +11,8 @@
         <template v-slot:activator="{ on }">
           <!-- Project -->
           <v-btn
-            text dark
+            text
+            dark
             slot="activator"
             v-on="on"
             class="pa-0 ml-4"
@@ -23,9 +24,11 @@
                 <v-avatar tile size="42">
                   <v-icon x-large>mdi-alpha-p-box</v-icon>
                 </v-avatar>
-                <v-layout align-center justify-center
+                <v-layout
+                  align-center
+                  justify-center
                   class="text-h5 ml-4 font-weight-black"
-                  style="text-decoration: underline;"
+                  style="text-decoration: underline"
                 >
                   {{ projectName }}
                 </v-layout>
@@ -85,7 +88,7 @@
             rel="noopener"
             :key="index"
           >
-            <v-list-item-action v-if="item.icon"  class="mr-4">
+            <v-list-item-action v-if="item.icon" class="mr-4">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
             <v-list-item-content>
@@ -105,12 +108,18 @@
     </v-toolbar>
 
     <!-- Project dialog -->
-    <v-dialog max-width="64%" v-model="projectDialog" @click:outside="projectDialog = false">
+    <v-dialog
+      max-width="64%"
+      v-model="projectDialog"
+      @click:outside="projectDialog = false"
+    >
       <v-card>
         <v-card-title>
           <span class="mx-2"> Project </span>
           <v-text-field
-            outlined clearable dense
+            outlined
+            clearable
+            dense
             prepend-icon="mdi-magnify"
             placeholder="Type something..."
             v-model="projectTable.search"
@@ -141,7 +150,8 @@
                 :key="t.tag"
                 :color="t.color"
                 class="ma-1"
-                dark link
+                dark
+                link
               >
                 {{ t.tag }}
               </v-chip>
@@ -149,18 +159,36 @@
           </v-data-table>
         </v-card-text>
         <v-card-actions>
-          <v-btn 
-            text outlined color="blue darken-1"
+          <v-btn
+            text
+            outlined
+            color="blue darken-1"
             v-if="currentProjectID"
-            @click="$router.push('/project/setting/'); projectDialog = false"
+            @click="
+              $router.push('/project/setting/')
+              projectDialog = false
+            "
           >
             {{ $t(`btn['EDIT PROJECT']`) }}
           </v-btn>
           <v-spacer />
-          <v-btn text outlined color="grey darken-1" @click="projectDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="projectDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
-          <v-btn text outlined color="green darken-1" @click="$router.push('/project/new/'); projectDialog = false">
+          <v-btn
+            text
+            outlined
+            color="green darken-1"
+            @click="
+              $router.push('/project/new/')
+              projectDialog = false
+            "
+          >
             {{ $t(`btn['CREATE NEW PROJECT']`) }}
           </v-btn>
         </v-card-actions>
@@ -170,13 +198,13 @@
   </v-app-bar>
 </template>
 <script>
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import Util from '@/util'
-import store from '@/store'
-import mixin from '@/mixin'
-import project from '@/mixin/api/project'
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import Util from "@/util"
+import store from "@/store"
+import mixin from "@/mixin"
+import project from "@/mixin/api/project"
 export default {
-  name: 'AppToolbar',
+  name: "AppToolbar",
   components: {
     // ProjectList,
     BottomSnackBar,
@@ -185,10 +213,10 @@ export default {
   data() {
     return {
       loading: false,
-      projectDialog:false,
+      projectDialog: false,
       projectTable: {
-        search: '',
-        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
+        search: "",
+        options: { page: 1, itemsPerPage: 10, sortBy: ["project_id"] },
         footer: {
           itemsPerPageOptions: [10],
           showCurrentPage: true,
@@ -196,40 +224,58 @@ export default {
         },
         item: [],
       },
-      currentProjectID: '',
+      currentProjectID: "",
       availableLanguages: [
-        {text: "English", value : "en"},
-        {text: "日本語",   value : "ja"},
+        { text: "English", value: "en" },
+        { text: "日本語", value: "ja" },
       ],
 
       myMenus: [
         {
-          icon: 'mdi-account-circle',
-          href: '#',
-          title: 'Account',
+          icon: "mdi-account-circle",
+          href: "#",
+          title: "Account",
           click: this.handleAccountSetting,
         },
         {
-          icon: 'mdi-alpha-p-box',
-          href: '#',
-          title: 'My Project',
+          icon: "mdi-alpha-p-box",
+          href: "#",
+          title: "My Project",
           click: this.handleProjectSetting,
         },
         {
-          icon: 'mdi-logout',
-          href: '#',
-          title: 'Signout',
+          icon: "mdi-logout",
+          href: "#",
+          title: "Signout",
           click: this.handleLogut,
         },
-      ]
+      ],
     }
   },
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item["ID"]'),   align: 'start',  width: '5%',  sortable: true, value: 'project_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start',  width: '25%', sortable: true, value: 'name' },
-        { text: this.$i18n.t('item["Tag"]'),  align: 'start', width: '70%',  sortable: true, value: 'tag' },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          width: "5%",
+          sortable: true,
+          value: "project_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          width: "25%",
+          sortable: true,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["Tag"]'),
+          align: "start",
+          width: "70%",
+          sortable: true,
+          value: "tag",
+        },
       ]
     },
     toolbarColor() {
@@ -246,7 +292,7 @@ export default {
           text: route.meta.title,
           to: to,
           exact: true,
-          disabled: false
+          disabled: false,
         }
       })
     },
@@ -260,38 +306,48 @@ export default {
     if (userLocale.lang && userLocale.text) {
       this.handleChangeLocale({
         value: userLocale.lang,
-        text:  userLocale.text
+        text: userLocale.text,
       })
       return
     }
     const browserLocale = Util.getNavigatorLanguage()
     this.handleChangeLocale({
       value: browserLocale,
-      text:  this.getLocaleText(browserLocale)
+      text: this.getLocaleText(browserLocale),
     })
   },
   methods: {
-    customFilter (value, search) {
-      return value != null &&
+    customFilter(value, search) {
+      return (
+        value != null &&
         search != null &&
-        typeof value !== 'boolean' &&
-        (typeof value === 'object' ? value.map(v => v.tag).join(',') : value)
-          .toString().toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1;
+        typeof value !== "boolean" &&
+        (typeof value === "object" ? value.map((v) => v.tag).join(",") : value)
+          .toString()
+          .toLocaleLowerCase()
+          .indexOf(search.toLocaleLowerCase()) !== -1
+      )
     },
     async listProject() {
       this.clearProjectList()
-      if ( !store.state.user || !store.state.user.user_id ) {
-        this.$refs.snackbar.notifyError( 'Error: Try again after signin.' )
+      await this.signinUser()
+      if (!store.state.user || !store.state.user.user_id) {
+        // this.$refs.snackbar.notifyError("Error: Try again after signin.")
+        console.log("Error: Try again after signin.")
         return
       }
-      const admin = await this.$axios.get('/iam/is-admin/?user_id=' + store.state.user.user_id ).catch((err) =>  {
-        return Promise.reject(err)
-      })
-      let listProjectParam = '?user_id=' + store.state.user.user_id
+      const admin = await this.$axios
+        .get("/iam/is-admin/?user_id=" + store.state.user.user_id)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      let listProjectParam = "?user_id=" + store.state.user.user_id
       if (admin.data.data.ok) {
-        listProjectParam = ''
+        listProjectParam = ""
       }
-      this.projectTable.item = await this.listProjectAPI(listProjectParam).catch((err) =>  {
+      this.projectTable.item = await this.listProjectAPI(
+        listProjectParam
+      ).catch((err) => {
         return Promise.reject(err)
       })
       this.loading = false
@@ -301,20 +357,20 @@ export default {
     },
 
     getLocaleText(locale) {
-      if (typeof locale !== 'string' || locale ===  '') return '?'
+      if (typeof locale !== "string" || locale === "") return "?"
       switch (locale.toLowerCase()) {
-        case 'en':
-          return 'English'
-        case 'ja':
-          return '日本語'
+        case "en":
+          return "English"
+        case "ja":
+          return "日本語"
         default:
-          return '?'
+          return "?"
       }
     },
 
     // handler
     handleDrawerToggle() {
-      this.$emit('side-icon-click')
+      this.$emit("side-icon-click")
     },
     handleFullScreen() {
       Util.toggleFullScreen()
@@ -325,27 +381,27 @@ export default {
         text: item.text,
       }
       this.$i18n.locale = item.value
-      store.commit('updateLocale', locale)
+      store.commit("updateLocale", locale)
     },
     handleLogut() {
-      this.$router.push('/auth/signin/')
+      this.$router.push("/auth/signin/")
     },
     handleAccountSetting() {
-      this.$router.push('/iam/profile/')
+      this.$router.push("/iam/profile/")
     },
     handleProjectSetting() {
-      this.$router.push('/project/setting/')
+      this.$router.push("/project/setting/")
     },
     handleGoBack() {
       this.$router.go(-1)
     },
-    async handleProjectClick(project)  {
+    async handleProjectClick(project) {
       await this.setProjectQueryParam(project.project_id)
-      await store.commit('updateProject', project)
+      await store.commit("updateProject", project)
       this.reload()
     },
     handleNewProject() {
-      this.$router.push('/project/new')
+      this.$router.push("/project/new")
     },
     handleSearchProject() {
       this.loading = true
@@ -356,7 +412,7 @@ export default {
       let query = await Object.assign({}, this.$router.query)
       // delete query["project_id"]
       query.project_id = project_id
-      await this.$router.push({query: query})
+      await this.$router.push({ query: query })
     },
   },
 }
