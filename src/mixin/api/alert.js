@@ -216,6 +216,16 @@ const alert = {
       })
     },
 
+    async testAlertNotification(notification_id) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        notification_id: notification_id,
+      }
+      await this.$axios.post('/alert/test-notification/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+    },
+
     // Analyze
     async analyzeAlert(alert_condition_id){
       const param = { 
