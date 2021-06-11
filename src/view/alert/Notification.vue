@@ -137,7 +137,7 @@
               type="info"
             >
               <p class="text-caption">
-                {{ $t(`view.alert['Currently, the following webhook URL (masked) is registered. Please enter the webhook URL again.']`) }}
+                {{ $t(`view.alert['Currently, the following webhook URL (masked) is registered. If webhook_url is blank when editing, it will be not updated.']`) }}
               </p>
               <p>{{ dataModel.masked_webhook_url | formatSmartMaskString }}</p>
             </v-alert>
@@ -178,6 +178,9 @@
             </v-alert>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
+              <v-btn text outlined color="blue darken-1" @click="handleTestSubmit" :disabled="form.new">
+                {{ $t(`btn['TEST NOTIFICATION']`) }}
+              </v-btn>
               <v-spacer />
               <v-btn text outlined color="grey darken-1" @click="editDialog = false">
                 {{ $t(`btn['CANCEL']`) }}
@@ -233,6 +236,47 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="testDialog" max-width="40%">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">
+            {{ $t(`message['Do you want to send a test notification?']`) }}
+          </span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="dataModel.notification_id"></v-list-item-title>
+              <v-list-item-subtitle>{{ $t(`item['Notification ID']`) }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>account_box</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
+              <v-list-item-subtitle>{{ $t(`item['Name']`) }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="testDialog = false">
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text outlined
+            :loading="loading"
+            @click="handleTestSubmit"
+          >
+            {{ $t(`btn['SEND']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -266,7 +310,7 @@ export default {
           ]
         },
         webhook_url: { label: 'Webhook URL', placeholder: 'https://xxx', validator:[
-            v => !!v || 'Webhook is required',
+            v => (!!v || !!this.dataModel.notification_id )|| 'Webhook is required',
           ]
         },
         custom_message: { label: 'Custom Message', placeholder: '<!here> <@user_id> Hello user!', validator:[]},
@@ -278,6 +322,7 @@ export default {
         search: '',
         options: { page: 1, itemsPerPage: 5, sortBy: ['notification_id'] },
         actions: [
+          { text: 'Test Notification', icon: 'mdi-bell-outline', click: this.handleTestItem },
           { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
           { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
         ],
@@ -290,6 +335,7 @@ export default {
       },
       deleteDialog: false,
       editDialog: false,
+      testDialog: false,
     }
   },
   computed: {
@@ -332,6 +378,15 @@ export default {
       this.finishSuccess('Success: Delete.')
     },
 
+    // test
+    async testNotification() {
+      await this.testAlertNotification(this.dataModel.notification_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Send Test Notification.')
+    },
+
     // put
     async putItem() {
       const param = { 
@@ -350,6 +405,7 @@ export default {
           }), 
         },
       }
+
       await this.putAlertNotification(param).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -393,6 +449,15 @@ export default {
     handleDeleteSubmit() {
       this.loading = true
       this.deleteItem()
+    },
+    handleTestItem(item) {
+      this.assignDataModel(item)
+      this.form.valid = false
+      this.testDialog  = true
+    },
+    handleTestSubmit() {
+      this.loading = true
+      this.testNotification()
     },
     assignDataModel(item) {
       this.dataModel = {}
