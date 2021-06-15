@@ -329,7 +329,6 @@ let mixin = {
         rnList.push(resource.resource_name)
       })
       this.resourceNameCombobox = rnList
-      this.loading = false
     },
     canDisplayActibityByResource(resourceName) {
       if (String(resourceName).startsWith('arn:')) return true
