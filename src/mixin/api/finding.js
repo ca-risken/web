@@ -43,6 +43,9 @@ const finding = {
       if (!res.data.data.finding) {
         return {} // empty
       }
+      if (!res.data.data.finding.score) {
+        res.data.data.finding.score = 0.0 // set zero value
+      }
       return res.data.data.finding
     },
     async listFindingTag(id) {
