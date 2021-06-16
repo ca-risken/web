@@ -11,6 +11,7 @@ const ja = {
     "EDIT": "編集",
     "SUBMIT": "送信",
     "PEND": "ペンディング",
+    "PEND ALL": "全てペンディング",
     "DELETE": "削除",
     "SEND": "送信",
     "TEST NOTIFICATION": "通知テスト",
@@ -133,11 +134,11 @@ const ja = {
     "Resource": "リソース",
     "ResourceName": "リソース名",
     "ResourceType": "リソースタイプ",
-    "Roles":"ロール設定",
+    "Roles": "ロール設定",
     "Rules": "ルール設定",
     "ScanAt": "スキャン日時",
     "Scan Public Repository": "パブリックリポジトリ",
-    "Scan Internal Repository":"インターナルリポジトリ",
+    "Scan Internal Repository": "インターナルリポジトリ",
     "Scan Private Repository": "プライベートリポジトリ",
     "Score Coefficient": "スコア係数",
     "Score": "スコア",
@@ -192,7 +193,7 @@ const ja = {
     "Sorry, page not found": "ページが見つかりませんでした。",
   },
   "view": {
-    "dashboard":{
+    "dashboard": {
       "Status": "ステータス",
       "Category": "カテゴリ",
       "Chart": "チャート",

@@ -11,6 +11,7 @@ const en = {
     "EDIT": "EDIT",
     "SUBMIT": "SUBMIT",
     "PEND": "PEND",
+    "PEND ALL": "PEND ALL",
     "DELETE": "DELETE",
     "SEND": "SEND",
     "TEST NOTIFICATION": "TEST NOTIFICATION",
@@ -133,11 +134,11 @@ const en = {
     "Resource": "Resource",
     "ResourceName": "ResourceName",
     "ResourceType": "ResourceType",
-    "Roles":"Roles",
+    "Roles": "Roles",
     "Rules": "Rules",
     "ScanAt": "ScanAt",
     "Scan Public Repository": "Scan Public Repository",
-    "Scan Internal Repository":"Scan Internal Repository",
+    "Scan Internal Repository": "Scan Internal Repository",
     "Scan Private Repository": "Scan Private Repository",
     "Score Coefficient": "Score Coefficient",
     "Score": "Score",
@@ -192,7 +193,7 @@ const en = {
     "Sorry, page not found": "Sorry, page not found",
   },
   "view": {
-    "dashboard":{
+    "dashboard": {
       "Status": "Status",
       "Category": "Category",
       "Chart": "Chart",
