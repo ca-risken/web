@@ -410,6 +410,21 @@
               </v-list-item>
             </v-col>
           </v-row>
+          <v-row v-if="findingModel.pend_note != ''" dense class="mx-4">
+            <v-col cols="12">
+              <v-alert
+                border="left"
+                colored-border
+                elevation="2"
+                type="warning"
+              >
+                <p>
+                  {{ findingModel.pend_note }}
+                </p>
+              </v-alert>
+            </v-col>
+          </v-row>
+
           <v-row dense class="mx-4">
             <v-col cols="12">
               <v-list-item-subtitle>
@@ -594,6 +609,82 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="pendDialog" max-width="40%">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">
+            {{ $t(`message['Do you want to update PENDING this?']`) }}
+          </span>
+        </v-card-title>
+        <v-card-text>
+          <v-list two-line>
+            <v-list-item>
+              <v-list-item-avatar
+                ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+              >
+              <v-list-item-content>
+                <v-list-item-title v-if="pendAll">
+                  {{ table.selected.length }} findings selected...
+                </v-list-item-title>
+                <v-list-item-title
+                  v-else
+                  v-text="findingModel.finding_id"
+                ></v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ $t(`item['Finding ID']`) }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-avatar
+                ><v-icon>mdi-image-text</v-icon></v-list-item-avatar
+              >
+              <v-list-item-content>
+                <v-textarea
+                  outlined
+                  clearable
+                  clear-icon="mdi-close-circle"
+                  v-model="pendNote"
+                  label="pending note"
+                ></v-textarea>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="pendDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            v-if="pendAll"
+            text
+            outlined
+            :loading="loading"
+            @click="handlePendSelectedSubmit"
+          >
+            {{ $t(`btn['PEND ALL']`) }}
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            v-else
+            text
+            outlined
+            :loading="loading"
+            @click="handlePendItemSubmit"
+          >
+            {{ $t(`btn['PEND']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -651,10 +742,14 @@ export default {
         created_at: "",
         updated_at: "",
         new_tag: "",
+        pend_note: "",
       },
       viewDialog: false,
       tagDialog: false,
       deleteDialog: false,
+      pendDialog: false,
+      pendNote: "",
+      pendAll: false,
       table: {
         selected: [],
         options: {
@@ -814,6 +909,7 @@ export default {
         data: finding.data,
         updated_at: finding.updated_at,
         created_at: finding.created_at,
+        pend_note: !pend.note ? "" : pend.note,
       }
     },
     clearList() {
@@ -957,23 +1053,6 @@ export default {
     handleSearch() {
       this.refleshList()
     },
-    handleDeleteItem(row) {
-      this.findingModel = Object.assign(this.findingModel, row)
-      this.deleteDialog = true
-    },
-    async handleActivateItem(row) {
-      this.loading = true
-      await this.deletePendFinding(
-        this.$store.state.project.project_id,
-        row.finding_id
-      )
-      this.finishSuccess("Success: Activated.")
-    },
-    async handlePendItem(row) {
-      this.loading = true
-      await this.putPendFinding(row.finding_id)
-      this.finishSuccess("Success: Pending.")
-    },
     handleNewTag() {
       this.findingModel.new_tag = "" // clear
       this.tagDialog = true
@@ -1001,19 +1080,15 @@ export default {
       this.viewDialog = false
       this.loading = false
     },
+    // Delete
+    handleDeleteItem(row) {
+      this.findingModel = Object.assign(this.findingModel, row)
+      this.deleteDialog = true
+    },
     async handleDeleteSubmit() {
       this.loading = true
       await this.deleteFinding(this.findingModel.finding_id)
       this.finishSuccess("Success: Delete.")
-    },
-    async handlePendSelected() {
-      this.loading = true
-      const count = this.table.selected.length
-      this.table.selected.forEach(async (item) => {
-        if (!item.finding_id) return
-        await this.putPendFinding(item.finding_id)
-      })
-      this.finishSuccess("Success: Pend " + count + " findings.")
     },
     async handleDeleteSelected() {
       this.loading = true
@@ -1023,6 +1098,40 @@ export default {
         await this.deleteFinding(item.finding_id)
       })
       this.finishSuccess("Success: Delete " + count + " findings.")
+    },
+    async handleActivateItem(row) {
+      this.loading = true
+      await this.deletePendFinding(
+        this.$store.state.project.project_id,
+        row.finding_id
+      )
+      this.finishSuccess("Success: Activated.")
+    },
+    // Pend
+    handlePendItem(row) {
+      this.findingModel = Object.assign(this.findingModel, row)
+      this.pendAll = false
+      this.pendNote = ""
+      this.pendDialog = true
+    },
+    async handlePendItemSubmit() {
+      this.loading = true
+      await this.putPendFinding(this.findingModel.finding_id, this.pendNote)
+      this.finishSuccess("Success: Pending.")
+    },
+    async handlePendSelected() {
+      this.pendAll = true
+      this.pendNote = ""
+      this.pendDialog = true
+    },
+    async handlePendSelectedSubmit() {
+      this.loading = true
+      const count = this.table.selected.length
+      this.table.selected.forEach(async (item) => {
+        if (!item.finding_id) return
+        await this.putPendFinding(item.finding_id, this.pendNote)
+      })
+      this.finishSuccess("Success: Pend " + count + " findings.")
     },
     handleChangeStatus(tabNumber) {
       switch (tabNumber) {
@@ -1072,6 +1181,7 @@ export default {
       this.loading = false
       this.viewDialog = false
       this.deleteDialog = false
+      this.pendDialog = false
       this.tagDialog = false
       if (reflesh) {
         this.handleSearch()

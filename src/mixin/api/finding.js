@@ -135,12 +135,13 @@ const finding = {
         return Promise.reject(err)
       })
     },
-    async putPendFinding(finding_id) {
+    async putPendFinding(finding_id, note) {
       const param = {
         project_id: this.$store.state.project.project_id,
         pend_finding: {
           finding_id: finding_id,
           project_id: this.$store.state.project.project_id,
+          note: note,
         }
       }
       await this.$axios.post('/finding/put-pend-finding/', param).catch((err) => {
