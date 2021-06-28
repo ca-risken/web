@@ -934,6 +934,12 @@ export default {
 
     // Analyze Alert
     async analyze(alertConditionID) {
+      if (alertConditionID == "") {
+        this.finishError(
+          "AlertConditionID must be required."
+        )
+        return
+      }
       await this.analyzeAlert(alertConditionID).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
