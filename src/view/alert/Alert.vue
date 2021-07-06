@@ -324,6 +324,7 @@ export default {
       alertModel: {},
       alertHistoryModel: [],
       alertResource: [],
+      findingMaxCount: 5,
       table: {
         selected: [],
         search: "",
@@ -440,11 +441,11 @@ export default {
       })
     },
     formatFindingIDs(ids) {
-      if (ids.length <= 5) {
+      if (ids.length <= this.findingMaxCount) {
         return ids
       }
       let formated = []
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < this.findingMaxCount; i++) {
         formated.push(ids[i])
       }
       formated.push("...")
@@ -454,9 +455,12 @@ export default {
     // alert finding list
     async getRelAlertFinding() {
       this.clearFinding()
-      const rel_alert_finding = await this.listRelAlertFinding(
+      let rel_alert_finding = await this.listRelAlertFinding(
         this.alertModel.alert_id
       )
+      if (rel_alert_finding.length > this.findingMaxCount) {
+        rel_alert_finding = rel_alert_finding.slice(0, this.findingMaxCount)
+      }
       rel_alert_finding.forEach(async (finding) => {
         const f = await this.getFinding(finding.finding_id)
         this.alertResource.push(f.resource_name)
