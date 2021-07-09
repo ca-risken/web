@@ -5,7 +5,9 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue darken-1">mdi-google-cloud</v-icon>
+              <v-icon large class="pr-2" color="blue darken-1"
+                >mdi-google-cloud</v-icon
+              >
               {{ $t(`submenu['GCP DataSource']`) }}
             </v-toolbar-title>
           </v-toolbar>
@@ -27,14 +29,24 @@
           ></v-select>
         </v-col>
         <v-spacer />
-        <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
+        <v-btn
+          class="mt-3 mr-4"
+          color="grey darken-2"
+          dense
+          small
+          icon
+          fab
+          outlined
           :loading="loading"
           @click="handleList"
         >
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
         <v-btn
-          class="mt-3 mr-4" dense medium dark
+          class="mt-3 mr-4"
+          dense
+          medium
+          dark
           :loading="loading"
           color="light-blue darken-2"
           @click="handleSetupAll"
@@ -65,7 +77,10 @@
               >
                 <template v-slot:[`item.avator`]="{ item }">
                   <v-avatar tile class="ma-3" size="74%">
-                    <img :src="getGCPDataSourceIcon(item.name)" :alt="item.name" />
+                    <img
+                      :src="getGCPDataSourceIcon(item.name)"
+                      :alt="item.name"
+                    />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.max_score`]="{ item }">
@@ -85,22 +100,17 @@
                       color="white"
                       class="mr-2"
                     ></v-progress-circular>
-                    <v-icon
-                      v-else
-                      small               
-                      color="white"
-                      class="mr-2"
-                    >{{ getDataSourceStatusIcon(item.status) }}</v-icon>
+                    <v-icon v-else small color="white" class="mr-2">{{
+                      getDataSourceStatusIcon(item.status)
+                    }}</v-icon>
                     {{ getDataSourceStatusText(item.status) }}
                   </v-chip>
-                  <v-chip
-                    v-else
-                    color="grey"
-                    dark
-                  >Not configured</v-chip>
+                  <v-chip v-else color="grey" dark>Not configured</v-chip>
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{ item.scan_at | formatTime }}</v-chip>
+                  <v-chip v-if="item.scan_at">{{
+                    item.scan_at | formatTime
+                  }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
@@ -119,12 +129,14 @@
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -150,9 +162,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.gcp_id.label+`']`) }}
+                    {{ $t(`item['` + gcpForm.gcp_id.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+gcpForm.gcp_id.label+`']`)"
+                      :name="$t(`item['` + gcpForm.gcp_id.label + `']`)"
                       :text="String(gcpModel.gcp_id)"
                     />
                   </v-list-item-subtitle>
@@ -166,9 +178,15 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.google_data_source_id.label+`']`) }}
+                    {{
+                      $t(`item['` + gcpForm.google_data_source_id.label + `']`)
+                    }}
                     <clip-board
-                      :name="$t(`item['`+gcpForm.google_data_source_id.label+`']`)"
+                      :name="
+                        $t(
+                          `item['` + gcpForm.google_data_source_id.label + `']`
+                        )
+                      "
                       :text="String(gcpModel.google_data_source_id)"
                     />
                   </v-list-item-subtitle>
@@ -182,9 +200,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.name.label+`']`) }}
+                    {{ $t(`item['` + gcpForm.name.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+gcpForm.name.label+`']`)"
+                      :name="$t(`item['` + gcpForm.name.label + `']`)"
                       :text="String(gcpModel.name)"
                     />
                   </v-list-item-subtitle>
@@ -198,7 +216,7 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.max_score.label+`']`) }}
+                    {{ $t(`item['` + gcpForm.max_score.label + `']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
@@ -215,9 +233,12 @@
                 <v-list-item-content>
                   <v-list-item-title class="headline">
                     <v-list-item-subtitle>
-                      {{ $t(`item['`+gcpForm.status.label+`']`) }}
+                      {{ $t(`item['` + gcpForm.status.label + `']`) }}
                     </v-list-item-subtitle>
-                    <v-chip dark :color="getDataSourceStatusColor(gcpModel.status)">
+                    <v-chip
+                      dark
+                      :color="getDataSourceStatusColor(gcpModel.status)"
+                    >
                       {{ getDataSourceStatusText(gcpModel.status) }}
                     </v-chip>
                   </v-list-item-title>
@@ -228,9 +249,13 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.gcp_organization_id.label+`']`) }}
+                    {{
+                      $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
+                    }}
                     <clip-board
-                      :name="$t(`item['`+gcpForm.gcp_organization_id.label+`']`)"
+                      :name="
+                        $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
+                      "
                       :text="String(gcpModel.gcp_organization_id)"
                     />
                   </v-list-item-subtitle>
@@ -244,9 +269,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.gcp_project_id.label+`']`) }}
+                    {{ $t(`item['` + gcpForm.gcp_project_id.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+gcpForm.gcp_project_id.label+`']`)"
+                      :name="$t(`item['` + gcpForm.gcp_project_id.label + `']`)"
                       :text="String(gcpModel.gcp_project_id)"
                     />
                   </v-list-item-subtitle>
@@ -260,7 +285,7 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+gcpForm.scan_at.label+`']`) }}
+                    {{ $t(`item['` + gcpForm.scan_at.label + `']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
@@ -277,9 +302,9 @@
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
                   <span class="font-weight-light">
-                    {{ $t(`item['`+gcpForm.status_detail.label+`']`) }}
+                    {{ $t(`item['` + gcpForm.status_detail.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+gcpForm.status_detail.label+`']`)"
+                      :name="$t(`item['` + gcpForm.status_detail.label + `']`)"
                       :text="String(gcpModel.status_detail)"
                     />
                   </span>
@@ -294,30 +319,43 @@
         <v-card-text>
           <v-divider class="mt-3 mb-3"></v-divider>
           <v-card-actions>
-            <v-btn 
-              text outlined color="blue darken-1" 
+            <v-btn
+              text
+              outlined
+              color="blue darken-1"
               v-if="gcpForm.readOnly"
-              :loading="loading" 
+              :loading="loading"
               @click="handleScan"
             >
               {{ $t(`btn['SCAN']`) }}
             </v-btn>
             <v-spacer />
-            <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+            <v-btn
+              text
+              outlined
+              color="grey darken-1"
+              @click="editDialog = false"
+            >
               {{ $t(`btn['CANCEL']`) }}
             </v-btn>
             <v-btn
-              text outlined color="green darken-1" 
+              text
+              outlined
+              color="green darken-1"
               v-if="!gcpForm.readOnly && !gcpForm.setupAll"
-              :loading="loading" 
-              @click="handleAttachSubmit">
+              :loading="loading"
+              @click="handleAttachSubmit"
+            >
               {{ $t(`btn['ATTACH']`) }}
             </v-btn>
             <v-btn
-              text outlined color="green darken-1" 
+              text
+              outlined
+              color="green darken-1"
               v-if="gcpForm.setupAll"
-              :loading="loading" 
-              @click="handleAttachAll">
+              :loading="loading"
+              @click="handleAttachAll"
+            >
               {{ $t(`btn['ATTACH ALL']`) }}
             </v-btn>
           </v-card-actions>
@@ -338,8 +376,12 @@
               <v-icon>mdi-google-cloud</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="gcpModel.google_data_source_id"></v-list-item-title>
-              <v-list-item-subtitle>{{ $t(`item['Data Source ID']`) }}</v-list-item-subtitle>
+              <v-list-item-title
+                v-text="gcpModel.google_data_source_id"
+              ></v-list-item-title>
+              <v-list-item-subtitle>{{
+                $t(`item['Data Source ID']`)
+              }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -347,19 +389,29 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="gcpModel.gcp_project_id"></v-list-item-title>
-              <v-list-item-subtitle>{{ $t(`item['GCP ProjectID']`) }}</v-list-item-subtitle>
+              <v-list-item-title
+                v-text="gcpModel.gcp_project_id"
+              ></v-list-item-title>
+              <v-list-item-subtitle>{{
+                $t(`item['GCP ProjectID']`)
+              }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
-            text outlined
+            text
+            outlined
             :loading="loading"
             @click="handleDetachSubmit"
           >
@@ -372,10 +424,10 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
-import mixin from '@/mixin'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import Util from "@/util"
+import mixin from "@/mixin"
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
 export default {
   mixins: [mixin],
   components: {
@@ -391,26 +443,63 @@ export default {
         readOnly: false,
         setupAll: false,
         valid: false,
-        google_data_source_id: { label: 'Google Data Source ID', placeholder: '-', validator: []},
-        name: { label: 'Data Source', placeholder: '-', validator: []},
-        max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
-        gcp_id: { label: 'GCP ID', placeholder: '-', validator: []},
-        gcp_project_id: { label: 'GCP ProjectID', placeholder: '-', validator: []},
-        gcp_organization_id: { label: 'GCP OrganizationID', placeholder: '-', validator: []},
-        status: { label: 'Status', placeholder: '-', validator: [] },
-        status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
-        scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
+        google_data_source_id: {
+          label: "Google Data Source ID",
+          placeholder: "-",
+          validator: [],
+        },
+        name: { label: "Data Source", placeholder: "-", validator: [] },
+        max_score: { label: "MAX Score", placeholder: "-", validator: [] },
+        gcp_id: { label: "GCP ID", placeholder: "-", validator: [] },
+        gcp_project_id: {
+          label: "GCP ProjectID",
+          placeholder: "-",
+          validator: [],
+        },
+        gcp_organization_id: {
+          label: "GCP OrganizationID",
+          placeholder: "-",
+          validator: [],
+        },
+        status: { label: "Status", placeholder: "-", validator: [] },
+        status_detail: {
+          label: "Status Detail",
+          placeholder: "-",
+          validator: [],
+        },
+        scan_at: { label: "ScanAt", placeholder: "-", validator: [] },
       },
-      gcpModel: { gcp_id:'', gcp_project_id:'',  google_data_source_id:'', name:'', max_score:'', status: 0, status_detail:'', scan_at: 0},
+      gcpModel: {
+        gcp_id: "",
+        gcp_project_id: "",
+        google_data_source_id: "",
+        name: "",
+        max_score: "",
+        status: 0,
+        status_detail: "",
+        scan_at: 0,
+      },
       table: {
         selected: [],
-        search: '',
-        options: { page: 1, itemsPerPage: 10, sortBy: ['gcp_id'] },
+        search: "",
+        options: { page: 1, itemsPerPage: 10, sortBy: ["gcp_id"] },
         actions: [
-          { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
-          { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
-          { text: 'Detach DataSource', icon: 'mdi-trash-can-outline', click: this.handleDetachItem },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+          {
+            text: "View DataSource",
+            icon: "mdi-eye",
+            click: this.handleViewItem,
+          },
+          {
+            text: "Attach DataSource",
+            icon: "mdi-pencil",
+            click: this.handleAttachItem,
+          },
+          {
+            text: "Detach DataSource",
+            icon: "mdi-trash-can-outline",
+            click: this.handleDetachItem,
+          },
+          { text: "Scan", icon: "mdi-magnify-scan", click: this.handleScan },
         ],
         total: 0,
         footer: {
@@ -419,30 +508,82 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       deleteDialog: false,
       editDialog: false,
     }
   },
-  created () {
-    this.$setInterval( async () => {
+  created() {
+    this.$setInterval(async () => {
       await this.refleshList()
     }, 6000)
   },
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item[""]'), align: 'center', width: '8%', sortable: false, value: 'avator' },
-        { text: this.$i18n.t('item["ID"]'), align: 'start', sortable: true, value: 'google_data_source_id' },
-        { text: this.$i18n.t('item["Google Data Source"]'), align: 'start', sortable: true, value: 'name' },
-        { text: this.$i18n.t('item["MAX Score"]'), align: 'center', sortable: true, value: 'max_score' },
-        { text: this.$i18n.t('item["Status"]'), align: 'start', width: '12%', sortable: true, value: 'status' },
-        { text: this.$i18n.t('item["GCP ID"]'),  align: 'start', sortable: true, value: 'gcp_id' },
-        { text: this.$i18n.t('item["GCP Organization"]'), align: 'start', sortable: true, value: 'gcp_organization_id' },
-        { text: this.$i18n.t('item["GCP Project"]'), align: 'start', sortable: true, value: 'gcp_project_id' },
-        { text: this.$i18n.t('item["ScanAt"]'), align: 'center', sortable: true, value: 'scan_at' },
-        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+        {
+          text: this.$i18n.t('item[""]'),
+          align: "center",
+          width: "8%",
+          sortable: false,
+          value: "avator",
+        },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: true,
+          value: "google_data_source_id",
+        },
+        {
+          text: this.$i18n.t('item["Google Data Source"]'),
+          align: "start",
+          sortable: true,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["MAX Score"]'),
+          align: "center",
+          sortable: true,
+          value: "max_score",
+        },
+        {
+          text: this.$i18n.t('item["Status"]'),
+          align: "start",
+          width: "12%",
+          sortable: true,
+          value: "status",
+        },
+        {
+          text: this.$i18n.t('item["GCP ID"]'),
+          align: "start",
+          sortable: true,
+          value: "gcp_id",
+        },
+        {
+          text: this.$i18n.t('item["GCP Organization"]'),
+          align: "start",
+          sortable: true,
+          value: "gcp_organization_id",
+        },
+        {
+          text: this.$i18n.t('item["GCP Project"]'),
+          align: "start",
+          sortable: true,
+          value: "gcp_project_id",
+        },
+        {
+          text: this.$i18n.t('item["ScanAt"]'),
+          align: "center",
+          sortable: true,
+          value: "scan_at",
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: "center",
+          sortable: false,
+          value: "action",
+        },
       ]
     },
   },
@@ -455,9 +596,9 @@ export default {
       return false
     }
     this.gcpModel = this.gcpList[0]
-    this.gcpList.forEach( async gcp => {
-      if ( gcp.gcp_id ==  Number(this.$route.query.gcp_id)) {
-        this.gcpModel =  gcp
+    this.gcpList.forEach(async (gcp) => {
+      if (gcp.gcp_id == Number(this.$route.query.gcp_id)) {
+        this.gcpModel = gcp
         return
       }
     })
@@ -466,62 +607,76 @@ export default {
   },
   methods: {
     async listGoogleDataSource() {
-      const res = await this.$axios.get('/google/list-google-datasource/').catch((err) =>  {
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.google_data_source ) {
+      const res = await this.$axios
+        .get("/google/list-google-datasource/")
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.google_data_source) {
         return false
       }
       this.googleDataSourceList = res.data.data.google_data_source
       this.loading = false
     },
     async listGCP() {
-      const res = await this.$axios.get('/google/list-gcp/?project_id=' + this.$store.state.project.project_id ).catch((err) =>  {
-        return Promise.reject(err)
-      })
-      if ( !res.data.data.gcp ) {
+      const res = await this.$axios
+        .get(
+          "/google/list-gcp/?project_id=" + this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.gcp) {
         return false
       }
       this.gcpList = res.data.data.gcp
       this.loading = false
     },
     async refleshList() {
-      if ( !this.gcpModel.gcp_id ) {
+      if (!this.gcpModel.gcp_id) {
         this.clearList()
         return
       }
       let items = []
-      this.googleDataSourceList.forEach( async ds => {
-        const res = await this.$axios.get(
-          '/google/get-gcp-datasource/?project_id='+ this.$store.state.project.project_id +
-            '&gcp_id=' + this.gcpModel.gcp_id +
-            '&google_data_source_id=' + ds.google_data_source_id
-        ).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
+      for (const ds of this.googleDataSourceList) {
+        // this.googleDataSourceList.forEach(async (ds) => {
+        const res = await this.$axios
+          .get(
+            "/google/get-gcp-datasource/?project_id=" +
+              this.$store.state.project.project_id +
+              "&gcp_id=" +
+              this.gcpModel.gcp_id +
+              "&google_data_source_id=" +
+              ds.google_data_source_id
+          )
+          .catch((err) => {
+            this.clearList()
+            return Promise.reject(err)
+          })
         let item = {
           google_data_source_id: ds.google_data_source_id,
-          name:ds.name,
+          name: ds.name,
           description: ds.description,
           max_score: ds.max_score,
           gcp_id: this.gcpModel.gcp_id,
-          gcp_organization_id: '',
-          gcp_project_id: '',
+          gcp_organization_id: "",
+          gcp_project_id: "",
           status: 0,
-          status_detail:'',
+          status_detail: "",
           scan_at: 0,
         }
-        if ( res.data.data.gcp_data_source ) {
+        if (res.data.data.gcp_data_source) {
           item.gcp_id = res.data.data.gcp_data_source.gcp_id
-          item.gcp_organization_id = res.data.data.gcp_data_source.gcp_organization_id,
-          item.gcp_project_id = res.data.data.gcp_data_source.gcp_project_id
+          ;(item.gcp_organization_id =
+            res.data.data.gcp_data_source.gcp_organization_id),
+            (item.gcp_project_id = res.data.data.gcp_data_source.gcp_project_id)
           item.status = res.data.data.gcp_data_source.status
           item.status_detail = res.data.data.gcp_data_source.status_detail
           item.scan_at = res.data.data.gcp_data_source.scan_at
         }
         items.push(item)
-      })
+        // })
+      }
       this.table.items = items
       this.table.total = this.googleDataSourceList.length
     },
@@ -532,44 +687,46 @@ export default {
     },
     getGCPDataSourceIcon(dataSource) {
       switch (dataSource) {
-        case 'google:asset':
-          return '/static/google/asset.png'
-        case 'google:cloudsploit':
-          return '/static/google/cloudsploit.png'
-        case 'google:scc':
-          return '/static/google/scc.png'
-        case 'google:portscan':
-          return '/static/google/nmap.png'
+        case "google:asset":
+          return "/static/google/asset.png"
+        case "google:cloudsploit":
+          return "/static/google/cloudsploit.png"
+        case "google:scc":
+          return "/static/google/scc.png"
+        case "google:portscan":
+          return "/static/google/nmap.png"
         default:
-          return '/static/google/default.png'
+          return "/static/google/default.png"
       }
     },
     async detachDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
         gcp_id: this.gcpModel.gcp_id,
-        google_data_source_id: this.gcpModel.google_data_source_id
+        google_data_source_id: this.gcpModel.google_data_source_id,
       }
-      await this.$axios.post('/google/detach-gcp-datasource/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.finishSuccess('Success: Detach GCP Data Source.')
+      await this.$axios
+        .post("/google/detach-gcp-datasource/", param)
+        .catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      this.finishSuccess("Success: Detach GCP Data Source.")
     },
     async attachDataSource() {
       await this.execAttachDataSource()
-      this.finishSuccess('Success: Attach GCP Data Source.')
+      this.finishSuccess("Success: Attach GCP Data Source.")
     },
     async attachAllDataSource() {
-      this.table.items.forEach( async ds => {
+      this.table.items.forEach(async (ds) => {
         this.gcpModel.google_data_source_id = ds.google_data_source_id
         await this.execAttachDataSource()
       })
-      this.finishSuccess('Success: Attach all GCP Data Source.')
+      this.finishSuccess("Success: Attach all GCP Data Source.")
     },
     async execAttachDataSource() {
       let scan_at = 0
-      if (this.gcpModel.scan_at > 0 ) {
+      if (this.gcpModel.scan_at > 0) {
         scan_at = this.gcpModel.scan_at
       }
       const param = {
@@ -579,51 +736,55 @@ export default {
           google_data_source_id: this.gcpModel.google_data_source_id,
           project_id: this.$store.state.project.project_id,
           status: 2, // CONFIGURED
-          status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
+          status_detail:
+            "Configured at: " + Util.formatDate(new Date(), "yyyy/MM/dd HH:mm"),
           scan_at: scan_at,
         },
       }
-      await this.$axios.post('/google/attach-gcp-datasource/', param).catch((err) =>  {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post("/google/attach-gcp-datasource/", param)
+        .catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
     },
     async scanDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
         gcp_id: this.gcpModel.gcp_id,
         google_data_source_id: this.gcpModel.google_data_source_id,
+        scan_only: false, // option
       }
-      await this.$axios.post('/google/invoke-scan-gcp/', param).catch((err) =>  {
+      await this.$axios.post("/google/invoke-scan-gcp/", param).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Invoke scan for GCP Data Source.')
+      this.finishSuccess("Success: Invoke scan for GCP Data Source.")
     },
 
     // handler method
     async handleList() {
       this.loading = true
       await this.refleshList()
-      await this.finishInfo('Reflesh list')
+      await this.finishInfo("Reflesh list")
     },
     handleViewItem(item) {
       this.assignDataModel(item)
       this.gcpForm.readOnly = true
       this.gcpForm.setupAll = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleSetupAll() {
       this.gcpModel = { gcp_id: this.gcpModel.gcp_id }
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = true
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleAttachItem(item) {
       this.assignDataModel(item)
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleAttachSubmit() {
       this.loading = true
@@ -635,12 +796,12 @@ export default {
     },
     handleDetachItem(item) {
       this.assignDataModel(item)
-      this.deleteDialog  = true
+      this.deleteDialog = true
     },
     handleDetachSubmit() {
       if (!this.gcpModel.gcp_id) {
-        this.$refs.snackbar.notifyError('Error: Not configred.')
-        this.deleteDialog  = false
+        this.$refs.snackbar.notifyError("Error: Not configred.")
+        this.deleteDialog = false
         return
       }
       this.loading = true
@@ -654,32 +815,37 @@ export default {
       this.scanDataSource()
     },
     assignDataModel(item) {
-      this.gcpModel = { gcp_id: this.gcpModel.gcp_id, google_data_source_id:'', data_source:'', max_score:'' }
+      this.gcpModel = {
+        gcp_id: this.gcpModel.gcp_id,
+        google_data_source_id: "",
+        data_source: "",
+        max_score: "",
+      }
       this.gcpModel = Object.assign(this.gcpModel, item)
     },
     async finishInfo(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       await this.finish(false)
       this.$refs.snackbar.notifyInfo(msg)
     },
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       await this.finish(true)
       this.$refs.snackbar.notifySuccess(msg)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       await this.finish(false)
       this.$refs.snackbar.notifyError(msg)
     },
     async finish(reflesh) {
       this.loading = false
-      this.editDialog  = false
-      this.deleteDialog  = false
-      if ( reflesh ) {
+      this.editDialog = false
+      this.deleteDialog = false
+      if (reflesh) {
         await this.refleshList()
       }
     },
-  }
+  },
 }
 </script>
