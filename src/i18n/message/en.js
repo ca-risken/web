@@ -7,6 +7,7 @@ const en = {
     "CREATE NEW PROJECT": "CREATE NEW PROJECT",
     "CloudTrail Filter": "CloudTrail Filter",
     "VIEW FINDING": "VIEW FINDING",
+    "ADD": "ADD",
     "REGIST": "REGIST",
     "EDIT": "EDIT",
     "SUBMIT": "SUBMIT",
@@ -64,6 +65,8 @@ const en = {
     "GCP DataSource": "GCP DataSource",
     "JIRA": "JIRA",     // Diagnosis
     "WPScan": "WPScan", // Diagnosis
+    "Portscan": "Portscan", // Diagnosis
+    "Portscan Target": "Portscan Target", // Diagnosis
     "OSINT": "OSINT",
     "OSINT DataSource": "OSINT DataSource",
     "Gitleaks": "Gitleaks",
@@ -126,6 +129,8 @@ const en = {
     "PersonalAccessToken": "PersonalAccessToken",
     "Policies": "Policies",
     "Policy Name": "Policy Name",
+    "Portscan Setting ID": "Portscan Setting ID",
+    "Portscan Target ID": "Portscan Target ID",
     "Repository": "Repository",
     "RepositoryPattern": "RepositoryPattern",
     "Region": "Region",
