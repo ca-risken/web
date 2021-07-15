@@ -331,7 +331,9 @@ export default {
         activeOnly: true,
         options: { page: 1, itemsPerPage: 10, sortBy: ["alert_id"] },
         footer: {
-          itemsPerPageOptions: [10],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageText: "Rows/Page",
           showCurrentPage: true,
           showFirstLastPage: true,
         },
