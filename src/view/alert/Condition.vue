@@ -573,7 +573,9 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageText: "Rows/Page",
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -585,8 +587,8 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ["alert_rule_id"] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [10, 20, 50],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -598,8 +600,8 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ["alert_rule_id"] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          disableItemsPerPage: false,
+          itemsPerPageOptions: [10, 20, 50],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -935,9 +937,7 @@ export default {
     // Analyze Alert
     async analyze(alertConditionID) {
       if (alertConditionID == "") {
-        this.finishError(
-          "AlertConditionID must be required."
-        )
+        this.finishError("AlertConditionID must be required.")
         return
       }
       await this.analyzeAlert(alertConditionID).catch((err) => {
