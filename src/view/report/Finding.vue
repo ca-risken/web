@@ -441,9 +441,9 @@ export default {
       })
     },
     async getReportFindingAll(searchCond,fromDate,toDate) {
-      var fDate = new Date()
-      var tDate = new Date()
-      var endDate = new Date()
+      let fDate = new Date()
+      let tDate = new Date()
+      let endDate = new Date()
       if (fromDate == "") {
         fDate = new Date()
         fDate.setMonth(fDate.getMonth() - 3)
@@ -458,7 +458,7 @@ export default {
       while (fDate < endDate){
         searchCond += "&from_date=" + Util.formatDate(fDate,'yyyy-MM-dd')
         searchCond += "&to_date=" + Util.formatDate(tDate,'yyyy-MM-dd')
-        var url = '/report/get-report-all/?project_id='
+        let url = '/report/get-report-all/?project_id='
         const res = await this.$axios.get(
         url + this.$store.state.project.project_id + searchCond
         ).catch((err) =>  {
