@@ -423,13 +423,9 @@ export default {
         this.flagAdmin = false
         return
     },
-    async getReportFinding(searchCond,target) {
+    async getReportFinding(searchCond) {
         let url = ""
-        if (target == "all"){
-            url = '/report/get-report-all/?project_id='
-        }else {
-            url = '/report/get-report/?project_id='
-        }
+        url = '/report/get-report/?project_id='
         const res = await this.$axios.get(
         url + this.$store.state.project.project_id + searchCond
         ).catch((err) =>  {
@@ -444,6 +440,41 @@ export default {
             this.reportFindings.push(report_finding)
       })
     },
+    async getReportFindingAll(searchCond,fromDate,toDate) {
+      var fDate = new Date()
+      var tDate = new Date()
+      var endDate = new Date()
+      if (fromDate == "") {
+        fDate = new Date()
+        fDate.setMonth(fDate.getMonth() - 3)
+        tDate.setMonth(tDate.getMonth() - 3)
+        tDate.setDate(tDate.getDate() + 7)
+      } else {
+        fDate = new Date(fromDate)
+      }
+      if (toDate != "") {
+        endDate = new Date(toDate)
+      }
+      while (fDate < endDate){
+        searchCond += "&from_date=" + Util.formatDate(fDate,'yyyy-MM-dd')
+        searchCond += "&to_date=" + Util.formatDate(tDate,'yyyy-MM-dd')
+        var url = '/report/get-report-all/?project_id='
+        const res = await this.$axios.get(
+        url + this.$store.state.project.project_id + searchCond
+        ).catch((err) =>  {
+            this.clearList()
+            return Promise.reject(err)
+        })
+        if(res.data.data.report_finding){
+          res.data.data.report_finding.forEach( report_finding => {
+              report_finding.report_date = report_finding.report_date.substr(0, 10)
+              this.reportFindings.push(report_finding)
+          })
+        }
+        fDate.setDate(fDate.getDate() + 7)
+        tDate.setDate(tDate.getDate() + 7)
+      }
+    },
     clearList (){
         this.reportFindings = []
     },
@@ -454,15 +485,19 @@ export default {
         searchCond += '&data_source=' + this.searchModel.dataSource
       }
       if (this.searchModel.fromDate) {
-        searchCond += '&from_date=' + this.searchModel.fromDate
-      }
-      if (this.searchModel.toDate) {
-        searchCond += '&to_date=' + this.searchModel.toDate
-      }
-      if (this.searchModel.score) {
         searchCond += '&score=' + this.searchModel.score
       }
-      await this.getReportFinding(searchCond,target)
+      if (target == "all") {
+        await this.getReportFindingAll(searchCond,this.searchModel.fromDate,this.searchModel.toDate)        
+      } else {
+        if (this.searchModel.toDate) {
+          searchCond += '&to_date=' + this.searchModel.toDate
+        }
+        if (this.searchModel.score) {
+          searchCond += '&from_date=' + this.searchModel.fromDate
+        }
+        await this.getReportFinding(searchCond,target)
+        }
       if (this.searchModel.format == "csv"){
         var csv = '\ufeff' + 'report_finding_id,report_date,category,data_source,project_id,project_name,score,count\n'
         this.reportFindings.forEach(el => {
