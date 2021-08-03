@@ -447,20 +447,22 @@ export default {
       if (fromDate == "") {
         fDate = new Date()
         fDate.setMonth(fDate.getMonth() - 3)
-        tDate.setMonth(tDate.getMonth() - 3)
-        tDate.setDate(tDate.getDate() + 7)
+        tDate.setMonth(fDate.getMonth())
+        tDate.setDate(tDate.getDate() + 6)
       } else {
         fDate = new Date(fromDate)
+        tDate.setMonth(fDate.getMonth())
+        tDate.setDate(fDate.getDate() + 6)
       }
-      if (toDate != "") {
+      if (toDate != null && toDate != "") {
         endDate = new Date(toDate)
       }
+      const url = '/report/get-report-all/?project_id='
       while (fDate < endDate){
-        searchCond += "&from_date=" + Util.formatDate(fDate,'yyyy-MM-dd')
-        searchCond += "&to_date=" + Util.formatDate(tDate,'yyyy-MM-dd')
-        let url = '/report/get-report-all/?project_id='
+        let condDate = "&from_date=" + Util.formatDate(fDate,'yyyy-MM-dd')
+        condDate += "&to_date=" + Util.formatDate(tDate,'yyyy-MM-dd')
         const res = await this.$axios.get(
-        url + this.$store.state.project.project_id + searchCond
+        url + this.$store.state.project.project_id + searchCond + condDate
         ).catch((err) =>  {
             this.clearList()
             return Promise.reject(err)
