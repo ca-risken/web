@@ -771,6 +771,11 @@ export default {
             icon: "mdi-trash-can-outline",
             click: this.handleDeleteSelected,
           },
+          {
+            text: "Download selected findings CSV",
+            icon: "mdi-file-download-outline",
+            click: this.handleDownloadCSVSelected,
+          },
         ],
         total: 0,
         footer: {
@@ -1164,6 +1169,28 @@ export default {
         default:
           this.searchModel.tab = 0
       }
+    },
+
+    // CSV
+    handleDownloadCSVSelected() {
+      this.loading = true
+      const count = this.table.selected.length
+      let csv = '\ufeff' + 'finding_id,data_source,description,score,status,tags\n'
+      this.table.selected.forEach(item => {
+        console.log(item)
+        if (!item.finding_id) return
+        var tags = ""
+        if (item.tags) tags = item.tags.map(tag => tag.tag).join(',')
+        var line = '' + item['finding_id'] + ',"' + item['data_source'] + '","' + item['description'] + '",' + item['score'] + ',"' + 
+          item['status'] + '","' + tags + '"\n'
+         csv += line
+      })
+      let blob = new Blob([csv], { type: 'text/csv' })
+      let link = document.createElement('a')
+      link.href = window.URL.createObjectURL(blob)
+      link.download = 'finding.csv'
+      link.click()
+      this.finishSuccess("Success: Export " + count + " findings.")
     },
 
     // finish

@@ -175,6 +175,7 @@ const en = {
     "Delete Item": "Delete Item",
     "Delete selected findings": "Delete selected findings",
     "Detach DataSource": "Detach DataSource",
+    "Download selected findings CSV": "Download selected findings CSV",
     "Edit Item": "Edit Item",
     "Pend Finding": "Pend Finding",
     "Pend selected findings": "Pend selected findings",
