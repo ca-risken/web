@@ -175,6 +175,7 @@ const ja = {
     "Delete Item": "削除する",
     "Delete selected findings": "選択中のFindingを削除",
     "Detach DataSource": "データソース設定を解除する",
+    "Download selected findings CSV": "CSVをダウンロード",
     "Edit Item": "編集する",
     "Pend Finding": "ペンディング化",
     "Pend selected findings": "選択中のFindingをペンディング化する",
