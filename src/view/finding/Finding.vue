@@ -691,6 +691,7 @@
 
 <script>
 import mixin from "@/mixin"
+import Util from '@/util'
 import finding from "@/mixin/api/finding"
 import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
 import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
@@ -1175,20 +1176,22 @@ export default {
     handleDownloadCSVSelected() {
       this.loading = true
       const count = this.table.selected.length
-      let csv = '\ufeff' + 'finding_id,data_source,description,score,status,tags\n'
+      let csv = '\ufeff' + 'finding_id,data_source,description,score,status,tags,created_at,updtated_at\n'
       this.table.selected.forEach(item => {
-        console.log(item)
+        let created_at = Util.formatDate(new Date(item.created_at * 1000), 'yyyy/MM/dd HH:mm')
+        let updated_at = Util.formatDate(new Date(item.updated_at * 1000), 'yyyy/MM/dd HH:mm')
         if (!item.finding_id) return
         var tags = ""
         if (item.tags) tags = item.tags.map(tag => tag.tag).join(',')
         var line = '' + item['finding_id'] + ',"' + item['data_source'] + '","' + item['description'] + '",' + item['score'] + ',"' + 
-          item['status'] + '","' + tags + '"\n'
+          item['status'] + '","' + tags + '","' + created_at + '","' + updated_at + '"\n'
          csv += line
       })
       let blob = new Blob([csv], { type: 'text/csv' })
       let link = document.createElement('a')
+      let fileDate = Util.formatDate(new Date(), 'yyyyMMddTHHmmss')
       link.href = window.URL.createObjectURL(blob)
-      link.download = 'finding.csv'
+      link.download = 'finding_' + fileDate + '.csv'
       link.click()
       this.finishSuccess("Success: Export " + count + " findings.")
     },
