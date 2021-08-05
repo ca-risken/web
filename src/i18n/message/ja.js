@@ -90,6 +90,7 @@ const ja = {
     "Assume Role": "Assume Role",
     "AWS ID": "AWS ID",
     "AWS Account ID": "AWSアカウントID",
+    "Base URL": "ベースURL",
     "Created": "作成日時",
     "Custom Message": "カスタムメッセージ（オプション）",
     "Channel": "チャンネル（オプション）",
