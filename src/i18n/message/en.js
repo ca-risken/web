@@ -90,6 +90,7 @@ const en = {
     "Assume Role": "Assume Role",
     "AWS ID": "AWS ID",
     "AWS Account ID": "AWS Account ID",
+    "Base URL": "Base URL",
     "Created": "Created",
     "Custom Message": "Custom Message  (Optional)",
     "Channel": "Channel (Optional)",
