@@ -101,6 +101,7 @@ const en = {
     "Duration": "Duration",
     "Enabled": "Enabled",
     "External ID": "External ID",
+    "External Link": "External Link",
     "Finding Count": "Finding Count",
     "Finding ID": "Finding ID",
     "Findings": "Findings",
