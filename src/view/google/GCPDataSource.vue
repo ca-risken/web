@@ -516,7 +516,9 @@ export default {
   },
   created() {
     this.$setInterval(async () => {
-      await this.refleshList()
+      if (!this.deleteDialog && !this.editDialog){
+        await this.refleshList()        
+      }
     }, 6000)
   },
   computed: {
