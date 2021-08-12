@@ -503,8 +503,8 @@ export default {
       if (this.searchModel.format == "csv"){
         var csv = '\ufeff' + 'report_finding_id,report_date,category,data_source,project_id,project_name,score,count\n'
         this.reportFindings.forEach(el => {
-            var line = el['report_finding_id'] + ',' + el['report_date'] + ',' + el['category'] + ',' + el['data_source'] + ',' + 
-             el['project_id'] + ',' + el['project_name'] + ','  + el['score'] + ',' + el['count'] +  '\n'
+            var line = el['report_finding_id'] + ',"' + el['report_date'] + '","' + el['category'] + '","' + el['data_source'] + '",' + 
+             el['project_id'] + ',"' + el['project_name'] + '",'  + el['score'] + ',' + el['count'] +  '\n'
             csv += line
         })
         let blob = new Blob([csv], { type: 'text/csv' })
