@@ -101,6 +101,7 @@ const ja = {
     "Duration": "期間",
     "Enabled": "有効",
     "External ID": "外部ID",
+    "External Link": "外部リンク",
     "Finding Count": "Finding数",
     "Finding ID": "Finding ID",
     "Findings": "Finding数",

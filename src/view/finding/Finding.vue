@@ -473,6 +473,15 @@
               </v-card>
             </v-col>
           </v-row>
+          <v-row class="ma-2" v-if=getExternalLink(findingModel.data)>
+            <v-col cols="12">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-link</v-icon>
+                {{ $t(`item['External Link']`) }}
+              </v-list-item-subtitle>
+              <a :href="getExternalLink(findingModel.data)" target="blank_">{{ getExternalLink(findingModel.data) }}</a>
+            </v-col>
+          </v-row>
           <v-row class="ma-2">
             <v-col cols="4">
               <v-list-item-subtitle>
@@ -954,6 +963,16 @@ export default {
         click: this.handleDeleteItem,
       })
       return list
+    },
+    getExternalLink(data) {
+      if (!data) {
+        return ""
+      }
+      const jsonData = JSON.parse(JSON.stringify(JSON.parse(data), null, 2))
+      if (jsonData.external_link) {
+        return jsonData.external_link
+      }
+      return ""
     },
 
     // handler
