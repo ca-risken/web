@@ -170,6 +170,7 @@ const en = {
     "": "",
     "Activate Finding": "Activate Finding",
     "Activate": "Activate",
+    "Activate selected findings": "Activate selected findings",
     "Analyze Alert": "Analyze Alert",
     "Attach DataSource": "Attach DataSource",
     "Deactivate": "Deactivate",

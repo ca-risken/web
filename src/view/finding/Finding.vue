@@ -118,7 +118,7 @@
               </template>
               <v-list dense>
                 <v-list-item
-                  v-for="action in table.selectedActions"
+                  v-for="action in getSelectedActionList()"
                   :key="action.text"
                   @click="action.click"
                 >
@@ -770,23 +770,6 @@ export default {
           key: "finding_id",
           direction: "asc",
         },
-        selectedActions: [
-          {
-            text: "Pend selected findings",
-            icon: "mdi-check-circle-outline",
-            click: this.handlePendSelected,
-          },
-          {
-            text: "Delete selected findings",
-            icon: "mdi-trash-can-outline",
-            click: this.handleDeleteSelected,
-          },
-          {
-            text: "Download selected findings CSV",
-            icon: "mdi-file-download-outline",
-            click: this.handleDownloadCSVSelected,
-          },
-        ],
         total: 0,
         footer: {
           disableItemsPerPage: false,
@@ -964,6 +947,34 @@ export default {
       })
       return list
     },
+    getSelectedActionList(){
+      let list = []
+      if (this.searchModel.status != this.getFindingStatus("PENDING")){
+        list.push({
+          text: "Pend selected findings",
+          icon: "mdi-check-circle-outline",
+          click: this.handlePendSelected,
+        })
+      }
+      if (this.searchModel.status != this.getFindingStatus("ACTIVE")){
+        list.push({
+          text: "Activate selected findings",
+          icon: "mdi-check-circle",
+          click: this.handleActivateSelected,
+        })
+      }
+      list.push({
+        text: "Delete selected findings",
+        icon: "mdi-trash-can-outline",
+        click: this.handleDeleteSelected,
+      })
+      list.push({
+          text: "Download selected findings CSV",
+          icon: "mdi-file-download-outline",
+          click: this.handleDownloadCSVSelected,
+      })
+      return list
+    },
     getExternalLink(data) {
       if (!data) {
         return ""
@@ -1122,6 +1133,7 @@ export default {
         if (!item.finding_id) return
         await this.deleteFinding(item.finding_id)
       })
+      this.table.selected = []
       this.finishSuccess("Success: Delete " + count + " findings.")
     },
     async handleActivateItem(row) {
@@ -1131,6 +1143,19 @@ export default {
         row.finding_id
       )
       this.finishSuccess("Success: Activated.")
+    },
+    async handleActivateSelected() {
+      this.loading = true
+      const count = this.table.selected.length
+      this.table.selected.forEach(async (item) => {
+        if (!item.finding_id) return
+          await this.deletePendFinding(
+            this.$store.state.project.project_id,
+            item.finding_id
+          )
+      })
+      this.table.selected = []
+      this.finishSuccess("Success: Activated " + count + " findings.")
     },
     // Pend
     handlePendItem(row) {
@@ -1156,6 +1181,7 @@ export default {
         if (!item.finding_id) return
         await this.putPendFinding(item.finding_id, this.pendNote)
       })
+      this.table.selected = []
       this.finishSuccess("Success: Pend " + count + " findings.")
     },
     handleChangeStatus(tabNumber) {
