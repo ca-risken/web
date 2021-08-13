@@ -170,6 +170,7 @@ const ja = {
     "": "",
     "Activate Finding": "有効化",
     "Activate": "有効化",
+    "Activate selected findings": "選択中のFindingを有効化する",
     "Analyze Alert": "アラート状態の解析",
     "Attach DataSource": "データソースを設定する",
     "Deactivate": "無効化",
