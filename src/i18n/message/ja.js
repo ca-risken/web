@@ -73,6 +73,7 @@ const ja = {
     "User": "ユーザ",
     "Role": "ロール",
     "Policy": "ポリシー",
+    "AccessToken": "アクセストークン",
     "ReportFinding": "Findingレポート",
     "NewProject": "新規プロジェクト",
     "ProjectSetting": "設定",

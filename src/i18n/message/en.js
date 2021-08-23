@@ -70,9 +70,10 @@ const en = {
     "OSINT": "OSINT",
     "OSINT DataSource": "OSINT DataSource",
     "Gitleaks": "Gitleaks",
-    "User": "User",     // IAM
-    "Role": "Role",     // IAM
-    "Policy": "Policy", // IAM
+    "User": "User",               // IAM
+    "Role": "Role",               // IAM
+    "Policy": "Policy",           // IAM
+    "AccessToken": "AccessToken", // IAM
     "ReportFinding": "ReportFinding", // Report
     "NewProject": "New",         // Project
     "ProjectSetting": "Setting", // Project

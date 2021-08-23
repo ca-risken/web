@@ -202,6 +202,7 @@ import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
 import Util from "@/util"
 import store from "@/store"
 import mixin from "@/mixin"
+import iam from "@/mixin/api/iam"
 import project from "@/mixin/api/project"
 export default {
   name: "AppToolbar",
@@ -209,7 +210,7 @@ export default {
     // ProjectList,
     BottomSnackBar,
   },
-  mixins: [mixin, project],
+  mixins: [mixin, project, iam],
   data() {
     return {
       loading: false,
@@ -336,13 +337,13 @@ export default {
         console.log("Error: Try again after signin.")
         return
       }
-      const admin = await this.$axios
-        .get("/iam/is-admin/?user_id=" + store.state.user.user_id)
-        .catch((err) => {
+      const admin = await this.isAdminAPI(store.state.user.user_id).catch(
+        (err) => {
           return Promise.reject(err)
-        })
+        }
+      )
       let listProjectParam = "?user_id=" + store.state.user.user_id
-      if (admin.data.data.ok) {
+      if (admin) {
         listProjectParam = ""
       }
       this.projectTable.item = await this.listProjectAPI(

@@ -55,7 +55,7 @@ export const appRoute = [
     meta: {
       title: 'Home',
       group: 'apps',
-    
+
     },
     children: [
       {
@@ -340,6 +340,14 @@ export const appRoute = [
             },
             component: () => import('@/view/iam/Policy.vue')
           },
+          // {
+          //   path: '/iam/access-token',
+          //   name: 'AccessToken',
+          //   meta: {
+          //     title: 'AccessToken'
+          //   },
+          //   component: () => import('@/view/iam/AccessToken.vue')
+          // },
           {
             path: '/iam/profile',
             name: 'Profile',
@@ -388,7 +396,7 @@ export const appRoute = [
               title: 'ProjectSetting',
             },
             component: () => import('@/view/project/Setting.vue')
-          },    
+          },
           {
             path: '/project/new',
             name: 'NewProject',

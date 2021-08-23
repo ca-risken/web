@@ -15,9 +15,11 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="4" sm="3" md="3">
             <v-combobox
-              outlined dense clearable
+              outlined
+              dense
+              clearable
               background-color="white"
-              :label="$t(`item['`+searchForm.userID.label+`']`)"
+              :label="$t(`item['` + searchForm.userID.label + `']`)"
               :placeholder="searchForm.userID.placeholder"
               :items="userIDList"
               v-model="searchModel.userID"
@@ -25,19 +27,35 @@
           </v-col>
           <v-col cols="8" sm="4" md="4">
             <v-combobox
-              outlined dense clearable
+              outlined
+              dense
+              clearable
               background-color="white"
-              :label="$t(`item['`+searchForm.userName.label+`']`)"
+              :label="$t(`item['` + searchForm.userName.label + `']`)"
               :placeholder="searchForm.userName.placeholder"
               :items="userNameList"
               v-model="searchModel.userName"
             />
           </v-col>
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
+          <v-btn
+            class="mt-3 mr-4"
+            fab
+            dense
+            small
+            :loading="loading"
+            @click="handleSearch"
+          >
             <v-icon>search</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNew">
+          <v-btn
+            class="mt-3 mr-4"
+            color="primary darken-3"
+            fab
+            dense
+            small
+            @click="handleNew"
+          >
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -68,7 +86,9 @@
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip :color="getColorByCount(item.role_cnt)" dark>{{ item.role_cnt }}</v-chip>
+                  <v-chip :color="getColorByCount(item.role_cnt)" dark>{{
+                    item.role_cnt
+                  }}</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -89,12 +109,14 @@
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -116,7 +138,12 @@
           </span>
           <v-spacer />
           <template v-if="userForm.clickNew">
-            <v-btn outlined  color="primary darken-3" dark @click="userDialog = true">
+            <v-btn
+              outlined
+              color="primary darken-3"
+              dark
+              @click="userDialog = true"
+            >
               Invite New User
             </v-btn>
             <user
@@ -128,17 +155,19 @@
         <v-card-text>
           <v-text-field
             v-model="userModel.user_id"
-            :label="$t(`item['`+userForm.user_id.label+`']`)"
+            :label="$t(`item['` + userForm.user_id.label + `']`)"
             :placeholder="userForm.user_id.placeholder"
-            filled disabled
+            filled
+            disabled
           ></v-text-field>
           <v-text-field
             v-model="userModel.name"
             :counter="64"
             :rules="userForm.name.validator"
-            :label="$t(`item['`+userForm.name.label+`']`) + ' *'"
+            :label="$t(`item['` + userForm.name.label + `']`) + ' *'"
             :placeholder="userForm.name.placeholder"
-            filled disabled
+            filled
+            disabled
           ></v-text-field>
           <!-- Role List -->
           <div v-show="userModel.user_id">
@@ -149,7 +178,10 @@
                   {{ $t(`submenu['Role']`) }}
                 </span>
               </v-toolbar-title>
-              <v-text-field text solo flat
+              <v-text-field
+                text
+                solo
+                flat
                 prepend-icon="mdi-magnify"
                 placeholder="Type something"
                 v-model="roleTable.search"
@@ -179,7 +211,8 @@
             >
               <template v-slot:[`item.action_ptn`]="{ item }">
                 <v-card
-                  label outliend
+                  label
+                  outliend
                   elevation="0"
                   color="red lighten-5"
                   class="my-1"
@@ -191,7 +224,8 @@
               </template>
               <template v-slot:[`item.resource_ptn`]="{ item }">
                 <v-card
-                  label outliend
+                  label
+                  outliend
                   elevation="0"
                   color="red lighten-5"
                   class="my-1"
@@ -210,17 +244,32 @@
               outlined
               type="error"
             >
-              {{ $t(`view.iam['Please select one or more roles. If you do not select any role, the user will be ']`) }}
+              {{
+                $t(
+                  `view.iam['Please select one or more roles. If you do not select any role, the user will be ']`
+                )
+              }}
               <strong>{{ $t(`view.iam['removed']`) }}</strong>
               {{ $t(`view.iam['from the project.']`) }}
               <!-- The selected user will be <strong>removed</strong> from the project, if you do not select any <strong>role</strong>,  -->
             </v-alert>
             <v-card-actions>
               <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+              <v-btn
+                text
+                outlined
+                color="grey darken-1"
+                @click="editDialog = false"
+              >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
+              <v-btn
+                text
+                outlined
+                color="green darken-1"
+                :loading="loading"
+                @click="handleEditSubmit"
+              >
                 {{ $t(`btn['EDIT']`) }}
               </v-btn>
             </v-card-actions>
@@ -234,11 +283,12 @@
 </template>
 
 <script>
-import mixin from '@/mixin'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import User from '@/component/widget/list/User'
+import mixin from "@/mixin"
+import iam from "@/mixin/api/iam"
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import User from "@/component/widget/list/User"
 export default {
-  mixins: [mixin],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     User,
@@ -246,26 +296,32 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: { 
+      searchModel: {
         userID: null,
-        userName: null 
+        userName: null,
       },
       searchForm: {
-        userID: { label: 'ID', placeholder: 'Filter for user id' },
-        userName: { label: 'Name', placeholder: 'Filter for user name' },
+        userID: { label: "ID", placeholder: "Filter for user id" },
+        userName: { label: "Name", placeholder: "Filter for user name" },
       },
       userForm: {
         clickNew: false,
-        user_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name', placeholder: 'Please select user...'},
+        user_id: { label: "ID", placeholder: "-" },
+        name: { label: "Name", placeholder: "Please select user..." },
       },
       userIDList: [],
       userNameList: [],
-      userModel: { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' },
+      userModel: {
+        user_id: "",
+        name: "",
+        role_cnt: 0,
+        roles: "",
+        updated_at: "",
+      },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ["user_id"] },
         actions: [
-          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEdit },
+          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEdit },
         ],
         total: 0,
         footer: {
@@ -274,7 +330,7 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       users: [],
       deleteDialog: false,
@@ -282,8 +338,8 @@ export default {
       userDialog: false,
       roleTable: {
         selected: [],
-        search: '',
-        options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
+        search: "",
+        options: { page: 1, itemsPerPage: 5, sortBy: ["role_id"] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -291,45 +347,86 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
     }
   },
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
-        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'user_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
-        { text: this.$i18n.t('item["Roles"]'), align: 'center', sortable: false, value: 'role_cnt' },
-        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
-        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+        {
+          text: this.$i18n.t('item[""]'),
+          align: "center",
+          width: "10%",
+          sortable: false,
+          value: "avator",
+        },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: false,
+          value: "user_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          sortable: false,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["Roles"]'),
+          align: "center",
+          sortable: false,
+          value: "role_cnt",
+        },
+        {
+          text: this.$i18n.t('item["Updated"]'),
+          align: "center",
+          sortable: false,
+          value: "updated_at",
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: "center",
+          sortable: false,
+          value: "action",
+        },
       ]
     },
     roleHeaders() {
       return [
-        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'role_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: true,
+          value: "role_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          sortable: true,
+          value: "name",
+        },
       ]
     },
   },
   mounted() {
-    this.refleshList('')
+    this.refleshList("")
   },
   methods: {
     async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/iam/list-user/?activated=true&project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
+      searchCond +=
+        "&project_id=" + this.$store.state.project.project_id + searchCond
+      const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.user_id ) {
+      if (!userIDs) {
         this.clearList()
         return false
       }
-      this.table.total = res.data.data.user_id.length
-      this.users = res.data.data.user_id
+      this.table.total = userIDs.length
+      this.users = userIDs
       this.loadList()
     },
     async loadList() {
@@ -337,24 +434,25 @@ export default {
       let items = []
       let userIDs = []
       let userNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
-      ids.forEach( async id => {
-        const res = await this.$axios.get('/iam/get-user/?project_id='+ this.$store.state.project.project_id +'&user_id=' + id).catch((err) =>  {
+      ids.forEach(async (id) => {
+        const user = await this.getUserAPI(id).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
-        const roles = await this.$axios.get('/iam/list-role/?project_id='+ this.$store.state.project.project_id +'&user_id=' + id).catch((err) =>  {
+        const roles = await this.listRoleAPI("&user_id=" + id).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
         const item = {
-          user_id:    res.data.data.user.user_id,
-          name:       res.data.data.user.name,
-          updated_at: res.data.data.user.updated_at,
-          role_cnt:   roles.data.data.role_id ? roles.data.data.role_id.length : 0,
-          roles:      roles.data.data.role_id ? roles.data.data.role_id : [],
+          user_id: user.user_id,
+          name: user.name,
+          updated_at: user.updated_at,
+          role_cnt: roles.length,
+          roles: roles,
         }
         items.push(item)
         userIDs.push(item.user_id)
@@ -374,26 +472,18 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      const res = await this.$axios.get(
-        '/iam/list-role/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const roles = await this.listRoleAPI("").catch((err) => {
         return Promise.reject(err)
       })
-      if ( !res.data.data.role_id ) {
-        return false
-      }
 
-      res.data.data.role_id.forEach( async id => {
-        const res = await this.$axios.get(
-          '/iam/get-role/?project_id='+ this.$store.state.project.project_id +'&role_id=' + id
-        ).catch((err) =>  {
+      roles.forEach(async (id) => {
+        const role = await this.getRoleAPI(id).catch((err) => {
           return Promise.reject(err)
         })
-        const r = res.data.data.role
-        this.roleTable.items.push(r)
+        this.roleTable.items.push(role)
 
-        if (this.userModel.roles.indexOf(r.role_id) !== -1 ){
-          this.roleTable.selected.push(r)
+        if (this.userModel.roles.indexOf(role.role_id) !== -1) {
+          this.roleTable.selected.push(role)
         }
       })
       this.loading = false
@@ -406,32 +496,38 @@ export default {
     async putItem() {
       this.loading = true
       // Attach/Detach roles
-      this.roleTable.items.forEach( async item => {
-        const param = { 
-          project_id: this.$store.state.project.project_id,
-          user_id: this.userModel.user_id,
-          role_id: item.role_id,
-        }
-        let uri = '/iam/detach-role/'
-        this.roleTable.selected.some( selected => {
-          if(item.role_id === selected.role_id){
-            uri = '/iam/attach-role/'
+      this.roleTable.items.forEach(async (item) => {
+        let attachRole = false
+        this.roleTable.selected.some((selected) => {
+          if (item.role_id === selected.role_id) {
+            attachRole = true
             return true
           }
         })
-        await this.$axios.post(uri, param).catch((err) =>  {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
+        if (attachRole) {
+          await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
+        } else {
+          await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
+        }
       })
 
-      this.finishUpdated('Success: Updated role.')
+      this.finishUpdated("Success: Updated role.")
     },
     async finishUpdated(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
-      this.editDialog  = false
+      this.editDialog = false
       this.handleSearch()
     },
 
@@ -441,34 +537,46 @@ export default {
     },
     handleNew() {
       this.userForm.clickNew = true
-      this.userModel = { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' }
+      this.userModel = {
+        user_id: "",
+        name: "",
+        role_cnt: 0,
+        roles: "",
+        updated_at: "",
+      }
       this.loadRoleList()
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleEdit(item) {
       this.userForm.clickNew = false
       this.assignDataModel(item)
       this.loadRoleList()
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleEditSubmit() {
       this.putItem()
     },
     handleSearch() {
-      let searchCond = ''
+      let searchCond = ""
       if (this.searchModel.userName) {
-        searchCond += '&name=' + this.searchModel.userName
+        searchCond += "&name=" + this.searchModel.userName
       }
       if (this.searchModel.userID) {
-        searchCond += '&user_id=' + this.searchModel.userID
+        searchCond += "&user_id=" + this.searchModel.userID
       }
 
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
-      this.awsuserModelModel = { user_id:'', name:'', role_cnt:0, roles:'', updated_at:'' }
+      this.awsuserModelModel = {
+        user_id: "",
+        name: "",
+        role_cnt: 0,
+        roles: "",
+        updated_at: "",
+      }
       this.userModel = Object.assign(this.userModel, item)
     },
-  }
+  },
 }
 </script>

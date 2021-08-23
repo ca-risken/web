@@ -15,9 +15,11 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-combobox
-              outlined clearable dense
+              outlined
+              clearable
+              dense
               background-color="white"
-              :label="$t(`item['`+searchForm.policyName.label+`']`)"
+              :label="$t(`item['` + searchForm.policyName.label + `']`)"
               :placeholder="searchForm.policyName.placeholder"
               :items="policyNameList"
               v-model="searchModel.policyName"
@@ -25,10 +27,24 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
+          <v-btn
+            class="mt-3 mr-4"
+            fab
+            dense
+            small
+            :loading="loading"
+            @click="handleSearch"
+          >
             <v-icon>search</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn
+            class="mt-3 mr-4"
+            color="primary darken-3"
+            fab
+            dense
+            small
+            @click="handleNewItem"
+          >
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -60,7 +76,8 @@
                 </template>
                 <template v-slot:[`item.action_ptn`]="{ item }">
                   <v-card
-                    label outliend
+                    label
+                    outliend
                     elevation="1"
                     color="teal lighten-5"
                     class="mx-auto"
@@ -72,7 +89,8 @@
                 </template>
                 <template v-slot:[`item.resource_ptn`]="{ item }">
                   <v-card
-                    label outliend
+                    label
+                    outliend
                     elevation="1"
                     color="light-green lighten-5"
                     class="mx-auto"
@@ -101,12 +119,14 @@
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -130,16 +150,17 @@
           <v-form v-model="policyForm.valid" ref="form">
             <v-text-field
               v-model="policyModel.policy_id"
-              :label="$t(`item['`+policyForm.policy_id.label+`']`)"
+              :label="$t(`item['` + policyForm.policy_id.label + `']`)"
               :placeholder="policyForm.policy_id.placeholder"
-              filled disabled
+              filled
+              disabled
             ></v-text-field>
             <template v-if="policyForm.newPolicy">
               <v-text-field
                 v-model="policyModel.name"
                 :counter="64"
                 :rules="policyForm.name.validator"
-                :label="$t(`item['`+policyForm.name.label+`']`) + ' *'"
+                :label="$t(`item['` + policyForm.name.label + `']`) + ' *'"
                 :placeholder="policyForm.name.placeholder"
                 required
               ></v-text-field>
@@ -149,33 +170,49 @@
                 v-model="policyModel.name"
                 :counter="64"
                 :rules="policyForm.name.validator"
-                :label="$t(`item['`+policyForm.name.label+`']`)"
+                :label="$t(`item['` + policyForm.name.label + `']`)"
                 :placeholder="policyForm.name.placeholder"
-                filled disabled
-              ></v-text-field>   
+                filled
+                disabled
+              ></v-text-field>
             </template>
 
             <v-text-field
               v-model="policyModel.action_ptn"
               :rules="policyForm.action_ptn.validator"
-              :label="$t(`item['`+policyForm.action_ptn.label+`']`) + ' *'"
+              :label="$t(`item['` + policyForm.action_ptn.label + `']`) + ' *'"
               :placeholder="policyForm.action_ptn.placeholder"
               required
             ></v-text-field>
             <v-text-field
               v-model="policyModel.resource_ptn"
               :rules="policyForm.resource_ptn.validator"
-              :label="$t(`item['`+policyForm.resource_ptn.label+`']`) + ' *'"
+              :label="
+                $t(`item['` + policyForm.resource_ptn.label + `']`) + ' *'
+              "
               :placeholder="policyForm.resource_ptn.placeholder"
-              required
+              value=".*"
+              filled
+              readonly
             ></v-text-field>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+              <v-btn
+                text
+                outlined
+                color="grey darken-1"
+                @click="editDialog = false"
+              >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
+              <v-btn
+                text
+                outlined
+                color="green darken-1"
+                :loading="loading"
+                @click="putItem"
+              >
                 <template v-if="policyForm.newPolicy">Regist</template>
                 <template v-else>Edit</template>
               </v-btn>
@@ -194,9 +231,13 @@
         </v-card-title>
         <v-list two-line>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-avatar
+              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+            >
             <v-list-item-content>
-              <v-list-item-title v-text="policyModel.policy_id"></v-list-item-title>
+              <v-list-item-title
+                v-text="policyModel.policy_id"
+              ></v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -216,12 +257,18 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
-            text outlined
+            text
+            outlined
             @click="deleteItem(policyModel.policy_id)"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -234,10 +281,11 @@
 </template>
 
 <script>
-import mixin from '@/mixin'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import mixin from "@/mixin"
+import iam from "@/mixin/api/iam"
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
 export default {
-  mixins: [mixin],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
   },
@@ -246,39 +294,65 @@ export default {
       loading: false,
       searchModel: { policyName: null },
       searchForm: {
-        policyName: { label: 'Policy Name', placeholder: 'Filter for policy name' },
+        policyName: {
+          label: "Policy Name",
+          placeholder: "Filter for policy name",
+        },
       },
       policyForm: {
         newPolicy: false,
         valid: false,
-        policy_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name', placeholder: 'something-policy', validator:[
-            v => !!v || 'Name is required',
-            v => v.length <= 64 || 'Name must be less than 64 characters',
-          ]
+        policy_id: { label: "ID", placeholder: "-" },
+        name: {
+          label: "Name",
+          placeholder: "something-policy",
+          validator: [
+            (v) => !!v || "Name is required",
+            (v) => v.length <= 64 || "Name must be less than 64 characters",
+          ],
         },
-        action_ptn: { label: 'Action Pattern', placeholder: '`.*` for all aciotns', validator:[
-            v => !!v || 'Action Pattern is required',
-            v => this.compilableRegexp(v) || 'Action Pattern must be compilable regular expression',
-          ]
+        action_ptn: {
+          label: "Action Pattern",
+          placeholder: "`.*` for all aciotns",
+          validator: [
+            (v) => !!v || "Action Pattern is required",
+            (v) =>
+              this.compilableRegexp(v) ||
+              "Action Pattern must be compilable regular expression",
+          ],
         },
-        resource_ptn: { label: 'Resource Pattern', placeholder: '`.*` for all resources', validator:[
-            v => !!v || 'Resource Pattern is required',
-            v => this.compilableRegexp(v) || 'Resource Pattern must be compilable regular expression',
-          ]
+        resource_ptn: {
+          label: "Resource Pattern",
+          placeholder: "`.*` for all resources",
+          validator: [
+            (v) => !!v || "Resource Pattern is required",
+            (v) =>
+              this.compilableRegexp(v) ||
+              "Resource Pattern must be compilable regular expression",
+          ],
         },
       },
       policyNameList: [],
-      policyModel: { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' },
+      policyModel: {
+        policy_id: "",
+        name: "",
+        action_ptn: "",
+        resource_ptn: ".*", // fixed
+        updated_at: "",
+      },
       table: {
         options: {
           page: 1,
           itemsPerPage: 10,
-          sortBy: ['policy_id'],
+          sortBy: ["policy_id"],
         },
         actions: [
-          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
-          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
+          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          {
+            text: "Delete Item",
+            icon: "mdi-trash-can-outline",
+            click: this.handleDeleteItem,
+          },
         ],
         total: 0,
         footer: {
@@ -287,7 +361,7 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       policies: [],
       deleteDialog: false,
@@ -297,51 +371,80 @@ export default {
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
-        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'policy_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
-        { text: this.$i18n.t('item["Action Pattern"]'), align: 'start', sortable: false, value: 'action_ptn' },
-        { text: this.$i18n.t('item["Resource Pattern"]'), align: 'start', sortable: false, value: 'resource_ptn' },
-        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
-        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+        {
+          text: this.$i18n.t('item[""]'),
+          align: "center",
+          width: "10%",
+          sortable: false,
+          value: "avator",
+        },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: false,
+          value: "policy_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          sortable: false,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["Action Pattern"]'),
+          align: "start",
+          sortable: false,
+          value: "action_ptn",
+        },
+        {
+          text: this.$i18n.t('item["Resource Pattern"]'),
+          align: "start",
+          sortable: false,
+          value: "resource_ptn",
+        },
+        {
+          text: this.$i18n.t('item["Updated"]'),
+          align: "center",
+          sortable: false,
+          value: "updated_at",
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: "center",
+          sortable: false,
+          value: "action",
+        },
       ]
     },
   },
   mounted() {
-    this.refleshList('')
+    this.refleshList("")
   },
   methods: {
     async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/iam/list-policy/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
+      const policies = await this.listPolicyAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.policy_id ) {
-        this.clearList()
-        return false
-      }
-      this.table.total = res.data.data.policy_id.length
-      this.policies = res.data.data.policy_id
+      this.table.total = policies.length
+      this.policies = policies
       this.loadList()
     },
     async loadList() {
       this.loading = true
       let items = []
       let policyNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.policies.slice(from, to)
-      ids.forEach( async id => {
-        const res = await this.$axios.get(
-          '/iam/get-policy/?project_id='+ this.$store.state.project.project_id +'&policy_id=' + id
-        ).catch((err) =>  {
+      ids.forEach(async (id) => {
+        const policy = await this.getPolicyAPI(id).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
-        items.push(res.data.data.policy)
-        policyNames.push(res.data.data.policy.name)
+        items.push(policy)
+        policyNames.push(policy.name)
       })
       this.table.items = items
       this.policyNameList = policyNames
@@ -354,72 +457,78 @@ export default {
       this.policyNameList = []
     },
     async deleteItem(policyID) {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          policy_id: policyID,
-      }
-      await this.$axios.post('/iam/delete-policy/', param).catch((err) =>  {
+      await this.deletePolicyAPI(policyID).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
-
-      this.deleteDialog  = false
+      this.$refs.snackbar.notifySuccess("Success: Deleting policy.")
+      this.deleteDialog = false
       this.handleSearch()
     },
     async putItem() {
-      const param = { 
+      const param = {
         project_id: this.$store.state.project.project_id,
         policy: {
           name: this.policyModel.name,
           project_id: this.$store.state.project.project_id,
           action_ptn: this.policyModel.action_ptn,
-          resource_ptn: this.policyModel.resource_ptn,
+          resource_ptn: ".*", //this.policyModel.resource_ptn,
         },
       }
-      await this.$axios.post('/iam/put-policy/', param).catch((err) =>  {
+      await this.putPolicyAPI(param).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess('Success: Updated policy.')
-
-      this.editDialog  = false
+      this.$refs.snackbar.notifySuccess("Success: Updated policy.")
+      this.editDialog = false
       this.handleSearch()
     },
     compilableRegexp(ptn) {
       try {
         new RegExp(ptn)
-      } catch(e) {
-        console.log('Regexp complie error: ' + e )
+      } catch (e) {
+        console.log("Regexp complie error: " + e)
         return false
       }
       return true
     },
     handleNewItem() {
-      this.policyModel = { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' }
+      this.policyModel = {
+        policy_id: "",
+        name: "",
+        action_ptn: "",
+        resource_ptn: ".*",
+        updated_at: "",
+      }
       this.policyForm.newPolicy = true
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
       this.policyForm.newPolicy = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
-      this.deleteDialog  = true
+      this.deleteDialog = true
     },
     handleSearch() {
-      let searchCond = ''
+      let searchCond = ""
       if (this.searchModel.policyName) {
-        searchCond += '&name=' + this.searchModel.policyName
+        searchCond += "&name=" + this.searchModel.policyName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
-      this.policyModel = { policy_id:'', name:'', action_ptn:'', resource_ptn:'', updated_at:'' }
+      this.policyModel = {
+        policy_id: "",
+        name: "",
+        action_ptn: "",
+        resource_ptn: ".*",
+        updated_at: "",
+      }
       this.policyModel = Object.assign(this.policyModel, item)
     },
-  }
+  },
 }
 </script>

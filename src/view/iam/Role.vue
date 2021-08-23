@@ -15,9 +15,11 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-combobox
-              outlined dense clearable
+              outlined
+              dense
+              clearable
               background-color="white"
-              :label="$t(`item['`+searchForm.roleName.label+`']`)"
+              :label="$t(`item['` + searchForm.roleName.label + `']`)"
               :placeholder="searchForm.roleName.placeholder"
               :items="roleNameList"
               v-model="searchModel.roleName"
@@ -28,7 +30,14 @@
           <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
             <v-icon>search</v-icon>
           </v-btn>
-          <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+          <v-btn
+            class="mt-3 mr-4"
+            color="primary darken-3"
+            fab
+            dense
+            small
+            @click="handleNewItem"
+          >
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
         </v-row>
@@ -59,7 +68,9 @@
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.policy_cnt`]="{ item }">
-                  <v-chip :color="getColorByCount(item.policy_cnt)" dark>{{ item.policy_cnt }}</v-chip>
+                  <v-chip :color="getColorByCount(item.policy_cnt)" dark>{{
+                    item.policy_cnt
+                  }}</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -80,12 +91,14 @@
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -110,16 +123,17 @@
           <v-form v-model="roleForm.valid" ref="form">
             <v-text-field
               v-model="roleModel.role_id"
-              :label="$t(`item['`+roleForm.role_id.label+`']`)"
+              :label="$t(`item['` + roleForm.role_id.label + `']`)"
               :placeholder="roleForm.role_id.placeholder"
-              filled disabled
+              filled
+              disabled
             ></v-text-field>
             <template v-if="roleForm.newRole">
               <v-text-field
                 v-model="roleModel.name"
                 :counter="64"
                 :rules="roleForm.name.validator"
-                :label="$t(`item['`+roleForm.name.label+`']`) + ' *'"
+                :label="$t(`item['` + roleForm.name.label + `']`) + ' *'"
                 :placeholder="roleForm.name.placeholder"
                 required
               ></v-text-field>
@@ -129,10 +143,11 @@
                 v-model="roleModel.name"
                 :counter="64"
                 :rules="roleForm.name.validator"
-                :label="$t(`item['`+roleForm.name.label+`']`) + ' *'"
+                :label="$t(`item['` + roleForm.name.label + `']`) + ' *'"
                 :placeholder="roleForm.name.placeholder"
-                filled disabled
-              ></v-text-field>   
+                filled
+                disabled
+              ></v-text-field>
             </template>
             <!-- Policy List -->
             <v-toolbar flat color="white">
@@ -142,7 +157,10 @@
                   {{ $t(`submenu['Policy']`) }}
                 </span>
               </v-toolbar-title>
-              <v-text-field text solo flat
+              <v-text-field
+                text
+                solo
+                flat
                 prepend-icon="mdi-magnify"
                 placeholder="Type something"
                 v-model="policyTable.search"
@@ -172,7 +190,8 @@
             >
               <template v-slot:[`item.action_ptn`]="{ item }">
                 <v-card
-                  label outliend
+                  label
+                  outliend
                   elevation="0"
                   color="teal lighten-5"
                   class="my-1"
@@ -184,7 +203,8 @@
               </template>
               <template v-slot:[`item.resource_ptn`]="{ item }">
                 <v-card
-                  label outliend
+                  label
+                  outliend
                   elevation="0"
                   color="light-green lighten-5"
                   class="my-1"
@@ -199,10 +219,21 @@
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+              <v-btn
+                text
+                outlined
+                color="grey darken-1"
+                @click="editDialog = false"
+              >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="putItem">
+              <v-btn
+                text
+                outlined
+                color="green darken-1"
+                :loading="loading"
+                @click="putItem"
+              >
                 <template v-if="roleForm.newRole">Regist</template>
                 <template v-else>Edit</template>
               </v-btn>
@@ -222,7 +253,9 @@
         </v-card-title>
         <v-list two-line>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-avatar
+              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+            >
             <v-list-item-content>
               <v-list-item-title v-text="roleModel.role_id"></v-list-item-title>
               <v-list-item-subtitle>
@@ -244,13 +277,19 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
             color="red darken-1"
-            text outlined
+            text
+            outlined
             @click="deleteItem(roleModel.role_id)"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -264,10 +303,11 @@
 </template>
 
 <script>
-import mixin from '@/mixin'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import mixin from "@/mixin"
+import iam from "@/mixin/api/iam"
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
 export default {
-  mixins: [mixin],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
   },
@@ -276,26 +316,39 @@ export default {
       loading: false,
       searchModel: { roleName: null },
       searchForm: {
-        roleName: { label: 'Name', placeholder: 'Filter for role name' },
+        roleName: { label: "Name", placeholder: "Filter for role name" },
       },
       roleForm: {
         newRole: false,
         valid: false,
-        role_id: { label: 'ID', placeholder: '-' },
-        name: { label: 'Name', placeholder: 'something-policy', validator:[
-            v => !!v || 'Name is required',
-            v => v.length <= 64 || 'Name must be less than 64 characters',
-          ]
+        role_id: { label: "ID", placeholder: "-" },
+        name: {
+          label: "Name",
+          placeholder: "something-policy",
+          validator: [
+            (v) => !!v || "Name is required",
+            (v) => v.length <= 64 || "Name must be less than 64 characters",
+          ],
         },
       },
 
       roleNameList: [],
-      roleModel: { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' },
+      roleModel: {
+        role_id: "",
+        name: "",
+        policy_cnt: 0,
+        policies: "",
+        updated_at: "",
+      },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['role_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ["role_id"] },
         actions: [
-          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
-          { text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem },
+          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          {
+            text: "Delete Item",
+            icon: "mdi-trash-can-outline",
+            click: this.handleDeleteItem,
+          },
         ],
         total: 0,
         footer: {
@@ -304,15 +357,15 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       roles: [],
       deleteDialog: false,
       editDialog: false,
       policyTable: {
         selected: [],
-        search: '',
-        options: { page: 1, itemsPerPage: 5, sortBy: ['policy_id'] },
+        search: "",
+        options: { page: 1, itemsPerPage: 5, sortBy: ["policy_id"] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -320,75 +373,123 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
     }
   },
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
-        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'role_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
-        { text: this.$i18n.t('item["Policies"]'), align: 'center', sortable: false, value: 'policy_cnt' },
-        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
-        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+        {
+          text: this.$i18n.t('item[""]'),
+          align: "center",
+          width: "10%",
+          sortable: false,
+          value: "avator",
+        },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: false,
+          value: "role_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          sortable: false,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["Policies"]'),
+          align: "center",
+          sortable: false,
+          value: "policy_cnt",
+        },
+        {
+          text: this.$i18n.t('item["Updated"]'),
+          align: "center",
+          sortable: false,
+          value: "updated_at",
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: "center",
+          sortable: false,
+          value: "action",
+        },
       ]
     },
     policyHeaders() {
       return [
-        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: true, value: 'policy_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: true, value: 'name' },
-        { text: this.$i18n.t('item["Action Pattern"]'), align: 'start', sortable: true, value: 'action_ptn' },
-        { text: this.$i18n.t('item["Resource Pattern"]'), align: 'start', sortable: true, value: 'resource_ptn' },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: true,
+          value: "policy_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          sortable: true,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["Action Pattern"]'),
+          align: "start",
+          sortable: true,
+          value: "action_ptn",
+        },
+        {
+          text: this.$i18n.t('item["Resource Pattern"]'),
+          align: "start",
+          sortable: true,
+          value: "resource_ptn",
+        },
       ]
     },
   },
   mounted() {
-    this.refleshList('')
+    this.refleshList("")
   },
   methods: {
     async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/iam/list-role/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) =>  {
+      const roles = await this.listRoleAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.role_id ) {
+      if (!roles) {
         this.clearList()
         return false
       }
-      this.table.total = res.data.data.role_id.length
-      this.roles = res.data.data.role_id
+      this.table.total = roles.length
+      this.roles = roles
       this.loadList()
     },
     async loadList() {
       this.loading = true
       let items = []
       let roleNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.roles.slice(from, to)
-      ids.forEach( async id => {
-        const res = await this.$axios.get(
-          '/iam/get-role/?project_id='+ this.$store.state.project.project_id +'&role_id=' + id
-        ).catch((err) =>  {
+      ids.forEach(async (id) => {
+        const role = await this.getRoleAPI(id).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
-        const policies = await this.$axios.get(
-          '/iam/list-policy/?project_id='+ this.$store.state.project.project_id +'&role_id=' + id
-        ).catch((err) =>  {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        const policies = await this.listPolicyAPI("&role_id=" + id).catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
         const item = {
-          role_id:    res.data.data.role.role_id,
-          name:       res.data.data.role.name,
-          updated_at: res.data.data.role.updated_at,
-          policy_cnt:  policies.data.data.policy_id ? policies.data.data.policy_id.length : 0,
-          policies:   policies.data.data.policy_id ? policies.data.data.policy_id : [],
+          role_id: role.role_id,
+          name: role.name,
+          updated_at: role.updated_at,
+          policy_cnt: policies.length,
+          policies: policies,
         }
         items.push(item)
         roleNames.push(item.name)
@@ -407,25 +508,16 @@ export default {
     async loadPolicyList() {
       this.loading = true
       this.clearPolicyList()
-      const res = await this.$axios.get(
-        '/iam/list-policy/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+      const policies = await this.listPolicyAPI("").catch((err) => {
         return Promise.reject(err)
       })
-      if ( !res.data.data.policy_id ) {
-        return false
-      }
-      res.data.data.policy_id.forEach( async id => {
-        const res = await this.$axios.get(
-          '/iam/get-policy/?project_id='+ this.$store.state.project.project_id +'&policy_id=' + id
-        ).catch((err) =>  {
+      policies.forEach(async (id) => {
+        const policy = await this.getPolicyAPI(id).catch((err) => {
           return Promise.reject(err)
         })
-        const p = res.data.data.policy
-        this.policyTable.items.push(p)
-
-        if (this.roleModel.policies.indexOf(p.policy_id) !== -1 ){
-          this.policyTable.selected.push(p)
+        this.policyTable.items.push(policy)
+        if (this.roleModel.policies.indexOf(policy.policy_id) !== -1) {
+          this.policyTable.selected.push(policy)
         }
       })
       this.loading = false
@@ -438,92 +530,99 @@ export default {
     async putItem() {
       this.loading = true
       // Update role
-      const roleParam = { 
-        project_id: this.$store.state.project.project_id,
-        role: {
-          name: this.roleModel.name,
-          project_id: this.$store.state.project.project_id,
-        },
-      }
-      await this.$axios.post('/iam/put-role/', roleParam).catch((err) =>  {
+      await this.putRoleAPI(this.roleModel.name).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
 
-      if ( this.roleForm.newRole) {
-        this.finishUpdated('Success: Created role.')
+      if (this.roleForm.newRole) {
+        this.finishUpdated("Success: Created role.")
         return
       }
       // Attach/Detach policies
-      this.policyTable.items.forEach( async item => {
-        const policyParam = { 
-          project_id: this.$store.state.project.project_id,
-          role_id: this.roleModel.role_id,
-          policy_id: item.policy_id,
-        }
-        let uri = '/iam/detach-policy/'
-        this.policyTable.selected.some( selected => {
-          if(item.policy_id === selected.policy_id){
-            uri = '/iam/attach-policy/'
+      this.policyTable.items.forEach(async (item) => {
+        let attachPolicy = false
+        this.policyTable.selected.some((selected) => {
+          if (item.policy_id === selected.policy_id) {
+            attachPolicy = true
             return true
           }
         })
-        await this.$axios.post(uri, policyParam).catch((err) =>  {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
+        if (attachPolicy) {
+          this.attachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
+        } else {
+          this.detachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
+        }
       })
 
-      this.finishUpdated('Success: Updated role.')
+      this.finishUpdated("Success: Updated role.")
     },
     async deleteItem(roleID) {
       this.loading = true
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          role_id: roleID,
-      }
-      await this.$axios.post('/iam/delete-role/', param).catch((err) =>  {
+      await this.deleteRoleAPI(roleID).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated('Success: Deleted role.')
+      this.finishUpdated("Success: Deleted role.")
     },
     async finishUpdated(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
-      this.deleteDialog  = false
-      this.editDialog  = false
+      this.deleteDialog = false
+      this.editDialog = false
       this.handleSearch()
     },
 
     handleNewItem() {
-      this.roleModel = { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' }
+      this.roleModel = {
+        role_id: "",
+        name: "",
+        policy_cnt: 0,
+        policies: "",
+        updated_at: "",
+      }
       this.loadPolicyList()
       this.roleForm.newRole = true
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
       this.loadPolicyList()
       this.roleForm.newRole = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
-      this.deleteDialog  = true
+      this.deleteDialog = true
     },
     handleSearch() {
-      let searchCond = ''
+      let searchCond = ""
       if (this.searchModel.roleName) {
-        searchCond += '&name=' + this.searchModel.roleName
+        searchCond += "&name=" + this.searchModel.roleName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
-      this.roleModel = { role_id:'', name:'', policy_cnt:0, policies:'', updated_at:'' }
+      this.roleModel = {
+        role_id: "",
+        name: "",
+        policy_cnt: 0,
+        policies: "",
+        updated_at: "",
+      }
       this.roleModel = Object.assign(this.roleModel, item)
     },
-  }
+  },
 }
 </script>

@@ -191,6 +191,7 @@ import Util from "@/util"
 import mixin from "@/mixin"
 import finding from "@/mixin/api/finding"
 import alert from "@/mixin/api/alert"
+import iam from "@/mixin/api/iam"
 import StatusStatistic from "@/component/widget/statistic/StatusStatistic"
 import MiniStatistic from "@/component/widget/statistic/MiniStatistic"
 import CategoryStatistic from "@/component/widget/statistic/CategoryStatistic"
@@ -198,7 +199,7 @@ import TimeLineChart from "@/component/widget/chart/TimeLineChart"
 import DoughnutChart from "@/component/widget/chart/DoughnutChart"
 export default {
   name: "PageDashboard",
-  mixins: [mixin, finding, alert],
+  mixins: [mixin, finding, alert, iam],
   components: {
     StatusStatistic,
     MiniStatistic,
@@ -368,19 +369,13 @@ export default {
     // User
     async setUser() {
       this.raw.invitedUser = []
-      const res = await this.$axios
-        .get(
-          "/iam/list-user/?activated=true&project_id=" +
-            this.$store.state.project.project_id
-        )
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      if (!res.data || !res.data.data || !res.data.data.user_id) {
-        return
-      }
-      this.status.tutorial.invitedUsers = res.data.data.user_id.length
-      this.raw.invitedUser = res.data.data.user_id
+      const userIDs = await this.listUserAPI(
+        "&project_id=" + this.$store.state.project.project_id
+      ).catch((err) => {
+        return Promise.reject(err)
+      })
+      this.status.tutorial.invitedUsers = userIDs.length
+      this.raw.invitedUser = userIDs
     },
     // Alert condition
     async setAlertCondition() {
