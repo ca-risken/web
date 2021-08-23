@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="600" class="mx-auto" >
+  <v-card max-width="600" class="mx-auto">
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="headline">
@@ -17,41 +17,48 @@
           <img src="/static/avatar/default.png" alt="avatar" align="center" />
         </v-avatar>
       </v-layout>
-      <v-card-text class="text-h6">
-        Edit your profile...
-      </v-card-text>
+      <v-card-text class="text-h6"> Edit your profile... </v-card-text>
     </v-img>
     <v-card-text>
       <v-form v-model="userForm.validator.valid" ref="form">
         <v-text-field
           v-model="userForm.data.id"
           label="ID"
-          outlined filled disabled
+          outlined
+          filled
+          disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.sub"
           label="Sub"
-          outlined filled disabled
+          outlined
+          filled
+          disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.name"
           :counter="64"
           :rules="userForm.validator.name"
           label="Name"
-          outlined required
+          outlined
+          required
         ></v-text-field>
         <v-text-field
           :value="userForm.data.updated_at | formatTime"
           label="Updated"
-          @input="value => userForm.data.updated_at = value"
-          outlined filled disabled
+          @input="(value) => (userForm.data.updated_at = value)"
+          outlined
+          filled
+          disabled
         >
           <pre>{{ userForm.data.updated_at | formatTime }}</pre>
         </v-text-field>
         <v-divider class="mt-3 mb-3"></v-divider>
         <v-card-actions>
           <v-spacer />
-          <v-btn text outlined color="green darken-1" @click="handleSubmit">Edit</v-btn>
+          <v-btn text outlined color="green darken-1" @click="handleSubmit"
+            >Edit</v-btn
+          >
         </v-card-actions>
       </v-form>
     </v-card-text>
@@ -60,29 +67,31 @@
 </template>
 
 <script>
-import store from '@/store'
-import mixin from '@/mixin'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import store from "@/store"
+import mixin from "@/mixin"
+import iam from "@/mixin/api/iam"
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
 export default {
-  mixins: [mixin],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
   },
   data() {
     return {
       userForm: {
-        validator:{
+        validator: {
           valid: false,
           name: [
-            v => !!v || 'Name is required',
-            v => !v || v.length <= 64 || 'Name must be less than 64 characters',
+            (v) => !!v || "Name is required",
+            (v) =>
+              !v || v.length <= 64 || "Name must be less than 64 characters",
           ],
         },
         data: {
-          id: '-',
-          sub: '-',
-          name: '',
-          updated_at: '0',
+          id: "-",
+          sub: "-",
+          name: "",
+          updated_at: "0",
         },
       },
     }
@@ -96,33 +105,33 @@ export default {
       if (store.state.user.user_id) {
         userID = store.state.user.user_id
       } else {
-        userID = await this.signin().catch((err) =>  {
+        userID = await this.signin().catch((err) => {
           return Promise.reject(err)
         })
       }
-      const res = await this.$axios.get('/iam/get-user/?user_id=' + userID).catch((err) =>  {
+      const user = await this.getUserAPI(userID).catch((err) => {
         return Promise.reject(err)
       })
-      if (!res.data.data.user) { return false }
+      if (!user) {
+        return false
+      }
       this.userForm.data = {
-        id : res.data.data.user.user_id,
-        sub: res.data.data.user.sub,
-        name: res.data.data.user.name,
-        updated_at: res.data.data.user.updated_at,
+        id: user.user_id,
+        sub: user.sub,
+        name: user.name,
+        updated_at: user.updated_at,
       }
     },
     async putUser() {
-      const param = {user: {
-        name: this.userForm.data.name,
-        activated: true,
-      }}
-      const res = await this.$axios.post('/iam/put-user/', param).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
-      store.commit('storeUser', res.data.data.user)
+      const user = await this.putUserAPI(this.userForm.data.name).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        }
+      )
+      store.commit("storeUser", user)
       this.getUser()
-      this.$refs.snackbar.notifySuccess('Success: Your profile updated.')
+      this.$refs.snackbar.notifySuccess("Success: Your profile updated.")
     },
     handleSubmit() {
       if (!this.$refs.form.validate()) {
@@ -130,6 +139,6 @@ export default {
       }
       this.putUser()
     },
-  }
+  },
 }
 </script>

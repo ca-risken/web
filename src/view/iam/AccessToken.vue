@@ -5,8 +5,8 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              {{ $t(`submenu['Role']`) }}
+              <v-icon large class="pr-2">mdi-shield-key-outline</v-icon>
+              {{ $t(`submenu['AccessToken']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -14,15 +14,14 @@
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
-            <v-combobox
+            <v-text-field
               outlined
               dense
               clearable
               background-color="white"
-              :label="$t(`item['` + searchForm.roleName.label + `']`)"
-              :placeholder="searchForm.roleName.placeholder"
-              :items="roleNameList"
-              v-model="searchModel.roleName"
+              :label="$t(`item['` + searchForm.keyword.label + `']`)"
+              :placeholder="searchForm.keyword.placeholder"
+              v-model="searchModel.keyword"
             />
           </v-col>
 
@@ -50,27 +49,34 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
+                :search="searchModel.keyword"
                 :options.sync="table.options"
-                :server-items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
-                item-key="role_id"
+                item-key="access_token_id"
                 @click:row="handleEditItem"
-                @update:page="loadList"
+                @update:page="refleshList"
               >
                 <template v-slot:[`item.avator`]="">
                   <v-avatar class="ma-3">
                     <v-icon large>mdi-alpha-r-circle</v-icon>
                   </v-avatar>
                 </template>
-                <template v-slot:[`item.policy_cnt`]="{ item }">
-                  <v-chip :color="getColorByCount(item.policy_cnt)" dark>{{
-                    item.policy_cnt
+                <template v-slot:[`item.role_cnt`]="{ item }">
+                  <v-chip :color="getColorByCount(item.role_cnt)" dark>{{
+                    item.role_cnt
                   }}</v-chip>
+                </template>
+                <template v-slot:[`item.expired_at`]="{ item }">
+                  <v-chip
+                    :color="getExpiredAtColor(item.expired_at)"
+                    :dark="getExpiredAtColor(item.expired_at) != ''"
+                    >{{ item.expired_at }}</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -114,47 +120,85 @@
     <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large>mdi-alpha-r-circle</v-icon>
+          <v-icon large>mdi-shield-key-outline</v-icon>
           <span class="mx-4 headline">
-            {{ $t(`submenu['Role']`) }}
+            {{ $t(`submenu['AccessToken']`) }}
           </span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="roleForm.valid" ref="form">
+          <v-form v-model="form.valid" ref="form">
             <v-text-field
-              v-model="roleModel.role_id"
-              :label="$t(`item['` + roleForm.role_id.label + `']`)"
-              :placeholder="roleForm.role_id.placeholder"
+              v-model="dataModel.access_token_id"
+              :label="$t(`item['` + form.access_token_id.label + `']`)"
+              :placeholder="form.access_token_id.placeholder"
               filled
               disabled
             ></v-text-field>
-            <template v-if="roleForm.newRole">
+            <template v-if="form.newToken">
               <v-text-field
-                v-model="roleModel.name"
+                v-model="dataModel.name"
                 :counter="64"
-                :rules="roleForm.name.validator"
-                :label="$t(`item['` + roleForm.name.label + `']`) + ' *'"
-                :placeholder="roleForm.name.placeholder"
+                :rules="form.name.validator"
+                :label="$t(`item['` + form.name.label + `']`) + ' *'"
+                :placeholder="form.name.placeholder"
                 required
+                outlined
               ></v-text-field>
             </template>
             <template v-else>
               <v-text-field
-                v-model="roleModel.name"
+                v-model="dataModel.name"
                 :counter="64"
-                :rules="roleForm.name.validator"
-                :label="$t(`item['` + roleForm.name.label + `']`) + ' *'"
-                :placeholder="roleForm.name.placeholder"
+                :rules="form.name.validator"
+                :label="$t(`item['` + form.name.label + `']`) + ' *'"
+                :placeholder="form.name.placeholder"
                 filled
                 disabled
+                outlined
               ></v-text-field>
             </template>
-            <!-- Policy List -->
+            <v-text-field
+              v-model="dataModel.description"
+              :counter="255"
+              :rules="form.description.validator"
+              :label="$t(`item['` + form.description.label + `']`)"
+              :placeholder="form.description.placeholder"
+              required
+              outlined
+            ></v-text-field>
+            <v-menu
+              v-model="form.expired_at.datePicker"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  outlined
+                  clearable
+                  v-model="dataModel.expired_at"
+                  :placeholder="form.expired_at.placeholder"
+                  :label="$t(`item['` + form.expired_at.label + `']`)"
+                  show-current
+                  background-color="white"
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="dataModel.expired_at"
+                @input="form.expired_at.datePicker = false"
+              ></v-date-picker>
+            </v-menu>
+
+            <!-- Role List -->
             <v-toolbar flat color="white">
               <v-toolbar-title class="grey--text text--darken-4">
-                <v-icon large>mdi-certificate-outline</v-icon>
+                <v-icon large>mdi-alpha-r-circle</v-icon>
                 <span class="mx-4">
-                  {{ $t(`submenu['Policy']`) }}
+                  {{ $t(`submenu['Role']`) }}
                 </span>
               </v-toolbar-title>
               <v-text-field
@@ -163,7 +207,7 @@
                 flat
                 prepend-icon="mdi-magnify"
                 placeholder="Type something"
-                v-model="policyTable.search"
+                v-model="roleTable.search"
                 hide-details
                 class="hidden-sm-and-down"
               />
@@ -174,18 +218,18 @@
             <v-divider></v-divider>
 
             <v-data-table
-              v-model="policyTable.selected"
-              :search="policyTable.search"
-              :headers="policyHeaders"
-              :footer-props="policyTable.footer"
-              :items="policyTable.items"
-              :options.sync="policyTable.options"
+              v-model="roleTable.selected"
+              :search="roleTable.search"
+              :headers="roleHeaders"
+              :footer-props="roleTable.footer"
+              :items="roleTable.items"
+              :options.sync="roleTable.options"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
               no-data-text="No data."
               class="elevation-1"
-              item-key="policy_id"
+              item-key="role_id"
               show-select
             >
               <template v-slot:[`item.action_ptn`]="{ item }">
@@ -216,6 +260,41 @@
               </template>
             </v-data-table>
 
+            <v-container>
+              <v-row class="ma-2">
+                <v-col cols="4">
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-clock-outline</v-icon>
+                    {{ $t(`item['Created']`) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-title>
+                    <v-chip>{{ dataModel.created_at | formatTime }}</v-chip>
+                  </v-list-item-title>
+                </v-col>
+                <v-col cols="4">
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-clock-outline</v-icon>
+                    {{ $t(`item['Updated']`) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-title>
+                    <v-chip>{{ dataModel.updated_at | formatTime }}</v-chip>
+                  </v-list-item-title>
+                </v-col>
+                <v-col cols="4">
+                  <v-list-item-subtitle>
+                    <v-icon left>mdi-account</v-icon>
+                    {{ $t(`item['Last Updated User']`) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ dataModel.last_updated_user_name }} (
+                      {{ dataModel.last_updated_user_id }} )
+                    </v-list-item-subtitle>
+                  </v-list-item-title>
+                </v-col>
+              </v-row>
+            </v-container>
+
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
@@ -234,7 +313,7 @@
                 :loading="loading"
                 @click="putItem"
               >
-                <template v-if="roleForm.newRole">Regist</template>
+                <template v-if="form.newToken">Regist</template>
                 <template v-else>Edit</template>
               </v-btn>
             </v-card-actions>
@@ -257,7 +336,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title v-text="roleModel.role_id"></v-list-item-title>
+              <v-list-item-title
+                v-text="dataModel.access_token_id"
+              ></v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -268,7 +349,7 @@
               <v-icon>mdi-alpha-r-circle</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="roleModel.name"></v-list-item-title>
+              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Name']`) }}
               </v-list-item-subtitle>
@@ -290,7 +371,7 @@
             color="red darken-1"
             text
             outlined
-            @click="deleteItem(roleModel.role_id)"
+            @click="deleteItem(dataModel.access_token_id)"
           >
             {{ $t(`btn['DELETE']`) }}
           </v-btn>
@@ -303,6 +384,7 @@
 </template>
 
 <script>
+import Util from "@/util"
 import mixin from "@/mixin"
 import iam from "@/mixin/api/iam"
 import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
@@ -314,34 +396,60 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: { roleName: null },
+      searchModel: { keyword: "" },
       searchForm: {
-        roleName: { label: "Name", placeholder: "Filter for role name" },
+        keyword: {
+          label: "Keyword",
+          placeholder: "Filter for access token",
+        },
       },
-      roleForm: {
-        newRole: false,
+      now: new Date(),
+      form: {
+        newToken: false,
         valid: false,
-        role_id: { label: "ID", placeholder: "-" },
+        access_token_id: {
+          label: "ID",
+          placeholder: "-",
+        },
         name: {
           label: "Name",
-          placeholder: "something-policy",
+          placeholder: "something",
           validator: [
             (v) => !!v || "Name is required",
             (v) => v.length <= 64 || "Name must be less than 64 characters",
           ],
         },
+        description: {
+          label: "Description",
+          placeholder: "note",
+          validator: [
+            (v) =>
+              !v ||
+              v.length <= 255 ||
+              "Description must be less than 255 characters",
+          ],
+        },
+        expired_at: {
+          label: "Expired At",
+          placeholder: "token exipired date",
+          validator: [],
+          datePicker: false,
+        },
       },
-
-      roleNameList: [],
-      roleModel: {
-        role_id: "",
+      dataModel: {
+        access_token_id: "",
         name: "",
-        policy_cnt: 0,
-        policies: "",
+        description: "",
+        expired_at: "",
+        last_updated_user_id: "",
+        last_updated_user_name: "",
+        created_at: "",
         updated_at: "",
+        role_cnt: 0,
+        roles: [],
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ["role_id"] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ["access_token_id"] },
         actions: [
           { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
           {
@@ -359,13 +467,12 @@ export default {
         },
         items: [],
       },
-      roles: [],
       deleteDialog: false,
       editDialog: false,
-      policyTable: {
+      roleTable: {
         selected: [],
         search: "",
-        options: { page: 1, itemsPerPage: 5, sortBy: ["policy_id"] },
+        options: { page: 1, itemsPerPage: 5, sortBy: ["role_id"] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -390,26 +497,38 @@ export default {
         {
           text: this.$i18n.t('item["ID"]'),
           align: "start",
-          sortable: false,
-          value: "role_id",
+          sortable: true,
+          value: "access_token_id",
         },
         {
           text: this.$i18n.t('item["Name"]'),
           align: "start",
-          sortable: false,
+          sortable: true,
           value: "name",
         },
         {
-          text: this.$i18n.t('item["Policies"]'),
+          text: this.$i18n.t('item["Roles"]'),
           align: "center",
-          sortable: false,
-          value: "policy_cnt",
+          sortable: true,
+          value: "role_cnt",
+        },
+        {
+          text: this.$i18n.t('item["Expired At"]'),
+          align: "center",
+          sortable: true,
+          value: "expired_at",
         },
         {
           text: this.$i18n.t('item["Updated"]'),
           align: "center",
-          sortable: false,
+          sortable: true,
           value: "updated_at",
+        },
+        {
+          text: this.$i18n.t('item["Last Updated User"]'),
+          align: "center",
+          sortable: true,
+          value: "last_updated_user_name",
         },
         {
           text: this.$i18n.t('item["Action"]'),
@@ -419,31 +538,19 @@ export default {
         },
       ]
     },
-    policyHeaders() {
+    roleHeaders() {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
           align: "start",
           sortable: true,
-          value: "policy_id",
+          value: "role_id",
         },
         {
           text: this.$i18n.t('item["Name"]'),
           align: "start",
           sortable: true,
           value: "name",
-        },
-        {
-          text: this.$i18n.t('item["Action Pattern"]'),
-          align: "start",
-          sortable: true,
-          value: "action_ptn",
-        },
-        {
-          text: this.$i18n.t('item["Resource Pattern"]'),
-          align: "start",
-          sortable: true,
-          value: "resource_ptn",
         },
       ]
     },
@@ -453,130 +560,164 @@ export default {
   },
   methods: {
     async refleshList(searchCond) {
-      const roles = await this.listRoleAPI(searchCond).catch((err) => {
+      this.loading = true
+      this.clearList()
+      const tokens = await this.listAccessTokenAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if (!roles) {
+      if (!tokens) {
         this.clearList()
         return false
       }
-      this.table.total = roles.length
-      this.roles = roles
-      this.loadList()
-    },
-    async loadList() {
-      this.loading = true
-      let items = []
-      let roleNames = []
-      const from =
-        (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.roles.slice(from, to)
-      ids.forEach(async (id) => {
-        const role = await this.getRoleAPI(id).catch((err) => {
+      this.table.total = tokens.length
+      tokens.forEach(async (token) => {
+        const roles = await this.listRoleAPI(
+          "&access_token_id=" + token.access_token_id
+        ).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
-        const policies = await this.listPolicyAPI("&role_id=" + id).catch(
+        const user = await this.getUserAPI(token.last_updated_user_id).catch(
           (err) => {
-            this.clearList()
-            return Promise.reject(err)
+            console.log(err)
           }
         )
+
         const item = {
-          role_id: role.role_id,
-          name: role.name,
-          updated_at: role.updated_at,
-          policy_cnt: policies.length,
-          policies: policies,
+          access_token_id: token.access_token_id,
+          name: token.name,
+          description: token.description,
+          expired_at: Util.formatDate(
+            new Date(token.expired_at * 1000),
+            "yyyy-MM-dd"
+          ),
+          last_updated_user_id: token.last_updated_user_id,
+          last_updated_user_name: user.name,
+          created_at: token.created_at,
+          updated_at: token.updated_at,
+          role_cnt: roles.length,
+          roles: roles,
         }
-        items.push(item)
-        roleNames.push(item.name)
+        this.table.items.push(item)
       })
-      this.table.items = items
-      this.roleNameList = roleNames
       this.loading = false
     },
     clearList() {
-      this.roles = []
       this.table.total = 0
       this.table.items = []
-      this.roleNameList = []
+      this.accessTokens = []
+      this.tokenNameList = []
     },
 
-    async loadPolicyList() {
+    async loadRoleList() {
       this.loading = true
-      this.clearPolicyList()
-      const policies = await this.listPolicyAPI("").catch((err) => {
+      this.clearRoleList()
+      const roles = await this.listRoleAPI("").catch((err) => {
         return Promise.reject(err)
       })
-      policies.forEach(async (id) => {
-        const policy = await this.getPolicyAPI(id).catch((err) => {
+
+      roles.forEach(async (id) => {
+        const role = await this.getRoleAPI(id).catch((err) => {
           return Promise.reject(err)
         })
-        this.policyTable.items.push(policy)
-        if (this.roleModel.policies.indexOf(policy.policy_id) !== -1) {
-          this.policyTable.selected.push(policy)
+        this.roleTable.items.push(role)
+
+        if (this.dataModel.roles.indexOf(role.role_id) !== -1) {
+          this.roleTable.selected.push(role)
         }
       })
       this.loading = false
     },
-    clearPolicyList() {
-      this.policyTable.items = []
-      this.policyTable.selected = []
+    clearRoleList() {
+      this.roleTable.items = []
+      this.roleTable.selected = []
     },
-
+    convertToUnixTime(timeString) {
+      let date = new Date(timeString)
+      date.setHours(23, 59, 59)
+      return Math.floor(date.getTime() / 1000)
+    },
+    getExpiredAtColor(timeString) {
+      const expiredAt = new Date(timeString)
+      if (expiredAt.getTime() <= this.now.getTime()) {
+        return "red"
+      }
+      return ""
+    },
     async putItem() {
       this.loading = true
-      // Update role
-      await this.putRoleAPI(this.roleModel.name).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        access_token: {
+          access_token_id: this.dataModel.access_token_id,
+          project_id: this.$store.state.project.project_id,
+          name: this.dataModel.name,
+          description: this.dataModel.description,
+          expired_at: this.convertToUnixTime(this.dataModel.expired_at),
 
-      if (this.roleForm.newRole) {
+          // server side update.
+          // plainTextToken: '',
+          // last_updated_user_id: '',
+        },
+      }
+      if (this.form.newToken) {
+        const newToken = await this.generateAccessTokenAPI(param).catch(
+          (err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+        // TODO
+        console.log(newToken)
         this.finishUpdated("Success: Created role.")
         return
+      } else {
+        await this.updateAccessTokenAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
       }
-      // Attach/Detach policies
-      this.policyTable.items.forEach(async (item) => {
-        let attachPolicy = false
-        this.policyTable.selected.some((selected) => {
-          if (item.policy_id === selected.policy_id) {
-            attachPolicy = true
+
+      // Attach/Detach roles
+      this.roleTable.items.forEach(async (item) => {
+        let attachRole = false
+        this.roleTable.selected.some((selected) => {
+          if (item.role_id === selected.role_id) {
+            attachRole = true
             return true
           }
         })
-        if (attachPolicy) {
-          this.attachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
-            (err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            }
-          )
+        if (attachRole) {
+          await this.attachTokenRoleAPI(
+            this.dataModel.access_token_id,
+            item.role_id
+          ).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          })
         } else {
-          this.detachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
-            (err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            }
-          )
+          await this.detachTokenRoleAPI(
+            this.dataModel.access_token_id,
+            item.role_id
+          ).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          })
         }
       })
-
       this.finishUpdated("Success: Updated role.")
     },
-    async deleteItem(roleID) {
+    async deleteItem(accessTokenID) {
       this.loading = true
-      await this.deleteRoleAPI(roleID).catch((err) => {
+      await this.deleteAccessTokenAPI(accessTokenID).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated("Success: Deleted role.")
+      this.finishUpdated("Success: Deleted access token.")
     },
     async finishUpdated(msg) {
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
       this.deleteDialog = false
@@ -585,21 +726,26 @@ export default {
     },
 
     handleNewItem() {
-      this.roleModel = {
-        role_id: "",
+      this.dataModel = {
+        access_token_id: "",
         name: "",
-        policy_cnt: 0,
-        policies: "",
+        description: "",
+        expired_at: "9999-12-31",
+        last_updated_user_id: "",
+        last_updated_user_name: "",
+        created_at: "",
         updated_at: "",
+        role_cnt: 0,
+        roles: [],
       }
-      this.loadPolicyList()
-      this.roleForm.newRole = true
+      this.loadRoleList()
+      this.form.newToken = true
       this.editDialog = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
-      this.loadPolicyList()
-      this.roleForm.newRole = false
+      this.loadRoleList()
+      this.form.newToken = false
       this.editDialog = true
     },
     handleDeleteItem(item) {
@@ -608,20 +754,20 @@ export default {
     },
     handleSearch() {
       let searchCond = ""
-      if (this.searchModel.roleName) {
-        searchCond += "&name=" + this.searchModel.roleName
+      if (this.searchModel.tokenName) {
+        searchCond += "&name=" + this.searchModel.tokenName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
-      this.roleModel = {
+      this.dataModel = {
         role_id: "",
         name: "",
-        policy_cnt: 0,
-        policies: "",
+        role_cnt: 0,
+        roles: "",
         updated_at: "",
       }
-      this.roleModel = Object.assign(this.roleModel, item)
+      this.dataModel = Object.assign(this.dataModel, item)
     },
   },
 }

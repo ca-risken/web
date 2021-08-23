@@ -54,21 +54,20 @@ let mixin = {
       const userID = await this.signin().catch((err) => {
         return Promise.reject(err)
       })
-      const user = await this.$axios
-        .get("/iam/get-user?user_id=" + userID)
+      const user = await this.getUserAPI(userID)
         .catch((err) => {
           return Promise.reject(err)
         })
-      await store.commit("storeUser", user.data.data.user)
+      await store.commit("storeUser", user)
     },
     async signin() {
-      const res = await this.$axios.get('/signin/').catch((err) => {
+      const userID = await this.signinAPI().catch((err) => {
         return Promise.reject(err)
       })
-      if (!res.data.user_id) {
+      if (!userID) {
         return
       }
-      return res.data.user_id
+      return userID
     },
     reload: function () {
       this.$router.go({ path: this.$router.currentRoute.path, force: true })

@@ -70,9 +70,10 @@ const en = {
     "OSINT": "OSINT",
     "OSINT DataSource": "OSINT DataSource",
     "Gitleaks": "Gitleaks",
-    "User": "User",     // IAM
-    "Role": "Role",     // IAM
-    "Policy": "Policy", // IAM
+    "User": "User",               // IAM
+    "Role": "Role",               // IAM
+    "Policy": "Policy",           // IAM
+    "AccessToken": "AccessToken", // IAM
     "ReportFinding": "ReportFinding", // Report
     "NewProject": "New",         // Project
     "ProjectSetting": "Setting", // Project
@@ -100,6 +101,7 @@ const en = {
     "Description": "Description",
     "Duration": "Duration",
     "Enabled": "Enabled",
+    "Expired At": "Expired At",
     "External ID": "External ID",
     "External Link": "External Link",
     "Finding Count": "Finding Count",
@@ -116,9 +118,11 @@ const en = {
     "GitHubUser": "GitHubUser",
     "Google Data Source": "Google Data Source",
     "Google Data Source ID": "Google Data Source ID",
+    "Keyword": "Keyword",
     "ID": "ID",
     "JIRA Setting ID": "JIRA Setting ID",
     "JIRA Project": "JIRA Project",
+    "Last Updated User": "Last Updated User",
     "MAX Score": "MAX Score",
     "Name": "Name",
     "Notificationns": "Notificationns",

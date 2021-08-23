@@ -5,7 +5,9 @@
         <v-row justify="center" align="center">
           <v-col cols="4">
             <v-text-field
-              outlined dense clearable
+              outlined
+              dense
+              clearable
               :label="searchForm.userID.label"
               :placeholder="searchForm.userID.placeholder"
               v-model="searchModel.userID"
@@ -13,7 +15,9 @@
           </v-col>
           <v-col cols="6">
             <v-combobox
-              outlined dense clearable
+              outlined
+              dense
+              clearable
               :label="searchForm.userName.label"
               :placeholder="searchForm.userName.placeholder"
               :items="userNameList"
@@ -62,9 +66,10 @@
 </template>
 
 <script>
-import mixin from '@/mixin'
+import mixin from "@/mixin"
+import iam from "@/mixin/api/iam"
 export default {
-  mixins: [mixin],
+  mixins: [mixin, iam],
   props: {
     userDialog: Boolean,
   },
@@ -76,12 +81,12 @@ export default {
         userID: null,
       },
       searchForm: {
-        userID: { label: 'User ID', placeholder: 'Filter for user id' },
-        userName: { label: 'User Name', placeholder: 'Filter for user name' },
+        userID: { label: "User ID", placeholder: "Filter for user id" },
+        userName: { label: "User Name", placeholder: "Filter for user name" },
       },
       userNameList: [],
       table: {
-        options: { page: 1, itemsPerPage: 20, sortBy: ['user_id'] },
+        options: { page: 1, itemsPerPage: 20, sortBy: ["user_id"] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -89,7 +94,7 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       users: [],
     }
@@ -97,47 +102,61 @@ export default {
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item["ID"]'),  align: 'start', sortable: false, value: 'user_id' },
-        { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
-        { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "start",
+          sortable: false,
+          value: "user_id",
+        },
+        {
+          text: this.$i18n.t('item["Name"]'),
+          align: "start",
+          sortable: false,
+          value: "name",
+        },
+        {
+          text: this.$i18n.t('item["Updated"]'),
+          align: "center",
+          sortable: false,
+          value: "updated_at",
+        },
       ]
     },
   },
   mounted() {
-    this.refleshList('')
+    this.refleshList("")
   },
   methods: {
     async refleshList(searchCond) {
-      const res = await this.$axios.get(
-        '/iam/list-user/?activated=true' + searchCond
-      ).catch((err) =>  {
+      const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !res.data.data.user_id ) {
+      if (!userIDs) {
         this.clearList()
         return false
       }
-      this.table.total = res.data.data.user_id.length
-      this.users = res.data.data.user_id
+      this.table.total = userIDs.length
+      this.users = userIDs
       this.loadList()
     },
     async loadList() {
       this.loading = true
       let items = []
       let userNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
-      ids.forEach( async id => {
-        const res = await this.$axios.get('/iam/get-user/?user_id=' + id).catch((err) =>  {
+      ids.forEach(async (id) => {
+        const user = await this.getUserAPI(id).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
         const item = {
-          user_id:    res.data.data.user.user_id,
-          name:       res.data.data.user.name,
-          updated_at: res.data.data.user.updated_at,
+          user_id: user.user_id,
+          name: user.name,
+          updated_at: user.updated_at,
         }
         items.push(item)
         userNames.push(item.name)
@@ -153,21 +172,21 @@ export default {
       this.userNameList = []
     },
     handleSearch() {
-      let searchCond = ''
+      let searchCond = ""
       if (this.searchModel.userName) {
-        searchCond += '&name=' + this.searchModel.userName
+        searchCond += "&name=" + this.searchModel.userName
       }
-      if (this.searchModel.userID){
-        searchCond += '&user_id=' + this.searchModel.userID        
+      if (this.searchModel.userID) {
+        searchCond += "&user_id=" + this.searchModel.userID
       }
       this.refleshList(searchCond)
     },
     handleSelectItem(item) {
-      this.$emit('handleUserDialogResponse', item)
+      this.$emit("handleUserDialogResponse", item)
     },
     handleCancel() {
-      this.$emit('handleUserDialogResponse', {user_id:'', name:''})
+      this.$emit("handleUserDialogResponse", { user_id: "", name: "" })
     },
-  }
+  },
 }
 </script>
