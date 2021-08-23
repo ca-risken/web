@@ -176,6 +176,64 @@ const iam = {
       return res
     },
 
+    // AccessToken API
+    async listAccessTokenAPI(searchCond) {
+      const res = await this.$axios.get(
+        "/iam/list-access-token/?project_id=" + this.$store.state.project.project_id + searchCond
+      ).catch((err) => {
+        return Promise.reject(err)
+      })
+      if (!res.data.data.access_token) {
+        return []
+      }
+      return res.data.data.access_token
+    },
+    async generateAccessTokenAPI(param) {
+      const res = await this.$axios.post("/iam/generate-access-token/", param).catch((err) => {
+        return Promise.reject(err)
+      })
+      return res
+    },
+    async updateAccessTokenAPI(param) {
+      const res = await this.$axios.post("/iam/update-access-token/", param).catch((err) => {
+        return Promise.reject(err)
+      })
+      return res
+    },
+    async attachTokenRoleAPI(accessTokenID, roleID) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        access_token_id: accessTokenID,
+        role_id: roleID,
+      }
+      const res = await this.$axios.post('/iam/attach-access-token/', param).catch((err) => {
+        return Promise.reject(err)
+      })
+      return res
+    },
+    async detachTokenRoleAPI(accessTokenID, roleID) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        access_token_id: accessTokenID,
+        role_id: roleID,
+      }
+      const res = await this.$axios.post('/iam/detach-access-token/', param).catch((err) => {
+        return Promise.reject(err)
+      })
+      return res
+    },
+
+    async deleteAccessTokenAPI(accessTokenID) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        access_token_id: accessTokenID,
+      }
+      const res = await this.$axios.post("/iam/delete-access-token/", param).catch((err) => {
+        return Promise.reject(err)
+      })
+      return res
+    },
+
   },
 }
 

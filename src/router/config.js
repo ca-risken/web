@@ -340,14 +340,15 @@ export const appRoute = [
             },
             component: () => import('@/view/iam/Policy.vue')
           },
-          // {
-          //   path: '/iam/access-token',
-          //   name: 'AccessToken',
-          //   meta: {
-          //     title: 'AccessToken'
-          //   },
-          //   component: () => import('@/view/iam/AccessToken.vue')
-          // },
+          {
+            path: '/iam/access-token',
+            name: 'AccessToken',
+            meta: {
+              title: 'AccessToken',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/iam/AccessToken.vue')
+          },
           {
             path: '/iam/profile',
             name: 'Profile',
