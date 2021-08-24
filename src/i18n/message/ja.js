@@ -269,7 +269,7 @@ const ja = {
       "Please select one or more roles. If you do not select any role, the user will be ": "一つ以上のロールを選択してください。何もロールを選択しない場合、対象ユーザはこのプロジェクトから",
       "removed": "削除",
       "from the project.": "されます.",
-      "Make sure to copy your access token now. You won’t be able to see it again!": "アクセストークンをコピーし大切に保管してください. この画面を閉じた後に再度見ることはできなくなります.",
+      "Make sure to copy your access token now. You won’t be able to see it again!": "アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.",
     },
     "gcp": {
       "Register the verification code in the label of your GCP project with the key `risken`.": "あなたのGCPプロジェクトのラベルに `risken` というキーで検証コードの値を登録してください",
