@@ -394,6 +394,17 @@
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar>
+              <v-icon>mdi-image-text</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="dataModel.name" />
+              <v-list-item-subtitle>
+                {{ $t(`item['Name']`) }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
               <clip-board
                 name="Access Token"
                 :text="String(dataModel.token_hash)"
@@ -412,17 +423,6 @@
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Token']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-image-text</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name" />
-              <v-list-item-subtitle>
-                {{ $t(`item['Name']`) }}
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
