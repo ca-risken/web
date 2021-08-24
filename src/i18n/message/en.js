@@ -163,6 +163,7 @@ const en = {
     "Target": "Target",
     "TargetResource": "TargetResource",
     "ToDate": "ToDate",
+    "Token": "Token",
     "Type": "Type",
     "Updated": "Updated",
     "UpdatedAt Range": "UpdatedAt Range",
@@ -268,6 +269,7 @@ const en = {
       "Please select one or more roles. If you do not select any role, the user will be ": "Please select one or more roles. If you do not select any role, the user will be ",
       "removed": "removed",
       "from the project.": "from the project.",
+      "Make sure to copy your access token now. You won’t be able to see it again!": "Make sure to copy your access token now. You won’t be able to see it again!",
     },
     "gcp": {
       "Register the verification code in the label of your GCP project with the key `risken`.": "Register the verification code in the label of your GCP project with the key `risken`.",

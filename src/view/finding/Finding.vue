@@ -467,19 +467,24 @@
                 />
               </v-list-item-subtitle>
               <v-card dark color="grey darken-3" class="ma-4">
-                <v-card-text class="title font-weight-bold">
+                <v-card-text
+                  class="title font-weight-bold"
+                  style="word-break: break-all"
+                >
                   <pre>{{ findingModel.data | pretty }}</pre>
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
-          <v-row class="ma-2" v-if=getExternalLink(findingModel.data)>
+          <v-row class="ma-2" v-if="getExternalLink(findingModel.data)">
             <v-col cols="12">
               <v-list-item-subtitle>
                 <v-icon left>mdi-link</v-icon>
                 {{ $t(`item['External Link']`) }}
               </v-list-item-subtitle>
-              <a :href="getExternalLink(findingModel.data)" target="blank_">{{ getExternalLink(findingModel.data) }}</a>
+              <a :href="getExternalLink(findingModel.data)" target="blank_">{{
+                getExternalLink(findingModel.data)
+              }}</a>
             </v-col>
           </v-row>
           <v-row class="ma-2">
@@ -700,7 +705,7 @@
 
 <script>
 import mixin from "@/mixin"
-import Util from '@/util'
+import Util from "@/util"
 import finding from "@/mixin/api/finding"
 import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
 import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
@@ -947,16 +952,16 @@ export default {
       })
       return list
     },
-    getSelectedActionList(){
+    getSelectedActionList() {
       let list = []
-      if (this.searchModel.status != this.getFindingStatus("PENDING")){
+      if (this.searchModel.status != this.getFindingStatus("PENDING")) {
         list.push({
           text: "Pend selected findings",
           icon: "mdi-check-circle-outline",
           click: this.handlePendSelected,
         })
       }
-      if (this.searchModel.status != this.getFindingStatus("ACTIVE")){
+      if (this.searchModel.status != this.getFindingStatus("ACTIVE")) {
         list.push({
           text: "Activate selected findings",
           icon: "mdi-check-circle",
@@ -969,9 +974,9 @@ export default {
         click: this.handleDeleteSelected,
       })
       list.push({
-          text: "Download selected findings CSV",
-          icon: "mdi-file-download-outline",
-          click: this.handleDownloadCSVSelected,
+        text: "Download selected findings CSV",
+        icon: "mdi-file-download-outline",
+        click: this.handleDownloadCSVSelected,
       })
       return list
     },
@@ -1149,10 +1154,10 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-          await this.deletePendFinding(
-            this.$store.state.project.project_id,
-            item.finding_id
-          )
+        await this.deletePendFinding(
+          this.$store.state.project.project_id,
+          item.finding_id
+        )
       })
       this.table.selected = []
       this.finishSuccess("Success: Activated " + count + " findings.")
@@ -1221,22 +1226,46 @@ export default {
     handleDownloadCSVSelected() {
       this.loading = true
       const count = this.table.selected.length
-      let csv = '\ufeff' + 'finding_id,data_source,description,score,status,tags,created_at,updtated_at\n'
-      this.table.selected.forEach(item => {
-        let created_at = Util.formatDate(new Date(item.created_at * 1000), 'yyyy/MM/dd HH:mm')
-        let updated_at = Util.formatDate(new Date(item.updated_at * 1000), 'yyyy/MM/dd HH:mm')
+      let csv =
+        "\ufeff" +
+        "finding_id,data_source,description,score,status,tags,created_at,updtated_at\n"
+      this.table.selected.forEach((item) => {
+        let created_at = Util.formatDate(
+          new Date(item.created_at * 1000),
+          "yyyy/MM/dd HH:mm"
+        )
+        let updated_at = Util.formatDate(
+          new Date(item.updated_at * 1000),
+          "yyyy/MM/dd HH:mm"
+        )
         if (!item.finding_id) return
         var tags = ""
-        if (item.tags) tags = item.tags.map(tag => tag.tag).join(',')
-        var line = '' + item['finding_id'] + ',"' + item['data_source'] + '","' + item['description'] + '",' + item['score'] + ',"' + 
-          item['status'] + '","' + tags + '","' + created_at + '","' + updated_at + '"\n'
-         csv += line
+        if (item.tags) tags = item.tags.map((tag) => tag.tag).join(",")
+        var line =
+          "" +
+          item["finding_id"] +
+          ',"' +
+          item["data_source"] +
+          '","' +
+          item["description"] +
+          '",' +
+          item["score"] +
+          ',"' +
+          item["status"] +
+          '","' +
+          tags +
+          '","' +
+          created_at +
+          '","' +
+          updated_at +
+          '"\n'
+        csv += line
       })
-      let blob = new Blob([csv], { type: 'text/csv' })
-      let link = document.createElement('a')
-      let fileDate = Util.formatDate(new Date(), 'yyyyMMddTHHmmss')
+      let blob = new Blob([csv], { type: "text/csv" })
+      let link = document.createElement("a")
+      let fileDate = Util.formatDate(new Date(), "yyyyMMddTHHmmss")
       link.href = window.URL.createObjectURL(blob)
-      link.download = 'finding_' + fileDate + '.csv'
+      link.download = "finding_" + fileDate + ".csv"
       link.click()
       this.finishSuccess("Success: Export " + count + " findings.")
     },
