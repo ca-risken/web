@@ -192,7 +192,7 @@ const iam = {
       const res = await this.$axios.post("/iam/generate-access-token/", param).catch((err) => {
         return Promise.reject(err)
       })
-      return res
+      return res.data.data
     },
     async updateAccessTokenAPI(param) {
       const res = await this.$axios.post("/iam/update-access-token/", param).catch((err) => {

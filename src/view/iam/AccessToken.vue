@@ -280,7 +280,7 @@
                     <v-chip>{{ dataModel.updated_at | formatTime }}</v-chip>
                   </v-list-item-title>
                 </v-col>
-                <v-col cols="4">
+                <v-col cols="4" v-if="dataModel.last_updated_user_id">
                   <v-list-item-subtitle>
                     <v-icon left>mdi-account</v-icon>
                     {{ $t(`item['Last Updated User']`) }}
@@ -379,6 +379,68 @@
       </v-card>
     </v-dialog>
 
+    <!-- Token Dialog -->
+    <v-dialog v-model="tokenDialog" max-width="60%">
+      <v-card>
+        <v-card-title class="text-h6">
+          <span class="mx-4">
+            {{
+              $t(
+                `view.iam['Make sure to copy your access token now. You won’t be able to see it again!']`
+              )
+            }}
+          </span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar>
+              <clip-board
+                name="Access Token"
+                :text="String(dataModel.token_hash)"
+              />
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title class="text-body-2">
+                <v-card dark color="grey darken-3" class="ma-4">
+                  <v-card-text
+                    class="font-weight-bold"
+                    style="text-overflow: clip; word-break: break-all"
+                  >
+                    {{ dataModel.token_hash }}
+                  </v-card-text>
+                </v-card>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $t(`item['Token']`) }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-image-text</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="dataModel.name" />
+              <v-list-item-subtitle>
+                {{ $t(`item['Name']`) }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -388,10 +450,12 @@ import Util from "@/util"
 import mixin from "@/mixin"
 import iam from "@/mixin/api/iam"
 import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
 export default {
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
+    ClipBoard,
   },
   data() {
     return {
@@ -445,6 +509,7 @@ export default {
         last_updated_user_name: "",
         created_at: "",
         updated_at: "",
+        token_hash: "",
         role_cnt: 0,
         roles: [],
       },
@@ -469,6 +534,7 @@ export default {
       },
       deleteDialog: false,
       editDialog: false,
+      tokenDialog: false,
       roleTable: {
         selected: [],
         search: "",
@@ -668,10 +734,8 @@ export default {
             return Promise.reject(err)
           }
         )
-        // TODO
-        console.log(newToken)
-        this.finishUpdated("Success: Created role.")
-        return
+        this.dataModel.access_token_id = newToken.access_token_id
+        this.dataModel.token_hash = newToken.access_token
       } else {
         await this.updateAccessTokenAPI(param).catch((err) => {
           this.$refs.snackbar.notifyError(err.response.data)
@@ -706,6 +770,11 @@ export default {
           })
         }
       })
+
+      if (this.form.newToken) {
+        this.finishGenerateToken(this.dataModel.token_hash)
+        return
+      }
       this.finishUpdated("Success: Updated role.")
     },
     async deleteItem(accessTokenID) {
@@ -725,12 +794,24 @@ export default {
       this.handleSearch()
     },
 
+    async finishGenerateToken(tokenHash) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      this.loading = false
+      this.deleteDialog = false
+      this.editDialog = false
+      this.handleSearch()
+
+      this.dataModel.token_hash = tokenHash
+      this.tokenDialog = true
+    },
     handleNewItem() {
+      let threeMonthLaater = new Date()
+      threeMonthLaater.setDate(threeMonthLaater.getDate() + 90)
       this.dataModel = {
         access_token_id: "",
         name: "",
         description: "",
-        expired_at: "9999-12-31",
+        expired_at: Util.formatDate(threeMonthLaater, "yyyy-MM-dd"),
         last_updated_user_id: "",
         last_updated_user_name: "",
         created_at: "",
