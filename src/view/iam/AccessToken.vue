@@ -433,7 +433,7 @@
             text
             outlined
             color="grey darken-1"
-            @click="deleteDialog = false"
+            @click="tokenDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
