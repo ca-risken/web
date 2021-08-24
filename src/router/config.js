@@ -345,7 +345,6 @@ export const appRoute = [
             name: 'AccessToken',
             meta: {
               title: 'AccessToken',
-              hiddenInMenu: true,
             },
             component: () => import('@/view/iam/AccessToken.vue')
           },
