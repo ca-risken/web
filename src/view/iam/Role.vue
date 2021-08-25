@@ -150,71 +150,73 @@
               ></v-text-field>
             </template>
             <!-- Policy List -->
-            <v-toolbar flat color="white">
-              <v-toolbar-title class="grey--text text--darken-4">
-                <v-icon large>mdi-certificate-outline</v-icon>
-                <span class="mx-4">
-                  {{ $t(`submenu['Policy']`) }}
-                </span>
-              </v-toolbar-title>
-              <v-text-field
-                text
-                solo
-                flat
-                prepend-icon="mdi-magnify"
-                placeholder="Type something"
-                v-model="policyTable.search"
-                hide-details
-                class="hidden-sm-and-down"
-              />
-              <v-btn icon>
-                <v-icon>mdi-filter</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-divider></v-divider>
+            <template v-if="!roleForm.newRole">
+              <v-toolbar flat color="white">
+                <v-toolbar-title class="grey--text text--darken-4">
+                  <v-icon large>mdi-certificate-outline</v-icon>
+                  <span class="mx-4">
+                    {{ $t(`submenu['Policy']`) }}
+                  </span>
+                </v-toolbar-title>
+                <v-text-field
+                  text
+                  solo
+                  flat
+                  prepend-icon="mdi-magnify"
+                  placeholder="Type something"
+                  v-model="policyTable.search"
+                  hide-details
+                  class="hidden-sm-and-down"
+                />
+                <v-btn icon>
+                  <v-icon>mdi-filter</v-icon>
+                </v-btn>
+              </v-toolbar>
+              <v-divider></v-divider>
 
-            <v-data-table
-              v-model="policyTable.selected"
-              :search="policyTable.search"
-              :headers="policyHeaders"
-              :footer-props="policyTable.footer"
-              :items="policyTable.items"
-              :options.sync="policyTable.options"
-              :loading="loading"
-              locale="ja-jp"
-              loading-text="Loading..."
-              no-data-text="No data."
-              class="elevation-1"
-              item-key="policy_id"
-              show-select
-            >
-              <template v-slot:[`item.action_ptn`]="{ item }">
-                <v-card
-                  label
-                  outliend
-                  elevation="0"
-                  color="teal lighten-5"
-                  class="my-1"
-                >
-                  <v-card-text class="font-weight-bold">
-                    {{ item.action_ptn }}
-                  </v-card-text>
-                </v-card>
-              </template>
-              <template v-slot:[`item.resource_ptn`]="{ item }">
-                <v-card
-                  label
-                  outliend
-                  elevation="0"
-                  color="light-green lighten-5"
-                  class="my-1"
-                >
-                  <v-card-text class="font-weight-bold">
-                    {{ item.resource_ptn }}
-                  </v-card-text>
-                </v-card>
-              </template>
-            </v-data-table>
+              <v-data-table
+                v-model="policyTable.selected"
+                :search="policyTable.search"
+                :headers="policyHeaders"
+                :footer-props="policyTable.footer"
+                :items="policyTable.items"
+                :options.sync="policyTable.options"
+                :loading="loading"
+                locale="ja-jp"
+                loading-text="Loading..."
+                no-data-text="No data."
+                class="elevation-1"
+                item-key="policy_id"
+                show-select
+              >
+                <template v-slot:[`item.action_ptn`]="{ item }">
+                  <v-card
+                    label
+                    outliend
+                    elevation="0"
+                    color="teal lighten-5"
+                    class="my-1"
+                  >
+                    <v-card-text class="font-weight-bold">
+                      {{ item.action_ptn }}
+                    </v-card-text>
+                  </v-card>
+                </template>
+                <template v-slot:[`item.resource_ptn`]="{ item }">
+                  <v-card
+                    label
+                    outliend
+                    elevation="0"
+                    color="light-green lighten-5"
+                    class="my-1"
+                  >
+                    <v-card-text class="font-weight-bold">
+                      {{ item.resource_ptn }}
+                    </v-card-text>
+                  </v-card>
+                </template>
+              </v-data-table>
+            </template>
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
