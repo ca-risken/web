@@ -117,7 +117,7 @@
     </v-container>
 
     <!-- Edit Dialog -->
-    <v-dialog v-model="editDialog" max-width="70%">
+    <v-dialog v-model="editDialog" max-width="60%">
       <v-card>
         <v-card-title>
           <v-icon large>mdi-shield-key-outline</v-icon>
@@ -261,7 +261,7 @@
             </v-data-table>
 
             <v-container>
-              <v-row class="ma-2">
+              <v-row class="ma-2" v-if="!form.newToken">
                 <v-col cols="4">
                   <v-list-item-subtitle>
                     <v-icon left>mdi-clock-outline</v-icon>
@@ -280,7 +280,7 @@
                     <v-chip>{{ dataModel.updated_at | formatTime }}</v-chip>
                   </v-list-item-title>
                 </v-col>
-                <v-col cols="4" v-if="dataModel.last_updated_user_id">
+                <v-col cols="4">
                   <v-list-item-subtitle>
                     <v-icon left>mdi-account</v-icon>
                     {{ $t(`item['Last Updated User']`) }}
