@@ -19,6 +19,7 @@ let mixin = {
         'google:cloudsploit',
         'google:scc',
         'google:portscan',
+        'RISKEN',
       ],
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,

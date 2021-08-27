@@ -480,7 +480,9 @@ export default {
           placeholder: "something",
           validator: [
             (v) => !!v || "Name is required",
-            (v) => v.length <= 64 || "Name must be less than 64 characters",
+            (v) =>
+              !v || v.length <= 64 || "Name must be less than 64 characters",
+            (v) => !v || !this.duplicatedName(v) || "Name is duplicated",
           ],
         },
         description: {
@@ -804,6 +806,16 @@ export default {
       this.dataModel.token_hash = tokenHash
       this.tokenDialog = true
     },
+
+    // validator
+    duplicatedName(name) {
+      for (const item of this.table.items) {
+        if (item.name === name) return true
+      }
+      return false
+    },
+
+    // handler
     handleNewItem() {
       let threeMonthLaater = new Date()
       threeMonthLaater.setDate(threeMonthLaater.getDate() + 90)
