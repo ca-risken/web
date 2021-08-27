@@ -143,6 +143,7 @@ const en = {
     "Resource Name": "Resource Name",
     "Resource Pattern": "Resource Pattern",
     "Resource": "Resource",
+    "Resource ID": "Resource ID",
     "ResourceName": "ResourceName",
     "ResourceType": "ResourceType",
     "Roles": "Roles",

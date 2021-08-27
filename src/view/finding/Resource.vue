@@ -5,7 +5,9 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
+              <v-icon large class="pr-2" color="blue lighten-2"
+                >mdi-file-find-outline</v-icon
+              >
               {{ $t(`submenu['Resource']`) }}
             </v-toolbar-title>
           </v-toolbar>
@@ -15,11 +17,17 @@
         <v-row dense>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
-              multiple outlined dense clearable small-chips deletable-chips hide-details
+              multiple
+              outlined
+              dense
+              clearable
+              small-chips
+              deletable-chips
+              hide-details
               background-color="white"
               v-model="searchModel.resourceName"
               :loading="loading"
-              :label="$t(`item['`+searchForm.resourceName.label+`']`)"
+              :label="$t(`item['` + searchForm.resourceName.label + `']`)"
               :placeholder="searchForm.resourceName.placeholder"
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
@@ -38,23 +46,36 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  outlined dense readonly
+                  outlined
+                  dense
+                  readonly
                   background-color="white"
                   v-model="dateRangeText"
-                  :label="$t(`item['`+searchForm.dates.label+`']`)"
+                  :label="$t(`item['` + searchForm.dates.label + `']`)"
                   prepend-icon="event"
                   v-bind="attrs"
                   v-on="on"
                 ></v-text-field>
               </template>
               <v-date-picker
-                range no-title scrollable
+                range
+                no-title
+                scrollable
                 v-model="searchModel.dates"
               >
-                <v-btn text color="accent" @click="searchModel.dates = ['', '']">Clear</v-btn>
+                <v-btn text color="accent" @click="searchModel.dates = ['', '']"
+                  >Clear</v-btn
+                >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="searchForm.menu = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.menu.save(searchModel.dates)">OK</v-btn>
+                <v-btn text color="primary" @click="searchForm.menu = false"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  @click="$refs.menu.save(searchModel.dates)"
+                  >OK</v-btn
+                >
               </v-date-picker>
             </v-menu>
           </v-col>
@@ -67,14 +88,21 @@
               min="0.0"
               max="100.0"
               step="0.1"
-              :label="$t(`item['`+searchForm.score.label+`']`)"
+              :label="$t(`item['` + searchForm.score.label + `']`)"
               :messages="searchForm.score.placeholder"
               v-model="searchModel.score"
             ></v-range-slider>
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small :loading="loading" @click="handleSearch">
+          <v-btn
+            class="mt-3 mr-4"
+            fab
+            dense
+            small
+            :loading="loading"
+            @click="handleSearch"
+          >
             <v-icon>search</v-icon>
           </v-btn>
         </v-row>
@@ -83,9 +111,9 @@
         <v-col cols="12">
           <v-card>
             <d3-network
-              :net-nodes="map.nodes" 
+              :net-nodes="map.nodes"
               :net-links="map.links"
-              :selection="map.selected" 
+              :selection="map.selected"
               :options="map.options"
               @node-click="clickNode"
             />
@@ -114,14 +142,28 @@
                 v-model="table.selected"
               >
                 <!-- Sortable Header -->
-                <template v-slot:[`header.resource_id`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
-                <template v-slot:[`header.resource_name`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
-                <template v-slot:[`header.updated_at`]="{ header }"><a @click="handleSort(header.value)">{{ header.text }}</a></template>
+                <template v-slot:[`header.resource_id`]="{ header }"
+                  ><a @click="handleSort(header.value)">{{
+                    header.text
+                  }}</a></template
+                >
+                <template v-slot:[`header.resource_name`]="{ header }"
+                  ><a @click="handleSort(header.value)">{{
+                    header.text
+                  }}</a></template
+                >
+                <template v-slot:[`header.updated_at`]="{ header }"
+                  ><a @click="handleSort(header.value)">{{
+                    header.text
+                  }}</a></template
+                >
                 <template v-slot:[`item.resource_name`]="{ item }">
                   {{ cutLongText(item.resource_name, 80) }}
                 </template>
                 <template v-slot:[`item.findings`]="{ item }">
-                  <v-chip :color="getColorByCount(item.findings)" dark>{{ item.findings }}</v-chip>
+                  <v-chip :color="getColorByCount(item.findings)" dark>{{
+                    item.findings
+                  }}</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -142,12 +184,14 @@
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -169,18 +213,17 @@
           <v-container>
             <v-row danse justify="center" align-content="center">
               <v-col cols="12">
-                <v-card :loading="loading"  height="60vh">
+                <v-card :loading="loading" height="60vh">
                   <d3-network
-                    :net-nodes="resourceMap.nodes" 
-                    :net-links="resourceMap.links" 
-                    :options="resourceMapOptions" 
+                    :net-nodes="resourceMap.nodes"
+                    :net-links="resourceMap.links"
+                    :options="resourceMapOptions"
                     @node-click="clickNode"
                   />
                 </v-card>
               </v-col>
             </v-row>
           </v-container>
-
         </v-card-text>
         <v-card-actions>
           <v-card-text>
@@ -216,7 +259,12 @@
                 ></v-slider>
               </v-col>
               <v-col cols="1">
-                <v-btn text outlined color="grey darken-1" @click="resourceMapDialog = false">
+                <v-btn
+                  text
+                  outlined
+                  color="grey darken-1"
+                  @click="resourceMapDialog = false"
+                >
                   {{ $t(`btn['CANCEL']`) }}
                 </v-btn>
               </v-col>
@@ -232,7 +280,9 @@
           <v-card-title>Finding Detail</v-card-title>
           <v-spacer />
           <v-btn
-            text outlined color="info"
+            text
+            outlined
+            color="info"
             style="text-transform: none"
             link
             :to="getRouterByResource(findingModel.resource_name)"
@@ -265,11 +315,15 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    <v-icon :color="getColorByScore(findingModel.score)">mdi-scoreboard</v-icon>
+                    <v-icon :color="getColorByScore(findingModel.score)"
+                      >mdi-scoreboard</v-icon
+                    >
                     Score
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    <v-chip dark :color="getColorByScore(findingModel.score)">{{ findingModel.score | formatScore }}</v-chip>
+                    <v-chip dark :color="getColorByScore(findingModel.score)">{{
+                      findingModel.score | formatScore
+                    }}</v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -278,7 +332,8 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    <v-icon left
+                    <v-icon
+                      left
                       v-text="getDataSourceIcon(findingModel.data_source)"
                       :color="getDataSourceIconColor(findingModel.data_source)"
                     />
@@ -352,29 +407,101 @@
                 <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
               </v-list-item-title>
             </v-col>
-          </v-row>        
+          </v-row>
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn dark outlined color="light-blue darken-4" @click="handleViewFindingFromNode">
+          <v-btn
+            dark
+            outlined
+            color="light-blue darken-4"
+            @click="handleViewFindingFromNode"
+          >
             {{ $t(`btn['VIEW FINDING']`) }}
           </v-btn>
-          <v-btn text outlined color="grey darken-1" @click="findingDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="findingDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="deleteDialog" max-width="40%">
+      <v-card>
+        <v-card-title class="headline">
+          <span class="mx-4">
+            {{ $t(`message['Do you really want to delete this?']`) }}
+          </span>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-item>
+            <v-list-item-avatar
+              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+            >
+            <v-list-item-content>
+              <v-list-item-title
+                v-text="resourceModel.resource_id"
+              ></v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $t(`item['Resource ID']`) }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>mdi-file-find-outline</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title
+                v-text="resourceModel.resource_name"
+              ></v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $t(`item['Resource Name']`) }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            text
+            outlined
+            :loading="loading"
+            @click="handleDeleteSubmit"
+          >
+            {{ $t(`btn['DELETE']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 <script>
-import mixin from '@/mixin'
-import finding from '@/mixin/api/finding'
-import D3Network from 'vue-d3-network'
-import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import mixin from "@/mixin"
+import finding from "@/mixin/api/finding"
+import D3Network from "vue-d3-network"
+import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
 export default {
   mixins: [mixin, finding],
   components: {
+    BottomSnackBar,
     D3Network,
     ClipBoard,
   },
@@ -383,30 +510,53 @@ export default {
       loading: false,
       searchModel: {
         resourceName: null,
-        dates: ['', ''],
+        dates: ["", ""],
         score: [0.0, 100.0],
       },
       searchForm: {
-        resourceName: { label: 'Resource Name', placeholder: 'Filter for resource name' },
-        dates: { label: 'UpdatedAt Range', placeholder: 'Filter for dates range', menu: false },
-        score: { label: 'Sum Score', placeholder: 'Filter for score( from - to )' },
+        resourceName: {
+          label: "Resource Name",
+          placeholder: "Filter for resource name",
+        },
+        dates: {
+          label: "UpdatedAt Range",
+          placeholder: "Filter for dates range",
+          menu: false,
+        },
+        score: {
+          label: "Sum Score",
+          placeholder: "Filter for score( from - to )",
+        },
       },
       resourceNameList: [],
-      search: '',
+      search: "",
       table: {
         selected: [],
         options: {
           page: 1,
           itemsPerPage: 5,
-          sortBy: ['id'],
+          sortBy: ["id"],
         },
         sort: {
-          key: 'resource_id',
-          direction: 'asc',
+          key: "resource_id",
+          direction: "asc",
         },
         actions: [
-          { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewFinding },
-          { text: 'Resource Map', icon: 'mdi-file-tree-outline', click: this.handleViewItem },
+          {
+            text: "View Finding",
+            icon: "mdi-eye",
+            click: this.handleViewFinding,
+          },
+          {
+            text: "Resource Map",
+            icon: "mdi-file-tree-outline",
+            click: this.handleViewItem,
+          },
+          {
+            text: "Delete Item",
+            icon: "mdi-trash-can-outline",
+            click: this.handleDeleteItem,
+          },
         ],
         total: 0,
         footer: {
@@ -415,7 +565,7 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       // resourceIDs: [],
       map: {
@@ -425,9 +575,9 @@ export default {
           force: 1200,
           nodeSize: 20,
           nodeLabels: true,
-          linkLabels:true,
+          linkLabels: true,
           linkWidth: 5,
-        }
+        },
       },
 
       resourceMapDialog: false,
@@ -437,33 +587,43 @@ export default {
         options: {
           force: 10000,
           nodeSize: 30,
-          size: {w:1160, h:560},
+          size: { w: 1160, h: 560 },
           nodeLabels: true,
-          linkLabels:true,
+          linkLabels: true,
           linkWidth: 30,
           fontSize: 20,
-        }
+        },
       },
       findingDialog: false,
       findingModel: {
-        finding_id:'',
-        status: '',
-        score:'',
-        original_score:'',
-        data_source:'',
-        resource_name:'',
-        description:'',
+        finding_id: "",
+        status: "",
+        score: "",
+        original_score: "",
+        data_source: "",
+        resource_name: "",
+        description: "",
         tags: [],
-        data: '',
-        created_at:'',
-        updated_at:'',
-        new_tag: '',
+        data: "",
+        created_at: "",
+        updated_at: "",
+        new_tag: "",
+      },
+
+      deleteDialog: false,
+      resourceModel: {
+        resource_id: "",
+        resource_name: "",
+        created_at: "",
+        updated_at: "",
       },
     }
   },
   filters: {
     formatScore: (score) => {
-      if (!Number.isInteger(score)){return score}
+      if (!Number.isInteger(score)) {
+        return score
+      }
       return score.toFixed(2)
     },
   },
@@ -474,42 +634,84 @@ export default {
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item["ID"]'),       align: 'center', width: '5%',  value: 'resource_id' },
-        { text: this.$i18n.t('item["Resource"]'), align: 'start',  width: '20%', value: 'resource_name' },
-        { text: this.$i18n.t('item["Findings"]'), align: 'center', width: '5%',  value: 'findings', sortable: false },
-        { text: this.$i18n.t('item["Updated"]'),  align: 'start',  width: '10%', value: 'updated_at' },
-        { text: this.$i18n.t('item["Action"]'),   align: 'center', width: '10%', value: 'action', sortable: false },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: "center",
+          width: "5%",
+          value: "resource_id",
+        },
+        {
+          text: this.$i18n.t('item["Resource"]'),
+          align: "start",
+          width: "20%",
+          value: "resource_name",
+        },
+        {
+          text: this.$i18n.t('item["Findings"]'),
+          align: "center",
+          width: "5%",
+          value: "findings",
+          sortable: false,
+        },
+        {
+          text: this.$i18n.t('item["Updated"]'),
+          align: "start",
+          width: "10%",
+          value: "updated_at",
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: "center",
+          width: "10%",
+          value: "action",
+          sortable: false,
+        },
       ]
     },
-    dateRangeText () {
-      if ( this.searchModel.dates.length < 1 || this.searchModel.dates[0] === '' || this.searchModel.dates[1] === '' ) {
-        return ''
+    dateRangeText() {
+      if (
+        this.searchModel.dates.length < 1 ||
+        this.searchModel.dates[0] === "" ||
+        this.searchModel.dates[1] === ""
+      ) {
+        return ""
       }
-      return this.searchModel.dates.join(' ~ ')
+      return this.searchModel.dates.join(" ~ ")
     },
-    resourceMapOptions(){
-      return{
-        force:      this.resourceMap.options.force,
-        size:       {w:this.resourceMap.options.size.w, h:this.resourceMap.options.size.h},
-        nodeSize:   this.resourceMap.options.nodeSize,
+    resourceMapOptions() {
+      return {
+        force: this.resourceMap.options.force,
+        size: {
+          w: this.resourceMap.options.size.w,
+          h: this.resourceMap.options.size.h,
+        },
+        nodeSize: this.resourceMap.options.nodeSize,
         nodeLabels: this.resourceMap.options.nodeLabels,
         linkLabels: this.resourceMap.options.linkLabels,
-        linkWidth:  this.resourceMap.options.linkWidth,
-        fontSize:   this.resourceMap.options.fontSize,
+        linkWidth: this.resourceMap.options.linkWidth,
+        fontSize: this.resourceMap.options.fontSize,
       }
-    }
+    },
   },
   methods: {
     // Handler
     handleViewFinding(item) {
-      this.$router.push('/finding/finding?from_score=0&resource_name=' + item.resource_name)
+      this.$router.push(
+        "/finding/finding?from_score=0&resource_name=" + item.resource_name
+      )
     },
     handleViewFindingFromNode() {
-      this.$router.push('/finding/finding/' + 
-        '?resource_name=' + this.findingModel.resource_name +
-        '&data_source='   + this.findingModel.data_source +
-        '&from_score='    + this.findingModel.from_score +
-        '&to_score='      + this.findingModel.to_score)
+      this.$router.push(
+        "/finding/finding/" +
+          "?resource_name=" +
+          this.findingModel.resource_name +
+          "&data_source=" +
+          this.findingModel.data_source +
+          "&from_score=" +
+          this.findingModel.from_score +
+          "&to_score=" +
+          this.findingModel.to_score
+      )
     },
     handleViewItem(item) {
       this.resourceMap.nodes = []
@@ -521,39 +723,65 @@ export default {
       this.refleshList()
     },
     handleSort(newSortKey) {
-      const oldKey =this.table.sort.key
+      const oldKey = this.table.sort.key
       const oldDirection = this.table.sort.direction
       if (oldKey === newSortKey) {
-        this.table.sort.direction = oldDirection === 'asc' ? 'desc' : 'asc' // reverse direction
+        this.table.sort.direction = oldDirection === "asc" ? "desc" : "asc" // reverse direction
       } else {
         this.table.sort.key = newSortKey
-        this.table.sort.direction = 'asc'
+        this.table.sort.direction = "asc"
       }
       this.refleshList()
     },
+    // Delete
+    handleDeleteItem(row) {
+      this.resourceModel = Object.assign(this.resourceModel, row)
+      this.deleteDialog = true
+    },
+    async handleDeleteSubmit() {
+      this.loading = true
+      await this.deleteResourceAPI(this.resourceModel.resource_id).catch(
+        (err) => {
+          this.clearList()
+          return Promise.reject(err)
+        }
+      )
+      this.finishSuccess("Success: Delete.")
+    },
 
     getSearchCondition() {
-      let searchCond = ''
+      let searchCond = ""
       if (this.searchModel.resourceName) {
-        searchCond += '&resource_name=' + this.searchModel.resourceName
+        searchCond += "&resource_name=" + this.searchModel.resourceName
       }
       if (this.searchModel.dates[0]) {
-        searchCond += '&from_at=' + Math.floor(Date.parse(this.searchModel.dates[0]) / 1000 )
+        searchCond +=
+          "&from_at=" + Math.floor(Date.parse(this.searchModel.dates[0]) / 1000)
       }
       if (this.searchModel.dates[1]) {
-        searchCond += '&to_at=' + Math.floor(Date.parse(this.searchModel.dates[1]) / 1000 )
+        searchCond +=
+          "&to_at=" + Math.floor(Date.parse(this.searchModel.dates[1]) / 1000)
       }
       if (this.searchModel.score[0]) {
-        searchCond += '&from_sum_score=' + this.searchModel.score[0]
+        searchCond += "&from_sum_score=" + this.searchModel.score[0]
       }
       if (this.searchModel.score[1]) {
-        searchCond += '&to_sum_score=' + this.searchModel.score[1]
+        searchCond += "&to_sum_score=" + this.searchModel.score[1]
       }
-      const offset = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const offset =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const limit = this.table.options.itemsPerPage
       const sort = this.table.sort.key
       const direction = this.table.sort.direction
-      searchCond += '&offset=' + offset + '&limit=' + limit + '&sort=' + sort + '&direction=' + direction
+      searchCond +=
+        "&offset=" +
+        offset +
+        "&limit=" +
+        limit +
+        "&sort=" +
+        sort +
+        "&direction=" +
+        direction
       return searchCond
     },
 
@@ -566,13 +794,13 @@ export default {
       this.loading = true
       this.clearList()
       const list = await this.listResourceID(this.getSearchCondition())
-      if ( !list.resource_id || list.resource_id.length == 0 ) {
+      if (!list.resource_id || list.resource_id.length == 0) {
         this.loading = false
-        return 
+        return
       }
       this.table.total = list.total
       let resources = []
-      for( const id of list.resource_id ) {
+      for (const id of list.resource_id) {
         resources.push(this.getResourceDetail(id))
       }
       this.table.items = await Promise.all(resources) // Parallel API call
@@ -580,23 +808,27 @@ export default {
     },
     async getResourceDetail(id) {
       const resource = await this.getResource(id)
-      const findingIDs = await this.listFindingByResouceName(resource.resource_name)
+      const findingIDs = await this.listFindingByResouceName(
+        resource.resource_name
+      )
       this.setResourceMap(resource, findingIDs, this.map, 5)
       this.resourceNameList.push(resource.resource_name)
       return {
-          resource_id:   resource.resource_id,
-          resource_name: resource.resource_name,
-          updated_at:    resource.updated_at,
-          findings:      findingIDs.length,
+        resource_id: resource.resource_id,
+        resource_name: resource.resource_name,
+        updated_at: resource.updated_at,
+        findings: findingIDs.length,
       }
     },
-    async loadResouceMap( resourceID ) {
+    async loadResouceMap(resourceID) {
       this.loading = true
       const resource = await this.getResource(resourceID)
-      const findingIDs = await this.listFindingByResouceName(resource.resource_name)
+      const findingIDs = await this.listFindingByResouceName(
+        resource.resource_name
+      )
       await this.setResourceMap(resource, findingIDs, this.resourceMap, 99999)
       this.loading = false
-    }, 
+    },
     clearList() {
       this.table.items = []
       this.resourceNameList = []
@@ -604,93 +836,116 @@ export default {
       this.map.links = []
     },
 
+    // finish
+    async finishSuccess(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.finish(true)
+    },
+    async finishError(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifyError(msg)
+      this.finish(false)
+    },
+    async finish(reflesh) {
+      this.loading = false
+      this.viewDialog = false
+      this.deleteDialog = false
+      if (reflesh) {
+        this.handleSearch()
+      }
+    },
+
     // ResourceMap
     async setResourceMap(resource, findingIDs, map, nodeLimits) {
-      const srcID = 'r-' + resource.resource_id
+      const srcID = "r-" + resource.resource_id
       map.nodes.push({
-        id :    srcID,
-        name:   this.getShortName(resource.resource_name),
-        svgSym: 'icons.gitHub',
+        id: srcID,
+        name: this.getShortName(resource.resource_name),
+        svgSym: "icons.gitHub",
       })
       let count = 0
-      for( let id of findingIDs ) {
+      for (let id of findingIDs) {
         count++
-        if ( count > nodeLimits ) {
-          const targetID = srcID + '-more...'
+        if (count > nodeLimits) {
+          const targetID = srcID + "-more..."
           map.nodes.push({
-            id:     targetID,
-            name:   'and more...',
-            _color: '#616161',
+            id: targetID,
+            name: "and more...",
+            _color: "#616161",
           })
           map.links.push({
             sid: srcID,
             tid: targetID,
-            _svgAttrs:{'stroke-width':3, opacity:2},
-            _color: '#E0E0E0',
+            _svgAttrs: { "stroke-width": 3, opacity: 2 },
+            _color: "#E0E0E0",
           })
           break // limit
         }
         const finding = await this.getFinding(id)
-        const targetID = 'f-' + finding.finding_id
+        const targetID = "f-" + finding.finding_id
         map.nodes.push({
-          id:      targetID,
-          name:    finding.score + 'pt (' + finding.data_source + ')',
+          id: targetID,
+          name: finding.score + "pt (" + finding.data_source + ")",
           finding: finding,
           _color: this.getColorRGBByScore(finding.score),
         })
         map.links.push({
           sid: srcID,
           tid: targetID,
-          _svgAttrs:{'stroke-width':3, opacity:2},
-          _color: '#E0E0E0',
+          _svgAttrs: { "stroke-width": 3, opacity: 2 },
+          _color: "#E0E0E0",
         })
       }
     },
     clickNode(event, node) {
-      if ( !node.finding ) return
+      if (!node.finding) return
       // console.log('event: ' + event)
       this.findingModel = Object.assign(this.findingModel, node.finding)
       this.findingDialog = true
     },
-  }
+  },
 }
 </script>
 <style>
 .node {
-  stroke: rgba(18,120,98,.7);
+  stroke: rgba(18, 120, 98, 0.7);
   stroke-width: 4px;
-  -webkit-transition: fill .5s ease;
-  transition: fill .5s ease;
-  fill: #E0E0E0
+  -webkit-transition: fill 0.5s ease;
+  transition: fill 0.5s ease;
+  fill: #e0e0e0;
 }
 .node.selected {
-  stroke: #caa455
+  stroke: #caa455;
 }
 .node.pinned {
-  stroke: rgba(190,56,93,.6)
+  stroke: rgba(190, 56, 93, 0.6);
 }
 .link {
-  stroke: rgba(18,120,98,.3)
+  stroke: rgba(18, 120, 98, 0.3);
 }
-.link,.node {
-  stroke-linecap: round
+.link,
+.node {
+  stroke-linecap: round;
 }
-.link:hover,.node:hover {
+.link:hover,
+.node:hover {
   stroke: #be385d;
-  stroke-width: 5px
+  stroke-width: 5px;
 }
 .link.selected {
-  stroke: rgba(202,164,85,.6)
+  stroke: rgba(202, 164, 85, 0.6);
 }
 .curve {
-  fill: none
+  fill: none;
 }
-.link-label,.node-label {
-  fill: #616161
+.link-label,
+.node-label {
+  fill: #616161;
 }
 .link-label {
-  -webkit-transform: translateY(-.5em);
-  transform: translateY(-.5em);
-  text-anchor: middle
+  -webkit-transform: translateY(-0.5em);
+  transform: translateY(-0.5em);
+  text-anchor: middle;
 }
 </style>

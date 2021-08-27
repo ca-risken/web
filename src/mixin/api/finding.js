@@ -159,6 +159,15 @@ const finding = {
         return Promise.reject(err)
       })
     },
+    async deleteResourceAPI(resource_id) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        resource_id: resource_id,
+      }
+      await this.$axios.post('/finding/delete-resource/', param).catch((err) => {
+        return Promise.reject(err)
+      })
+    },
 
     // FindingSetting API
     async listFindingSettingAPI(statusParam) {
