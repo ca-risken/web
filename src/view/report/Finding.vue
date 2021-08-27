@@ -588,7 +588,7 @@ export default {
       if (this.searchModel.dataSource) {
         searchCond += "&data_source=" + this.searchModel.dataSource
       }
-      if (this.searchModel.fromDate) {
+      if (this.searchModel.score) {
         searchCond += "&score=" + this.searchModel.score
       }
       if (target == "all") {
