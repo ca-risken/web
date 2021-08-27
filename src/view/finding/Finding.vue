@@ -206,7 +206,16 @@
                 </template>
                 <template v-slot:[`item.data_source`]="{ item }">
                   <v-layout justify-center>
+                    <v-avatar
+                      v-if="item.data_source == 'RISKEN'"
+                      tile
+                      class="ma-0"
+                      size="30px"
+                    >
+                      <img src="/static/m.png" :alt="item.data_source" />
+                    </v-avatar>
                     <v-icon
+                      v-else
                       v-text="getDataSourceIcon(item.data_source)"
                       :color="getDataSourceIconColor(item.data_source)"
                     />
