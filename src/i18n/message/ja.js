@@ -143,6 +143,7 @@ const ja = {
     "Resource Name": "リソース名",
     "Resource Pattern": "リソースパターン",
     "Resource": "リソース",
+    "Resource ID": "リソースID",
     "ResourceName": "リソース名",
     "ResourceType": "リソースタイプ",
     "Roles": "ロール設定",
