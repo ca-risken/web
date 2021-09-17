@@ -408,6 +408,47 @@ export const appRoute = [
         ]
       },
       {
+        path: '/admin',
+        component: RouteWrapper,
+        redirect: '/admin/menu',
+        hidden: true,
+        meta: {
+          title: 'Admin',
+          icon: 'mdi-account-multiple',
+          group: 'admin',
+          hiddenInMenu: true,
+        },
+        children: [
+          {
+            path: '/admin/menu',
+            name: 'AdminMenu',
+            meta: {
+              title: 'Menu',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/admin/Menu.vue')
+          },
+          {
+            path: '/admin/user',
+            name: 'AdminUser',
+            meta: {
+              title: 'Role',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/admin/User.vue')
+          },
+          {
+            path: '/admin/report',
+            name: 'AdminReport',
+            meta: {
+              title: 'Report',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/report/Finding.vue')
+          },
+        ]
+      },
+      {
         path: '/403',
         name: 'Forbidden',
         meta: {
