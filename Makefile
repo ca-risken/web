@@ -14,8 +14,8 @@ help:
 	@echo "\n---------------- sub-command list ----------------"
 	@cat Makefile | grep -e "^.PHONY:" | grep -v "all" | cut -f2 -d' '
 
-.PHONY: clean
-clean:
+.PHONY: local-clean
+local-clean:
 	rm -rf dist
 	rm -rf node_modules
 
@@ -25,7 +25,7 @@ install:
 
 .PHONY: build
 build: test
-	. env.sh && TARGET=$(TARGET) IMAGE_TAG=$(IMAGE_TAG) IMAGE_PREFIX=$(IMAGE_PREFIX) BUILD_OPT="$(BUILD_OPT)" . hack/docker-build.sh
+	TARGET=$(TARGET) IMAGE_TAG=$(IMAGE_TAG) IMAGE_PREFIX=$(IMAGE_PREFIX) BUILD_OPT="$(BUILD_OPT)" . hack/docker-build.sh
 
 .PHONY: build-ci
 build-ci:
@@ -52,5 +52,9 @@ test:
 	yarn lint
 
 .PHONY: run
-run: test
+run: clean test
 	yarn serve
+
+.PHONY: clean
+clean:
+	yarn cache clean

@@ -78,7 +78,7 @@
         </template>
         <v-list class="pa-0">
           <v-list-item
-            v-for="(item, index) in myMenus"
+            v-for="(item, index) in myMenu"
             :to="!item.href ? { name: item.name } : null"
             :href="item.href"
             @click="item.click"
@@ -230,8 +230,7 @@ export default {
         { text: "English", value: "en" },
         { text: "日本語", value: "ja" },
       ],
-
-      myMenus: [
+      myMenu: [
         {
           icon: "mdi-account-circle",
           href: "#",
@@ -251,6 +250,7 @@ export default {
           click: this.handleLogut,
         },
       ],
+      isAdmin: false,
     }
   },
   computed: {
@@ -301,7 +301,22 @@ export default {
       return store.state.project.name
     },
   },
-  mounted() {
+  async mounted() {
+    await this.signinUser()
+    if (!store.state.user || !store.state.user.user_id) {
+      console.log("Error: Try again after signin.")
+      return
+    }
+    const admin = await this.isAdminAPI(store.state.user.user_id).catch(
+      (err) => {
+        return Promise.reject(err)
+      }
+    )
+    if (admin) {
+      this.isAdmin = true
+    }
+    this.myMenu = await this.getMenu()
+
     this.currentProjectID = store.state.project.project_id
     const userLocale = store.state.locale
     if (userLocale.lang && userLocale.text) {
@@ -309,7 +324,6 @@ export default {
         value: userLocale.lang,
         text: userLocale.text,
       })
-      return
     }
     const browserLocale = Util.getNavigatorLanguage()
     this.handleChangeLocale({
@@ -331,19 +345,8 @@ export default {
     },
     async listProject() {
       this.clearProjectList()
-      await this.signinUser()
-      if (!store.state.user || !store.state.user.user_id) {
-        // this.$refs.snackbar.notifyError("Error: Try again after signin.")
-        console.log("Error: Try again after signin.")
-        return
-      }
-      const admin = await this.isAdminAPI(store.state.user.user_id).catch(
-        (err) => {
-          return Promise.reject(err)
-        }
-      )
       let listProjectParam = "?user_id=" + store.state.user.user_id
-      if (admin) {
+      if (this.isAdmin) {
         listProjectParam = ""
       }
       this.projectTable.item = await this.listProjectAPI(
@@ -369,6 +372,38 @@ export default {
       }
     },
 
+    async getMenu() {
+      let menu = [
+        {
+          icon: "mdi-account-circle",
+          href: "#",
+          title: "Account",
+          click: this.handleAccountSetting,
+        },
+        {
+          icon: "mdi-alpha-p-box",
+          href: "#",
+          title: "My Project",
+          click: this.handleProjectSetting,
+        },
+      ]
+      if (this.isAdmin) {
+        menu.push({
+          icon: "mdi-head-minus",
+          href: "#",
+          title: "Admin Menu",
+          click: this.handleAdmin,
+        })
+      }
+      menu.push({
+        icon: "mdi-logout",
+        href: "#",
+        title: "Signout",
+        click: this.handleLogut,
+      })
+      return menu
+    },
+
     // handler
     handleDrawerToggle() {
       this.$emit("side-icon-click")
@@ -392,6 +427,9 @@ export default {
     },
     handleProjectSetting() {
       this.$router.push("/project/setting/")
+    },
+    handleAdmin() {
+      this.$router.push("/admin/menu/")
     },
     handleGoBack() {
       this.$router.go(-1)

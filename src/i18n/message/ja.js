@@ -48,6 +48,7 @@ const ja = {
     "Code": "ソースコード",
     "IAM": "IAM",
     "Report": "レポート",
+    "Admin": "管理者",
   },
   "submenu": {
     "Dashboard": "ダッシュボード",
@@ -78,6 +79,9 @@ const ja = {
     "NewProject": "新規プロジェクト",
     "ProjectSetting": "設定",
     "Profile": "プロフィール",
+    "Menu": "メニュー",
+    "Admin User": "管理者ユーザ",
+    "Report": "レポート",
   },
   "item": {
     "": "",

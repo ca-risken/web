@@ -48,6 +48,7 @@ const en = {
     "Code": "Code",
     "IAM": "IAM",
     "Report": "Report",
+    "Admin": "Admin",
   },
   "submenu": {
     "Dashboard": "Dashboard",
@@ -74,10 +75,13 @@ const en = {
     "Role": "Role",               // IAM
     "Policy": "Policy",           // IAM
     "AccessToken": "AccessToken", // IAM
-    "ReportFinding": "ReportFinding", // Report
+    "ReportFinding": "Report Finding", // Report
     "NewProject": "New",         // Project
     "ProjectSetting": "Setting", // Project
     "Profile": "Profile",
+    "Menu": "Menu",
+    "Admin User": "Admin User",
+    "Report": "Report",
   },
   "item": {
     "": "",

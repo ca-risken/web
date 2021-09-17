@@ -12,6 +12,11 @@ yarn install
 yarn serve
 ```
 
+### Cache clean
+```
+yarn cache clean
+```
+
 ### Compiles and minifies for production
 ```
 yarn build
