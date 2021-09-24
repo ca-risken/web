@@ -256,6 +256,14 @@ export const appRoute = [
             },
             component: () => import('@/view/diagnosis/Portscan.vue')
           },
+          {
+            path: '/diagnosis/applicationscan',
+            name: 'DiagnosisApplicationScan',
+            meta: {
+              title: 'Application Scan',
+            },
+            component: () => import('@/view/diagnosis/ApplicationScan.vue')
+          },
         ]
       },
       {

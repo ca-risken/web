@@ -24,6 +24,7 @@ let mixin = {
       jira_datasource_id: 1001,
       wpscan_datasource_id: 1002,
       diagnosis_portscan_datasource_id: 1003,
+      diagnosis_application_scan_datasource_id: 1004,
       gitleaks_datasource_id: 1001,
       resourceNameCombobox: [],
       projectTagDialog: false,
