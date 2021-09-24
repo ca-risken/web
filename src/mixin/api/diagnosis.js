@@ -121,10 +121,10 @@ const diagnosis = {
       })
       return res
     },
-    async getApplicationScanBasicSettingAPI(application_scan_basic_setting_id) {
+    async getApplicationScanBasicSettingAPI(application_scan_id) {
       var url = '/diagnosis/get-application-scan-basic-setting/?project_id=' + this.$store.state.project.project_id
-      if (application_scan_basic_setting_id != 0) {
-        url = url + '&application_scan_basic_setting_id=' + application_scan_basic_setting_id
+      if (application_scan_id != 0) {
+        url = url + '&application_scan_id=' + application_scan_id
       } 
       const res = await this.$axios.get(url).catch((err) =>  {
         return Promise.reject(err)

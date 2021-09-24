@@ -374,8 +374,6 @@ export default {
       this.loading = false
     },
     async deleteItem(applicationScanID) {
-      console.log(this.applicationScanModel)
-      console.log(this.applicationScanBasicSettingModel)
       await this.deleteApplicationScanAPI(applicationScanID).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -392,7 +390,6 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      console.log(this.applicationScanBasicSettingModel)
       await this.putApplicationScanBasicSettingAPI(newApplicationScanID,this.applicationScanBasicSettingModel.application_scan_basic_setting_id,this.applicationScanBasicSettingModel.target,this.applicationScanBasicSettingModel.max_depth,this.applicationScanBasicSettingModel.max_children).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -445,7 +442,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Invoke scan for Data Source.')
+      this.finish('Success: Invoke scan for Data Source.')
     },
     async assignDataModel(item) {
       this.applicationScanModel = {}
@@ -453,8 +450,8 @@ export default {
       const setting = await this.getApplicationScanBasicSetting(item.application_scan_id)
       this.applicationScanBasicSettingModel = Object.assign(this.applicationScanBasicSettingModel, setting)
     },
-    async getApplicationScanBasicSetting(applicationScanBasicSettingID) {
-      const application_scan_basic_setting = await this.getApplicationScanBasicSettingAPI(applicationScanBasicSettingID).catch((err) =>  {
+    async getApplicationScanBasicSetting(applicationScanID) {
+      const application_scan_basic_setting = await this.getApplicationScanBasicSettingAPI(applicationScanID).catch((err) =>  {
         this.clearList()
         this.finishError(err.response.data)
         return null
