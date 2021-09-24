@@ -68,6 +68,8 @@ const en = {
     "WPScan": "WPScan", // Diagnosis
     "Portscan": "Portscan", // Diagnosis
     "Portscan Target": "Portscan Target", // Diagnosis
+    "Application Scan": "Application Scan", // Diagnosis
+    "Application Scan Basic Setting": "Application Scan Basic Setting", // Diagnosis
     "OSINT": "OSINT",
     "OSINT DataSource": "OSINT DataSource",
     "Gitleaks": "Gitleaks",
@@ -92,6 +94,8 @@ const en = {
     "Alert Condition ID": "Alert Condition ID",
     "Alert Rule ID": "Alert Rule ID",
     "And Or": "And Or",
+    "Application Scan ID": "Application Scan ID",
+    "Application Scan Basic Setting ID": "Application Scan Basic Setting ID",
     "Assume Role": "Assume Role",
     "AWS ID": "AWS ID",
     "AWS Account ID": "AWS Account ID",
@@ -128,6 +132,8 @@ const en = {
     "JIRA Project": "JIRA Project",
     "Last Updated User": "Last Updated User",
     "MAX Score": "MAX Score",
+    "Max Depth": "MAX Depth",
+    "Max Children": "MAX Children",
     "Name": "Name",
     "Notificationns": "Notificationns",
     "Notification ID": "Notification ID",
@@ -153,11 +159,13 @@ const en = {
     "Roles": "Roles",
     "Rules": "Rules",
     "ScanAt": "ScanAt",
+    "ScanType": "ScanType",
     "Scan Public Repository": "Scan Public Repository",
     "Scan Internal Repository": "Scan Internal Repository",
     "Scan Private Repository": "Scan Private Repository",
     "Score Coefficient": "Score Coefficient",
     "Score": "Score",
+    "Setting Detail": "Setting Detail",
     "Severity": "Severity",
     "Status": "Status",
     "Status Detail": "Status Detail",

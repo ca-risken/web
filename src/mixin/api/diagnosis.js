@@ -82,6 +82,86 @@ const diagnosis = {
       })
       return res
     },
+    async listApplicationScanAPI() {
+      const res = await this.$axios.get(
+        '/diagnosis/list-application-scan/?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.application_scan ) {
+        return []
+      }
+      return res.data.data.application_scan  
+    },
+    async putApplicationScanAPI(diagnosisDataSourceID,applicationScanSettingID,name,scanType) {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        application_scan: {
+          project_id: this.$store.state.project.project_id,
+          diagnosis_data_source_id: diagnosisDataSourceID,
+          application_scan_id: applicationScanSettingID,
+          name: name,
+          scan_type: scanType,
+          status: 2, //CONFIGURED
+        },
+      }
+      const res = await this.$axios.post('/diagnosis/put-application-scan/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      var newApplicationScanID = res.data.data.application_scan.application_scan_id
+      return newApplicationScanID
+    },
+    async deleteApplicationScanAPI(applicationScanSettingID) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        application_scan_id: applicationScanSettingID,
+      }
+      const res = await this.$axios.post('/diagnosis/delete-application-scan/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      return res
+    },
+    async getApplicationScanBasicSettingAPI(application_scan_basic_setting_id) {
+      var url = '/diagnosis/get-application-scan-basic-setting/?project_id=' + this.$store.state.project.project_id
+      if (application_scan_basic_setting_id != 0) {
+        url = url + '&application_scan_basic_setting_id=' + application_scan_basic_setting_id
+      } 
+      const res = await this.$axios.get(url).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data.data.application_scan_basic_setting ) {
+        return null
+      }
+      return res.data.data.application_scan_basic_setting  
+    },
+    async putApplicationScanBasicSettingAPI(applicationScanSettingID,applicationScanBasicSettingID,target,max_depth,max_children) {
+      const param = { 
+        project_id: this.$store.state.project.project_id,
+        application_scan_basic_setting: {
+          project_id: this.$store.state.project.project_id,
+          application_scan_id: applicationScanSettingID,
+          application_scan_basic_setting_id: applicationScanBasicSettingID,
+          target: target,
+          max_depth: max_depth,
+          max_children: max_children,
+          status: 2, // CONFIGURED
+        },
+      }
+      const res = await this.$axios.post('/diagnosis/put-application-scan-basic-setting/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      return res
+    },
+    async deleteApplicationScanBasicSettingAPI(applicationScanBasicSettingID) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        application_scan_basic_setting_id: applicationScanBasicSettingID,
+      }
+      const res = await this.$axios.post('/diagnosis/delete-application-scan-basic-setting/', param).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      return res
+    },
     async invokeDiagnosisScanAPI(setting_id, diagnosis_data_source_id) {
       const param = {
         project_id: this.$store.state.project.project_id,
