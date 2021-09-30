@@ -201,6 +201,17 @@
               </v-menu>
             </template>
           </v-data-table>
+          <v-card-actions>
+              <v-btn 
+                text outlined color="blue darken-1" 
+                v-if="!this.portscanSettingForm.newPortscanSetting"
+                :loading="loading" 
+                @click="handleScan"
+              >
+                {{ $t(`btn['SCAN']`) }}
+              </v-btn>
+            <v-spacer />
+          </v-card-actions>
         </v-card-text>
       </v-card>
     </v-dialog>
