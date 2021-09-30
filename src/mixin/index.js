@@ -13,6 +13,7 @@ let mixin = {
         'diagnosis:jira',
         'diagnosis:wpscan',
         'diagnosis:portscan',
+        'diagnosis:application-scan',
         'osint:subdomain',
         'code:gitleaks',
         'google:asset',
