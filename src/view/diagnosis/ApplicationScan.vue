@@ -34,6 +34,12 @@
             @projectTagCancel="projectTagDialog = false"
             @projectTagUpdated="handleProjectTagUpdated"
           />
+          <v-btn class="mt-1 mr-4" color="grey darken-2" dense small icon fab outlined
+            :loading="loading"
+            @click="refleshList"
+          >
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
           <v-btn class="mt-1 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
@@ -316,7 +322,7 @@ export default {
             v =>  !v || v >= 0 || v <= 100 || 'Max Children must be more than 0 and less than 100 number',
           ]}
       },
-      applicationScanModel: { application_scan_id:0, name:'',status:'', updated_at:'',target:'',detailBasicSetting:false },
+      applicationScanModel: { application_scan_id:0, name:'',status:'',scan_at:'', updated_at:'',target:'',detailBasicSetting:false },
       applicationScanBasicSettingModel: { application_scan_id:0, application_scan_basic_setting_id:0, target:'',scan_at:'',max_depth:0,max_children:0, updated_at:'' },
       table: {
         selected: [],
@@ -346,10 +352,18 @@ export default {
         { text: this.$i18n.t('item["Name"]'), align: 'start', sortable: false, value: 'name' },
         { text: this.$i18n.t('item["ScanType"]'), align: 'start', sortable: false, value: 'scan_type' },
         { text: this.$i18n.t('item["Status"]'), align: 'start', sortable: false, value: 'status' },
+        { text: this.$i18n.t('item["ScanAt"]'), align: 'center', sortable: false, value: 'scan_at' },
         { text: this.$i18n.t('item["Updated"]'), align: 'center', sortable: false, value: 'updated_at' },
         { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
       ]
     },
+  },
+  created() {
+    this.$setInterval(async () => {
+      if (!this.deleteDialog && !this.editDialog){
+        await this.refleshList()        
+      }
+    }, 3000)
   },
   mounted() {
     this.loading = true
