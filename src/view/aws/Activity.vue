@@ -705,7 +705,7 @@ console.log(config)
         const res = await this.getIPlocation(parsed.sourceIPAddress).catch((err) =>  {
           console.log(err)
         })
-        if (res != {} && res.country_name ) {
+        if ( res && res.country_name ) {
           contents.location = parsed.sourceIPAddress + ' (' + res.country_name + ')'
         }
       }
