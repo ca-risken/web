@@ -183,6 +183,9 @@ const ja = {
     "Verification Code": "検証コード",
     "Webhook URL": "ウェブフックURL",
     "WPScan Setting ID": "ワードプレス設定ID",
+    "WPScan Force": "対象URLにて、WordPressが動作しているかどうかにかかわらずスキャンを実行する",
+    "WPScan Random User Agent": "スキャンごとにランダムなUAを使用する",
+    "WPScan WP Content Dir": "「wp-content」ディレクトリを自動で検知できない場合に手動で設定する",
   },
   "action": {
     "": "",

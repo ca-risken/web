@@ -183,6 +183,9 @@ const en = {
     "Verification Code": "Verification Code",
     "Webhook URL": "Webhook URL",
     "WPScan Setting ID": "WPScan Setting ID",
+    "WPScan Force": "Do not check if the target is running WordPress or returns a 403",
+    "WPScan Random User Agent": "Use a random user-agent for each scan",
+    "WPScan WP Content Dir": "The wp-content directory if custom or not detected, such as \"wp-content\"",
   },
   "action": {
     "": "",
