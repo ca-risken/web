@@ -1,8 +1,65 @@
+import Util from '@/util'
 const diagnosis = {
   data: () => {
     return {}
   },
   methods: {
+    async getWPScanDataSourceAPI() {
+      const res = await this.$axios.get(
+        '/diagnosis/get-datasource/'
+          + '?diagnosis_data_source_id=' + this.wpscan_datasource_id 
+          + '&project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data || !res.data.data || !res.data.data.diagnosis_data_source ) {
+        return false
+      }
+      return res.data.data.diagnosis_data_source
+    },
+    async listWPScanSettingAPI() {
+      const res = await this.$axios.get(
+        '/diagnosis/list-wpscan-setting/'
+          + '?project_id=' + this.$store.state.project.project_id
+      ).catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !res.data || !res.data.data || !res.data.data.wpscan_setting ) {
+        return []
+      }
+      return res.data.data.wpscan_setting
+    },
+    async putWPScanSettingAPI(wpscan_setting_id,target_url,options,scan_at) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        wpscan_setting: {
+          project_id: this.$store.state.project.project_id,
+          wpscan_setting_id: wpscan_setting_id,
+          diagnosis_data_source_id: this.wpscan_datasource_id,
+          target_url: target_url,
+          options: options,
+          status: 2, // CONFIGURED
+          status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
+          scan_at: scan_at,
+        },
+      }
+      await this.$axios.post('/diagnosis/put-wpscan-setting/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      return
+    },
+    async deleteWPScanSettingAPI(wpscan_setting_id) {
+      const param = {
+          project_id: this.$store.state.project.project_id,
+          wpscan_setting_id: wpscan_setting_id,
+      }
+      await this.$axios.post('/diagnosis/delete-wpscan-setting/', param).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      return
+    },
     async listPortscanSettingAPI() {
       const res = await this.$axios.get(
         '/diagnosis/list-portscan-setting/?project_id=' + this.$store.state.project.project_id

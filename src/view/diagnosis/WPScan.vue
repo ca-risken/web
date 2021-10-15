@@ -271,7 +271,39 @@
                   :filled="wpscanForm.readOnly"
                 ></v-text-field>
               </v-col>
+              <v-checkbox
+                v-model="wpscanModel.use_detail_setting"
+                :label="$t(`item['`+wpscanForm.use_detail_setting.label+`']`)"
+                :disabled="wpscanForm.readOnly"
+                :filled="wpscanForm.readOnly"
+              ></v-checkbox>
             </v-row>
+            <v-container v-if="wpscanModel.use_detail_setting">
+              <v-divider></v-divider>
+              <v-checkbox
+                v-model="detailSettingModel.force"
+                :label="$t(`item['`+detailSettingForm.force.label+`']`)"
+                :disabled="detailSettingForm.readOnly"
+                :filled="detailSettingForm.readOnly"
+              ></v-checkbox>
+              <v-checkbox
+                v-model="detailSettingModel.random_user_agent"
+                :label="$t(`item['`+detailSettingForm.random_user_agent.label+`']`)"
+                :disabled="detailSettingForm.readOnly"
+                :filled="detailSettingForm.readOnly"
+              ></v-checkbox>
+              <v-text-field
+                v-model.number="detailSettingModel.wp_content_dir"
+                auto-grow
+                clearable
+                :rules="detailSettingForm.wp_content_dir.validator"
+                :label="$t(`item['`+detailSettingForm.wp_content_dir.label+`']`)"
+                :placeholder="detailSettingForm.wp_content_dir.placeholder"
+                :disabled="detailSettingForm.readOnly"
+                :filled="detailSettingForm.readOnly"
+                outlined required
+              ></v-text-field>
+            </v-container>
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -345,13 +377,13 @@
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
+import diagnosis from '@/mixin/api/diagnosis'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
-  mixins: [mixin, project],
+  mixins: [mixin,diagnosis, project],
   components: {
     BottomSnackBar,
     ProjectTag,
@@ -366,6 +398,18 @@ export default {
             v => !v || v.length <= 200 || 'WPScan Key must be less than 200 characters',
           ]
         },
+        use_detail_setting: {label: 'Setting Detail'}
+      },
+      detailSettingForm: {
+        readOnly: false,
+        valid: false,
+        force: {label: 'WPScan Force'},
+        random_user_agent: {label: 'WPScan Random User Agent'},
+        wp_content_dir: { label: 'WPScan WP Content Dir', placeholder: 'wp-content', validator:[
+            v => v.length <= 200 || 'WPScan Content Dir must be less than 200 characters',
+          ]
+        },
+        use_detail_setting: {label: 'Setting Detail'}
       },
       diagnosisModel: { diagnosis_data_source_id:'', name:'', description:'', max_score:'', updated_at:'' },
       wpscanModel: {
@@ -373,10 +417,13 @@ export default {
         diagnosis_data_source_id:'',
         target_url:'',
         status:'',
+        options: '',
+        use_detail_setting: false,
         status_detail:'',
         scan_at:'',
         updated_at:'',
       },
+      detailSettingModel: {force: false,random_user_agent: false, wp_content_dir: ''},
       table: {
         selected: [],
         search: '',
@@ -417,95 +464,75 @@ export default {
     },
   },
   async mounted() {
-    this.loading = true
-    await this.getWPScan()
-    await this.listWPScanSetting()
+    await this.getWPScanDataSource()
+    await this.refleshList()
   },
   methods: {
-    async getWPScan() {
-      const res = await this.$axios.get(
-        '/diagnosis/get-datasource/'
-          + '?diagnosis_data_source_id=' + this.wpscan_datasource_id 
-          + '&project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
+    async refleshList() {
+      this.loading = true
+      this.listWPScanSetting().catch((err) =>  {
         this.clearList()
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      if ( !res.data || !res.data.data || !res.data.data.diagnosis_data_source ) {
-        this.clearList()
-        return false
-      }
-      this.diagnosisModel = res.data .data.diagnosis_data_source
       this.loading = false
-    },
-    async listWPScanSetting() {
-      const res = await this.$axios.get(
-        '/diagnosis/list-wpscan-setting/'
-          + '?diagnosis_data_source_id=' + this.diagnosisModel.diagnosis_data_source_id
-          + '&project_id=' + this.$store.state.project.project_id
-      ).catch((err) =>  {
-        this.clearList()
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
-      if ( !res.data || !res.data.data || !res.data.data.wpscan_setting ) {
-        this.clearList()
-        return false
-      }
-      this.table.items = res.data.data.wpscan_setting
     },
     clearList() {
       this.table.items = []
       this.loading = false
     },
-    async deleteItem() {
-      const param = {
-          project_id: this.$store.state.project.project_id,
-          wpscan_setting_id: this.wpscanModel.wpscan_setting_id,
-      }
-      await this.$axios.post('/diagnosis/delete-wpscan-setting/', param).catch((err) =>  {
-        this.finishError(err.response.data)
+    async getWPScanDataSource() {
+      const wpscan_datasource = await this.getWPScanDataSourceAPI().catch((err) =>  {
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Delete.')
+      if ( !wpscan_datasource ) {
+        return false
+      }
+      this.diagnosisModel = wpscan_datasource
+    },
+    async listWPScanSetting() {
+      const wpscan = await this.listWPScanSettingAPI().catch((err) =>  {
+        return Promise.reject(err)
+      })
+      if ( !wpscan ) {
+        return false
+      }
+      this.table.items = wpscan
     },
     async putItem() {
       let scan_at = 0
       if (this.wpscanModel.scan_at > 0 ) {
         scan_at = this.wpscanModel.scan_at
       }
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        wpscan_setting: {
-          project_id: this.$store.state.project.project_id,
-          wpscan_setting_id: this.wpscanModel.wpscan_setting_id,
-          diagnosis_data_source_id: this.diagnosisModel.diagnosis_data_source_id,
-          target_url: this.wpscanModel.target_url,
-          status: 2, // CONFIGURED
-          status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
-          scan_at: scan_at,
-        },
-      }
-      await this.$axios.post('/diagnosis/put-wpscan-setting/', param).catch((err) =>  {
+      const scanOptions = this.setScanOptions()
+      await this.putWPScanSettingAPI(this.wpscanModel.wpscan_setting_id,this.wpscanModel.target_url,JSON.stringify(scanOptions),scan_at).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
       this.finishSuccess('Success: Put WPScan.')
     },
-    async scanDataSource() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        setting_id: this.wpscanModel.wpscan_setting_id,
-        diagnosis_data_source_id: this.wpscanModel.diagnosis_data_source_id,
-}
-      await this.$axios.post('/diagnosis/invoke-scan/', param).catch((err) =>  {
+    async deleteItem() {
+      await this.deleteWPScanSettingAPI(this.wpscanModel.wpscan_setting_id).catch((err) =>  {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess('Success: Invoke scan for Data Source.')
+      this.finishSuccess('Success: Delete.')
     },
-
+    setScanOptions(){
+      let scanOptions = {}
+      if (this.wpscanModel.use_detail_setting) {
+        if (this.detailSettingModel.force) {
+          scanOptions["force"] = true
+        }
+        if (this.detailSettingModel.random_user_agent) {
+          scanOptions["random-user-agent"] = true
+        }
+        if (this.detailSettingModel.wp_content_dir) {
+          scanOptions["wp-content-dir"] = this.detailSettingModel.wp_content_dir
+        }
+      }
+      return scanOptions
+    },
     // Handler
     async handleList() {
       this.loading = true
@@ -518,6 +545,7 @@ export default {
     handleViewItem(item) {
       this.assignDataModel(item)
       this.wpscanForm.readOnly = true
+      this.detailSettingForm.readOnly = true
       this.editDialog  = true
     },
     handleNewItem() {
@@ -526,6 +554,7 @@ export default {
     handleEditItem(item) {
       this.assignDataModel(item)
       this.wpscanForm.readOnly = false
+      this.detailSettingForm.readOnly = false
       this.editDialog  = true
     },
     async handleEditSubmit() {
@@ -545,19 +574,48 @@ export default {
       await this.untagProjectAPI('wpscan:' + this.wpscanModel.target_url)
       await this.deleteItem()
     },
-    handleScan(item) {
+    async handleScan(item) {
       this.loading = true
       if (item && item.wpscan_setting_id) {
         this.assignDataModel(item)
       }
-      this.scanDataSource()
+      await this.invokeDiagnosisScanAPI(this.wpscanModel.wpscan_setting_id, this.wpscan_datasource_id).catch((err) =>  {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finish('Success: Invoke scan for Data Source.')    
     },
 
     assignDataModel(item) {
       this.wpscanModel = {}
+      this.detailSettingModel = {"force":false,"random_user_agent":false,"wp_content_dir":""}
       this.wpscanModel = Object.assign(this.wpscanModel, item)
+      if (item) {
+        this.assignScanOptions(item.options)
+      }
     },
-
+    assignScanOptions(strScanOptions){
+      if (!strScanOptions) {
+        return
+      }
+      let scanOptions = JSON.parse(strScanOptions)
+      let isSetDetail = false
+      if (scanOptions["force"]) {
+        this.detailSettingModel.force = true
+        isSetDetail = true
+      }
+      if (scanOptions["random-user-agent"]) {
+        this.detailSettingModel.random_user_agent = true
+        isSetDetail = true
+      }
+      if (scanOptions["wp-content-dir"]) {
+        this.detailSettingModel.wp_content_dir = scanOptions["wp-content-dir"]
+        isSetDetail = true
+      }
+      if (isSetDetail) {
+        this.wpscanModel.use_detail_setting = true
+      }
+    },
     async finishInfo(msg) {
       await new Promise(resolve => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyInfo(msg)
@@ -574,12 +632,12 @@ export default {
       this.finish(false)
     },
     async finish(reflesh) {
-      this.loading = false
       this.editDialog  = false
       this.deleteDialog  = false
       if ( reflesh ) {
         this.listWPScanSetting()
       }
+      this.loading = false
     },
   }
 }
