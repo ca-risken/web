@@ -414,6 +414,12 @@ export default {
       }
       this.finish(msg)
     },
+    getApplicationScanTag() {
+      if (this.applicationScanBasicSettingModel.target !== '') {
+        return 'applicationscan:' + this.applicationScanBasicSettingModel.target
+      } 
+      return ''
+    },
     async handleRowClick(item) {
       this.handleEditItem(item)
     },
@@ -434,6 +440,9 @@ export default {
       }
       this.loading = true
       await this.putItem()
+      if (this.getApplicationScanTag() !== '') {
+        await this.tagProjectAPI(this.getApplicationScanTag(), 'indigo darken-1')
+      }
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
