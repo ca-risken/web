@@ -52,7 +52,7 @@ test:
 	yarn lint
 
 .PHONY: run
-run: clean test
+run: clean install test
 	yarn serve
 
 .PHONY: clean
