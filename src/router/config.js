@@ -224,7 +224,7 @@ export const appRoute = [
       {
         path: '/diagnosis',
         component: RouteWrapper,
-        redirect: '/diagnosis/jira',
+        redirect: '/diagnosis/wpscan',
         meta: {
           title: 'Diagnosis',
           icon: 'mdi-bug-check-outline',
@@ -236,6 +236,7 @@ export const appRoute = [
             name: 'JIRA',
             meta: {
               title: 'JIRA',
+              hiddenInMenu: true
             },
             component: () => import('@/view/diagnosis/JIRA.vue')
           },
