@@ -252,7 +252,6 @@ export const appRoute = [
             path: '/diagnosis/portscan',
             name: 'DiagnosisPortscan',
             meta: {
-              hiddenInMenu: true,
               title: 'Portscan',
             },
             component: () => import('@/view/diagnosis/Portscan.vue')
