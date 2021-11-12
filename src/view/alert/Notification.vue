@@ -358,9 +358,9 @@
   </div>
 </template>
 <script>
-import mixin from "@/mixin"
-import alert from "@/mixin/api/alert"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, alert],
   components: {
@@ -373,76 +373,76 @@ export default {
         new: false,
         valid: false,
         show_option: false,
-        notification_id: { label: "ID", placeholder: "-" },
+        notification_id: { label: 'ID', placeholder: '-' },
         name: {
-          label: "Name",
-          placeholder: "something",
+          label: 'Name',
+          placeholder: 'something',
           validator: [
-            (v) => !!v || "Name is required",
+            (v) => !!v || 'Name is required',
             (v) =>
-              !v || v.length <= 200 || "Name must be less than 200 characters",
+              !v || v.length <= 200 || 'Name must be less than 200 characters',
           ],
         },
         type: {
-          label: "Type",
-          placeholder: "slack",
-          list: ["slack"],
+          label: 'Type',
+          placeholder: 'slack',
+          list: ['slack'],
           validator: [
-            (v) => !!v || "Type is required",
-            (v) => v === "slack" || "Type is invalid type",
+            (v) => !!v || 'Type is required',
+            (v) => v === 'slack' || 'Type is invalid type',
           ],
         },
         webhook_url: {
-          label: "Webhook URL",
-          placeholder: "https://xxx",
+          label: 'Webhook URL',
+          placeholder: 'https://xxx',
           validator: [
             (v) =>
-              !!v || !!this.dataModel.notification_id || "Webhook is required",
+              !!v || !!this.dataModel.notification_id || 'Webhook is required',
           ],
         },
         custom_message: {
-          label: "Custom Message",
-          placeholder: "<!here> <@user_id> Hello user!",
+          label: 'Custom Message',
+          placeholder: '<!here> <@user_id> Hello user!',
           validator: [],
         },
         channel: {
-          label: "Channel",
-          placeholder: "#your-channel",
+          label: 'Channel',
+          placeholder: '#your-channel',
           validator: [],
         },
       },
       dataModel: {
         notification_id: 0,
-        name: "",
-        type: "slack",
+        name: '',
+        type: 'slack',
         notify_setting: {},
-        masked_webhook_url: "",
-        webhook_url: "",
-        custom_message: "",
-        channel: "",
-        updated_at: "",
+        masked_webhook_url: '',
+        webhook_url: '',
+        custom_message: '',
+        channel: '',
+        updated_at: '',
       },
       table: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 5, sortBy: ["notification_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 5, sortBy: ['notification_id'] },
         actions: [
           {
-            text: "Test Notification",
-            icon: "mdi-bell-outline",
+            text: 'Test Notification',
+            icon: 'mdi-bell-outline',
             click: this.handleTestItem,
           },
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
         ],
         footer: {
           disableItemsPerPage: false,
           itemsPerPageOptions: [20, 50, 100],
-          itemsPerPageText: "Rows/Page",
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -458,40 +458,40 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "notification_id",
+          value: 'notification_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Type"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "type",
+          value: 'type',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "updated_at",
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -523,7 +523,7 @@ export default {
           return Promise.reject(err)
         }
       )
-      this.finishSuccess("Success: Delete.")
+      this.finishSuccess('Success: Delete.')
     },
 
     // test
@@ -534,7 +534,7 @@ export default {
           return Promise.reject(err)
         }
       )
-      this.finishSuccess("Success: Send Test Notification.")
+      this.finishSuccess('Success: Send Test Notification.')
     },
 
     // put
@@ -560,9 +560,9 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      let msg = "Success: Updated Notification."
+      let msg = 'Success: Updated Notification.'
       if (this.form.new) {
-        msg = "Success: Created new Notification."
+        msg = 'Success: Created new Notification.'
       }
       this.finishSuccess(msg)
     },
@@ -570,13 +570,13 @@ export default {
     handleNewItem() {
       this.dataModel = {
         notification_id: 0,
-        name: "",
-        type: "slack",
-        masked_webhook_url: "",
-        webhook_url: "",
-        custom_message: "",
-        channel: "",
-        updated_at: "",
+        name: '',
+        type: 'slack',
+        masked_webhook_url: '',
+        webhook_url: '',
+        custom_message: '',
+        channel: '',
+        updated_at: '',
       }
       this.form.valid = false
       this.form.new = true
@@ -588,7 +588,7 @@ export default {
     handleEditItem(item) {
       this.assignDataModel(item)
       this.dataModel.masked_webhook_url = this.dataModel.webhook_url
-      this.dataModel.webhook_url = ""
+      this.dataModel.webhook_url = ''
       this.form.valid = false
       this.form.new = false
       this.editDialog = true
@@ -624,7 +624,7 @@ export default {
 
       const setting = JSON.parse(this.dataModel.notify_setting)
       // slack
-      if (this.dataModel.type === "slack") {
+      if (this.dataModel.type === 'slack') {
         if (setting.webhook_url) {
           this.dataModel.webhook_url = setting.webhook_url
         }

@@ -476,10 +476,10 @@
   </div>
 </template>
 <script>
-import Util from "@/util"
-import mixin from "@/mixin"
-import alert from "@/mixin/api/alert"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import Util from '@/util'
+import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, alert],
   components: {
@@ -491,91 +491,91 @@ export default {
       form: {
         new: false,
         valid: false,
-        alert_condition_id: { label: "ID", placeholder: "-" },
+        alert_condition_id: { label: 'ID', placeholder: '-' },
         description: {
-          label: "Description",
-          placeholder: "description",
+          label: 'Description',
+          placeholder: 'description',
           validator: [
-            (v) => !!v || "Description is required",
-            (v) => v.length <= 200 || "Name must be less than 200 characters",
+            (v) => !!v || 'Description is required',
+            (v) => v.length <= 200 || 'Name must be less than 200 characters',
           ],
         },
         severity: {
-          label: "Severity",
-          placeholder: "high",
-          list: ["high", "medium", "low"],
+          label: 'Severity',
+          placeholder: 'high',
+          list: ['high', 'medium', 'low'],
           validator: [
-            (v) => !!v || "Severity is required",
+            (v) => !!v || 'Severity is required',
             (v) =>
               !v ||
-              v === "high" ||
-              v === "medium" ||
-              v === "low" ||
-              "Severity is invalid",
+              v === 'high' ||
+              v === 'medium' ||
+              v === 'low' ||
+              'Severity is invalid',
           ],
         },
         and_or: {
-          label: "And Or",
-          placeholder: "and",
-          list: ["and", "or"],
+          label: 'And Or',
+          placeholder: 'and',
+          list: ['and', 'or'],
           validator: [
-            (v) => !!v || "AND/OR is required",
-            (v) => !v || v === "and" || v === "or" || "AND/OR is invalid",
+            (v) => !!v || 'AND/OR is required',
+            (v) => !v || v === 'and' || v === 'or' || 'AND/OR is invalid',
           ],
         },
         noti_cache: {
-          label: "Notification cache term",
-          placeholder: "1 hour",
-          list: ["No Cache", "1 hour", "1 day", "1 week", "1 month"],
+          label: 'Notification cache term',
+          placeholder: '1 hour',
+          list: ['No Cache', '1 hour', '1 day', '1 week', '1 month'],
           validator: [
-            (v) => !!v || "Notification cache term is required",
+            (v) => !!v || 'Notification cache term is required',
             (v) =>
               !v ||
-              v === "No Cache" ||
-              v === "1 hour" ||
-              v === "1 day" ||
-              v === "1 week" ||
-              v === "1 month" ||
-              "Notification cache term is invalid",
+              v === 'No Cache' ||
+              v === '1 hour' ||
+              v === '1 day' ||
+              v === '1 week' ||
+              v === '1 month' ||
+              'Notification cache term is invalid',
           ],
         },
-        enabled: { label: "Enabled", placeholder: "true" },
+        enabled: { label: 'Enabled', placeholder: 'true' },
       },
       nowUnix: Math.floor(new Date().getTime() / 1000),
       dataModel: {
         alert_condition_id: 0,
-        description: "",
-        severity: "",
-        and_or: "and",
-        noti_cache: "1 hour",
+        description: '',
+        severity: '',
+        and_or: 'and',
+        noti_cache: '1 hour',
         next_noti_time: -1,
         enabled: false,
         rules: [],
         notifications: [],
-        updated_at: "",
+        updated_at: '',
       },
       table: {
         selected: [],
-        search: "",
+        search: '',
         enabledOnly: true,
-        options: { page: 1, itemsPerPage: 10, sortBy: ["alert_condition_id"] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['alert_condition_id'] },
         actions: [
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
           {
-            text: "Analyze Alert",
-            icon: "mdi-magnify-scan",
+            text: 'Analyze Alert',
+            icon: 'mdi-magnify-scan',
             click: this.handleAnalyze,
           },
         ],
         footer: {
           disableItemsPerPage: false,
           itemsPerPageOptions: [20, 50, 100],
-          itemsPerPageText: "Rows/Page",
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -583,8 +583,8 @@ export default {
       },
       ruleTable: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 10, sortBy: ["alert_rule_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: false,
@@ -596,8 +596,8 @@ export default {
       },
       notiTable: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 10, sortBy: ["alert_rule_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: false,
@@ -616,58 +616,58 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "5%",
+          align: 'center',
+          width: '5%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["Enabled"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "enabled",
+          value: 'enabled',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "alert_condition_id",
+          value: 'alert_condition_id',
         },
         {
           text: this.$i18n.t('item["Description"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "description",
+          value: 'description',
         },
         {
           text: this.$i18n.t('item["Severity"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "severity",
+          value: 'severity',
         },
         {
           text: this.$i18n.t('item["And Or"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "and_or",
+          value: 'and_or',
         },
         {
           text: this.$i18n.t('item["Rules"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "rules",
+          value: 'rules',
         },
         {
           text: this.$i18n.t('item["Notificationns"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "notifications",
+          value: 'notifications',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -675,39 +675,39 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "alert_rule_id",
+          value: 'alert_rule_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Resource Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "resource_name",
+          value: 'resource_name',
         },
         {
           text: this.$i18n.t('item["Tag"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "tag",
+          value: 'tag',
         },
         {
           text: this.$i18n.t('item["Finding Count"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "finding_cnt",
+          value: 'finding_cnt',
         },
         {
           text: this.$i18n.t('item["Score"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "score",
+          value: 'score',
         },
       ]
     },
@@ -715,21 +715,21 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "notification_id",
+          value: 'notification_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Type"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "type",
+          value: 'type',
         },
       ]
     },
@@ -755,12 +755,12 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
-        let noti_cache = ""
+        let noti_cache = ''
         if (notis[0] && notis[0].cache_second) {
           noti_cache = this.getNotiCacheText(notis[0].cache_second)
         }
-        if (noti_cache == "") {
-          noti_cache = "1 hour"
+        if (noti_cache == '') {
+          noti_cache = '1 hour'
         }
         let next_noti_time = -1
         if (
@@ -800,7 +800,7 @@ export default {
           return Promise.reject(err)
         }
       )
-      this.finishSuccess("Success: Delete.")
+      this.finishSuccess('Success: Delete.')
     },
 
     // Put Condition
@@ -850,7 +850,7 @@ export default {
     async putRule() {
       this.ruleTable.items.forEach(async (item) => {
         // Set param for delete request.
-        let uri = "/alert/delete-condition_rule/"
+        let uri = '/alert/delete-condition_rule/'
         let param = {
           project_id: this.$store.state.project.project_id,
           alert_condition_id: this.dataModel.alert_condition_id,
@@ -859,7 +859,7 @@ export default {
         this.ruleTable.selected.some((selected) => {
           if (item.alert_rule_id === selected.alert_rule_id) {
             // If the rule is selected, change to param for put request.
-            uri = "/alert/put-condition_rule/"
+            uri = '/alert/put-condition_rule/'
             param = {
               project_id: this.$store.state.project.project_id,
               alert_cond_rule: {
@@ -902,7 +902,7 @@ export default {
     async putNotification() {
       this.notiTable.items.forEach(async (item) => {
         // Set param for delete request.
-        let uri = "/alert/delete-condition_notification/"
+        let uri = '/alert/delete-condition_notification/'
         let param = {
           project_id: this.$store.state.project.project_id,
           alert_condition_id: this.dataModel.alert_condition_id,
@@ -911,7 +911,7 @@ export default {
         this.notiTable.selected.some((selected) => {
           if (item.notification_id === selected.notification_id) {
             // If the rule is selected, change to param for put request.
-            uri = "/alert/put-condition_notification/"
+            uri = '/alert/put-condition_notification/'
             param = {
               project_id: this.$store.state.project.project_id,
               alert_cond_notification: {
@@ -936,8 +936,8 @@ export default {
 
     // Analyze Alert
     async analyze(alertConditionID) {
-      if (alertConditionID == "") {
-        this.finishError("AlertConditionID must be required.")
+      if (alertConditionID == '') {
+        this.finishError('AlertConditionID must be required.')
         return
       }
       await this.analyzeAlert(alertConditionID).catch((err) => {
@@ -945,7 +945,7 @@ export default {
         return Promise.reject(err)
       })
       this.finishAnalyze(
-        "Analyze Started: You will be redirected to the alert result soon..."
+        'Analyze Started: You will be redirected to the alert result soon...'
       )
     },
 
@@ -957,14 +957,14 @@ export default {
     async handleNewItem() {
       this.dataModel = {
         alert_condition_id: 0,
-        description: "",
-        severity: "medium",
-        and_or: "and",
-        noti_cache: "1 hour",
+        description: '',
+        severity: 'medium',
+        and_or: 'and',
+        noti_cache: '1 hour',
         enabled: true,
         rules: [],
         notifications: [],
-        updated_at: "",
+        updated_at: '',
       }
       await this.listRule()
       await this.listNotification()
@@ -989,7 +989,7 @@ export default {
       await this.putItem()
       await this.putRule()
       await this.putNotification()
-      this.finishSuccess("Success: Put alert condition.")
+      this.finishSuccess('Success: Put alert condition.')
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
@@ -1001,7 +1001,7 @@ export default {
     },
     handleAnalyze(item) {
       this.loading = true
-      let alertConditionID = ""
+      let alertConditionID = ''
       if (item.alert_condition_id) {
         alertConditionID = item.alert_condition_id
       }
@@ -1016,30 +1016,30 @@ export default {
     getNotiCacheText(sec) {
       switch (sec) {
         case 1:
-          return "No Cache"
+          return 'No Cache'
         case 60 * 60:
-          return "1 hour"
+          return '1 hour'
         case 60 * 60 * 24:
-          return "1 day"
+          return '1 day'
         case 60 * 60 * 24 * 7:
-          return "1 week"
+          return '1 week'
         case 60 * 60 * 24 * 7 * 30:
-          return "1 month"
+          return '1 month'
         default:
-          return ""
+          return ''
       }
     },
     getNotiCacheSecound(text) {
       switch (text) {
-        case "No Cache":
+        case 'No Cache':
           return 1
-        case "1 hour":
+        case '1 hour':
           return 60 * 60
-        case "1 day":
+        case '1 day':
           return 60 * 60 * 24
-        case "1 week":
+        case '1 week':
           return 60 * 60 * 24 * 7
-        case "1 month":
+        case '1 month':
           return 60 * 60 * 24 * 7 * 30
         default:
           return 60 * 60
@@ -1050,7 +1050,7 @@ export default {
     async finishAnalyze(msg) {
       this.$refs.snackbar.notifyInfo(msg)
       await new Promise((resolve) => setTimeout(resolve, 750))
-      this.$router.push("/alert/alert/")
+      this.$router.push('/alert/alert/')
     },
     async finishSuccess(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))

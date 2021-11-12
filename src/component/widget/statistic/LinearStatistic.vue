@@ -27,13 +27,13 @@ export default {
     title: String,
     subTitle: String,
     value: Number,
-    color: String
+    color: String,
   },
   computed: {
     caption() {
       return this.value + '% ' + this.subTitle
-    }
-  }
+    },
+  },
 }
 </script>
 

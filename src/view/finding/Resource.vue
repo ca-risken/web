@@ -493,11 +493,11 @@
   </div>
 </template>
 <script>
-import mixin from "@/mixin"
-import finding from "@/mixin/api/finding"
-import D3Network from "vue-d3-network"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
+import mixin from '@/mixin'
+import finding from '@/mixin/api/finding'
+import D3Network from 'vue-d3-network'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin, finding],
   components: {
@@ -510,51 +510,51 @@ export default {
       loading: false,
       searchModel: {
         resourceName: null,
-        dates: ["", ""],
+        dates: ['', ''],
         score: [0.0, 100.0],
       },
       searchForm: {
         resourceName: {
-          label: "Resource Name",
-          placeholder: "Filter for resource name",
+          label: 'Resource Name',
+          placeholder: 'Filter for resource name',
         },
         dates: {
-          label: "UpdatedAt Range",
-          placeholder: "Filter for dates range",
+          label: 'UpdatedAt Range',
+          placeholder: 'Filter for dates range',
           menu: false,
         },
         score: {
-          label: "Sum Score",
-          placeholder: "Filter for score( from - to )",
+          label: 'Sum Score',
+          placeholder: 'Filter for score( from - to )',
         },
       },
       resourceNameList: [],
-      search: "",
+      search: '',
       table: {
         selected: [],
         options: {
           page: 1,
           itemsPerPage: 5,
-          sortBy: ["id"],
+          sortBy: ['id'],
         },
         sort: {
-          key: "resource_id",
-          direction: "asc",
+          key: 'resource_id',
+          direction: 'asc',
         },
         actions: [
           {
-            text: "View Finding",
-            icon: "mdi-eye",
+            text: 'View Finding',
+            icon: 'mdi-eye',
             click: this.handleViewFinding,
           },
           {
-            text: "Resource Map",
-            icon: "mdi-file-tree-outline",
+            text: 'Resource Map',
+            icon: 'mdi-file-tree-outline',
             click: this.handleViewItem,
           },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
         ],
@@ -596,26 +596,26 @@ export default {
       },
       findingDialog: false,
       findingModel: {
-        finding_id: "",
-        status: "",
-        score: "",
-        original_score: "",
-        data_source: "",
-        resource_name: "",
-        description: "",
+        finding_id: '',
+        status: '',
+        score: '',
+        original_score: '',
+        data_source: '',
+        resource_name: '',
+        description: '',
         tags: [],
-        data: "",
-        created_at: "",
-        updated_at: "",
-        new_tag: "",
+        data: '',
+        created_at: '',
+        updated_at: '',
+        new_tag: '',
       },
 
       deleteDialog: false,
       resourceModel: {
-        resource_id: "",
-        resource_name: "",
-        created_at: "",
-        updated_at: "",
+        resource_id: '',
+        resource_name: '',
+        created_at: '',
+        updated_at: '',
       },
     }
   },
@@ -636,34 +636,34 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "center",
-          width: "5%",
-          value: "resource_id",
+          align: 'center',
+          width: '5%',
+          value: 'resource_id',
         },
         {
           text: this.$i18n.t('item["Resource"]'),
-          align: "start",
-          width: "20%",
-          value: "resource_name",
+          align: 'start',
+          width: '20%',
+          value: 'resource_name',
         },
         {
           text: this.$i18n.t('item["Findings"]'),
-          align: "center",
-          width: "5%",
-          value: "findings",
+          align: 'center',
+          width: '5%',
+          value: 'findings',
           sortable: false,
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "start",
-          width: "10%",
-          value: "updated_at",
+          align: 'start',
+          width: '10%',
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
-          width: "10%",
-          value: "action",
+          align: 'center',
+          width: '10%',
+          value: 'action',
           sortable: false,
         },
       ]
@@ -671,12 +671,12 @@ export default {
     dateRangeText() {
       if (
         this.searchModel.dates.length < 1 ||
-        this.searchModel.dates[0] === "" ||
-        this.searchModel.dates[1] === ""
+        this.searchModel.dates[0] === '' ||
+        this.searchModel.dates[1] === ''
       ) {
-        return ""
+        return ''
       }
-      return this.searchModel.dates.join(" ~ ")
+      return this.searchModel.dates.join(' ~ ')
     },
     resourceMapOptions() {
       return {
@@ -697,19 +697,19 @@ export default {
     // Handler
     handleViewFinding(item) {
       this.$router.push(
-        "/finding/finding?from_score=0&resource_name=" + item.resource_name
+        '/finding/finding?from_score=0&resource_name=' + item.resource_name
       )
     },
     handleViewFindingFromNode() {
       this.$router.push(
-        "/finding/finding/" +
-          "?resource_name=" +
+        '/finding/finding/' +
+          '?resource_name=' +
           this.findingModel.resource_name +
-          "&data_source=" +
+          '&data_source=' +
           this.findingModel.data_source +
-          "&from_score=" +
+          '&from_score=' +
           this.findingModel.from_score +
-          "&to_score=" +
+          '&to_score=' +
           this.findingModel.to_score
       )
     },
@@ -726,10 +726,10 @@ export default {
       const oldKey = this.table.sort.key
       const oldDirection = this.table.sort.direction
       if (oldKey === newSortKey) {
-        this.table.sort.direction = oldDirection === "asc" ? "desc" : "asc" // reverse direction
+        this.table.sort.direction = oldDirection === 'asc' ? 'desc' : 'asc' // reverse direction
       } else {
         this.table.sort.key = newSortKey
-        this.table.sort.direction = "asc"
+        this.table.sort.direction = 'asc'
       }
       this.refleshList()
     },
@@ -746,27 +746,27 @@ export default {
           return Promise.reject(err)
         }
       )
-      this.finishSuccess("Success: Delete.")
+      this.finishSuccess('Success: Delete.')
     },
 
     getSearchCondition() {
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.resourceName) {
-        searchCond += "&resource_name=" + this.searchModel.resourceName
+        searchCond += '&resource_name=' + this.searchModel.resourceName
       }
       if (this.searchModel.dates[0]) {
         searchCond +=
-          "&from_at=" + Math.floor(Date.parse(this.searchModel.dates[0]) / 1000)
+          '&from_at=' + Math.floor(Date.parse(this.searchModel.dates[0]) / 1000)
       }
       if (this.searchModel.dates[1]) {
         searchCond +=
-          "&to_at=" + Math.floor(Date.parse(this.searchModel.dates[1]) / 1000)
+          '&to_at=' + Math.floor(Date.parse(this.searchModel.dates[1]) / 1000)
       }
       if (this.searchModel.score[0]) {
-        searchCond += "&from_sum_score=" + this.searchModel.score[0]
+        searchCond += '&from_sum_score=' + this.searchModel.score[0]
       }
       if (this.searchModel.score[1]) {
-        searchCond += "&to_sum_score=" + this.searchModel.score[1]
+        searchCond += '&to_sum_score=' + this.searchModel.score[1]
       }
       const offset =
         (this.table.options.page - 1) * this.table.options.itemsPerPage
@@ -774,13 +774,13 @@ export default {
       const sort = this.table.sort.key
       const direction = this.table.sort.direction
       searchCond +=
-        "&offset=" +
+        '&offset=' +
         offset +
-        "&limit=" +
+        '&limit=' +
         limit +
-        "&sort=" +
+        '&sort=' +
         sort +
-        "&direction=" +
+        '&direction=' +
         direction
       return searchCond
     },
@@ -858,43 +858,43 @@ export default {
 
     // ResourceMap
     async setResourceMap(resource, findingIDs, map, nodeLimits) {
-      const srcID = "r-" + resource.resource_id
+      const srcID = 'r-' + resource.resource_id
       map.nodes.push({
         id: srcID,
         name: this.getShortName(resource.resource_name),
-        svgSym: "icons.gitHub",
+        svgSym: 'icons.gitHub',
       })
       let count = 0
       for (let id of findingIDs) {
         count++
         if (count > nodeLimits) {
-          const targetID = srcID + "-more..."
+          const targetID = srcID + '-more...'
           map.nodes.push({
             id: targetID,
-            name: "and more...",
-            _color: "#616161",
+            name: 'and more...',
+            _color: '#616161',
           })
           map.links.push({
             sid: srcID,
             tid: targetID,
-            _svgAttrs: { "stroke-width": 3, opacity: 2 },
-            _color: "#E0E0E0",
+            _svgAttrs: { 'stroke-width': 3, opacity: 2 },
+            _color: '#E0E0E0',
           })
           break // limit
         }
         const finding = await this.getFinding(id)
-        const targetID = "f-" + finding.finding_id
+        const targetID = 'f-' + finding.finding_id
         map.nodes.push({
           id: targetID,
-          name: finding.score + "pt (" + finding.data_source + ")",
+          name: finding.score + 'pt (' + finding.data_source + ')',
           finding: finding,
           _color: this.getColorRGBByScore(finding.score),
         })
         map.links.push({
           sid: srcID,
           tid: targetID,
-          _svgAttrs: { "stroke-width": 3, opacity: 2 },
-          _color: "#E0E0E0",
+          _svgAttrs: { 'stroke-width': 3, opacity: 2 },
+          _color: '#E0E0E0',
         })
       }
     },

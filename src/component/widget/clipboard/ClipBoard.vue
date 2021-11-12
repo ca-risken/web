@@ -1,11 +1,7 @@
 <template>
   <div class="inline-block">
-    <v-icon
-      class="mx-2"
-      :size="size"
-      :color="color"
-      @click="copy"
-    >mdi-content-copy
+    <v-icon class="mx-2" :size="size" :color="color" @click="copy"
+      >mdi-content-copy
     </v-icon>
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -19,7 +15,7 @@ export default {
   },
   props: {
     name: String,
-    text:  String,
+    text: String,
     color: String,
     size: {
       type: String,
@@ -33,8 +29,8 @@ export default {
         return Promise.reject(err)
       })
       this.$refs.snackbar.notifyInfo('Copied! ' + this.name)
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>

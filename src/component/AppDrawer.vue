@@ -123,9 +123,9 @@
   </v-navigation-drawer>
 </template>
 <script>
-import { appRoute as routes } from "@/router/config"
+import { appRoute as routes } from '@/router/config'
 export default {
-  name: "AppDrawer",
+  name: 'AppDrawer',
   components: {},
   props: {
     expanded: {
@@ -146,7 +146,7 @@ export default {
   },
   computed: {
     computeLogo() {
-      return "/static/m.png"
+      return '/static/m.png'
     },
     computeMenu() {
       return routes[0].children
@@ -166,7 +166,7 @@ export default {
       this.drawerWidth = this.drawerWidth === 256 ? 64 : 256
     },
     toTop() {
-      this.$router.push("/")
+      this.$router.push('/')
     },
   },
 }

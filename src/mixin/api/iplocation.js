@@ -11,12 +11,11 @@ const iplocation = {
         return {}
       }
       // {"country_name":"JAPAN","country_code":"JP","city":"-","ip":"60.112.136.197"}
-      const res = await axios.get(
-        'https://api.hostip.info/get_json.php?ip=' + ip,
-        { timeout: 500 },
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await axios
+        .get('https://api.hostip.info/get_json.php?ip=' + ip, { timeout: 500 })
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data) {
         return {}
       }
@@ -30,8 +29,8 @@ const iplocation = {
         }
       }
       return true
-    }
-  }
+    },
+  },
 }
 
 export default iplocation

@@ -67,10 +67,10 @@
 </template>
 
 <script>
-import store from "@/store"
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import store from '@/store'
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, iam],
   components: {
@@ -82,16 +82,16 @@ export default {
         validator: {
           valid: false,
           name: [
-            (v) => !!v || "Name is required",
+            (v) => !!v || 'Name is required',
             (v) =>
-              !v || v.length <= 64 || "Name must be less than 64 characters",
+              !v || v.length <= 64 || 'Name must be less than 64 characters',
           ],
         },
         data: {
-          id: "-",
-          sub: "-",
-          name: "",
-          updated_at: "0",
+          id: '-',
+          sub: '-',
+          name: '',
+          updated_at: '0',
         },
       },
     }
@@ -101,7 +101,7 @@ export default {
   },
   methods: {
     async getUser() {
-      let userID = ""
+      let userID = ''
       if (store.state.user.user_id) {
         userID = store.state.user.user_id
       } else {
@@ -129,9 +129,9 @@ export default {
           return Promise.reject(err)
         }
       )
-      store.commit("storeUser", user)
+      store.commit('storeUser', user)
       this.getUser()
-      this.$refs.snackbar.notifySuccess("Success: Your profile updated.")
+      this.$refs.snackbar.notifySuccess('Success: Your profile updated.')
     },
     handleSubmit() {
       if (!this.$refs.form.validate()) {

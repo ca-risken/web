@@ -1,9 +1,6 @@
 <template>
-  <v-card
-    class="mx-auto"
-    @click="handleClick"
-  >
-    <v-system-bar  height="10" :color="color" :dark="dark" />
+  <v-card class="mx-auto" @click="handleClick">
+    <v-system-bar height="10" :color="color" :dark="dark" />
     <v-card-title>
       <v-icon :color="color" large left>{{ icon }}</v-icon>
       <span class="title font-weight-bold">{{ category }}</span>
@@ -31,7 +28,7 @@ export default {
   methods: {
     handleClick() {
       this.$router.push(this.link)
-    }
-  }
+    },
+  },
 }
 </script>

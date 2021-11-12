@@ -27,14 +27,24 @@
           ></v-select>
         </v-col>
         <v-spacer />
-        <v-btn class="mt-3 mr-4" color="grey darken-2" dense small icon fab outlined
+        <v-btn
+          class="mt-3 mr-4"
+          color="grey darken-2"
+          dense
+          small
+          icon
+          fab
+          outlined
           :loading="loading"
           @click="handleList"
         >
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
         <v-btn
-          class="mt-3 mr-4" dense medium dark
+          class="mt-3 mr-4"
+          dense
+          medium
+          dark
           :loading="loading"
           color="light-blue darken-2"
           @click="handleSetupAll"
@@ -65,7 +75,10 @@
               >
                 <template v-slot:[`item.avator`]="{ item }">
                   <v-avatar tile class="ma-3" size="40px">
-                    <img :src="getAWSDataSourceIcon(item.data_source)" :alt="item.data_source" />
+                    <img
+                      :src="getAWSDataSourceIcon(item.data_source)"
+                      :alt="item.data_source"
+                    />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.max_score`]="{ item }">
@@ -85,22 +98,17 @@
                       color="white"
                       class="mr-2"
                     ></v-progress-circular>
-                    <v-icon
-                      v-else
-                      small               
-                      color="white"
-                      class="mr-2"
-                    >{{ getDataSourceStatusIcon(item.status) }}</v-icon>
+                    <v-icon v-else small color="white" class="mr-2">{{
+                      getDataSourceStatusIcon(item.status)
+                    }}</v-icon>
                     {{ getDataSourceStatusText(item.status) }}
                   </v-chip>
-                  <v-chip
-                    v-else
-                    color="grey"
-                    dark
-                  >Not configured</v-chip>
+                  <v-chip v-else color="grey" dark>Not configured</v-chip>
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{ item.scan_at | formatTime }}</v-chip>
+                  <v-chip v-if="item.scan_at">{{
+                    item.scan_at | formatTime
+                  }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
@@ -119,12 +127,14 @@
                       <v-list-item
                         v-for="action in getActionList(item.data_source)"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -140,7 +150,9 @@
       <v-card>
         <v-card-title>
           <v-icon large color="orange darken-1">mdi-aws</v-icon>
-          <span class="mx-4 headline">{{ $t(`submenu['AWS DataSource']`) }}</span>
+          <span class="mx-4 headline">{{
+            $t(`submenu['AWS DataSource']`)
+          }}</span>
         </v-card-title>
         <v-container fluid>
           <v-row dense>
@@ -148,9 +160,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+awsForm.aws_id.label+`']`) }}
+                    {{ $t(`item['` + awsForm.aws_id.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+awsForm.aws_id.label+`']`)"
+                      :name="$t(`item['` + awsForm.aws_id.label + `']`)"
                       :text="String(awsModel.aws_id)"
                     />
                   </v-list-item-subtitle>
@@ -164,9 +176,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+awsForm.aws_account_id.label+`']`) }}
+                    {{ $t(`item['` + awsForm.aws_account_id.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+awsForm.aws_account_id.label+`']`)"
+                      :name="$t(`item['` + awsForm.aws_account_id.label + `']`)"
                       :text="awsModel.aws_account_id"
                     />
                   </v-list-item-subtitle>
@@ -180,9 +192,11 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+awsForm.aws_data_source_id.label+`']`) }}
+                    {{ $t(`item['` + awsForm.aws_data_source_id.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+awsForm.aws_data_source_id.label+`']`)"
+                      :name="
+                        $t(`item['` + awsForm.aws_data_source_id.label + `']`)
+                      "
                       :text="String(awsModel.aws_data_source_id)"
                     />
                   </v-list-item-subtitle>
@@ -196,9 +210,9 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+awsForm.data_source.label+`']`) }}
+                    {{ $t(`item['` + awsForm.data_source.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+awsForm.data_source.label+`']`)"
+                      :name="$t(`item['` + awsForm.data_source.label + `']`)"
                       :text="awsModel.data_source"
                     />
                   </v-list-item-subtitle>
@@ -215,9 +229,12 @@
                 <v-list-item-content>
                   <v-list-item-title class="headline">
                     <v-list-item-subtitle>
-                      {{ $t(`item['`+awsForm.status.label+`']`) }}
+                      {{ $t(`item['` + awsForm.status.label + `']`) }}
                     </v-list-item-subtitle>
-                    <v-chip dark :color="getDataSourceStatusColor(awsModel.status)">
+                    <v-chip
+                      dark
+                      :color="getDataSourceStatusColor(awsModel.status)"
+                    >
                       {{ getDataSourceStatusText(awsModel.status) }}
                     </v-chip>
                   </v-list-item-title>
@@ -228,7 +245,7 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                    {{ $t(`item['`+awsForm.scan_at.label+`']`) }}
+                    {{ $t(`item['` + awsForm.scan_at.label + `']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
@@ -242,7 +259,7 @@
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
-                      {{ $t(`item['`+awsForm.max_score.label+`']`) }}
+                    {{ $t(`item['` + awsForm.max_score.label + `']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
@@ -260,9 +277,9 @@
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
                   <span class="font-weight-light">
-                    {{ $t(`item['`+awsForm.status_detail.label+`']`) }}
+                    {{ $t(`item['` + awsForm.status_detail.label + `']`) }}
                     <clip-board
-                      :name="$t(`item['`+awsForm.status_detail.label+`']`)"
+                      :name="$t(`item['` + awsForm.status_detail.label + `']`)"
                       :text="String(awsModel.status_detail)"
                     />
                   </span>
@@ -280,7 +297,7 @@
               <v-col cols="1">
                 <clip-board
                   class="pt-4 pl-6"
-                  :name="$t(`item['`+awsForm.assume_role_arn.label+`']`)"
+                  :name="$t(`item['` + awsForm.assume_role_arn.label + `']`)"
                   :text="String(awsModel.assume_role_arn)"
                   size="x-large"
                 />
@@ -290,7 +307,7 @@
                   v-model="awsModel.assume_role_arn"
                   :counter="255"
                   :rules="awsForm.assume_role_arn.validator"
-                  :label="$t(`item['`+awsForm.assume_role_arn.label+`']`)"
+                  :label="$t(`item['` + awsForm.assume_role_arn.label + `']`)"
                   :placeholder="awsForm.assume_role_arn.placeholder"
                   :disabled="awsForm.readOnly"
                   :filled="awsForm.readOnly"
@@ -302,7 +319,7 @@
               <v-col cols="1">
                 <clip-board
                   class="pt-4 pl-6"
-                  :name="$t(`item['`+awsForm.external_id.label+`']`)"
+                  :name="$t(`item['` + awsForm.external_id.label + `']`)"
                   :text="String(awsModel.external_id)"
                   size="x-large"
                 />
@@ -312,7 +329,7 @@
                   v-model="awsModel.external_id"
                   :counter="255"
                   :rules="awsForm.external_id.validator"
-                  :label="$t(`item['`+awsForm.external_id.label+`']`)"
+                  :label="$t(`item['` + awsForm.external_id.label + `']`)"
                   :placeholder="awsForm.external_id.placeholder"
                   :disabled="awsForm.readOnly"
                   :filled="awsForm.readOnly"
@@ -324,10 +341,12 @@
               <v-col cols="1" />
               <v-col cols="2">
                 <v-btn
-                  text dense
-                  color="purple darken-2" 
+                  text
+                  dense
+                  color="purple darken-2"
                   :disabled="awsForm.readOnly"
-                  @click="handleGenerateID">
+                  @click="handleGenerateID"
+                >
                   {{ $t(`btn['AUTO GENERATE EXTERNAL ID']`) }}
                 </v-btn>
               </v-col>
@@ -336,34 +355,47 @@
               v-if="awsForm.setupAll"
               v-model="awsModel.overrideDataSource"
               label="Override the already attaced datasources"
-            ></v-checkbox> 
+            ></v-checkbox>
 
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
-              <v-btn 
-                text outlined color="blue darken-1" 
+              <v-btn
+                text
+                outlined
+                color="blue darken-1"
                 v-if="awsForm.readOnly && scanSupported(awsModel.data_source)"
-                :loading="loading" 
+                :loading="loading"
                 @click="handleScan"
               >
                 {{ $t(`btn['SCAN']`) }}
               </v-btn>
               <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+              <v-btn
+                text
+                outlined
+                color="grey darken-1"
+                @click="editDialog = false"
+              >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
-                text outlined color="green darken-1" 
+                text
+                outlined
+                color="green darken-1"
                 v-if="!awsForm.readOnly && !awsForm.setupAll"
-                :loading="loading" 
-                @click="handleAttachSubmit">
+                :loading="loading"
+                @click="handleAttachSubmit"
+              >
                 {{ $t(`btn['ATTACH']`) }}
               </v-btn>
               <v-btn
-                text outlined color="green darken-1" 
+                text
+                outlined
+                color="green darken-1"
                 v-if="awsForm.setupAll"
-                :loading="loading" 
-                @click="handleAttachAll">
+                :loading="loading"
+                @click="handleAttachAll"
+              >
                 {{ $t(`btn['ATTACH ALL']`) }}
               </v-btn>
             </v-card-actions>
@@ -375,11 +407,15 @@
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">{{ $t(`message['Do you really want to detach this?']`) }}</span>
+          <span class="mx-4">{{
+            $t(`message['Do you really want to detach this?']`)
+          }}</span>
         </v-card-title>
         <v-list two-line>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-avatar
+              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+            >
             <v-list-item-content>
               <v-list-item-title v-text="awsModel.aws_id"></v-list-item-title>
               <v-list-item-subtitle>
@@ -403,7 +439,9 @@
               <v-icon>mdi-aws</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.data_source"></v-list-item-title>
+              <v-list-item-title
+                v-text="awsModel.data_source"
+              ></v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Data Source']`) }}
               </v-list-item-subtitle>
@@ -412,12 +450,18 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
-            text outlined
+            text
+            outlined
             :loading="loading"
             @click="handleDetachSubmit"
           >
@@ -449,32 +493,81 @@ export default {
         readOnly: false,
         setupAll: false,
         valid: false,
-        aws_data_source_id: { label: 'Data Source ID', placeholder: '-', validator: []},
-        data_source: { label: 'Data Source', placeholder: '-', validator: []},
+        aws_data_source_id: {
+          label: 'Data Source ID',
+          placeholder: '-',
+          validator: [],
+        },
+        data_source: { label: 'Data Source', placeholder: '-', validator: [] },
         max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
-        aws_id: { label: 'AWS ID', placeholder: '-', validator: []},
-        aws_account_id: { label: 'AWS Account ID', placeholder: '-', validator: []},
-        assume_role_arn: { label: 'Assume Role', placeholder: '-', validator: [
-            v => !!v || 'Assume Role is required',
-            v => !v || v.length <= 255 || 'Assume Role must be less than 255 characters',
-        ]},
-        external_id: { label: 'External ID', placeholder: '-', validator: [
-            v => !!v || 'External ID is required',
-            v => !v || (v.length >= 8 && v.length <= 255) || 'External ID must be between 8 and 255 characters',
-        ]},
+        aws_id: { label: 'AWS ID', placeholder: '-', validator: [] },
+        aws_account_id: {
+          label: 'AWS Account ID',
+          placeholder: '-',
+          validator: [],
+        },
+        assume_role_arn: {
+          label: 'Assume Role',
+          placeholder: '-',
+          validator: [
+            (v) => !!v || 'Assume Role is required',
+            (v) =>
+              !v ||
+              v.length <= 255 ||
+              'Assume Role must be less than 255 characters',
+          ],
+        },
+        external_id: {
+          label: 'External ID',
+          placeholder: '-',
+          validator: [
+            (v) => !!v || 'External ID is required',
+            (v) =>
+              !v ||
+              (v.length >= 8 && v.length <= 255) ||
+              'External ID must be between 8 and 255 characters',
+          ],
+        },
         status: { label: 'Status', placeholder: '-', validator: [] },
-        status_detail: { label: 'Status Detail', placeholder: '-', validator: [] },
+        status_detail: {
+          label: 'Status Detail',
+          placeholder: '-',
+          validator: [],
+        },
         scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
       },
-      awsModel: { aws_id:'', aws_account_id:'', aws_data_source_id:'', data_source:'', max_score:'', assume_role_arn:'', external_id:'', status: 0, status_detail:'', scan_at: 0},
+      awsModel: {
+        aws_id: '',
+        aws_account_id: '',
+        aws_data_source_id: '',
+        data_source: '',
+        max_score: '',
+        assume_role_arn: '',
+        external_id: '',
+        status: 0,
+        status_detail: '',
+        scan_at: 0,
+      },
       table: {
         selected: [],
         search: '',
         options: { page: 1, itemsPerPage: 10, sortBy: ['aws_id'] },
         actions: [
-          { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
-          { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
-          { text: 'Detach DataSource', icon: 'mdi-trash-can-outline', click: this.handleDetachItem },
+          {
+            text: 'View DataSource',
+            icon: 'mdi-eye',
+            click: this.handleViewItem,
+          },
+          {
+            text: 'Attach DataSource',
+            icon: 'mdi-pencil',
+            click: this.handleAttachItem,
+          },
+          {
+            text: 'Detach DataSource',
+            icon: 'mdi-trash-can-outline',
+            click: this.handleDetachItem,
+          },
           { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         total: 0,
@@ -484,14 +577,14 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       deleteDialog: false,
       editDialog: false,
     }
   },
-  created () {
-    this.$setInterval( async () => {
+  created() {
+    this.$setInterval(async () => {
       await this.refleshList()
     }, 3000)
   },
@@ -503,9 +596,9 @@ export default {
       return false
     }
     this.awsModel = this.awsList[0]
-    this.awsList.forEach( async aws => {
-      if ( aws.aws_id ==  Number(this.$route.query.aws_id)) {
-        this.awsModel =  aws
+    this.awsList.forEach(async (aws) => {
+      if (aws.aws_id == Number(this.$route.query.aws_id)) {
+        this.awsModel = aws
         return
       }
     })
@@ -515,38 +608,83 @@ export default {
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item[""]'), align: 'center', width: '10%', sortable: false, value: 'avator' },
-        { text: this.$i18n.t('item["Data Source"]'), align: 'start', sortable: false, value: 'data_source' },
-        { text: this.$i18n.t('item["MAX Score"]'), align: 'center', sortable: false, value: 'max_score' },
-        { text: this.$i18n.t('item["Status"]'), align: 'start', width: '12%', sortable: false, value: 'status' },
-        { text: this.$i18n.t('item["AWS ID"]'),  align: 'start', sortable: false, value: 'aws_id' },
-        { text: this.$i18n.t('item["Assume Role"]'), align: 'start', sortable: false, value: 'assume_role_arn' },
-        { text: this.$i18n.t('item["ScanAt"]'), align: 'center', sortable: false, value: 'scan_at' },
-        { text: this.$i18n.t('item["Action"]'), align: 'center', sortable: false, value: 'action' },
+        {
+          text: this.$i18n.t('item[""]'),
+          align: 'center',
+          width: '10%',
+          sortable: false,
+          value: 'avator',
+        },
+        {
+          text: this.$i18n.t('item["Data Source"]'),
+          align: 'start',
+          sortable: false,
+          value: 'data_source',
+        },
+        {
+          text: this.$i18n.t('item["MAX Score"]'),
+          align: 'center',
+          sortable: false,
+          value: 'max_score',
+        },
+        {
+          text: this.$i18n.t('item["Status"]'),
+          align: 'start',
+          width: '12%',
+          sortable: false,
+          value: 'status',
+        },
+        {
+          text: this.$i18n.t('item["AWS ID"]'),
+          align: 'start',
+          sortable: false,
+          value: 'aws_id',
+        },
+        {
+          text: this.$i18n.t('item["Assume Role"]'),
+          align: 'start',
+          sortable: false,
+          value: 'assume_role_arn',
+        },
+        {
+          text: this.$i18n.t('item["ScanAt"]'),
+          align: 'center',
+          sortable: false,
+          value: 'scan_at',
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: 'center',
+          sortable: false,
+          value: 'action',
+        },
       ]
     },
   },
   methods: {
     async listAWS() {
-      const aws = await this.listAWSAPI().catch((err) =>  {
+      const aws = await this.listAWSAPI().catch((err) => {
         return Promise.reject(err)
       })
-      if ( !aws ) {
+      if (!aws) {
         return false
       }
       this.awsList = aws
       this.loading = false
     },
     async refleshList() {
-      if ( !this.awsModel.aws_id ) {
+      if (!this.awsModel.aws_id) {
         this.clearList()
         return
       }
-      const ds = await this.listAWSDataSourceAPI(this.awsModel.aws_id, '').catch((err) =>  {
+      const ds = await this.listAWSDataSourceAPI(
+        this.awsModel.aws_id,
+        ''
+      ).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if ( !ds ) {
+      if (!ds) {
         this.clearList()
         return false
       }
@@ -581,7 +719,10 @@ export default {
       }
     },
     async detachDataSource() {
-      await this.detachAWSDataSourceAPI(this.awsModel.aws_id, this.awsModel.aws_data_source_id).catch((err) =>  {
+      await this.detachAWSDataSourceAPI(
+        this.awsModel.aws_id,
+        this.awsModel.aws_data_source_id
+      ).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -592,8 +733,12 @@ export default {
       this.finishSuccess('Success: Attach AWS Data Source.')
     },
     async attachAllDataSource() {
-      this.table.items.forEach( async ds => {
-        if ( this.awsModel.overrideDataSource || ds.assume_role_arn == undefined || ds.assume_role_arn == "" ) {
+      this.table.items.forEach(async (ds) => {
+        if (
+          this.awsModel.overrideDataSource ||
+          ds.assume_role_arn == undefined ||
+          ds.assume_role_arn == ''
+        ) {
           this.awsModel.aws_data_source_id = ds.aws_data_source_id
           await this.execAttachDataSource()
         }
@@ -602,7 +747,7 @@ export default {
     },
     async execAttachDataSource() {
       let scan_at = 0
-      if (this.awsModel.scan_at > 0 ) {
+      if (this.awsModel.scan_at > 0) {
         scan_at = this.awsModel.scan_at
       }
       const param = {
@@ -614,21 +759,27 @@ export default {
           assume_role_arn: this.awsModel.assume_role_arn,
           external_id: this.awsModel.external_id,
           status: 2, // CONFIGURED
-          status_detail: 'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
+          status_detail:
+            'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
           scan_at: scan_at,
         },
       }
-      await this.attachAWSDataSourceAPI(param).catch((err) =>  {
+      await this.attachAWSDataSourceAPI(param).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
     },
     async scanDataSource() {
       if (!this.scanSupported(this.awsModel.data_source)) {
-        this.finishError('Unsupported DataSource: data_source='+this.awsModel.data_source)
+        this.finishError(
+          'Unsupported DataSource: data_source=' + this.awsModel.data_source
+        )
         return
       }
-      await this.invokeAWSScanAPI(this.awsModel.aws_id, this.awsModel.aws_data_source_id).catch((err) =>  {
+      await this.invokeAWSScanAPI(
+        this.awsModel.aws_id,
+        this.awsModel.aws_data_source_id
+      ).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -643,13 +794,29 @@ export default {
 
     getActionList(data_source) {
       let actions = [
-        { text: 'View DataSource',  icon: 'mdi-eye', click: this.handleViewItem },
-        { text: 'Attach DataSource',  icon: 'mdi-pencil', click: this.handleAttachItem },
-        { text: 'Detach DataSource', icon: 'mdi-trash-can-outline', click: this.handleDetachItem },
+        {
+          text: 'View DataSource',
+          icon: 'mdi-eye',
+          click: this.handleViewItem,
+        },
+        {
+          text: 'Attach DataSource',
+          icon: 'mdi-pencil',
+          click: this.handleAttachItem,
+        },
+        {
+          text: 'Detach DataSource',
+          icon: 'mdi-trash-can-outline',
+          click: this.handleDetachItem,
+        },
         // { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
       ]
       if (this.scanSupported(data_source)) {
-        actions.push({ text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan })
+        actions.push({
+          text: 'Scan',
+          icon: 'mdi-magnify-scan',
+          click: this.handleScan,
+        })
       }
       return actions
     },
@@ -664,37 +831,37 @@ export default {
       this.awsModel = {
         aws_id: this.awsModel.aws_id,
         aws_account_id: this.awsModel.aws_account_id,
-        aws_data_source_id:'',
-        data_source:'',
-        max_score:'',
-        assume_role_arn:'',
-        external_id:''
+        aws_data_source_id: '',
+        data_source: '',
+        max_score: '',
+        assume_role_arn: '',
+        external_id: '',
       }
       this.awsForm.readOnly = false
       this.awsForm.setupAll = true
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleViewItem(item) {
       this.assignDataModel(item)
       this.awsForm.readOnly = true
       this.awsForm.setupAll = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleAttachItem(item) {
       this.assignDataModel(item)
       this.awsForm.readOnly = false
       this.awsForm.setupAll = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleAttachSubmit() {
-      if ( !this.$refs.form.validate() ) {
+      if (!this.$refs.form.validate()) {
         return
       }
       this.loading = true
       this.attachDataSource()
     },
     handleAttachAll() {
-      if ( !this.$refs.form.validate() ) {
+      if (!this.$refs.form.validate()) {
         return
       }
       this.loading = true
@@ -702,12 +869,12 @@ export default {
     },
     handleDetachItem(item) {
       this.assignDataModel(item)
-      this.deleteDialog  = true
+      this.deleteDialog = true
     },
     handleDetachSubmit() {
       if (!this.awsModel.aws_id) {
         this.$refs.snackbar.notifyError('Error: Not configred.')
-        this.deleteDialog  = false
+        this.deleteDialog = false
         return
       }
       this.loading = true
@@ -727,37 +894,37 @@ export default {
       this.awsModel = {
         aws_id: this.awsModel.aws_id,
         aws_account_id: this.awsModel.aws_account_id,
-        aws_data_source_id:'',
-        data_source:'',
-        max_score:'',
-        assume_role_arn:'',
-        external_id:''
+        aws_data_source_id: '',
+        data_source: '',
+        max_score: '',
+        assume_role_arn: '',
+        external_id: '',
       }
       this.awsModel = Object.assign(this.awsModel, item)
     },
     async finishInfo(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyInfo(msg)
       this.finish(true)
     },
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(true)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },
     async finish(reflesh) {
       this.loading = false
-      this.editDialog  = false
-      this.deleteDialog  = false
-      if ( reflesh ) {
+      this.editDialog = false
+      this.deleteDialog = false
+      if (reflesh) {
         this.refleshList()
       }
     },
-  }
+  },
 }
 </script>

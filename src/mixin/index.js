@@ -1,5 +1,5 @@
 import Util from '@/util'
-import store from "@/store"
+import store from '@/store'
 const maskedPattern = /\*.*$/
 let mixin = {
   data: () => {
@@ -53,15 +53,14 @@ let mixin = {
   },
   methods: {
     async signinUser() {
-      await store.commit("storeUser", {})
+      await store.commit('storeUser', {})
       const userID = await this.signin().catch((err) => {
         return Promise.reject(err)
       })
-      const user = await this.getUserAPI(userID)
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      await store.commit("storeUser", user)
+      const user = await this.getUserAPI(userID).catch((err) => {
+        return Promise.reject(err)
+      })
+      await store.commit('storeUser', user)
     },
     async signin() {
       const userID = await this.signinAPI().catch((err) => {
@@ -140,7 +139,9 @@ let mixin = {
       }
     },
     getDataSourceIcon: (dataSource) => {
-      if (typeof dataSource !== 'string' || !dataSource.split(':')[0]) { return 'mdi-help-circle-outline' }
+      if (typeof dataSource !== 'string' || !dataSource.split(':')[0]) {
+        return 'mdi-help-circle-outline'
+      }
       switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'mdi-aws'
@@ -157,7 +158,9 @@ let mixin = {
       }
     },
     getDataSourceIconColor: (dataSource) => {
-      if (typeof dataSource !== 'string' || !dataSource.split(':')[0]) { return '' }
+      if (typeof dataSource !== 'string' || !dataSource.split(':')[0]) {
+        return ''
+      }
       switch (dataSource.split(':')[0].toLowerCase()) {
         case 'aws':
           return 'orange'
@@ -299,17 +302,25 @@ let mixin = {
     },
     getShortName: (longName) => {
       // colon
-      if (!longName.split(':').slice(-1)[0]) { return longName }
+      if (!longName.split(':').slice(-1)[0]) {
+        return longName
+      }
       const endOfColon = longName.split(':').slice(-1)[0]
 
       // slash
-      if (!endOfColon.split('/')) { return endOfColon }
+      if (!endOfColon.split('/')) {
+        return endOfColon
+      }
       const slashSplited = endOfColon.split('/')
 
       if (slashSplited.length < 2) {
         return slashSplited[slashSplited.length - 1]
       }
-      return slashSplited[slashSplited.length - 2] + '/' + slashSplited[slashSplited.length - 1]
+      return (
+        slashSplited[slashSplited.length - 2] +
+        '/' +
+        slashSplited[slashSplited.length - 1]
+      )
     },
     async listResourceNameForCombobox(event) {
       let input = ''
@@ -321,14 +332,18 @@ let mixin = {
       }
       // console.log(input)
       this.loading = true
-      const list = await this.listResourceID('&resource_name=' + input + '&offset=0&limit=10&sort=resource_name&direction=asc')
+      const list = await this.listResourceID(
+        '&resource_name=' +
+          input +
+          '&offset=0&limit=10&sort=resource_name&direction=asc'
+      )
       if (!list.resource_id || list.resource_id.length == 0) {
         this.resourceNameCombobox = []
         this.loading = false
         return
       }
       let rnList = []
-      list.resource_id.forEach(async id => {
+      list.resource_id.forEach(async (id) => {
         const resource = await this.getResource(id)
         rnList.push(resource.resource_name)
       })
@@ -339,7 +354,11 @@ let mixin = {
       return false // others not supported.
     },
     getRouterByResource(resourceName, id) {
-      if (String(resourceName).startsWith('arn:')) return { path: '/aws/activity', query: { aws_id: id, arn: resourceName } }
+      if (String(resourceName).startsWith('arn:'))
+        return {
+          path: '/aws/activity',
+          query: { aws_id: id, arn: resourceName },
+        }
       return {} // others not supported.
     },
     handleProjectTagUpdated(message) {

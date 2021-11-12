@@ -301,10 +301,10 @@
   </div>
 </template>
 <script>
-import mixin from "@/mixin"
-import alert from "@/mixin/api/alert"
-import finding from "@/mixin/api/finding"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import finding from '@/mixin/api/finding'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, alert, finding],
   components: {
@@ -316,79 +316,79 @@ export default {
       form: {
         new: false,
         valid: false,
-        alert_rule_id: { label: "ID", placeholder: "-" },
+        alert_rule_id: { label: 'ID', placeholder: '-' },
         name: {
-          label: "Name",
-          placeholder: "something",
+          label: 'Name',
+          placeholder: 'something',
           validator: [
-            (v) => !!v || "Name is required",
-            (v) => v.length <= 200 || "Name must be less than 200 characters",
+            (v) => !!v || 'Name is required',
+            (v) => v.length <= 200 || 'Name must be less than 200 characters',
           ],
         },
         score: {
-          label: "Score",
-          placeholder: "Select score ( 0.0 ~ 1.0 )",
+          label: 'Score',
+          placeholder: 'Select score ( 0.0 ~ 1.0 )',
           validator: [
-            (v) => !!v || "Score is required",
+            (v) => !!v || 'Score is required',
             (v) =>
               !v ||
               (0.0 <= v && v <= 1.0) ||
-              "Score is must between 0.0 and 1.0",
+              'Score is must between 0.0 and 1.0',
           ],
         },
         resource_name: {
-          label: "Resource Name",
-          placeholder: "resource pattern (Partial Match)",
+          label: 'Resource Name',
+          placeholder: 'resource pattern (Partial Match)',
           validator: [
             (v) =>
               !v ||
               v.length <= 255 ||
-              "Resource Name must be less than 255 characters",
+              'Resource Name must be less than 255 characters',
           ],
         },
         tag: {
-          label: "Tag",
-          placeholder: "key:value",
+          label: 'Tag',
+          placeholder: 'key:value',
           list: [],
           validator: [
             (v) =>
-              !v || v.length <= 64 || "Tag must be less than 64 characters",
+              !v || v.length <= 64 || 'Tag must be less than 64 characters',
           ],
         },
         finding_cnt: {
-          label: "Finding Count",
-          placeholder: "1",
+          label: 'Finding Count',
+          placeholder: '1',
           validator: [
-            (v) => !!v || "Finding Count is required",
-            (v) => !v || 1 <= v || "finding_cnt must be 1 or more",
+            (v) => !!v || 'Finding Count is required',
+            (v) => !v || 1 <= v || 'finding_cnt must be 1 or more',
           ],
         },
       },
       dataModel: {
         alert_rule_id: 0,
-        name: "",
+        name: '',
         score: 0,
-        resource_name: "",
-        tag: "",
+        resource_name: '',
+        tag: '',
         finding_cnt: 0,
-        updated_at: "",
+        updated_at: '',
       },
       table: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 10, sortBy: ["alert_rule_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         actions: [
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
         ],
         footer: {
           disableItemsPerPage: false,
           itemsPerPageOptions: [20, 50, 100],
-          itemsPerPageText: "Rows/Page",
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -403,52 +403,52 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "alert_rule_id",
+          value: 'alert_rule_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Resource Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "resource_name",
+          value: 'resource_name',
         },
         {
           text: this.$i18n.t('item["Tag"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "tag",
+          value: 'tag',
         },
         {
           text: this.$i18n.t('item["Finding Count"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "finding_cnt",
+          value: 'finding_cnt',
         },
         {
           text: this.$i18n.t('item["Score"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "score",
+          value: 'score',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -494,7 +494,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess("Success: Delete.")
+      this.finishSuccess('Success: Delete.')
     },
 
     // put
@@ -515,9 +515,9 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      let msg = "Success: Updated alert rule."
+      let msg = 'Success: Updated alert rule.'
       if (this.form.new) {
-        msg = "Success: Created new alert rule."
+        msg = 'Success: Created new alert rule.'
       }
       this.finishSuccess(msg)
     },
@@ -526,12 +526,12 @@ export default {
     handleNewItem() {
       this.dataModel = {
         alert_rule_id: 0,
-        name: "",
+        name: '',
         score: 0.6,
-        resource_name: "",
-        tag: "",
+        resource_name: '',
+        tag: '',
         finding_cnt: 1,
-        updated_at: "",
+        updated_at: '',
       }
       this.form.new = true
       this.editDialog = true

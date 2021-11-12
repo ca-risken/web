@@ -1,19 +1,15 @@
-import {
-  LayoutAuth,
-  LayoutDefault,
-  RouteWrapper
-} from '@/component/layout'
+import { LayoutAuth, LayoutDefault, RouteWrapper } from '@/component/layout'
 
 export const commonRoute = [
   {
     path: '*',
-    component: () => import('@/view/error/NotFound.vue')
+    component: () => import('@/view/error/NotFound.vue'),
   },
   {
     path: '/auth',
     component: LayoutAuth,
     meta: {
-      title: 'Signin'
+      title: 'Signin',
     },
     redirect: '/auth/signin',
     hidden: true,
@@ -22,29 +18,29 @@ export const commonRoute = [
         path: 'signin',
         name: 'signin',
         meta: {
-          title: 'Signin'
+          title: 'Signin',
         },
-        component: () => import('@/view/auth/Signin.vue')
-      }
-    ]
+        component: () => import('@/view/auth/Signin.vue'),
+      },
+    ],
   },
 
   {
     path: '/404',
     name: '404',
     meta: {
-      title: 'Not Found'
+      title: 'Not Found',
     },
-    component: () => import('@/view/error/NotFound.vue')
+    component: () => import('@/view/error/NotFound.vue'),
   },
 
   {
     path: '/timeout',
     name: 'timeout',
     meta: {
-      title: 'Server Error'
+      title: 'Server Error',
     },
-    component: () => import('@/view/error/Timeout.vue')
+    component: () => import('@/view/error/Timeout.vue'),
   },
 ]
 
@@ -55,7 +51,6 @@ export const appRoute = [
     meta: {
       title: 'Home',
       group: 'apps',
-
     },
     children: [
       {
@@ -65,7 +60,7 @@ export const appRoute = [
           title: 'Home',
           hiddenInMenu: true,
         },
-        component: () => import('@/view/Home.vue')
+        component: () => import('@/view/Home.vue'),
       },
       {
         path: '/dashboard',
@@ -73,9 +68,9 @@ export const appRoute = [
         meta: {
           title: 'Dashboard',
           group: 'apps',
-          icon: 'mdi-view-dashboard'
+          icon: 'mdi-view-dashboard',
         },
-        component: () => import('@/view/Dashboard.vue')
+        component: () => import('@/view/Dashboard.vue'),
       },
       {
         path: '/finding',
@@ -84,34 +79,34 @@ export const appRoute = [
         meta: {
           title: 'Finding',
           icon: 'mdi-file-find-outline',
-          group: 'finding'
+          group: 'finding',
         },
         children: [
           {
             path: '/finding/resource',
             name: 'Resource',
             meta: {
-              title: 'Resource'
+              title: 'Resource',
             },
-            component: () => import('@/view/finding/Resource.vue')
+            component: () => import('@/view/finding/Resource.vue'),
           },
           {
             path: '/finding/finding',
             name: 'Finding',
             meta: {
-              title: 'Finding'
+              title: 'Finding',
             },
-            component: () => import('@/view/finding/Finding.vue')
+            component: () => import('@/view/finding/Finding.vue'),
           },
           {
             path: '/finding/setting',
             name: 'Setting',
             meta: {
-              title: 'Setting'
+              title: 'Setting',
             },
-            component: () => import('@/view/finding/Setting.vue')
+            component: () => import('@/view/finding/Setting.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/alert',
@@ -120,42 +115,42 @@ export const appRoute = [
         meta: {
           title: 'Alert',
           icon: 'mdi-alert',
-          group: 'alert'
+          group: 'alert',
         },
         children: [
           {
             path: '/alert/alert',
             name: 'Alert',
             meta: {
-              title: 'Alert'
+              title: 'Alert',
             },
-            component: () => import('@/view/alert/Alert.vue')
+            component: () => import('@/view/alert/Alert.vue'),
           },
           {
             path: '/alert/condition',
             name: 'Condition',
             meta: {
-              title: 'Condition'
+              title: 'Condition',
             },
-            component: () => import('@/view/alert/Condition.vue')
+            component: () => import('@/view/alert/Condition.vue'),
           },
           {
             path: '/alert/rule',
             name: 'Rule',
             meta: {
-              title: 'Rule'
+              title: 'Rule',
             },
-            component: () => import('@/view/alert/Rule.vue')
+            component: () => import('@/view/alert/Rule.vue'),
           },
           {
             path: '/alert/notification',
             name: 'Notification',
             meta: {
-              title: 'Notification'
+              title: 'Notification',
             },
-            component: () => import('@/view/alert/Notification.vue')
+            component: () => import('@/view/alert/Notification.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/aws',
@@ -164,7 +159,7 @@ export const appRoute = [
         meta: {
           title: 'AWS',
           icon: 'mdi-aws',
-          group: 'aws'
+          group: 'aws',
         },
         children: [
           {
@@ -173,7 +168,7 @@ export const appRoute = [
             meta: {
               title: 'AWS',
             },
-            component: () => import('@/view/aws/AWS.vue')
+            component: () => import('@/view/aws/AWS.vue'),
           },
           {
             path: '/aws/data-source',
@@ -181,7 +176,7 @@ export const appRoute = [
             meta: {
               title: 'AWS DataSource',
             },
-            component: () => import('@/view/aws/DataSource.vue')
+            component: () => import('@/view/aws/DataSource.vue'),
           },
           {
             path: '/aws/activity',
@@ -189,9 +184,9 @@ export const appRoute = [
             meta: {
               title: 'AWS Activity',
             },
-            component: () => import('@/view/aws/Activity.vue')
+            component: () => import('@/view/aws/Activity.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/google',
@@ -200,7 +195,7 @@ export const appRoute = [
         meta: {
           title: 'Google',
           icon: 'mdi-google',
-          group: 'google'
+          group: 'google',
         },
         children: [
           {
@@ -209,7 +204,7 @@ export const appRoute = [
             meta: {
               title: 'GCP',
             },
-            component: () => import('@/view/google/GCP.vue')
+            component: () => import('@/view/google/GCP.vue'),
           },
           {
             path: '/google/gcp-data-source',
@@ -217,9 +212,9 @@ export const appRoute = [
             meta: {
               title: 'GCP DataSource',
             },
-            component: () => import('@/view/google/GCPDataSource.vue')
+            component: () => import('@/view/google/GCPDataSource.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/diagnosis',
@@ -228,7 +223,7 @@ export const appRoute = [
         meta: {
           title: 'Diagnosis',
           icon: 'mdi-bug-check-outline',
-          group: 'diagnosis'
+          group: 'diagnosis',
         },
         children: [
           {
@@ -236,9 +231,9 @@ export const appRoute = [
             name: 'JIRA',
             meta: {
               title: 'JIRA',
-              hiddenInMenu: true
+              hiddenInMenu: true,
             },
-            component: () => import('@/view/diagnosis/JIRA.vue')
+            component: () => import('@/view/diagnosis/JIRA.vue'),
           },
           {
             path: '/diagnosis/wpscan',
@@ -246,7 +241,7 @@ export const appRoute = [
             meta: {
               title: 'WPScan',
             },
-            component: () => import('@/view/diagnosis/WPScan.vue')
+            component: () => import('@/view/diagnosis/WPScan.vue'),
           },
           {
             path: '/diagnosis/portscan',
@@ -254,7 +249,7 @@ export const appRoute = [
             meta: {
               title: 'Portscan',
             },
-            component: () => import('@/view/diagnosis/Portscan.vue')
+            component: () => import('@/view/diagnosis/Portscan.vue'),
           },
           {
             path: '/diagnosis/applicationscan',
@@ -262,9 +257,9 @@ export const appRoute = [
             meta: {
               title: 'Application Scan',
             },
-            component: () => import('@/view/diagnosis/ApplicationScan.vue')
+            component: () => import('@/view/diagnosis/ApplicationScan.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/osint',
@@ -273,7 +268,7 @@ export const appRoute = [
         meta: {
           title: 'OSINT',
           icon: 'http',
-          group: 'osint'
+          group: 'osint',
         },
         children: [
           {
@@ -282,7 +277,7 @@ export const appRoute = [
             meta: {
               title: 'OSINT',
             },
-            component: () => import('@/view/osint/OSINT.vue')
+            component: () => import('@/view/osint/OSINT.vue'),
           },
           {
             path: '/osint/data-source',
@@ -290,9 +285,9 @@ export const appRoute = [
             meta: {
               title: 'OSINT DataSource',
             },
-            component: () => import('@/view/osint/DataSource.vue')
+            component: () => import('@/view/osint/DataSource.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/code',
@@ -301,7 +296,7 @@ export const appRoute = [
         meta: {
           title: 'Code',
           icon: 'mdi-github',
-          group: 'code'
+          group: 'code',
         },
         children: [
           {
@@ -310,9 +305,9 @@ export const appRoute = [
             meta: {
               title: 'Gitleaks',
             },
-            component: () => import('@/view/code/Gitleaks.vue')
+            component: () => import('@/view/code/Gitleaks.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/iam',
@@ -321,7 +316,7 @@ export const appRoute = [
         meta: {
           title: 'IAM',
           icon: 'mdi-account-multiple',
-          group: 'iam'
+          group: 'iam',
         },
         children: [
           {
@@ -330,23 +325,23 @@ export const appRoute = [
             meta: {
               title: 'User',
             },
-            component: () => import('@/view/iam/User.vue')
+            component: () => import('@/view/iam/User.vue'),
           },
           {
             path: '/iam/role',
             name: 'Role',
             meta: {
-              title: 'Role'
+              title: 'Role',
             },
-            component: () => import('@/view/iam/Role.vue')
+            component: () => import('@/view/iam/Role.vue'),
           },
           {
             path: '/iam/policy',
             name: 'Policy',
             meta: {
-              title: 'Policy'
+              title: 'Policy',
             },
-            component: () => import('@/view/iam/Policy.vue')
+            component: () => import('@/view/iam/Policy.vue'),
           },
           {
             path: '/iam/access-token',
@@ -354,7 +349,7 @@ export const appRoute = [
             meta: {
               title: 'AccessToken',
             },
-            component: () => import('@/view/iam/AccessToken.vue')
+            component: () => import('@/view/iam/AccessToken.vue'),
           },
           {
             path: '/iam/profile',
@@ -363,9 +358,9 @@ export const appRoute = [
               title: 'Profile',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/iam/Profile.vue')
+            component: () => import('@/view/iam/Profile.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/report',
@@ -374,7 +369,7 @@ export const appRoute = [
         meta: {
           title: 'Report',
           icon: 'mdi-file-chart',
-          group: 'report'
+          group: 'report',
         },
         children: [
           {
@@ -383,9 +378,9 @@ export const appRoute = [
             meta: {
               title: 'ReportFinding',
             },
-            component: () => import('@/view/report/Finding.vue')
+            component: () => import('@/view/report/Finding.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/project/',
@@ -394,7 +389,7 @@ export const appRoute = [
         meta: {
           title: 'Project',
           icon: 'mdi-alpha-p-box',
-          group: 'project'
+          group: 'project',
         },
         children: [
           {
@@ -403,7 +398,7 @@ export const appRoute = [
             meta: {
               title: 'ProjectSetting',
             },
-            component: () => import('@/view/project/Setting.vue')
+            component: () => import('@/view/project/Setting.vue'),
           },
           {
             path: '/project/new',
@@ -411,9 +406,9 @@ export const appRoute = [
             meta: {
               title: 'NewProject',
             },
-            component: () => import('@/view/project/New.vue')
+            component: () => import('@/view/project/New.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/admin',
@@ -434,7 +429,7 @@ export const appRoute = [
               title: 'Menu',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/admin/Menu.vue')
+            component: () => import('@/view/admin/Menu.vue'),
           },
           {
             path: '/admin/user',
@@ -443,7 +438,7 @@ export const appRoute = [
               title: 'Role',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/admin/User.vue')
+            component: () => import('@/view/admin/User.vue'),
           },
           {
             path: '/admin/report',
@@ -452,19 +447,19 @@ export const appRoute = [
               title: 'Report',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/report/Finding.vue')
+            component: () => import('@/view/report/Finding.vue'),
           },
-        ]
+        ],
       },
       {
         path: '/403',
         name: 'Forbidden',
         meta: {
           title: 'Access Denied',
-          hiddenInMenu: true
+          hiddenInMenu: true,
         },
-        component: () => import('@/view/error/Deny.vue')
+        component: () => import('@/view/error/Deny.vue'),
       },
-    ]
-  }
+    ],
+  },
 ]

@@ -198,14 +198,14 @@
   </v-app-bar>
 </template>
 <script>
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import Util from "@/util"
-import store from "@/store"
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
-import project from "@/mixin/api/project"
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import Util from '@/util'
+import store from '@/store'
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import project from '@/mixin/api/project'
 export default {
-  name: "AppToolbar",
+  name: 'AppToolbar',
   components: {
     // ProjectList,
     BottomSnackBar,
@@ -216,8 +216,8 @@ export default {
       loading: false,
       projectDialog: false,
       projectTable: {
-        search: "",
-        options: { page: 1, itemsPerPage: 10, sortBy: ["project_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         footer: {
           itemsPerPageOptions: [10],
           showCurrentPage: true,
@@ -225,28 +225,28 @@ export default {
         },
         item: [],
       },
-      currentProjectID: "",
+      currentProjectID: '',
       availableLanguages: [
-        { text: "English", value: "en" },
-        { text: "日本語", value: "ja" },
+        { text: 'English', value: 'en' },
+        { text: '日本語', value: 'ja' },
       ],
       myMenu: [
         {
-          icon: "mdi-account-circle",
-          href: "#",
-          title: "Account",
+          icon: 'mdi-account-circle',
+          href: '#',
+          title: 'Account',
           click: this.handleAccountSetting,
         },
         {
-          icon: "mdi-alpha-p-box",
-          href: "#",
-          title: "My Project",
+          icon: 'mdi-alpha-p-box',
+          href: '#',
+          title: 'My Project',
           click: this.handleProjectSetting,
         },
         {
-          icon: "mdi-logout",
-          href: "#",
-          title: "Signout",
+          icon: 'mdi-logout',
+          href: '#',
+          title: 'Signout',
           click: this.handleLogut,
         },
       ],
@@ -258,24 +258,24 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
-          width: "5%",
+          align: 'start',
+          width: '5%',
           sortable: true,
-          value: "project_id",
+          value: 'project_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
-          width: "25%",
+          align: 'start',
+          width: '25%',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Tag"]'),
-          align: "start",
-          width: "70%",
+          align: 'start',
+          width: '70%',
           sortable: true,
-          value: "tag",
+          value: 'tag',
         },
       ]
     },
@@ -304,7 +304,7 @@ export default {
   async mounted() {
     await this.signinUser()
     if (!store.state.user || !store.state.user.user_id) {
-      console.log("Error: Try again after signin.")
+      console.log('Error: Try again after signin.')
       return
     }
     const admin = await this.isAdminAPI(store.state.user.user_id).catch(
@@ -336,8 +336,8 @@ export default {
       return (
         value != null &&
         search != null &&
-        typeof value !== "boolean" &&
-        (typeof value === "object" ? value.map((v) => v.tag).join(",") : value)
+        typeof value !== 'boolean' &&
+        (typeof value === 'object' ? value.map((v) => v.tag).join(',') : value)
           .toString()
           .toLocaleLowerCase()
           .indexOf(search.toLocaleLowerCase()) !== -1
@@ -345,9 +345,9 @@ export default {
     },
     async listProject() {
       this.clearProjectList()
-      let listProjectParam = "?user_id=" + store.state.user.user_id
+      let listProjectParam = '?user_id=' + store.state.user.user_id
       if (this.isAdmin) {
-        listProjectParam = ""
+        listProjectParam = ''
       }
       this.projectTable.item = await this.listProjectAPI(
         listProjectParam
@@ -361,44 +361,44 @@ export default {
     },
 
     getLocaleText(locale) {
-      if (typeof locale !== "string" || locale === "") return "?"
+      if (typeof locale !== 'string' || locale === '') return '?'
       switch (locale.toLowerCase()) {
-        case "en":
-          return "English"
-        case "ja":
-          return "日本語"
+        case 'en':
+          return 'English'
+        case 'ja':
+          return '日本語'
         default:
-          return "?"
+          return '?'
       }
     },
 
     async getMenu() {
       let menu = [
         {
-          icon: "mdi-account-circle",
-          href: "#",
-          title: "Account",
+          icon: 'mdi-account-circle',
+          href: '#',
+          title: 'Account',
           click: this.handleAccountSetting,
         },
         {
-          icon: "mdi-alpha-p-box",
-          href: "#",
-          title: "My Project",
+          icon: 'mdi-alpha-p-box',
+          href: '#',
+          title: 'My Project',
           click: this.handleProjectSetting,
         },
       ]
       if (this.isAdmin) {
         menu.push({
-          icon: "mdi-head-minus",
-          href: "#",
-          title: "Admin Menu",
+          icon: 'mdi-head-minus',
+          href: '#',
+          title: 'Admin Menu',
           click: this.handleAdmin,
         })
       }
       menu.push({
-        icon: "mdi-logout",
-        href: "#",
-        title: "Signout",
+        icon: 'mdi-logout',
+        href: '#',
+        title: 'Signout',
         click: this.handleLogut,
       })
       return menu
@@ -406,7 +406,7 @@ export default {
 
     // handler
     handleDrawerToggle() {
-      this.$emit("side-icon-click")
+      this.$emit('side-icon-click')
     },
     handleFullScreen() {
       Util.toggleFullScreen()
@@ -417,30 +417,30 @@ export default {
         text: item.text,
       }
       this.$i18n.locale = item.value
-      store.commit("updateLocale", locale)
+      store.commit('updateLocale', locale)
     },
     handleLogut() {
-      this.$router.push("/auth/signin/")
+      this.$router.push('/auth/signin/')
     },
     handleAccountSetting() {
-      this.$router.push("/iam/profile/")
+      this.$router.push('/iam/profile/')
     },
     handleProjectSetting() {
-      this.$router.push("/project/setting/")
+      this.$router.push('/project/setting/')
     },
     handleAdmin() {
-      this.$router.push("/admin/menu/")
+      this.$router.push('/admin/menu/')
     },
     handleGoBack() {
       this.$router.go(-1)
     },
     async handleProjectClick(project) {
       await this.setProjectQueryParam(project.project_id)
-      await store.commit("updateProject", project)
+      await store.commit('updateProject', project)
       this.reload()
     },
     handleNewProject() {
-      this.$router.push("/project/new")
+      this.$router.push('/project/new')
     },
     handleSearchProject() {
       this.loading = true

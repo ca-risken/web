@@ -281,9 +281,9 @@
 </template>
 
 <script>
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, iam],
   components: {
@@ -295,62 +295,62 @@ export default {
       searchModel: { policyName: null },
       searchForm: {
         policyName: {
-          label: "Policy Name",
-          placeholder: "Filter for policy name",
+          label: 'Policy Name',
+          placeholder: 'Filter for policy name',
         },
       },
       policyForm: {
         newPolicy: false,
         valid: false,
-        policy_id: { label: "ID", placeholder: "-" },
+        policy_id: { label: 'ID', placeholder: '-' },
         name: {
-          label: "Name",
-          placeholder: "something-policy",
+          label: 'Name',
+          placeholder: 'something-policy',
           validator: [
-            (v) => !!v || "Name is required",
-            (v) => v.length <= 64 || "Name must be less than 64 characters",
+            (v) => !!v || 'Name is required',
+            (v) => v.length <= 64 || 'Name must be less than 64 characters',
           ],
         },
         action_ptn: {
-          label: "Action Pattern",
-          placeholder: "`.*` for all aciotns",
+          label: 'Action Pattern',
+          placeholder: '`.*` for all aciotns',
           validator: [
-            (v) => !!v || "Action Pattern is required",
+            (v) => !!v || 'Action Pattern is required',
             (v) =>
               this.compilableRegexp(v) ||
-              "Action Pattern must be compilable regular expression",
+              'Action Pattern must be compilable regular expression',
           ],
         },
         resource_ptn: {
-          label: "Resource Pattern",
-          placeholder: "`.*` for all resources",
+          label: 'Resource Pattern',
+          placeholder: '`.*` for all resources',
           validator: [
-            (v) => !!v || "Resource Pattern is required",
+            (v) => !!v || 'Resource Pattern is required',
             (v) =>
               this.compilableRegexp(v) ||
-              "Resource Pattern must be compilable regular expression",
+              'Resource Pattern must be compilable regular expression',
           ],
         },
       },
       policyNameList: [],
       policyModel: {
-        policy_id: "",
-        name: "",
-        action_ptn: "",
-        resource_ptn: ".*", // fixed
-        updated_at: "",
+        policy_id: '',
+        name: '',
+        action_ptn: '',
+        resource_ptn: '.*', // fixed
+        updated_at: '',
       },
       table: {
         options: {
           page: 1,
           itemsPerPage: 10,
-          sortBy: ["policy_id"],
+          sortBy: ['policy_id'],
         },
         actions: [
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
         ],
@@ -373,52 +373,52 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "policy_id",
+          value: 'policy_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Action Pattern"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "action_ptn",
+          value: 'action_ptn',
         },
         {
           text: this.$i18n.t('item["Resource Pattern"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "resource_ptn",
+          value: 'resource_ptn',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "updated_at",
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
   },
   mounted() {
-    this.refleshList("")
+    this.refleshList('')
   },
   methods: {
     async refleshList(searchCond) {
@@ -461,7 +461,7 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess("Success: Deleting policy.")
+      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
       this.deleteDialog = false
       this.handleSearch()
     },
@@ -472,14 +472,14 @@ export default {
           name: this.policyModel.name,
           project_id: this.$store.state.project.project_id,
           action_ptn: this.policyModel.action_ptn,
-          resource_ptn: ".*", //this.policyModel.resource_ptn,
+          resource_ptn: '.*', //this.policyModel.resource_ptn,
         },
       }
       await this.putPolicyAPI(param).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.$refs.snackbar.notifySuccess("Success: Updated policy.")
+      this.$refs.snackbar.notifySuccess('Success: Updated policy.')
       this.editDialog = false
       this.handleSearch()
     },
@@ -487,18 +487,18 @@ export default {
       try {
         new RegExp(ptn)
       } catch (e) {
-        console.log("Regexp complie error: " + e)
+        console.log('Regexp complie error: ' + e)
         return false
       }
       return true
     },
     handleNewItem() {
       this.policyModel = {
-        policy_id: "",
-        name: "",
-        action_ptn: "",
-        resource_ptn: ".*",
-        updated_at: "",
+        policy_id: '',
+        name: '',
+        action_ptn: '',
+        resource_ptn: '.*',
+        updated_at: '',
       }
       this.policyForm.newPolicy = true
       this.editDialog = true
@@ -513,19 +513,19 @@ export default {
       this.deleteDialog = true
     },
     handleSearch() {
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.policyName) {
-        searchCond += "&name=" + this.searchModel.policyName
+        searchCond += '&name=' + this.searchModel.policyName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
       this.policyModel = {
-        policy_id: "",
-        name: "",
-        action_ptn: "",
-        resource_ptn: ".*",
-        updated_at: "",
+        policy_id: '',
+        name: '',
+        action_ptn: '',
+        resource_ptn: '.*',
+        updated_at: '',
       }
       this.policyModel = Object.assign(this.policyModel, item)
     },

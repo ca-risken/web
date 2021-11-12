@@ -9,31 +9,35 @@ export default {
   props: {
     chartData: {
       type: Object,
-      default: null
+      default: null,
     },
     options: {
       type: Object,
       default: () => {
         return {
           scales: {
-            xAxes: [{
-              type: 'time',
-              time: {
-                displayFormats: {
-                  day: 'MM/DD'
+            xAxes: [
+              {
+                type: 'time',
+                time: {
+                  displayFormats: {
+                    day: 'MM/DD',
+                  },
+                  unit: 'day',
                 },
-                unit: 'day'
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Week',
+                },
               },
-              scaleLabel: {
-                display: true,
-                labelString: 'Week'
-              }
-            }],
-            yAxes: [{
+            ],
+            yAxes: [
+              {
                 ticks: {
-                    beginAtZero: true
-                }
-            }],
+                  beginAtZero: true,
+                },
+              },
+            ],
           },
           // plugins: {
           //   colorschemes: {
@@ -42,12 +46,12 @@ export default {
           //   }
           // },
         }
-      }
+      },
     },
   },
-  mounted () {
+  mounted() {
     // this.addPlugin(this.plugins)
     this.renderChart(this.chartData, this.options)
-  }
+  },
 }
 </script>

@@ -310,16 +310,16 @@
 </template>
 
 <script>
-import store from "@/store"
-import Util from "@/util"
-import mixin from "@/mixin"
-import finding from "@/mixin/api/finding"
-import alert from "@/mixin/api/alert"
-import iam from "@/mixin/api/iam"
-import DoughnutChart from "@/component/widget/chart/DoughnutChart"
-import BarChart from "@/component/widget/chart/BarChart"
-import colors from "vuetify/lib/util/colors"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import store from '@/store'
+import Util from '@/util'
+import mixin from '@/mixin'
+import finding from '@/mixin/api/finding'
+import alert from '@/mixin/api/alert'
+import iam from '@/mixin/api/iam'
+import DoughnutChart from '@/component/widget/chart/DoughnutChart'
+import BarChart from '@/component/widget/chart/BarChart'
+import colors from 'vuetify/lib/util/colors'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, finding, alert, iam],
   components: {
@@ -332,33 +332,33 @@ export default {
       loading: false,
       fromMenu: false,
       toMenu: false,
-      format: "csv",
+      format: 'csv',
       flagAdmin: false,
-      availableFormat: ["csv", "json"],
+      availableFormat: ['csv', 'json'],
       reportFindings: [],
       searchModel: {
         dataSource: [],
         score: 0.0,
-        fromDate: "",
+        fromDate: '',
         toDate: new Date().toISOString().substr(0, 10),
-        format: "csv",
+        format: 'csv',
       },
       searchForm: {
         dataSource: {
-          label: "Data Source",
-          placeholder: "Filter data sources",
+          label: 'Data Source',
+          placeholder: 'Filter data sources',
         },
-        score: { label: "Score", placeholder: "Filter score( from )" },
-        format: { label: "Format", placeholder: "select format" },
-        fromDate: { label: "FromDate", placeholder: "Filter date( from )" },
-        toDate: { label: "ToDate", placeholder: "Filter date( to )" },
+        score: { label: 'Score', placeholder: 'Filter score( from )' },
+        format: { label: 'Format', placeholder: 'select format' },
+        fromDate: { label: 'FromDate', placeholder: 'Filter date( from )' },
+        toDate: { label: 'ToDate', placeholder: 'Filter date( to )' },
       },
       // for visual
       now: 0,
       dateLastMonth: 0,
-      latest: "",
-      yesterday: "",
-      lastMonth: "",
+      latest: '',
+      yesterday: '',
+      lastMonth: '',
       todayReportFindings: [],
       yesterdayReportFindings: [],
       ReportFindings: [],
@@ -366,8 +366,8 @@ export default {
       totalHighFindings: 0,
       yesterdayTotalFindings: 0,
       yesterdayTotalHighFindings: 0,
-      category: ["aws", "diagnosis", "osint", "code", "google"],
-      severity: ["Low", "Medium", "High"],
+      category: ['aws', 'diagnosis', 'osint', 'code', 'google'],
+      severity: ['Low', 'Medium', 'High'],
       categorystatistics: [],
       categoryFinding: {
         aws: 0,
@@ -386,76 +386,76 @@ export default {
       ReportFindingTable: {
         headersCategory: [
           {
-            text: "",
+            text: '',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "avatar",
+            align: 'center',
+            width: '5%',
+            value: 'avatar',
           },
           {
-            text: "Category",
+            text: 'Category',
             sortable: false,
-            align: "left",
-            width: "5%",
-            value: "category",
+            align: 'left',
+            width: '5%',
+            value: 'category',
           },
           {
-            text: "Previous",
+            text: 'Previous',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "previous",
+            align: 'center',
+            width: '5%',
+            value: 'previous',
           },
           {
-            text: "Latest",
+            text: 'Latest',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "latest",
+            align: 'center',
+            width: '5%',
+            value: 'latest',
           },
           {
-            text: "Change",
+            text: 'Change',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "change",
+            align: 'center',
+            width: '5%',
+            value: 'change',
           },
         ],
         headersSeverity: [
           {
-            text: "",
+            text: '',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "avatar",
+            align: 'center',
+            width: '5%',
+            value: 'avatar',
           },
           {
-            text: "Severity",
+            text: 'Severity',
             sortable: false,
-            align: "left",
-            width: "5%",
-            value: "severity",
+            align: 'left',
+            width: '5%',
+            value: 'severity',
           },
           {
-            text: "Previous",
+            text: 'Previous',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "previous",
+            align: 'center',
+            width: '5%',
+            value: 'previous',
           },
           {
-            text: "Latest",
+            text: 'Latest',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "latest",
+            align: 'center',
+            width: '5%',
+            value: 'latest',
           },
           {
-            text: "Change",
+            text: 'Change',
             sortable: false,
-            align: "center",
-            width: "5%",
-            value: "change",
+            align: 'center',
+            width: '5%',
+            value: 'change',
           },
         ],
         itemsPerCategory: [],
@@ -473,8 +473,8 @@ export default {
         datasets: [],
       },
       // BarChart
-      visibleDuration: "week",
-      visibleDurationList: ["week", "month"],
+      visibleDuration: 'week',
+      visibleDurationList: ['week', 'month'],
       labelBarChart: [],
       dataSourceBarChart: {
         labels: [],
@@ -495,17 +495,17 @@ export default {
     this.now.setDate(this.now.getDate() - 1)
     var yesterdayDate = new Date()
     yesterdayDate.setDate(this.now.getDate() - 1)
-    this.yesterday = Util.formatDate(yesterdayDate, "yyyy-MM-dd")
+    this.yesterday = Util.formatDate(yesterdayDate, 'yyyy-MM-dd')
     this.dateLastMonth = new Date()
     this.dateLastMonth.setMonth(this.now.getMonth() - 1)
-    this.latest = Util.formatDate(this.now, "yyyy-MM-dd")
-    this.lastMonth = Util.formatDate(this.dateLastMonth, "yyyy-MM-dd")
+    this.latest = Util.formatDate(this.now, 'yyyy-MM-dd')
+    this.lastMonth = Util.formatDate(this.dateLastMonth, 'yyyy-MM-dd')
     this.setData()
   },
   methods: {
     async setFlagAdmin() {
       if (!store.state.user || !store.state.user.user_id) {
-        this.$refs.snackbar.notifyError("Error: Try again after signin.")
+        this.$refs.snackbar.notifyError('Error: Try again after signin.')
         return
       }
       const admin = await this.isAdminAPI(store.state.user.user_id).catch(
@@ -521,8 +521,8 @@ export default {
       return
     },
     async getReportFinding(searchCond) {
-      let url = ""
-      url = "/report/get-report/?project_id="
+      let url = ''
+      url = '/report/get-report/?project_id='
       const res = await this.$axios
         .get(url + this.$store.state.project.project_id + searchCond)
         .catch((err) => {
@@ -541,7 +541,7 @@ export default {
       let fDate = new Date()
       let tDate = new Date()
       let endDate = new Date()
-      if (fromDate == "") {
+      if (fromDate == '') {
         fDate = new Date()
         fDate.setMonth(fDate.getMonth() - 3)
         tDate.setMonth(fDate.getMonth())
@@ -551,13 +551,13 @@ export default {
         tDate.setMonth(fDate.getMonth())
         tDate.setDate(fDate.getDate() + 6)
       }
-      if (toDate != null && toDate != "") {
+      if (toDate != null && toDate != '') {
         endDate = new Date(toDate)
       }
-      const url = "/report/get-report-all/?project_id="
+      const url = '/report/get-report-all/?project_id='
       while (fDate < endDate) {
-        let condDate = "&from_date=" + Util.formatDate(fDate, "yyyy-MM-dd")
-        condDate += "&to_date=" + Util.formatDate(tDate, "yyyy-MM-dd")
+        let condDate = '&from_date=' + Util.formatDate(fDate, 'yyyy-MM-dd')
+        condDate += '&to_date=' + Util.formatDate(tDate, 'yyyy-MM-dd')
         const res = await this.$axios
           .get(
             url + this.$store.state.project.project_id + searchCond + condDate
@@ -584,14 +584,14 @@ export default {
     },
     async handleGet(target) {
       this.clearList()
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.dataSource) {
-        searchCond += "&data_source=" + this.searchModel.dataSource
+        searchCond += '&data_source=' + this.searchModel.dataSource
       }
       if (this.searchModel.score) {
-        searchCond += "&score=" + this.searchModel.score
+        searchCond += '&score=' + this.searchModel.score
       }
-      if (target == "all") {
+      if (target == 'all') {
         await this.getReportFindingAll(
           searchCond,
           this.searchModel.fromDate,
@@ -599,48 +599,48 @@ export default {
         )
       } else {
         if (this.searchModel.toDate) {
-          searchCond += "&to_date=" + this.searchModel.toDate
+          searchCond += '&to_date=' + this.searchModel.toDate
         }
         if (this.searchModel.score) {
-          searchCond += "&from_date=" + this.searchModel.fromDate
+          searchCond += '&from_date=' + this.searchModel.fromDate
         }
         await this.getReportFinding(searchCond, target)
       }
-      if (this.searchModel.format == "csv") {
+      if (this.searchModel.format == 'csv') {
         var csv =
-          "\ufeff" +
-          "report_finding_id,report_date,category,data_source,project_id,project_name,score,count\n"
+          '\ufeff' +
+          'report_finding_id,report_date,category,data_source,project_id,project_name,score,count\n'
         this.reportFindings.forEach((el) => {
           var line =
-            el["report_finding_id"] +
+            el['report_finding_id'] +
             ',"' +
-            el["report_date"] +
+            el['report_date'] +
             '","' +
-            el["category"] +
+            el['category'] +
             '","' +
-            el["data_source"] +
+            el['data_source'] +
             '",' +
-            el["project_id"] +
+            el['project_id'] +
             ',"' +
-            el["project_name"] +
+            el['project_name'] +
             '",' +
-            el["score"] +
-            "," +
-            el["count"] +
-            "\n"
+            el['score'] +
+            ',' +
+            el['count'] +
+            '\n'
           csv += line
         })
-        let blob = new Blob([csv], { type: "text/csv" })
-        let link = document.createElement("a")
+        let blob = new Blob([csv], { type: 'text/csv' })
+        let link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
-        link.download = "finding_report.csv"
+        link.download = 'finding_report.csv'
         link.click()
-      } else if (this.searchModel.format == "json") {
+      } else if (this.searchModel.format == 'json') {
         var json = JSON.stringify({ data: this.reportFindings })
-        let blob = new Blob([json], { type: "text/json" })
-        let link = document.createElement("a")
+        let blob = new Blob([json], { type: 'text/json' })
+        let link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
-        link.download = "finding_report.json"
+        link.download = 'finding_report.json'
         link.click()
       }
     },
@@ -657,11 +657,11 @@ export default {
     async setReportFinding() {
       const res = await this.$axios
         .get(
-          "/report/get-report/?project_id=" +
+          '/report/get-report/?project_id=' +
             this.$store.state.project.project_id +
-            "&from_date=" +
+            '&from_date=' +
             this.lastMonth +
-            "&to_date=" +
+            '&to_date=' +
             this.latest
         )
         .catch((err) => {
@@ -670,7 +670,7 @@ export default {
       if (!res.data || !res.data.data || !res.data.data.report_finding) {
         return
       }
-      var category = ""
+      var category = ''
       for (const fr of res.data.data.report_finding) {
         var reportFinding = new this.newReportFinding(fr)
         this.ReportFindings.push(reportFinding)
@@ -680,7 +680,7 @@ export default {
           if (reportFinding.score >= 0.8) {
             this.totalHighFindings += reportFinding.count
           }
-          category = reportFinding.data_source.split(":")[0]
+          category = reportFinding.data_source.split(':')[0]
           this.categoryFinding[category] += reportFinding.count
         }
         if (reportFinding.date.indexOf(this.yesterday) > -1) {
@@ -689,7 +689,7 @@ export default {
           if (reportFinding.score >= 0.8) {
             this.yesterdayTotalHighFindings += reportFinding.count
           }
-          category = reportFinding.data_source.split(":")[0]
+          category = reportFinding.data_source.split(':')[0]
           this.yesterdayCategoryFinding[category] += reportFinding.count
         }
       }
@@ -750,11 +750,11 @@ export default {
           this.categoryFinding.google,
         ],
         backgroundColor: [
-          this.getRGBByCategory("aws"),
-          this.getRGBByCategory("diagnosis"),
-          this.getRGBByCategory("osint"),
-          this.getRGBByCategory("code"),
-          this.getRGBByCategory("google"),
+          this.getRGBByCategory('aws'),
+          this.getRGBByCategory('diagnosis'),
+          this.getRGBByCategory('osint'),
+          this.getRGBByCategory('code'),
+          this.getRGBByCategory('google'),
         ],
       })
     },
@@ -765,9 +765,9 @@ export default {
           this.CountFindingsPerSeverityDate(sev, this.latest)
         ),
         backgroundColor: [
-          this.getRGBBySeverity("low"),
-          this.getRGBBySeverity("medium"),
-          this.getRGBBySeverity("high"),
+          this.getRGBBySeverity('low'),
+          this.getRGBBySeverity('medium'),
+          this.getRGBBySeverity('high'),
         ],
       })
     },
@@ -795,18 +795,18 @@ export default {
       var label = []
       var day = new Date(this.now.getTime())
       switch (this.visibleDuration) {
-        case "week":
+        case 'week':
           day.setDate(this.now.getDate() - 6)
           break
-        case "month":
+        case 'month':
         default:
           day.setMonth(this.now.getMonth() - 1)
           break
       }
-      var nowDate = Util.formatDate(this.now, "yyyy-MM-dd")
-      var date = ""
+      var nowDate = Util.formatDate(this.now, 'yyyy-MM-dd')
+      var date = ''
       while (date != nowDate) {
-        date = Util.formatDate(day, "yyyy-MM-dd")
+        date = Util.formatDate(day, 'yyyy-MM-dd')
         label.push(date)
         day.setDate(day.getDate() + 1)
       }
@@ -865,11 +865,11 @@ export default {
     CountFindingsPerSeverityDate(severity, date) {
       const data = this.ReportFindings.filter((rf) => {
         switch (severity.toLowerCase()) {
-          case "high":
+          case 'high':
             return rf.score >= 0.8 && rf.date.indexOf(date) > -1
-          case "low":
+          case 'low':
             return rf.score < 0.6 && rf.date.indexOf(date) > -1
-          case "medium":
+          case 'medium':
             return (
               rf.score >= 0.6 && rf.score < 0.8 && rf.date.indexOf(date) > -1
             )
@@ -883,15 +883,15 @@ export default {
     getRGBByCategory(category) {
       category = category.toLowerCase()
       switch (category) {
-        case "aws":
+        case 'aws':
           return colors.orange.lighten3
-        case "diagnosis":
+        case 'diagnosis':
           return colors.indigo.lighten3
-        case "osint":
+        case 'osint':
           return colors.green.lighten3
-        case "code":
+        case 'code':
           return colors.grey.darken1
-        case "google":
+        case 'google':
           return colors.lightBlue.lighten3
         default:
           return colors.gray
@@ -900,11 +900,11 @@ export default {
     getRGBBySeverity(severity) {
       severity = severity.toLowerCase()
       switch (severity) {
-        case "high":
+        case 'high':
           return colors.red.lighten2
-        case "medium":
+        case 'medium':
           return colors.yellow.lighten2
-        case "low":
+        case 'low':
           return colors.teal.lighten2
         default:
           return colors.gray
@@ -912,11 +912,11 @@ export default {
     },
     getIconByCountChange(num) {
       if (num > 0) {
-        return "mdi-arrow-up"
+        return 'mdi-arrow-up'
       } else if (num < 0) {
-        return "mdi-arrow-down"
+        return 'mdi-arrow-down'
       } else {
-        return "mdi-arrow-right"
+        return 'mdi-arrow-right'
       }
     },
   },

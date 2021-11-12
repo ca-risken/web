@@ -9,7 +9,13 @@
           </v-card-title>
           <v-card-actions>
             <v-spacer />
-            <v-btn large tile color="primary" @click="signin" :loading="loading">
+            <v-btn
+              large
+              tile
+              color="primary"
+              @click="signin"
+              :loading="loading"
+            >
               {{ $t(`btn['SIGNIN']`) }}
             </v-btn>
           </v-card-actions>
@@ -30,7 +36,7 @@ export default {
   computed: {
     prefix() {
       return ''
-    }
+    },
   },
   methods: {
     signin() {
@@ -38,9 +44,9 @@ export default {
       setTimeout(() => {
         this.$router.push('/')
       }, 1000)
-    }
+    },
   },
-  }
+}
 </script>
 
 <style lang="sass" scoped>

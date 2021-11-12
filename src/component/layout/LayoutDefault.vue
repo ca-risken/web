@@ -2,18 +2,25 @@
   <v-app id="inspire" class="app dashboard">
     <app-drawer class="app--drawer" :show-drawer="showDrawer" />
     <app-toolbar class="app--toolbar" @side-icon-click="handleDrawerVisiable" />
-    <v-main >
+    <v-main>
       <!-- Page Header -->
       <v-card height="100%" color="background" class="page-wrapper">
         <router-view />
       </v-card>
     </v-main>
     <!-- App Footer -->
-    <v-footer height="auto" class="pa-3 app--footer" dark color="primary lighten-1">
+    <v-footer
+      height="auto"
+      class="pa-3 app--footer"
+      dark
+      color="primary lighten-1"
+    >
       <v-spacer />
       <div class="mt-3">
         <v-icon class="mr-2" color="grey lighten-2">mdi-magnify</v-icon>
-        <span class="mr-4 font-weight-bold">RISKEN @ {{ new Date().getFullYear() }}</span>
+        <span class="mr-4 font-weight-bold"
+          >RISKEN @ {{ new Date().getFullYear() }}</span
+        >
       </div>
     </v-footer>
 
@@ -31,11 +38,11 @@ export default {
   components: {
     AppDrawer,
     AppToolbar,
-    AppFab
+    AppFab,
   },
   data() {
     return {
-      showDrawer: true
+      showDrawer: true,
     }
   },
   methods: {
@@ -43,7 +50,7 @@ export default {
       this.showDrawer = !this.showDrawer
     },
   },
-  created() {}
+  created() {},
 }
 </script>
 

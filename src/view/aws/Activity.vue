@@ -25,12 +25,15 @@
             @change="handleList"
             return-object
             outlined
-            dense hide-details
+            dense
+            hide-details
           ></v-select>
         </v-col>
         <v-col cols="3">
           <v-combobox
-            outlined dense hide-details
+            outlined
+            dense
+            hide-details
             background-color="white"
             v-model="search.region"
             append-icon="mdi-earth"
@@ -47,11 +50,15 @@
             :close-on-content-click="false"
             :nudge-right="40"
             transition="scale-transition"
-            offset-y hide-details
+            offset-y
+            hide-details
             min-width="auto"
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-text-field outlined dense  hide-details
+              <v-text-field
+                outlined
+                dense
+                hide-details
                 v-model="search.from"
                 placeholder=""
                 :label="$t(`item['FromDate']`)"
@@ -74,12 +81,15 @@
             :close-on-content-click="false"
             :nudge-right="40"
             transition="scale-transition"
-            offset-y hide-details
+            offset-y
+            hide-details
             min-width="auto"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                outlined dense hide-details
+                outlined
+                dense
+                hide-details
                 v-model="search.to"
                 placeholder=""
                 :label="$t(`item['ToDate']`)"
@@ -101,7 +111,9 @@
       <v-row dense>
         <v-col cols="3">
           <v-combobox
-            outlined dense hide-details
+            outlined
+            dense
+            hide-details
             background-color="white"
             v-model="search.type"
             :loading="loading"
@@ -113,7 +125,10 @@
         </v-col>
         <v-col cols="4">
           <v-text-field
-            outlined clearable dense hide-details
+            outlined
+            clearable
+            dense
+            hide-details
             :loading="loading"
             background-color="white"
             :label="$t(`item['Resource']`)"
@@ -161,11 +176,18 @@
         </v-col>
       </v-row>
 
-      <v-card v-if="customCloudTrailLog"  outlined color="background darken-1" class="pa-1 ma-1 mr-10">
+      <v-card
+        v-if="customCloudTrailLog"
+        outlined
+        color="background darken-1"
+        class="pa-1 ma-1 mr-10"
+      >
         <v-row dense>
           <v-col cols="3">
             <v-combobox
-              outlined dense hide-details
+              outlined
+              dense
+              hide-details
               background-color="white"
               v-model="search.attrKey"
               label="AttributeKey"
@@ -179,7 +201,9 @@
           <v-col cols="4">
             <v-combobox
               v-if="search.attrKey == 'RESOURCE_TYPE'"
-              outlined dense hide-details
+              outlined
+              dense
+              hide-details
               background-color="white"
               :loading="loading"
               label="AttributeValue"
@@ -190,7 +214,9 @@
             />
             <v-combobox
               v-else-if="search.attrKey == 'READ_ONLY'"
-              outlined dense hide-details
+              outlined
+              dense
+              hide-details
               background-color="white"
               :loading="loading"
               label="AttributeValue"
@@ -201,7 +227,9 @@
             />
             <v-text-field
               v-else
-              outlined dense hide-details
+              outlined
+              dense
+              hide-details
               :loading="loading"
               background-color="white"
               label="AttributeValue"
@@ -212,7 +240,9 @@
           </v-col>
           <v-col cols="4">
             <v-text-field
-              outlined dense hide-details
+              outlined
+              dense
+              hide-details
               :loading="loading"
               background-color="white"
               label="TextFilter"
@@ -225,10 +255,7 @@
       </v-card>
       <v-row>
         <v-col cols="12">
-          <v-timeline
-            align-top
-            v-if="!items || items.length > 0"
-          >
+          <v-timeline align-top v-if="!items || items.length > 0">
             <v-timeline-item
               v-for="(item, i) in items"
               :key="i"
@@ -240,36 +267,35 @@
               fill-dot
             >
               <template v-slot:opposite>
-                <v-chip
-                  outlined
-                  
-                >
-                  <v-icon left >mdi-calendar-clock</v-icon>
-                  <span class="mx-2 text-subtitle-1">{{item.time}}</span>
+                <v-chip outlined>
+                  <v-icon left>mdi-calendar-clock</v-icon>
+                  <span class="mx-2 text-subtitle-1">{{ item.time }}</span>
                 </v-chip>
               </template>
-              <v-card
-                :color="item.color"
-                dark
-              >
+              <v-card :color="item.color" dark>
                 <v-card-title class="title pa-2 mb-0">
                   {{ item.title }}
-                  <v-chip class="mx-2" dark color="white" :text-color="item.color">{{item.tag}}</v-chip>
+                  <v-chip
+                    class="mx-2"
+                    dark
+                    color="white"
+                    :text-color="item.color"
+                    >{{ item.tag }}</v-chip
+                  >
                   <v-spacer />
                   <v-btn
-                    class="mx-0" outlined
+                    class="mx-0"
+                    outlined
                     @click="handleClickItem(item.data)"
                   >
                     <v-icon left>mdi-magnify</v-icon>VIEW
                   </v-btn>
                 </v-card-title>
                 <v-card-text class="white text--primary">
-                  <div
-                    v-for="(v, k) in item.contents"
-                    :key="k"
-                  >
+                  <div v-for="(v, k) in item.contents" :key="k">
                     <v-card-text class="text--primary pa-1">
-                      <strong class="pr-4">{{ k }}</strong>{{v}}
+                      <strong class="pr-4">{{ k }}</strong
+                      >{{ v }}
                       <clip-board
                         :name="k"
                         :text="v"
@@ -282,11 +308,7 @@
               </v-card>
             </v-timeline-item>
           </v-timeline>
-          <v-card
-            v-else
-            color="background"
-            flat
-          >
+          <v-card v-else color="background" flat>
             <v-card-text align="center" justify="center">
               <template v-if="loading">Loading ...</template>
               <template v-else-if="noDataSource">
@@ -296,19 +318,36 @@
                   type="error"
                   elevation="2"
                 >
-                  <p>{{ $t("view.aws['You must configure the DataSource for `aws:activity`.']") }}</p>
-                  <p>{{ $t("view.aws['Please access to the ']") }}<router-link :to="{ path: '/aws/data-source', query: { aws_id: awsModel.aws_id }}">AWS DataSource</router-link>.</p>
+                  <p>
+                    {{
+                      $t(
+                        "view.aws['You must configure the DataSource for `aws:activity`.']"
+                      )
+                    }}
+                  </p>
+                  <p>
+                    {{ $t("view.aws['Please access to the ']")
+                    }}<router-link
+                      :to="{
+                        path: '/aws/data-source',
+                        query: { aws_id: awsModel.aws_id },
+                      }"
+                      >AWS DataSource</router-link
+                    >.
+                  </p>
                 </v-alert>
               </template>
               <template v-else>No data ...</template>
             </v-card-text>
           </v-card>
-          <v-card
-            color="background"
-            flat
-          >
+          <v-card color="background" flat>
             <v-card-text align="center" justify="center">
-              <v-btn :loading="loading" text v-show="more" @click="handleLoadMore">
+              <v-btn
+                :loading="loading"
+                text
+                v-show="more"
+                @click="handleLoadMore"
+              >
                 {{ $t(`btn['LOAD MORE ...']`) }}
               </v-btn>
             </v-card-text>
@@ -320,9 +359,7 @@
     <v-dialog v-model="arnDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4">
-            Set your ARN
-          </span>
+          <span class="mx-4"> Set your ARN </span>
         </v-card-title>
         <v-card-text>
           <v-combobox
@@ -334,7 +371,9 @@
             :items="resourceNameCombobox"
             @keydown="listResourceNameForCombobox"
             class="hidden-sm-and-down"
-            persistent-hint outlined clearable
+            persistent-hint
+            outlined
+            clearable
           />
         </v-card-text>
         <v-card-actions>
@@ -344,11 +383,12 @@
           </v-btn>
           <v-btn
             color="red darken-1"
-            text outlined
+            text
+            outlined
             :loading="loading"
             @click="handleSetARN"
           >
-           SET
+            SET
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -365,14 +405,14 @@
               <v-list-item-subtitle>
                 <v-icon left>mdi-code-json</v-icon>
                 JSON Data
-                <clip-board
-                  name="JSON Data"
-                  :text="detailJSON | pretty"
-                />
+                <clip-board name="JSON Data" :text="detailJSON | pretty" />
               </v-list-item-subtitle>
               <v-card dark color="grey darken-3" class="ma-4">
-                <v-card-text class="title font-weight-bold" style="overflow-wrap: normal;">
-                <pre>{{ detailJSON | pretty }}</pre>
+                <v-card-text
+                  class="title font-weight-bold"
+                  style="overflow-wrap: normal"
+                >
+                  <pre>{{ detailJSON | pretty }}</pre>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -380,7 +420,12 @@
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined  color="grey darken-1" @click="viewDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="viewDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
@@ -412,7 +457,7 @@ export default {
       arnDialog: false,
       viewDialog: false,
       nowUnix: new Date().getTime(),
-      awsModel: { aws_id:'', name:'', aws_account_id:'', updated_at:'' },
+      awsModel: { aws_id: '', name: '', aws_account_id: '', updated_at: '' },
       search: {
         arn: '',
         region: 'ap-northeast-1',
@@ -420,71 +465,140 @@ export default {
         resource: '',
         from: '',
         to: '',
-        attrKey: '' ,
+        attrKey: '',
         attrValue: '',
         cloudTrailFilter: '',
       },
       awsList: [],
       cloudTrailAttrList: [
-        "RESOURCE_TYPE",      // {key: 1, text: "RESOURCE_TYPE"},
-        "RESOURCE_NAME",      // {key: 2, text: "RESOURCE_NAME"},
-        "EVENT_ID",           // {key: 3, text: "EVENT_ID"},
-        "EVENT_SOURCE",       // {key: 4, text: "EVENT_SOURCE"},
-        "EVENT_NAME",         // {key: 5, text: "EVENT_NAME"},
-        "USERNAME",           // {key: 6, text: "USERNAME"},
-        "READ_ONLY",          // {key: 7, text: "READ_ONLY"},
+        'RESOURCE_TYPE', // {key: 1, text: "RESOURCE_TYPE"},
+        'RESOURCE_NAME', // {key: 2, text: "RESOURCE_NAME"},
+        'EVENT_ID', // {key: 3, text: "EVENT_ID"},
+        'EVENT_SOURCE', // {key: 4, text: "EVENT_SOURCE"},
+        'EVENT_NAME', // {key: 5, text: "EVENT_NAME"},
+        'USERNAME', // {key: 6, text: "USERNAME"},
+        'READ_ONLY', // {key: 7, text: "READ_ONLY"},
       ],
       regions: [
-        'ap-northeast-1', 'ap-northeast-2', 'ap-northeast-3',
-        'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2',
-        'ap-east-1', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2',
-        'eu-west-1', 'eu-west-2', 'eu-west-3',
-        'eu-central-1', 'eu-south-1', 'eu-north-1',
-        'ca-central-1', 'af-south-1', 'me-south-1', 'sa-east-1',
+        'ap-northeast-1',
+        'ap-northeast-2',
+        'ap-northeast-3',
+        'us-east-1',
+        'us-east-2',
+        'us-west-1',
+        'us-west-2',
+        'ap-east-1',
+        'ap-south-1',
+        'ap-southeast-1',
+        'ap-southeast-2',
+        'eu-west-1',
+        'eu-west-2',
+        'eu-west-3',
+        'eu-central-1',
+        'eu-south-1',
+        'eu-north-1',
+        'ca-central-1',
+        'af-south-1',
+        'me-south-1',
+        'sa-east-1',
       ],
       types: [
         'AWS::ACM::Certificate',
-        'AWS::ApiGateway::RestApi' ,'AWS::ApiGateway::Stage' ,'AWS::ApiGatewayV2::Api',
-        'AWS::ApiGatewayV2::Stage' ,'AWS::AutoScaling::AutoScalingGroup',
-        'AWS::AutoScaling::LaunchConfiguration' ,'AWS::AutoScaling::ScalingPolicy' ,'AWS::AutoScaling::ScheduledAction',
+        'AWS::ApiGateway::RestApi',
+        'AWS::ApiGateway::Stage',
+        'AWS::ApiGatewayV2::Api',
+        'AWS::ApiGatewayV2::Stage',
+        'AWS::AutoScaling::AutoScalingGroup',
+        'AWS::AutoScaling::LaunchConfiguration',
+        'AWS::AutoScaling::ScalingPolicy',
+        'AWS::AutoScaling::ScheduledAction',
         'AWS::CloudFormation::Stack',
-        'AWS::CloudFront::Distribution' ,'AWS::CloudFront::StreamingDistribution',
+        'AWS::CloudFront::Distribution',
+        'AWS::CloudFront::StreamingDistribution',
         'AWS::CloudTrail::Trail',
         'AWS::CloudWatch::Alarm',
         'AWS::CodeBuild::Project',
         'AWS::CodePipeline::Pipeline',
-        'AWS::Config::ConformancePackCompliance' ,'AWS::Config::ResourceCompliance',
+        'AWS::Config::ConformancePackCompliance',
+        'AWS::Config::ResourceCompliance',
         'AWS::DynamoDB::Table',
-        'AWS::EC2::CustomerGateway' ,'AWS::EC2::EgressOnlyInternetGateway' ,'AWS::EC2::EIP',
-        'AWS::EC2::FlowLog' ,'AWS::EC2::Host' ,'AWS::EC2::Instance' ,'AWS::EC2::InternetGateway',
-        'AWS::EC2::NatGateway' ,'AWS::EC2::NetworkAcl' ,'AWS::EC2::NetworkInterface',
-        'AWS::EC2::RegisteredHAInstance' ,'AWS::EC2::RouteTable' ,'AWS::EC2::SecurityGroup',
-        'AWS::EC2::Subnet','AWS::EC2::Volume','AWS::EC2::VPC',
-        'AWS::EC2::VPCEndpoint','AWS::EC2::VPCEndpointService' ,'AWS::EC2::VPCPeeringConnection',
-        'AWS::EC2::VPNConnection' ,'AWS::EC2::VPNGateway',
-        'AWS::ElasticBeanstalk::Application' ,'AWS::ElasticBeanstalk::ApplicationVersion' ,'AWS::ElasticBeanstalk::Environment',
-        'AWS::ElasticLoadBalancing::LoadBalancer' ,'AWS::ElasticLoadBalancingV2::LoadBalancer',
+        'AWS::EC2::CustomerGateway',
+        'AWS::EC2::EgressOnlyInternetGateway',
+        'AWS::EC2::EIP',
+        'AWS::EC2::FlowLog',
+        'AWS::EC2::Host',
+        'AWS::EC2::Instance',
+        'AWS::EC2::InternetGateway',
+        'AWS::EC2::NatGateway',
+        'AWS::EC2::NetworkAcl',
+        'AWS::EC2::NetworkInterface',
+        'AWS::EC2::RegisteredHAInstance',
+        'AWS::EC2::RouteTable',
+        'AWS::EC2::SecurityGroup',
+        'AWS::EC2::Subnet',
+        'AWS::EC2::Volume',
+        'AWS::EC2::VPC',
+        'AWS::EC2::VPCEndpoint',
+        'AWS::EC2::VPCEndpointService',
+        'AWS::EC2::VPCPeeringConnection',
+        'AWS::EC2::VPNConnection',
+        'AWS::EC2::VPNGateway',
+        'AWS::ElasticBeanstalk::Application',
+        'AWS::ElasticBeanstalk::ApplicationVersion',
+        'AWS::ElasticBeanstalk::Environment',
+        'AWS::ElasticLoadBalancing::LoadBalancer',
+        'AWS::ElasticLoadBalancingV2::LoadBalancer',
         'AWS::Elasticsearch::Domain',
-        'AWS::IAM::Group' ,'AWS::IAM::Policy' ,'AWS::IAM::Role' ,'AWS::IAM::User',
+        'AWS::IAM::Group',
+        'AWS::IAM::Policy',
+        'AWS::IAM::Role',
+        'AWS::IAM::User',
         'AWS::KMS::Key',
         'AWS::Lambda::Function',
-        'AWS::NetworkFirewall::Firewall' ,'AWS::NetworkFirewall::FirewallPolicy' ,'AWS::NetworkFirewall::RuleGroup',
+        'AWS::NetworkFirewall::Firewall',
+        'AWS::NetworkFirewall::FirewallPolicy',
+        'AWS::NetworkFirewall::RuleGroup',
         'AWS::QLDB::Ledger',
-        'AWS::RDS::DBCluster' ,'AWS::RDS::DBClusterSnapshot' ,'AWS::RDS::DBInstance' ,'AWS::RDS::DBSecurityGroup',
-        'AWS::RDS::DBSnapshot' ,'AWS::RDS::DBSubnetGroup' ,'AWS::RDS::EventSubscription',
-        'AWS::Redshift::Cluster' ,'AWS::Redshift::ClusterParameterGroup' ,'AWS::Redshift::ClusterSecurityGroup',
-        'AWS::Redshift::ClusterSnapshot' ,'AWS::Redshift::ClusterSubnetGroup' ,'AWS::Redshift::EventSubscription',
-        'AWS::S3::AccountPublicAccessBlock' ,'AWS::S3::Bucket',
+        'AWS::RDS::DBCluster',
+        'AWS::RDS::DBClusterSnapshot',
+        'AWS::RDS::DBInstance',
+        'AWS::RDS::DBSecurityGroup',
+        'AWS::RDS::DBSnapshot',
+        'AWS::RDS::DBSubnetGroup',
+        'AWS::RDS::EventSubscription',
+        'AWS::Redshift::Cluster',
+        'AWS::Redshift::ClusterParameterGroup',
+        'AWS::Redshift::ClusterSecurityGroup',
+        'AWS::Redshift::ClusterSnapshot',
+        'AWS::Redshift::ClusterSubnetGroup',
+        'AWS::Redshift::EventSubscription',
+        'AWS::S3::AccountPublicAccessBlock',
+        'AWS::S3::Bucket',
         'AWS::SecretsManager::Secret',
-        'AWS::ServiceCatalog::CloudFormationProduct' ,'AWS::ServiceCatalog::CloudFormationProvisionedProduct' ,'AWS::ServiceCatalog::Portfolio',
+        'AWS::ServiceCatalog::CloudFormationProduct',
+        'AWS::ServiceCatalog::CloudFormationProvisionedProduct',
+        'AWS::ServiceCatalog::Portfolio',
         'AWS::Shield::Protection',
         'AWS::ShieldRegional::Protection',
         'AWS::SNS::Topic',
         'AWS::SQS::Queue',
-        'AWS::SSM::AssociationCompliance' ,'AWS::SSM::FileData' ,'AWS::SSM::ManagedInstanceInventory' ,'AWS::SSM::PatchCompliance',
-        'AWS::WAF::RateBasedRule' ,'AWS::WAF::Rule' ,'AWS::WAF::RuleGroup' ,'AWS::WAF::WebACL',
-        'AWS::WAFRegional::RateBasedRule' ,'AWS::WAFRegional::Rule'  ,'AWS::WAFRegional::RuleGroup','AWS::WAFRegional::WebACL',
-        'AWS::WAFv2::IPSet' ,'AWS::WAFv2::ManagedRuleSet' ,'AWS::WAFv2::RegexPatternSet' ,'AWS::WAFv2::RuleGroup' ,'AWS::WAFv2::WebACL',
+        'AWS::SSM::AssociationCompliance',
+        'AWS::SSM::FileData',
+        'AWS::SSM::ManagedInstanceInventory',
+        'AWS::SSM::PatchCompliance',
+        'AWS::WAF::RateBasedRule',
+        'AWS::WAF::Rule',
+        'AWS::WAF::RuleGroup',
+        'AWS::WAF::WebACL',
+        'AWS::WAFRegional::RateBasedRule',
+        'AWS::WAFRegional::Rule',
+        'AWS::WAFRegional::RuleGroup',
+        'AWS::WAFRegional::WebACL',
+        'AWS::WAFv2::IPSet',
+        'AWS::WAFv2::ManagedRuleSet',
+        'AWS::WAFv2::RegexPatternSet',
+        'AWS::WAFv2::RuleGroup',
+        'AWS::WAFv2::WebACL',
         'AWS::XRay::EncryptionConfig',
       ],
       cloudtrail: {
@@ -513,8 +627,8 @@ export default {
       return false
     }
     this.awsModel = this.awsList[0]
-    this.awsList.forEach( async aws => {
-      if ( aws.aws_id ==  Number(this.$route.query.aws_id)) {
+    this.awsList.forEach(async (aws) => {
+      if (aws.aws_id == Number(this.$route.query.aws_id)) {
         this.awsModel = aws
         return
       }
@@ -527,19 +641,19 @@ export default {
     pretty: (v) => {
       if (!v || v == '') return
       let obj = v
-      if (typeof (v) == "string") {
+      if (typeof v == 'string') {
         obj = JSON.parse(v)
       }
       return JSON.stringify(obj, null, 2).replaceAll(',', ', ')
     },
- },
+  },
   methods: {
     async listAWS() {
       this.loading = true
-      const aws = await this.listAWSAPI().catch((err) =>  {
+      const aws = await this.listAWSAPI().catch((err) => {
         return Promise.reject(err)
       })
-      if ( !aws ) {
+      if (!aws) {
         return false
       }
       this.awsList = aws
@@ -547,10 +661,18 @@ export default {
     },
 
     async alreadyDataSourceSetting() {
-      const dataSources = await this.listAWSDataSourceAPI( this.awsModel.aws_id, 'aws:activity').catch((err) =>  {
+      const dataSources = await this.listAWSDataSourceAPI(
+        this.awsModel.aws_id,
+        'aws:activity'
+      ).catch((err) => {
         return Promise.reject(err)
       })
-      if ( !dataSources || dataSources.length < 1 || !dataSources[0].assume_role_arn || !dataSources[0].external_id ) {
+      if (
+        !dataSources ||
+        dataSources.length < 1 ||
+        !dataSources[0].assume_role_arn ||
+        !dataSources[0].external_id
+      ) {
         return false
       }
       return true
@@ -558,8 +680,9 @@ export default {
     async refleshList() {
       this.loading = true
       await this.setQuery()
-      this.items = [], this.noDataSource = false
-      this.cloudtrail = {list: [], next_token: ''}, this.config = {list: [], next_token: ''}
+      ;(this.items = []), (this.noDataSource = false)
+      ;(this.cloudtrail = { list: [], next_token: '' }),
+        (this.config = { list: [], next_token: '' })
 
       if (this.awsModel.aws_id == '' || this.search.region == '') {
         this.loading = false
@@ -586,32 +709,37 @@ export default {
     async listCloudTrail(nextToken) {
       this.cloudtrail.next_token = ''
       const trail = await this.listCloudTrailAPI(
-        this.awsModel.aws_id, this.search.region, 
-        this.convertFromUnixTime(this.search.from), this.convertToUnixTime(this.search.to),
-        this.convertAttrKey(this.search.attrKey), this.search.attrValue,
-        nextToken, // this.cloudtrail.next_token,
-      ).catch((err) =>  {
+        this.awsModel.aws_id,
+        this.search.region,
+        this.convertFromUnixTime(this.search.from),
+        this.convertToUnixTime(this.search.to),
+        this.convertAttrKey(this.search.attrKey),
+        this.search.attrValue,
+        nextToken // this.cloudtrail.next_token,
+      ).catch((err) => {
         this.loading = false
         // return Promise.reject(err)
-        this.$refs.snackbar.notifyError('CloudTrail API Error: ' + JSON.stringify(err.response.data))
+        this.$refs.snackbar.notifyError(
+          'CloudTrail API Error: ' + JSON.stringify(err.response.data)
+        )
       })
       if (!trail || !trail.cloudtrail) {
         return
       }
-console.log(trail)
+      console.log(trail)
       if (trail.next_token && trail.next_token != '') {
         this.cloudtrail.next_token = trail.next_token
         this.more = true
       }
       let putLogFuncs = []
-      for ( const log of trail.cloudtrail) {
+      for (const log of trail.cloudtrail) {
         if (this.filterLog(log)) {
           putLogFuncs.push(this.parseAndPutTrailLog(log))
         }
       }
       await Promise.all(putLogFuncs) // Parallel API call
     },
-    convertAttrKey(key){
+    convertAttrKey(key) {
       if (Util.isEmptyString(key)) return 0
       switch (key.toLocaleUpperCase()) {
         case 'RESOURCE_TYPE':
@@ -635,30 +763,39 @@ console.log(trail)
     filterLog(log) {
       if (Util.isEmptyString(this.search.cloudTrailFilter)) return true
       const raw = log.cloudtrail_event.replace('\\', '')
-      return raw.toLowerCase().includes(this.search.cloudTrailFilter.toLowerCase())
+      return raw
+        .toLowerCase()
+        .includes(this.search.cloudTrailFilter.toLowerCase())
     },
 
     // AWS Config API request
     async listConfig(nextToken) {
       this.config.next_token = ''
       const config = await this.listConfigHistoryAPI(
-        this.awsModel.aws_id, this.search.region, this.search.type, this.search.resource,
-        this.convertFromUnixTime(this.search.from), this.convertToUnixTime(this.search.to), nextToken, // this.config.next_token,
-      ).catch((err) =>  {
+        this.awsModel.aws_id,
+        this.search.region,
+        this.search.type,
+        this.search.resource,
+        this.convertFromUnixTime(this.search.from),
+        this.convertToUnixTime(this.search.to),
+        nextToken // this.config.next_token,
+      ).catch((err) => {
         this.loading = false
         // return Promise.reject(err)
-        this.$refs.snackbar.notifyError('ConfigService API Error: ' + JSON.stringify(err.response.data))
+        this.$refs.snackbar.notifyError(
+          'ConfigService API Error: ' + JSON.stringify(err.response.data)
+        )
       })
       if (!config || !config.configuration) {
-        return 
+        return
       }
-console.log(config)
+      console.log(config)
       if (config.next_token && config.next_token != '') {
         this.config.next_token = config.next_token
         this.more = true
       }
       let putLogFuncs = []
-      for ( const log of config.configuration) {
+      for (const log of config.configuration) {
         putLogFuncs.push(this.parseAndPutConfigLog(log))
       }
       await Promise.all(putLogFuncs) // Parallel API call
@@ -667,23 +804,24 @@ console.log(config)
     async sortList() {
       let list = this.cloudtrail.list.concat(this.config.list)
       // Sort list with DESC order
-      await list.sort( (a, b) => {
-        if(a.time > b.time) return -1
-        if(a.time < b.time) return 1
+      await list.sort((a, b) => {
+        if (a.time > b.time) return -1
+        if (a.time < b.time) return 1
         return 0
       })
 
-      let dispPoint = "0000/01/01 00:00"
-      if (this.cloudtrail.list.length > 0){
-        dispPoint = this.cloudtrail.list[ this.cloudtrail.list.length - 1].time
+      let dispPoint = '0000/01/01 00:00'
+      if (this.cloudtrail.list.length > 0) {
+        dispPoint = this.cloudtrail.list[this.cloudtrail.list.length - 1].time
       }
       // Update display flag
-      await Object.keys(list).forEach( (index) => {
-        if (this.canDisplay(dispPoint, list[index].time)) list[index].display = true
+      await Object.keys(list).forEach((index) => {
+        if (this.canDisplay(dispPoint, list[index].time))
+          list[index].display = true
       })
       this.items = list
     },
-    canDisplay(dispPoint, time){
+    canDisplay(dispPoint, time) {
       if (this.cloudtrail.next_token == '' || time >= dispPoint) {
         return true
       }
@@ -695,32 +833,48 @@ console.log(config)
       const title = log.event_name
       const tag = log.read_only === 'true' ? 'Read' : 'Write'
       let color = log.read_only === 'true' ? 'success' : 'warning darken-1'
-      let contents = {ID: log.event_id, event_source: log.event_source, username: log.username}
+      let contents = {
+        ID: log.event_id,
+        event_source: log.event_source,
+        username: log.username,
+      }
       if (parsed.errorCode || parsed.errorMessage) {
         color = 'error'
-        contents = {ID: log.event_id, event_source: log.event_source, username: log.username, error_code: parsed.errorCode, error_message: parsed.errorMessage}
+        contents = {
+          ID: log.event_id,
+          event_source: log.event_source,
+          username: log.username,
+          error_code: parsed.errorCode,
+          error_message: parsed.errorMessage,
+        }
       }
       if (parsed.sourceIPAddress) {
         contents.location = parsed.sourceIPAddress
-        const res = await this.getIPlocation(parsed.sourceIPAddress).catch((err) =>  {
-          console.log(err)
-        })
-        if ( res && res.country_name ) {
-          contents.location = parsed.sourceIPAddress + ' (' + res.country_name + ')'
+        const res = await this.getIPlocation(parsed.sourceIPAddress).catch(
+          (err) => {
+            console.log(err)
+          }
+        )
+        if (res && res.country_name) {
+          contents.location =
+            parsed.sourceIPAddress + ' (' + res.country_name + ')'
         }
       }
       this.cloudtrail.list.push({
         type: 'cloudtrail',
         color: color,
         tag: tag,
-        time: Util.formatDate(new Date(log.event_time * 1000), 'yyyy/MM/dd HH:mm'),
+        time: Util.formatDate(
+          new Date(log.event_time * 1000),
+          'yyyy/MM/dd HH:mm'
+        ),
         title: title,
         contents: contents,
         data: log.cloudtrail_event,
         display: false,
       })
     },
-    parseAndPutConfigLog(log){
+    parseAndPutConfigLog(log) {
       if (log.configuration) {
         const parsed = JSON.parse(log.configuration)
         log.configuration = parsed
@@ -752,26 +906,34 @@ console.log(config)
         type: 'config',
         color: color,
         tag: tag,
-        time: Util.formatDate(new Date(log.configuration_item_capture_time * 1000), 'yyyy/MM/dd HH:mm'),
+        time: Util.formatDate(
+          new Date(log.configuration_item_capture_time * 1000),
+          'yyyy/MM/dd HH:mm'
+        ),
         title: title,
-        contents: {state_id: log.configuration_state_id, aws_account:log.account_id, region: log.aws_region, resource: log.resource_id},
+        contents: {
+          state_id: log.configuration_state_id,
+          aws_account: log.account_id,
+          region: log.aws_region,
+          resource: log.resource_id,
+        },
         data: log,
         display: false,
       })
     },
 
     async setARN() {
-      if ( !this.search.arn ) {
-        return 
+      if (!this.search.arn) {
+        return
       }
       this.loading = true
-      const arn = await this.describeArnAPI(this.search.arn).catch((err) =>  {
+      const arn = await this.describeArnAPI(this.search.arn).catch((err) => {
         this.loading = false
         return Promise.reject(err)
       })
       if (!arn) {
         this.loading = false
-        return 
+        return
       }
       this.search.type = ''
       this.search.resource = ''
@@ -781,7 +943,7 @@ console.log(config)
       let query = await Object.assign({}, this.$router.query)
       if (arn.account_id) {
         for (const aws of this.awsList) {
-          if ( aws.aws_account_id ==  arn.account_id) {
+          if (aws.aws_account_id == arn.account_id) {
             this.awsModel = aws
             query.aws_id = aws.aws_id
           }
@@ -803,7 +965,7 @@ console.log(config)
         query.attr_key = 'RESOURCE_NAME'
         query.attr_value = arn.resource_id
       }
-      await this.$router.push({query: query})
+      await this.$router.push({ query: query })
       this.loading = false
     },
     clearList() {
@@ -820,25 +982,45 @@ console.log(config)
     },
 
     parseQuery() {
-      if (!Util.isEmptyString(this.$route.query.arn)) this.search.arn = this.$route.query.arn
-      if (!Util.isEmptyString(this.$route.query.region)) this.search.region = this.$route.query.region
-      if (!Util.isEmptyString(this.$route.query.type)) this.search.type = this.$route.query.type
-      if (!Util.isEmptyString(this.$route.query.resource)) this.search.resource = this.$route.query.resource
-      if (!Util.isEmptyString(this.$route.query.from)) this.search.from = Util.formatDate(new Date(this.$route.query.from), 'yyyy-MM-dd')
-      if (!Util.isEmptyString(this.$route.query.to)) this.search.to = Util.formatDate(new Date(this.$route.query.to), 'yyyy-MM-dd')
-      if (!Util.isEmptyString(this.$route.query.attr_key)) this.search.attrKey = this.$route.query.attr_key
-      if (!Util.isEmptyString(this.$route.query.attr_value)) this.search.attrValue = this.$route.query.attr_value
+      if (!Util.isEmptyString(this.$route.query.arn))
+        this.search.arn = this.$route.query.arn
+      if (!Util.isEmptyString(this.$route.query.region))
+        this.search.region = this.$route.query.region
+      if (!Util.isEmptyString(this.$route.query.type))
+        this.search.type = this.$route.query.type
+      if (!Util.isEmptyString(this.$route.query.resource))
+        this.search.resource = this.$route.query.resource
+      if (!Util.isEmptyString(this.$route.query.from))
+        this.search.from = Util.formatDate(
+          new Date(this.$route.query.from),
+          'yyyy-MM-dd'
+        )
+      if (!Util.isEmptyString(this.$route.query.to))
+        this.search.to = Util.formatDate(
+          new Date(this.$route.query.to),
+          'yyyy-MM-dd'
+        )
+      if (!Util.isEmptyString(this.$route.query.attr_key))
+        this.search.attrKey = this.$route.query.attr_key
+      if (!Util.isEmptyString(this.$route.query.attr_value))
+        this.search.attrValue = this.$route.query.attr_value
     },
     async setQuery() {
       const queryOld = this.$route.query
       let queryNew = await Object.assign({}, this.$route.query)
-      if (!Util.isEmptyString(this.awsModel.aws_id)) queryNew.aws_id = this.awsModel.aws_id
+      if (!Util.isEmptyString(this.awsModel.aws_id))
+        queryNew.aws_id = this.awsModel.aws_id
       if (!Util.isEmptyString(this.search.arn)) queryNew.arn = this.search.arn
-      if (!Util.isEmptyString(this.search.region)) queryNew.region = this.search.region
-      if (!Util.isEmptyString(this.search.type)) queryNew.type = this.search.type
-      if (!Util.isEmptyString(this.search.resource)) queryNew.resource = this.search.resource
-      if (!Util.isEmptyString(this.search.attrKey)) queryNew.attr_key = this.search.attrKey
-      if (!Util.isEmptyString(this.search.attrValue)) queryNew.attr_value = this.search.attrValue
+      if (!Util.isEmptyString(this.search.region))
+        queryNew.region = this.search.region
+      if (!Util.isEmptyString(this.search.type))
+        queryNew.type = this.search.type
+      if (!Util.isEmptyString(this.search.resource))
+        queryNew.resource = this.search.resource
+      if (!Util.isEmptyString(this.search.attrKey))
+        queryNew.attr_key = this.search.attrKey
+      if (!Util.isEmptyString(this.search.attrValue))
+        queryNew.attr_value = this.search.attrValue
       const today = new Date()
       if (Util.isEmptyString(this.search.from)) {
         let threeMonthAgo = new Date(today)
@@ -853,23 +1035,26 @@ console.log(config)
       }
       queryNew.to = this.search.to
 
-      if (Object.entries(queryNew).sort().toString() != Object.entries(queryOld).sort().toString() ){
-        await this.$router.push({query: queryNew})
+      if (
+        Object.entries(queryNew).sort().toString() !=
+        Object.entries(queryOld).sort().toString()
+      ) {
+        await this.$router.push({ query: queryNew })
       }
     },
 
     convertFromUnixTime(timeString) {
       let date = new Date(timeString)
       date.setHours(0, 0, 0)
-      return Math.floor( date.getTime() / 1000 )
+      return Math.floor(date.getTime() / 1000)
     },
     convertToUnixTime(timeString) {
       let date = new Date(timeString)
       date.setHours(23, 59, 59)
       if (date.getTime() > this.nowUnix) {
-        return Math.floor( this.nowUnix / 1000 )
+        return Math.floor(this.nowUnix / 1000)
       }
-      return Math.floor( date.getTime() / 1000 )
+      return Math.floor(date.getTime() / 1000)
     },
 
     // handler method
@@ -900,7 +1085,7 @@ console.log(config)
     async handleLoadMore() {
       this.loading = true
       if (this.cloudtrail.next_token == '' && this.config.next_token == '') {
-        this.more =false 
+        this.more = false
         this.loading = false
         return
       }
@@ -912,7 +1097,7 @@ console.log(config)
       }
       await this.sortList()
       if (this.cloudtrail.next_token == '' && this.config.next_token == '') {
-        this.more =false
+        this.more = false
       }
       this.loading = false
     },
@@ -921,17 +1106,17 @@ console.log(config)
     },
 
     async finishInfo(msg, reflesh) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyInfo(msg)
       this.finish(reflesh)
     },
     async finishSuccess(msg, reflesh) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(reflesh)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },
@@ -939,10 +1124,10 @@ console.log(config)
       this.loading = false
       this.arnDialog = false
       this.viewDialog = false
-      if ( reflesh ) {
+      if (reflesh) {
         this.refleshList()
       }
     },
-  }
+  },
 }
 </script>

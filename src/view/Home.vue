@@ -1,16 +1,16 @@
 <template><div /></template>
 <script>
-import mixin from "@/mixin"
+import mixin from '@/mixin'
 
 export default {
-  name: "Home",
+  name: 'Home',
   mounted() {
     this.redirectDashBoard()
   },
   mixins: [mixin],
   methods: {
     async redirectDashBoard() {
-      this.$router.push("/dashboard")
+      this.$router.push('/dashboard')
     },
   },
 }

@@ -424,10 +424,10 @@
   </div>
 </template>
 <script>
-import Util from "@/util"
-import mixin from "@/mixin"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
+import Util from '@/util'
+import mixin from '@/mixin'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin],
   components: {
@@ -444,62 +444,62 @@ export default {
         setupAll: false,
         valid: false,
         google_data_source_id: {
-          label: "Google Data Source ID",
-          placeholder: "-",
+          label: 'Google Data Source ID',
+          placeholder: '-',
           validator: [],
         },
-        name: { label: "Data Source", placeholder: "-", validator: [] },
-        max_score: { label: "MAX Score", placeholder: "-", validator: [] },
-        gcp_id: { label: "GCP ID", placeholder: "-", validator: [] },
+        name: { label: 'Data Source', placeholder: '-', validator: [] },
+        max_score: { label: 'MAX Score', placeholder: '-', validator: [] },
+        gcp_id: { label: 'GCP ID', placeholder: '-', validator: [] },
         gcp_project_id: {
-          label: "GCP ProjectID",
-          placeholder: "-",
+          label: 'GCP ProjectID',
+          placeholder: '-',
           validator: [],
         },
         gcp_organization_id: {
-          label: "GCP OrganizationID",
-          placeholder: "-",
+          label: 'GCP OrganizationID',
+          placeholder: '-',
           validator: [],
         },
-        status: { label: "Status", placeholder: "-", validator: [] },
+        status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: {
-          label: "Status Detail",
-          placeholder: "-",
+          label: 'Status Detail',
+          placeholder: '-',
           validator: [],
         },
-        scan_at: { label: "ScanAt", placeholder: "-", validator: [] },
+        scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
       },
       gcpModel: {
-        gcp_id: "",
-        gcp_project_id: "",
-        google_data_source_id: "",
-        name: "",
-        max_score: "",
+        gcp_id: '',
+        gcp_project_id: '',
+        google_data_source_id: '',
+        name: '',
+        max_score: '',
         status: 0,
-        status_detail: "",
+        status_detail: '',
         scan_at: 0,
       },
       table: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 10, sortBy: ["gcp_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['gcp_id'] },
         actions: [
           {
-            text: "View DataSource",
-            icon: "mdi-eye",
+            text: 'View DataSource',
+            icon: 'mdi-eye',
             click: this.handleViewItem,
           },
           {
-            text: "Attach DataSource",
-            icon: "mdi-pencil",
+            text: 'Attach DataSource',
+            icon: 'mdi-pencil',
             click: this.handleAttachItem,
           },
           {
-            text: "Detach DataSource",
-            icon: "mdi-trash-can-outline",
+            text: 'Detach DataSource',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDetachItem,
           },
-          { text: "Scan", icon: "mdi-magnify-scan", click: this.handleScan },
+          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         total: 0,
         footer: {
@@ -516,8 +516,8 @@ export default {
   },
   created() {
     this.$setInterval(async () => {
-      if (!this.deleteDialog && !this.editDialog){
-        await this.refleshList()        
+      if (!this.deleteDialog && !this.editDialog) {
+        await this.refleshList()
       }
     }, 6000)
   },
@@ -526,65 +526,65 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "8%",
+          align: 'center',
+          width: '8%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "google_data_source_id",
+          value: 'google_data_source_id',
         },
         {
           text: this.$i18n.t('item["Google Data Source"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["MAX Score"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "max_score",
+          value: 'max_score',
         },
         {
           text: this.$i18n.t('item["Status"]'),
-          align: "start",
-          width: "12%",
+          align: 'start',
+          width: '12%',
           sortable: true,
-          value: "status",
+          value: 'status',
         },
         {
           text: this.$i18n.t('item["GCP ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "gcp_id",
+          value: 'gcp_id',
         },
         {
           text: this.$i18n.t('item["GCP Organization"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "gcp_organization_id",
+          value: 'gcp_organization_id',
         },
         {
           text: this.$i18n.t('item["GCP Project"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "gcp_project_id",
+          value: 'gcp_project_id',
         },
         {
           text: this.$i18n.t('item["ScanAt"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "scan_at",
+          value: 'scan_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -610,7 +610,7 @@ export default {
   methods: {
     async listGoogleDataSource() {
       const res = await this.$axios
-        .get("/google/list-google-datasource/")
+        .get('/google/list-google-datasource/')
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -623,7 +623,7 @@ export default {
     async listGCP() {
       const res = await this.$axios
         .get(
-          "/google/list-gcp/?project_id=" + this.$store.state.project.project_id
+          '/google/list-gcp/?project_id=' + this.$store.state.project.project_id
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -644,11 +644,11 @@ export default {
         // this.googleDataSourceList.forEach(async (ds) => {
         const res = await this.$axios
           .get(
-            "/google/get-gcp-datasource/?project_id=" +
+            '/google/get-gcp-datasource/?project_id=' +
               this.$store.state.project.project_id +
-              "&gcp_id=" +
+              '&gcp_id=' +
               this.gcpModel.gcp_id +
-              "&google_data_source_id=" +
+              '&google_data_source_id=' +
               ds.google_data_source_id
           )
           .catch((err) => {
@@ -661,10 +661,10 @@ export default {
           description: ds.description,
           max_score: ds.max_score,
           gcp_id: this.gcpModel.gcp_id,
-          gcp_organization_id: "",
-          gcp_project_id: "",
+          gcp_organization_id: '',
+          gcp_project_id: '',
           status: 0,
-          status_detail: "",
+          status_detail: '',
           scan_at: 0,
         }
         if (res.data.data.gcp_data_source) {
@@ -689,16 +689,16 @@ export default {
     },
     getGCPDataSourceIcon(dataSource) {
       switch (dataSource) {
-        case "google:asset":
-          return "/static/google/asset.png"
-        case "google:cloudsploit":
-          return "/static/google/cloudsploit.png"
-        case "google:scc":
-          return "/static/google/scc.png"
-        case "google:portscan":
-          return "/static/google/nmap.png"
+        case 'google:asset':
+          return '/static/google/asset.png'
+        case 'google:cloudsploit':
+          return '/static/google/cloudsploit.png'
+        case 'google:scc':
+          return '/static/google/scc.png'
+        case 'google:portscan':
+          return '/static/google/nmap.png'
         default:
-          return "/static/google/default.png"
+          return '/static/google/default.png'
       }
     },
     async detachDataSource() {
@@ -708,23 +708,23 @@ export default {
         google_data_source_id: this.gcpModel.google_data_source_id,
       }
       await this.$axios
-        .post("/google/detach-gcp-datasource/", param)
+        .post('/google/detach-gcp-datasource/', param)
         .catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
-      this.finishSuccess("Success: Detach GCP Data Source.")
+      this.finishSuccess('Success: Detach GCP Data Source.')
     },
     async attachDataSource() {
       await this.execAttachDataSource()
-      this.finishSuccess("Success: Attach GCP Data Source.")
+      this.finishSuccess('Success: Attach GCP Data Source.')
     },
     async attachAllDataSource() {
       this.table.items.forEach(async (ds) => {
         this.gcpModel.google_data_source_id = ds.google_data_source_id
         await this.execAttachDataSource()
       })
-      this.finishSuccess("Success: Attach all GCP Data Source.")
+      this.finishSuccess('Success: Attach all GCP Data Source.')
     },
     async execAttachDataSource() {
       let scan_at = 0
@@ -739,12 +739,12 @@ export default {
           project_id: this.$store.state.project.project_id,
           status: 2, // CONFIGURED
           status_detail:
-            "Configured at: " + Util.formatDate(new Date(), "yyyy/MM/dd HH:mm"),
+            'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
           scan_at: scan_at,
         },
       }
       await this.$axios
-        .post("/google/attach-gcp-datasource/", param)
+        .post('/google/attach-gcp-datasource/', param)
         .catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
@@ -757,18 +757,18 @@ export default {
         google_data_source_id: this.gcpModel.google_data_source_id,
         scan_only: false, // option
       }
-      await this.$axios.post("/google/invoke-scan-gcp/", param).catch((err) => {
+      await this.$axios.post('/google/invoke-scan-gcp/', param).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess("Success: Invoke scan for GCP Data Source.")
+      this.finishSuccess('Success: Invoke scan for GCP Data Source.')
     },
 
     // handler method
     async handleList() {
       this.loading = true
       await this.refleshList()
-      await this.finishInfo("Reflesh list")
+      await this.finishInfo('Reflesh list')
     },
     handleViewItem(item) {
       this.assignDataModel(item)
@@ -802,7 +802,7 @@ export default {
     },
     handleDetachSubmit() {
       if (!this.gcpModel.gcp_id) {
-        this.$refs.snackbar.notifyError("Error: Not configred.")
+        this.$refs.snackbar.notifyError('Error: Not configred.')
         this.deleteDialog = false
         return
       }
@@ -819,9 +819,9 @@ export default {
     assignDataModel(item) {
       this.gcpModel = {
         gcp_id: this.gcpModel.gcp_id,
-        google_data_source_id: "",
-        data_source: "",
-        max_score: "",
+        google_data_source_id: '',
+        data_source: '',
+        max_score: '',
       }
       this.gcpModel = Object.assign(this.gcpModel, item)
     },

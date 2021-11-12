@@ -24,7 +24,7 @@ install:
 	yarn install
 
 .PHONY: build
-build: test
+build: lint
 	TARGET=$(TARGET) IMAGE_TAG=$(IMAGE_TAG) IMAGE_PREFIX=$(IMAGE_PREFIX) BUILD_OPT="$(BUILD_OPT)" . hack/docker-build.sh
 
 .PHONY: build-ci
@@ -47,12 +47,17 @@ push-manifest:
 	docker manifest push $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(MANIFEST_TAG)
 	docker manifest inspect $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(MANIFEST_TAG)
 
-.PHONY: test
-test:
-	yarn lint
+.PHONY: fmt
+fmt:
+	yarn prettier --write src
+
+.PHONY: lint
+lint:
+	yarn prettier --check src
+	yarn run eslint src
 
 .PHONY: run
-run: clean install test
+run: clean install lint
 	yarn serve
 
 .PHONY: clean

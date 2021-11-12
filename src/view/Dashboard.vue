@@ -187,18 +187,18 @@
 </template>
 
 <script>
-import Util from "@/util"
-import mixin from "@/mixin"
-import finding from "@/mixin/api/finding"
-import alert from "@/mixin/api/alert"
-import iam from "@/mixin/api/iam"
-import StatusStatistic from "@/component/widget/statistic/StatusStatistic"
-import MiniStatistic from "@/component/widget/statistic/MiniStatistic"
-import CategoryStatistic from "@/component/widget/statistic/CategoryStatistic"
-import TimeLineChart from "@/component/widget/chart/TimeLineChart"
-import DoughnutChart from "@/component/widget/chart/DoughnutChart"
+import Util from '@/util'
+import mixin from '@/mixin'
+import finding from '@/mixin/api/finding'
+import alert from '@/mixin/api/alert'
+import iam from '@/mixin/api/iam'
+import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
+import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
+import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
+import TimeLineChart from '@/component/widget/chart/TimeLineChart'
+import DoughnutChart from '@/component/widget/chart/DoughnutChart'
 export default {
-  name: "PageDashboard",
+  name: 'PageDashboard',
   mixins: [mixin, finding, alert, iam],
   components: {
     StatusStatistic,
@@ -211,8 +211,8 @@ export default {
     return {
       nowUnix: 0,
       oneMonthAgoUnix: 0,
-      nowDate: "",
-      oneMonthAgoDate: "",
+      nowDate: '',
+      oneMonthAgoDate: '',
       raw: {
         activeAlert: [],
         highScoreFinding: [],
@@ -225,16 +225,16 @@ export default {
         notification: [], // 5. Setting Alert Notification
       },
       status: {
-        alert: "-",
-        finding: "-",
-        compSettingRate: "-",
-        imcompSetting: "-",
+        alert: '-',
+        finding: '-',
+        compSettingRate: '-',
+        imcompSetting: '-',
         riskFactor: [],
         risk: {
-          icon: "mdi-map-marker-question-outline",
-          color: "grey",
-          description: "There is nothing to display.",
-          detail: "Please reload after selecting the project.",
+          icon: 'mdi-map-marker-question-outline',
+          color: 'grey',
+          description: 'There is nothing to display.',
+          detail: 'Please reload after selecting the project.',
         },
         tutorial: {
           // [Total 5 setting steps]
@@ -256,9 +256,9 @@ export default {
             labels: [new Date()],
             datasets: [
               {
-                label: "Findings",
+                label: 'Findings',
                 data: [0],
-                type: "line",
+                type: 'line',
                 lineTension: 0.3,
               },
             ],
@@ -266,12 +266,12 @@ export default {
         },
         alert: {
           data: {
-            labels: ["high", "medium", "low"],
+            labels: ['high', 'medium', 'low'],
             datasets: [
               {
-                label: "Alerts",
+                label: 'Alerts',
                 data: [10, 40, 50],
-                type: "doughnut",
+                type: 'doughnut',
               },
             ],
           },
@@ -289,10 +289,10 @@ export default {
     this.oneMonthAgoUnix = Math.floor(
       new Date().setMonth(new Date().getMonth() - 1) / 1000
     )
-    this.nowDate = Util.formatDate(new Date(this.nowUnix * 1000), "yyyy-MM-dd")
+    this.nowDate = Util.formatDate(new Date(this.nowUnix * 1000), 'yyyy-MM-dd')
     this.oneMonthAgoDate = Util.formatDate(
       new Date(this.oneMonthAgoUnix * 1000),
-      "yyyy-MM-dd"
+      'yyyy-MM-dd'
     )
 
     await this.setRawData()
@@ -314,7 +314,7 @@ export default {
     // alert list
     async setActiveAlert() {
       const list = await this.listAlert(
-        "&status=" + this.getAlertStatus("ACTIVE")
+        '&status=' + this.getAlertStatus('ACTIVE')
       )
       this.raw.activeAlert = list
     },
@@ -322,21 +322,21 @@ export default {
     async setHighScoreFinding() {
       // await this.getFindingReport(this.oneMonthAgoDate, this.nowDate, 0.79)
       const [all, aws, diagnosis, osint, code, google] = await Promise.all([
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, ""),
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, "aws:"),
+        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, ''),
+        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:'),
         this.getFindingCount(
           this.oneMonthAgoUnix,
           this.nowUnix,
           0.8,
-          "diagnosis:"
+          'diagnosis:'
         ),
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, "osint:"),
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, "code:"),
+        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:'),
+        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:'),
         this.getFindingCount(
           this.oneMonthAgoUnix,
           this.nowUnix,
           0.8,
-          "google:"
+          'google:'
         ),
       ])
       this.raw.highScoreFinding = all
@@ -347,21 +347,21 @@ export default {
       this.raw.highScoreFindingGoogle = google
     },
     async setStoreFinding() {
-      const storeFindings = await this.getFindingCount(0, this.nowUnix, 0, "")
+      const storeFindings = await this.getFindingCount(0, this.nowUnix, 0, '')
       this.raw.storeFinding = storeFindings
       this.status.tutorial.storeFindings = storeFindings
     },
     async getFindingCount(fromAt, toAt, fromScore, dataSource) {
       const searceCondition =
-        "&from_at=" +
+        '&from_at=' +
         fromAt +
-        "&to_at=" +
+        '&to_at=' +
         toAt +
-        "&from_score=" +
+        '&from_score=' +
         fromScore +
-        "&data_source=" +
+        '&data_source=' +
         dataSource +
-        "&status=1&offset=0&limit=200"
+        '&status=1&offset=0&limit=200'
       const count = await this.listFindingCnt(searceCondition)
       return count
     },
@@ -370,7 +370,7 @@ export default {
     async setUser() {
       this.raw.invitedUser = []
       const userIDs = await this.listUserAPI(
-        "&project_id=" + this.$store.state.project.project_id
+        '&project_id=' + this.$store.state.project.project_id
       ).catch((err) => {
         return Promise.reject(err)
       })
@@ -417,24 +417,24 @@ export default {
       this.status.riskFactor = []
       this.status.riskFactor.push({
         title: this.status.alert.length.toString(),
-        subTitle: "Action required ....",
-        icon: "mdi-alert",
-        color: "red darken-3",
-        link: "/alert/alert/",
+        subTitle: 'Action required ....',
+        icon: 'mdi-alert',
+        color: 'red darken-3',
+        link: '/alert/alert/',
       })
       this.status.riskFactor.push({
         title: String(this.status.finding),
-        subTitle: "High score findings ",
-        icon: "mdi-file-find-outline",
-        color: "blue darken-1",
-        link: "/finding/finding/?from_score=0.8",
+        subTitle: 'High score findings ',
+        icon: 'mdi-file-find-outline',
+        color: 'blue darken-1',
+        link: '/finding/finding/?from_score=0.8',
       })
       this.status.riskFactor.push({
         title: this.status.compSettingRate,
-        subTitle: "Settings coverage...",
-        icon: "mdi-cog",
-        color: "grey darken-2",
-        link: "settingDialog",
+        subTitle: 'Settings coverage...',
+        icon: 'mdi-cog',
+        color: 'grey darken-2',
+        link: 'settingDialog',
       })
     },
     // Setting Status
@@ -457,7 +457,7 @@ export default {
       }
       this.status.imcompSetting = this.raw.settingStep - completed
       this.status.compSettingRate =
-        ((completed / this.raw.settingStep) * 100).toString() + "%"
+        ((completed / this.raw.settingStep) * 100).toString() + '%'
     },
     // Total Status
     setTotalStatus() {
@@ -470,34 +470,34 @@ export default {
         totalRisk += Number(this.status.finding.length)
       }
       this.status.risk.detail =
-        "  Active alerts: " +
+        '  Active alerts: ' +
         this.status.alert.length +
-        ", High score findings: " +
+        ', High score findings: ' +
         this.status.finding +
-        ", Imcompleted settings: " +
+        ', Imcompleted settings: ' +
         this.status.imcompSetting +
-        " / " +
+        ' / ' +
         this.raw.settingStep
       if (this.status.imcompSetting === this.raw.settingStep) {
-        this.status.risk.icon = "mdi-message-settings"
-        this.status.risk.color = "cyan"
-        this.status.risk.description = "You need to configure some settings 🔜"
+        this.status.risk.icon = 'mdi-message-settings'
+        this.status.risk.color = 'cyan'
+        this.status.risk.description = 'You need to configure some settings 🔜'
       } else if (totalRisk === 0) {
-        this.status.risk.icon = "mdi-check-circle-outline"
-        this.status.risk.color = "green"
-        this.status.risk.description = "No problem. 👌"
+        this.status.risk.icon = 'mdi-check-circle-outline'
+        this.status.risk.color = 'green'
+        this.status.risk.description = 'No problem. 👌'
       } else if (0 < totalRisk && totalRisk <= 3) {
-        this.status.risk.icon = "mdi-weather-cloudy"
-        this.status.risk.color = "grey darken-1"
-        this.status.risk.description = "Need to check a few things. 👀"
+        this.status.risk.icon = 'mdi-weather-cloudy'
+        this.status.risk.color = 'grey darken-1'
+        this.status.risk.description = 'Need to check a few things. 👀'
       } else if (3 < totalRisk && totalRisk <= 10) {
-        this.status.risk.icon = "mdi-weather-pouring"
-        this.status.risk.color = "lime darken-3"
-        this.status.risk.description = "There are some problems... 😥"
+        this.status.risk.icon = 'mdi-weather-pouring'
+        this.status.risk.color = 'lime darken-3'
+        this.status.risk.description = 'There are some problems... 😥'
       } else {
-        this.status.risk.icon = "mdi-weather-lightning"
-        this.status.risk.color = "red darken-2"
-        this.status.risk.description = "We have a lot of problems... 🙀"
+        this.status.risk.icon = 'mdi-weather-lightning'
+        this.status.risk.color = 'red darken-2'
+        this.status.risk.description = 'We have a lot of problems... 🙀'
       }
     },
 
@@ -505,67 +505,67 @@ export default {
     setCategory() {
       this.category = []
       this.category.push({
-        category: "User",
+        category: 'User',
         title: this.raw.invitedUser.length.toString(),
-        subTitle: "Project members",
-        icon: "mdi-account-multiple",
-        color: "cyan lighten-2",
+        subTitle: 'Project members',
+        icon: 'mdi-account-multiple',
+        color: 'cyan lighten-2',
         dark: false,
-        link: "/iam/user/",
+        link: '/iam/user/',
       })
       this.category.push({
-        category: "AWS",
+        category: 'AWS',
         title: String(this.raw.highScoreFindingAWS),
-        subTitle: "High score findings",
-        icon: "mdi-aws",
-        color: "orange darken-1",
+        subTitle: 'High score findings',
+        icon: 'mdi-aws',
+        color: 'orange darken-1',
         dark: true,
-        link: "/finding/finding/?from_score=0.8&data_source=aws:",
+        link: '/finding/finding/?from_score=0.8&data_source=aws:',
       })
       this.category.push({
-        category: "Diagnosis",
+        category: 'Diagnosis',
         title: String(this.raw.highScoreFindingDiagnosis),
-        subTitle: "High score findings",
-        icon: "mdi-bug-check-outline",
-        color: "indigo darken-1",
+        subTitle: 'High score findings',
+        icon: 'mdi-bug-check-outline',
+        color: 'indigo darken-1',
         dark: true,
-        link: "/finding/finding/?from_score=0.8&data_source=diagnosis:",
+        link: '/finding/finding/?from_score=0.8&data_source=diagnosis:',
       })
       this.category.push({
-        category: "OSINT",
+        category: 'OSINT',
         title: String(this.raw.highScoreFindingOsint),
-        subTitle: "High score findings",
-        icon: "http",
-        color: "green darken-1",
+        subTitle: 'High score findings',
+        icon: 'http',
+        color: 'green darken-1',
         dark: true,
-        link: "/finding/finding/?from_score=0.8&data_source=osint:",
+        link: '/finding/finding/?from_score=0.8&data_source=osint:',
       })
       this.category.push({
-        category: "Code",
+        category: 'Code',
         title: String(this.raw.highScoreFindingCode),
-        subTitle: "High score findings",
-        icon: "mdi-github",
-        color: "black",
+        subTitle: 'High score findings',
+        icon: 'mdi-github',
+        color: 'black',
         dark: true,
-        link: "/finding/finding/?from_score=0.8&data_source=code:",
+        link: '/finding/finding/?from_score=0.8&data_source=code:',
       })
       this.category.push({
-        category: "Google",
+        category: 'Google',
         title: String(this.raw.highScoreFindingGoogle),
-        subTitle: "High score findings",
-        icon: "mdi-google",
-        color: "light-blue darken-1",
+        subTitle: 'High score findings',
+        icon: 'mdi-google',
+        color: 'light-blue darken-1',
         dark: true,
-        link: "/finding/finding/?from_score=0.8&data_source=google:",
+        link: '/finding/finding/?from_score=0.8&data_source=google:',
       })
       this.category.push({
-        category: "Azure",
-        title: "-",
-        subTitle: "Not yet supported...",
-        icon: "mdi-microsoft-azure",
-        color: "blue darken-1",
+        category: 'Azure',
+        title: '-',
+        subTitle: 'Not yet supported...',
+        icon: 'mdi-microsoft-azure',
+        color: 'blue darken-1',
         dark: true,
-        link: "/finding/finding/?from_score=0.8&data_source=azure:",
+        link: '/finding/finding/?from_score=0.8&data_source=azure:',
       })
     },
 
@@ -604,7 +604,7 @@ export default {
         fromUnix,
         toUnix - 1,
         0,
-        ""
+        ''
       )
       this.chart.finding.data.labels.push(from)
       this.chart.finding.data.datasets[0].data.push(findingCount)
@@ -613,23 +613,23 @@ export default {
     //   return dt.getMonth()+1 + '/' + dt.getDate() // `getMonth()` will return 0~11, because need +1 month for display label
     // }
     setAlertChart() {
-      this.chart.alert.data.labels = ["high", "medium", "low"]
+      this.chart.alert.data.labels = ['high', 'medium', 'low']
       let highCnt = 0
       let mediumCnt = 0
       let lowCnt = 0
       this.raw.activeAlert.forEach(async (alert) => {
         switch (alert.severity) {
-          case "high":
+          case 'high':
             highCnt++
             break
-          case "medium":
+          case 'medium':
             mediumCnt++
             break
-          case "low":
+          case 'low':
             lowCnt++
             break
           default:
-            console.log("Unknown serverity: " + alert.severity)
+            console.log('Unknown serverity: ' + alert.severity)
         }
       })
       this.chart.alert.data.datasets[0].data = [highCnt, mediumCnt, lowCnt]
@@ -637,7 +637,7 @@ export default {
 
     // handler
     handleClickFactor(link) {
-      if (link === "settingDialog") {
+      if (link === 'settingDialog') {
         this.handleSettingSteps()
         return
       }

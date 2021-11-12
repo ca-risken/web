@@ -19,21 +19,30 @@
               <v-form v-model="projectForm.valid" ref="form">
                 <v-text-field
                   v-model="projectModel.project_id"
-                  :label="$t(`item['`+projectForm.ID.label+`']`)"
+                  :label="$t(`item['` + projectForm.ID.label + `']`)"
                   :placeholder="projectForm.ID.placeholder"
-                  filled disabled outlined
+                  filled
+                  disabled
+                  outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="projectModel.name"
-                  :label="$t(`item['`+projectForm.name.label+`']`) + ' *'"
+                  :label="$t(`item['` + projectForm.name.label + `']`) + ' *'"
                   :placeholder="projectForm.name.placeholder"
                   :counter="64"
                   :rules="projectForm.name.validator"
-                  required outlined
+                  required
+                  outlined
                 ></v-text-field>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEdit">
+                  <v-btn
+                    text
+                    outlined
+                    color="green darken-1"
+                    :loading="loading"
+                    @click="handleEdit"
+                  >
                     {{ $t(`btn['EDIT']`) }}
                   </v-btn>
                 </v-card-actions>
@@ -48,7 +57,8 @@
                 :key="t.tag"
                 :color="t.color"
                 class="ma-2"
-                close dark
+                close
+                dark
                 @click="handleTag(t)"
                 @click:close="handleDeleteTag(t)"
               >
@@ -56,7 +66,13 @@
               </v-chip>
               <v-card-actions>
                 <v-spacer />
-                <v-btn text outlined color="blue darken-1" :loading="loading" @click="projectTagDialog = true">
+                <v-btn
+                  text
+                  outlined
+                  color="blue darken-1"
+                  :loading="loading"
+                  @click="projectTagDialog = true"
+                >
                   {{ $t(`btn['NEW TAG']`) }}
                 </v-btn>
                 <project-tag
@@ -72,7 +88,13 @@
             <v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn text outlined color="red darken-1" :loading="loading" @click="handleDelete">
+                <v-btn
+                  text
+                  outlined
+                  color="red darken-1"
+                  :loading="loading"
+                  @click="handleDelete"
+                >
                   {{ $t(`btn['DELETE']`) }}
                 </v-btn>
               </v-card-actions>
@@ -94,13 +116,19 @@
         </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
             color="red darken-1"
-            text outlined
+            text
+            outlined
             @click="handleDeleteSubmit"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -108,7 +136,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </div>
 </template>
 
@@ -129,14 +156,24 @@ export default {
       loading: false,
       tagDialog: false,
       deleteDialog: false,
-      projectModel: {project_id:'', name:'', tag: [], created_at:'', updated_at:'' },
+      projectModel: {
+        project_id: '',
+        name: '',
+        tag: [],
+        created_at: '',
+        updated_at: '',
+      },
       projectForm: {
         valid: false,
-        ID : { label: 'ID', placeholder: '-', validator:[]},
-        name: { label: 'Name', placeholder: 'your-project', validator:[
-            v => !!v || 'Name is required',
-            v => !v || v.length <= 64 || 'Name must be less than 64 characters',
-          ]
+        ID: { label: 'ID', placeholder: '-', validator: [] },
+        name: {
+          label: 'Name',
+          placeholder: 'your-project',
+          validator: [
+            (v) => !!v || 'Name is required',
+            (v) =>
+              !v || v.length <= 64 || 'Name must be less than 64 characters',
+          ],
         },
       },
     }
@@ -148,12 +185,12 @@ export default {
   },
   methods: {
     async setProject() {
-      if (!store.state.project.project_id ) {
+      if (!store.state.project.project_id) {
         return
       }
       this.projectModel = store.state.project
       const param = '?project_id=' + this.projectModel.project_id
-      const project = await this.listProjectAPI(param).catch((err) =>  {
+      const project = await this.listProjectAPI(param).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
@@ -161,24 +198,26 @@ export default {
       this.projectModel.tag = project[0].tag
     },
     async editProject() {
-      const project = await this.updateProjectAPI(this.projectModel.name).catch((err) =>  {
-        this.$refs.snackbar.notifyError(err.response.data)
-        this.loading = false
-        return Promise.reject(err)
-      })
-      if ( !project.project_id ) {
+      const project = await this.updateProjectAPI(this.projectModel.name).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          this.loading = false
+          return Promise.reject(err)
+        }
+      )
+      if (!project.project_id) {
         this.$refs.snackbar.notifyError('Failed to get new porject.')
       }
       store.commit('updateProject', project)
     },
     async untagProject() {
-      await this.untagProjectAPI(this.projectTagModel.tag).catch((err) =>  {
+      await this.untagProjectAPI(this.projectTagModel.tag).catch((err) => {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)
       })
     },
     async deleteProject() {
-      await this.deleteProjectAPI().catch((err) =>  {
+      await this.deleteProjectAPI().catch((err) => {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)
       })
@@ -186,12 +225,12 @@ export default {
 
     // Handler
     handleEdit() {
-      if ( !this.$refs.form.validate() ) {
+      if (!this.$refs.form.validate()) {
         return
       }
       this.loading = true
       this.editProject()
-      this.$refs.snackbar.notifySuccess( 'Success: updated.' )
+      this.$refs.snackbar.notifySuccess('Success: updated.')
       this.loading = false
     },
 
@@ -199,12 +238,12 @@ export default {
       this.loading = true
       this.projectTagModel = {
         project_id: this.projectModel.project_id,
-        tag:        tag.tag,
+        tag: tag.tag,
       }
       await this.untagProject()
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       await this.setProject()
-      this.$refs.snackbar.notifySuccess( 'Success: Untag project.' )
+      this.$refs.snackbar.notifySuccess('Success: Untag project.')
       this.loading = false
     },
 
@@ -215,17 +254,17 @@ export default {
       this.projectTagDialog = false
     },
     handleDelete() {
-      this.deleteDialog  = true
+      this.deleteDialog = true
     },
     async handleDeleteSubmit() {
       this.loading = true
       await this.deleteProject()
       store.commit('updateProject', {})
-      this.$refs.snackbar.notifySuccess( 'Success: Delete project.' )
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      this.$refs.snackbar.notifySuccess('Success: Delete project.')
+      await new Promise((resolve) => setTimeout(resolve, 2000))
       this.loading = false
       this.reload()
     },
-  }
+  },
 }
 </script>

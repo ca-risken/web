@@ -309,10 +309,10 @@
   </div>
 </template>
 <script>
-import mixin from "@/mixin"
-import alert from "@/mixin/api/alert"
-import finding from "@/mixin/api/finding"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import finding from '@/mixin/api/finding'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, alert, finding],
   components: {
@@ -327,13 +327,13 @@ export default {
       findingMaxCount: 5,
       table: {
         selected: [],
-        search: "",
+        search: '',
         activeOnly: true,
-        options: { page: 1, itemsPerPage: 10, sortBy: ["alert_id"] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
         footer: {
           disableItemsPerPage: false,
           itemsPerPageOptions: [20, 50, 100],
-          itemsPerPageText: "Rows/Page",
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -348,52 +348,52 @@ export default {
       return [
         {
           text: this.$i18n.t('item["Status"]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: true,
-          value: "status",
+          value: 'status',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: true,
-          value: "alert_id",
+          value: 'alert_id',
         },
         {
           text: this.$i18n.t('item["Severity"]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: true,
-          value: "severity",
+          value: 'severity',
         },
         {
           text: this.$i18n.t('item["Description"]'),
-          align: "start",
-          width: "40%",
+          align: 'start',
+          width: '40%',
           sortable: true,
-          value: "description",
+          value: 'description',
         },
         {
           text: this.$i18n.t('item["Passed"]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: true,
-          value: "created_at",
+          value: 'created_at',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: true,
-          value: "updated_at",
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -405,9 +405,9 @@ export default {
     // alert list
     async getAlert() {
       this.table.items = []
-      let statusParam = ""
+      let statusParam = ''
       if (this.table.activeOnly) {
-        statusParam = "&status=" + this.getAlertStatus("ACTIVE")
+        statusParam = '&status=' + this.getAlertStatus('ACTIVE')
       }
       const list = await this.listAlert(statusParam)
       this.table.items = list
@@ -424,7 +424,7 @@ export default {
       const alertHistory = await this.listAlertHistory(this.alertModel.alert_id)
       alertHistory.forEach(async (history) => {
         const json = JSON.parse(history.finding_history)
-        let findingsIDs = ""
+        let findingsIDs = ''
         if (json && json.finding_id) {
           findingsIDs = this.formatFindingIDs(json.finding_id)
         }
@@ -450,7 +450,7 @@ export default {
       for (let i = 0; i < this.findingMaxCount; i++) {
         formated.push(ids[i])
       }
-      formated.push("...")
+      formated.push('...')
       return formated
     },
 
@@ -479,7 +479,7 @@ export default {
         for (let i = 0; i < 10; i++) {
           result.push(resources[i])
         }
-        result.push("...")
+        result.push('...')
       } else {
         result = resources
       }
@@ -487,19 +487,19 @@ export default {
     },
     getActionList(item) {
       let list = [
-        { text: "View Item", icon: "mdi-eye", click: this.handleViewItem },
+        { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
       ]
       if (!item.status) return list
-      if (this.getAlertStatusText(item.status) == "ACTIVE") {
+      if (this.getAlertStatusText(item.status) == 'ACTIVE') {
         list.push({
-          text: "Pending",
-          icon: "mdi-trash-can-outline",
+          text: 'Pending',
+          icon: 'mdi-trash-can-outline',
           click: this.handlePendItem,
         })
-      } else if (this.getAlertStatusText(item.status) == "PENDING") {
+      } else if (this.getAlertStatusText(item.status) == 'PENDING') {
         list.push({
-          text: "Activate",
-          icon: "mdi-check-circle-outline",
+          text: 'Activate',
+          icon: 'mdi-check-circle-outline',
           click: this.handleActiveItem,
         })
       }
@@ -523,7 +523,7 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess("Success: Update alert status.")
+      this.finishSuccess('Success: Update alert status.')
     },
 
     // handler
@@ -532,7 +532,7 @@ export default {
       this.getAlert()
     },
     handleCondition() {
-      this.$router.push("/alert/condition/")
+      this.$router.push('/alert/condition/')
     },
     handleViewItem(item) {
       this.loading = true
@@ -548,12 +548,12 @@ export default {
     },
     handlePendSubmit() {
       this.loading = true
-      this.putAlertStatus("PENDING")
+      this.putAlertStatus('PENDING')
     },
     handleActiveItem(item) {
       this.loading = true
       this.assignDataModel(item)
-      this.putAlertStatus("ACTIVE")
+      this.putAlertStatus('ACTIVE')
     },
     assignDataModel(item) {
       this.alertModel = {}
