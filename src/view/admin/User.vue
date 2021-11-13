@@ -280,10 +280,10 @@
 </template>
 
 <script>
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import User from "@/component/widget/list/User"
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import User from '@/component/widget/list/User'
 export default {
   mixins: [mixin, iam],
   components: {
@@ -298,27 +298,27 @@ export default {
         userName: null,
       },
       searchForm: {
-        userID: { label: "ID", placeholder: "Filter for user id" },
-        userName: { label: "Name", placeholder: "Filter for user name" },
+        userID: { label: 'ID', placeholder: 'Filter for user id' },
+        userName: { label: 'Name', placeholder: 'Filter for user name' },
       },
       userForm: {
         clickNew: false,
-        user_id: { label: "ID", placeholder: "-" },
-        name: { label: "Name", placeholder: "Please select user..." },
+        user_id: { label: 'ID', placeholder: '-' },
+        name: { label: 'Name', placeholder: 'Please select user...' },
       },
       userIDList: [],
       userNameList: [],
       userModel: {
-        user_id: "",
-        name: "",
+        user_id: '',
+        name: '',
         role_cnt: 0,
-        roles: "",
-        updated_at: "",
+        roles: '',
+        updated_at: '',
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ["user_id"] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
         actions: [
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEdit },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEdit },
         ],
         total: 0,
         footer: {
@@ -335,8 +335,8 @@ export default {
       userDialog: false,
       roleTable: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 5, sortBy: ["role_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -353,40 +353,40 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "user_id",
+          value: 'user_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Roles"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "role_cnt",
+          value: 'role_cnt',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "updated_at",
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -394,25 +394,25 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "role_id",
+          value: 'role_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
       ]
     },
   },
   mounted() {
-    this.refleshList("")
+    this.refleshList('')
   },
   methods: {
     async refleshList(searchCond) {
-      searchCond = "&admin=true" + searchCond
+      searchCond = '&admin=true' + searchCond
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
@@ -439,7 +439,7 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
-        const roles = await this.listAdminRoleAPI("&user_id=" + id).catch(
+        const roles = await this.listAdminRoleAPI('&user_id=' + id).catch(
           (err) => {
             this.clearList()
             return Promise.reject(err)
@@ -470,7 +470,7 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      const roles = await this.listAdminRoleAPI("").catch((err) => {
+      const roles = await this.listAdminRoleAPI('').catch((err) => {
         return Promise.reject(err)
       })
 
@@ -521,7 +521,7 @@ export default {
         }
       })
 
-      this.finishUpdated("Success: Updated role.")
+      this.finishUpdated('Success: Updated role.')
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -538,11 +538,11 @@ export default {
     handleNew() {
       this.userForm.clickNew = true
       this.userModel = {
-        user_id: "",
-        name: "",
+        user_id: '',
+        name: '',
         role_cnt: 0,
-        roles: "",
-        updated_at: "",
+        roles: '',
+        updated_at: '',
       }
       this.loadRoleList()
       this.editDialog = true
@@ -557,23 +557,23 @@ export default {
       this.putItem()
     },
     handleSearch() {
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.userName) {
-        searchCond += "&name=" + this.searchModel.userName
+        searchCond += '&name=' + this.searchModel.userName
       }
       if (this.searchModel.userID) {
-        searchCond += "&user_id=" + this.searchModel.userID
+        searchCond += '&user_id=' + this.searchModel.userID
       }
 
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
       this.awsuserModelModel = {
-        user_id: "",
-        name: "",
+        user_id: '',
+        name: '',
         role_cnt: 0,
-        roles: "",
-        updated_at: "",
+        roles: '',
+        updated_at: '',
       }
       this.userModel = Object.assign(this.userModel, item)
     },

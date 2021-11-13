@@ -66,8 +66,8 @@
 </template>
 
 <script>
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
 export default {
   mixins: [mixin, iam],
   props: {
@@ -81,12 +81,12 @@ export default {
         userID: null,
       },
       searchForm: {
-        userID: { label: "User ID", placeholder: "Filter for user id" },
-        userName: { label: "User Name", placeholder: "Filter for user name" },
+        userID: { label: 'User ID', placeholder: 'Filter for user id' },
+        userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
       userNameList: [],
       table: {
-        options: { page: 1, itemsPerPage: 20, sortBy: ["user_id"] },
+        options: { page: 1, itemsPerPage: 20, sortBy: ['user_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -104,27 +104,27 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "user_id",
+          value: 'user_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "updated_at",
+          value: 'updated_at',
         },
       ]
     },
   },
   mounted() {
-    this.refleshList("")
+    this.refleshList('')
   },
   methods: {
     async refleshList(searchCond) {
@@ -172,20 +172,20 @@ export default {
       this.userNameList = []
     },
     handleSearch() {
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.userName) {
-        searchCond += "&name=" + this.searchModel.userName
+        searchCond += '&name=' + this.searchModel.userName
       }
       if (this.searchModel.userID) {
-        searchCond += "&user_id=" + this.searchModel.userID
+        searchCond += '&user_id=' + this.searchModel.userID
       }
       this.refleshList(searchCond)
     },
     handleSelectItem(item) {
-      this.$emit("handleUserDialogResponse", item)
+      this.$emit('handleUserDialogResponse', item)
     },
     handleCancel() {
-      this.$emit("handleUserDialogResponse", { user_id: "", name: "" })
+      this.$emit('handleUserDialogResponse', { user_id: '', name: '' })
     },
   },
 }

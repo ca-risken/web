@@ -17,36 +17,44 @@ const router = new Router({
 })
 
 const handleAPIError = (error) => {
-  console.log('Error: statu=' + error.response.status + ', reponse=' + error.response)
-  router.push({path: '/'})
+  console.log(
+    'Error: statu=' + error.response.status + ', reponse=' + error.response
+  )
+  router.push({ path: '/' })
 }
 
 // Navigation guards
-router.beforeEach( async (to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
   const project_id = to.query.project_id
-  const current_project_id = store.state.project.project_id 
+  const current_project_id = store.state.project.project_id
   const user_id = store.state.user.user_id
-  if ( typeof project_id != 'undefined' && typeof user_id != 'undefined' && project_id != current_project_id ) {
-    const admin = await axios.get('/iam/is-admin/?user_id=' + user_id ).catch((err) =>  {
+  if (
+    typeof project_id != 'undefined' &&
+    typeof user_id != 'undefined' &&
+    project_id != current_project_id
+  ) {
+    const admin = await axios
+      .get('/iam/is-admin/?user_id=' + user_id)
+      .catch((err) => {
+        handleAPIError(err)
+        return
+      })
+    let q = 'project_id=' + project_id
+    if (!admin.data.data.ok) {
+      q += '&user_id=' + user_id
+    }
+    const res = await axios.get('/project/list-project/?' + q).catch((err) => {
       handleAPIError(err)
       return
     })
-    let q = 'project_id=' + project_id
-    if ( !admin.data.data.ok ) {
-      q += '&user_id=' + user_id
-    }
-    const res = await axios.get('/project/list-project/?' + q ).catch((err) =>  {
-      handleAPIError(err)
-      return 
-    })
-    if ( res.data.data.project ) {
+    if (res.data.data.project) {
       await store.commit('updateProject', res.data.data.project[0])
       let query = await Object.assign({}, to.query)
       // delete query["project_id"]
-      query.project_id = store.state.project.project_id 
-      router.push({query: query}) // Edit query parameter
-      router.go({path: to.currentRoute})
+      query.project_id = store.state.project.project_id
+      router.push({ query: query }) // Edit query parameter
+      router.go({ path: to.currentRoute })
       next(false)
     }
   }
@@ -55,7 +63,7 @@ router.beforeEach( async (to, from, next) => {
 
 // Global after hook
 router.afterEach(() => {
-  if ( store.state.interval.id ) {
+  if (store.state.interval.id) {
     clearInterval(store.state.interval.id)
   }
   store.commit('updateInterval', {}) // clear set interval

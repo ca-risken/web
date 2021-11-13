@@ -715,12 +715,12 @@
 </template>
 
 <script>
-import mixin from "@/mixin"
-import Util from "@/util"
-import finding from "@/mixin/api/finding"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
-import JsonViewer from "vue-json-viewer"
+import mixin from '@/mixin'
+import Util from '@/util'
+import finding from '@/mixin/api/finding'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import JsonViewer from 'vue-json-viewer'
 export default {
   mixins: [mixin, finding],
   components: {
@@ -732,7 +732,7 @@ export default {
     return {
       loading: false,
       searchModel: {
-        findingID: "",
+        findingID: '',
         dataSource: [],
         resourceName: [],
         tag: [],
@@ -743,40 +743,40 @@ export default {
         status: 1,
       },
       searchForm: {
-        findingID: { label: "ID", placeholder: "ID" },
+        findingID: { label: 'ID', placeholder: 'ID' },
         dataSource: {
-          label: "Data Source",
-          placeholder: "Filter data sources",
+          label: 'Data Source',
+          placeholder: 'Filter data sources',
         },
         resourceName: {
-          label: "Resource Name",
-          placeholder: "Filter resource",
+          label: 'Resource Name',
+          placeholder: 'Filter resource',
         },
-        tag: { label: "Tag", placeholder: "Filter tag" },
-        score: { label: "Score", placeholder: "Filter score" },
+        tag: { label: 'Tag', placeholder: 'Filter tag' },
+        score: { label: 'Score', placeholder: 'Filter score' },
         resourceNameList: [],
         tagList: [],
       },
       findingModel: {
-        finding_id: "",
-        status: "",
-        score: "",
-        original_score: "",
-        data_source: "",
-        resource_name: "",
-        description: "",
+        finding_id: '',
+        status: '',
+        score: '',
+        original_score: '',
+        data_source: '',
+        resource_name: '',
+        description: '',
         tags: [],
-        data: "",
-        created_at: "",
-        updated_at: "",
-        new_tag: "",
-        pend_note: "",
+        data: '',
+        created_at: '',
+        updated_at: '',
+        new_tag: '',
+        pend_note: '',
       },
       viewDialog: false,
       tagDialog: false,
       deleteDialog: false,
       pendDialog: false,
-      pendNote: "",
+      pendNote: '',
       pendAll: false,
       table: {
         selected: [],
@@ -785,14 +785,14 @@ export default {
           itemsPerPage: 20,
         },
         sort: {
-          key: "finding_id",
-          direction: "asc",
+          key: 'finding_id',
+          direction: 'asc',
         },
         total: 0,
         footer: {
           disableItemsPerPage: false,
           itemsPerPageOptions: [20, 50, 100],
-          itemsPerPageText: "Rows/Page",
+          itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -825,53 +825,53 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "center",
-          width: "5%",
-          value: "finding_id",
+          align: 'center',
+          width: '5%',
+          value: 'finding_id',
         },
         {
           text: this.$i18n.t('item["Status"]'),
-          align: "center",
-          width: "10%",
-          value: "status",
+          align: 'center',
+          width: '10%',
+          value: 'status',
           sortable: false,
         },
         {
           text: this.$i18n.t('item["Score"]'),
-          align: "center",
-          width: "5%",
-          value: "score",
+          align: 'center',
+          width: '5%',
+          value: 'score',
         },
         {
           text: this.$i18n.t('item["Data Source"]'),
-          align: "center",
-          width: "10%",
-          value: "data_source",
+          align: 'center',
+          width: '10%',
+          value: 'data_source',
         },
         {
           text: this.$i18n.t('item["Resource"]'),
-          align: "start",
-          width: "30%",
-          value: "resource_name",
+          align: 'start',
+          width: '30%',
+          value: 'resource_name',
         },
         {
           text: this.$i18n.t('item["Description"]'),
-          align: "start",
-          width: "30%",
-          value: "description",
+          align: 'start',
+          width: '30%',
+          value: 'description',
         },
         {
           text: this.$i18n.t('item["Tags"]'),
-          align: "start",
-          width: "5%",
-          value: "tags",
+          align: 'start',
+          width: '5%',
+          value: 'tags',
           sortable: false,
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
-          width: "5%",
-          value: "action",
+          align: 'center',
+          width: '5%',
+          value: 'action',
           sortable: false,
         },
       ]
@@ -915,7 +915,7 @@ export default {
       ])
       return {
         finding_id: id,
-        status: !pend.finding_id ? "ACTIVE" : "PENDING",
+        status: !pend.finding_id ? 'ACTIVE' : 'PENDING',
         score: finding.score,
         original_score: finding.original_score,
         data_source: finding.data_source,
@@ -925,7 +925,7 @@ export default {
         data: finding.data,
         updated_at: finding.updated_at,
         created_at: finding.created_at,
-        pend_note: !pend.note ? "" : pend.note,
+        pend_note: !pend.note ? '' : pend.note,
       }
     },
     clearList() {
@@ -942,66 +942,66 @@ export default {
     },
     getActionList(item) {
       let list = [
-        { text: "View Finding", icon: "mdi-eye", click: this.handleViewItem },
+        { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewItem },
       ]
       if (!item.status) return list
-      if (item.status === "ACTIVE") {
+      if (item.status === 'ACTIVE') {
         list.push({
-          text: "Pend Finding",
-          icon: "mdi-check-circle-outline",
+          text: 'Pend Finding',
+          icon: 'mdi-check-circle-outline',
           click: this.handlePendItem,
         })
       } else {
         list.push({
-          text: "Activate Finding",
-          icon: "mdi-check-circle",
+          text: 'Activate Finding',
+          icon: 'mdi-check-circle',
           click: this.handleActivateItem,
         })
       }
       list.push({
-        text: "Delete Finding",
-        icon: "mdi-trash-can-outline",
+        text: 'Delete Finding',
+        icon: 'mdi-trash-can-outline',
         click: this.handleDeleteItem,
       })
       return list
     },
     getSelectedActionList() {
       let list = []
-      if (this.searchModel.status != this.getFindingStatus("PENDING")) {
+      if (this.searchModel.status != this.getFindingStatus('PENDING')) {
         list.push({
-          text: "Pend selected findings",
-          icon: "mdi-check-circle-outline",
+          text: 'Pend selected findings',
+          icon: 'mdi-check-circle-outline',
           click: this.handlePendSelected,
         })
       }
-      if (this.searchModel.status != this.getFindingStatus("ACTIVE")) {
+      if (this.searchModel.status != this.getFindingStatus('ACTIVE')) {
         list.push({
-          text: "Activate selected findings",
-          icon: "mdi-check-circle",
+          text: 'Activate selected findings',
+          icon: 'mdi-check-circle',
           click: this.handleActivateSelected,
         })
       }
       list.push({
-        text: "Delete selected findings",
-        icon: "mdi-trash-can-outline",
+        text: 'Delete selected findings',
+        icon: 'mdi-trash-can-outline',
         click: this.handleDeleteSelected,
       })
       list.push({
-        text: "Download selected findings CSV",
-        icon: "mdi-file-download-outline",
+        text: 'Download selected findings CSV',
+        icon: 'mdi-file-download-outline',
         click: this.handleDownloadCSVSelected,
       })
       return list
     },
     getExternalLink(data) {
       if (!data) {
-        return ""
+        return ''
       }
       const jsonData = JSON.parse(JSON.stringify(JSON.parse(data), null, 2))
       if (jsonData.external_link) {
         return jsonData.external_link
       }
-      return ""
+      return ''
     },
 
     // handler
@@ -1012,17 +1012,17 @@ export default {
     parseQuery() {
       if (!this.$route.query) return
       const query = this.$route.query
-      if (query.finding_id && query.finding_id != "") {
+      if (query.finding_id && query.finding_id != '') {
         this.searchModel.findingID = query.finding_id
       }
-      if (query.data_source && query.data_source != "") {
-        this.searchModel.dataSource = String(query.data_source).split(",")
+      if (query.data_source && query.data_source != '') {
+        this.searchModel.dataSource = String(query.data_source).split(',')
       }
-      if (query.tag && query.tag != "") {
-        this.searchModel.tag = String(query.tag).split(",")
+      if (query.tag && query.tag != '') {
+        this.searchModel.tag = String(query.tag).split(',')
       }
-      if (query.resource_name && query.resource_name != "") {
-        this.searchModel.resourceName = String(query.resource_name).split(",")
+      if (query.resource_name && query.resource_name != '') {
+        this.searchModel.resourceName = String(query.resource_name).split(',')
       }
       this.searchModel.scoreFrom = 0.5
       this.searchModel.scoreTo = 1.0
@@ -1032,43 +1032,43 @@ export default {
       // if ( query.to_score ) {
       //   this.searchModel.score[1] = query.to_score
       // }
-      this.searchModel.status = this.getFindingStatus("ACTIVE")
+      this.searchModel.status = this.getFindingStatus('ACTIVE')
       if (query.status) {
         this.searchModel.status = query.status
       }
       this.setStatusTab()
     },
     getSearchCondition() {
-      let searchCond = ""
+      let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
       if (this.searchModel.findingID) {
-        searchCond += "&finding_id=" + this.searchModel.findingID
+        searchCond += '&finding_id=' + this.searchModel.findingID
         queryNew.finding_id = this.searchModel.findingID
       }
       if (this.searchModel.dataSource) {
-        searchCond += "&data_source=" + this.searchModel.dataSource
+        searchCond += '&data_source=' + this.searchModel.dataSource
         queryNew.data_source = this.searchModel.dataSource
       }
       if (this.searchModel.tag) {
-        searchCond += "&tag=" + this.searchModel.tag
+        searchCond += '&tag=' + this.searchModel.tag
         queryNew.tag = this.searchModel.tag
       }
       if (this.searchModel.resourceName) {
-        searchCond += "&resource_name=" + this.searchModel.resourceName
+        searchCond += '&resource_name=' + this.searchModel.resourceName
         queryNew.resource_name = this.searchModel.resourceName
       }
       if (!this.searchModel.scoreFrom) {
         this.searchModel.scoreFrom = 0
       }
-      searchCond += "&from_score=" + this.searchModel.scoreFrom
+      searchCond += '&from_score=' + this.searchModel.scoreFrom
       queryNew.from_score = this.searchModel.scoreFrom
       // if (this.searchModel.score[1]) {
       //   searchCond += '&to_score=' + this.searchModel.score[1]
       //   queryNew.to_score = this.searchModel.score[1]
       // }
       if (this.searchModel.status) {
-        searchCond += "&status=" + this.searchModel.status
+        searchCond += '&status=' + this.searchModel.status
         queryNew.status = this.searchModel.status
       }
       const offset =
@@ -1077,13 +1077,13 @@ export default {
       const sort = this.table.sort.key
       const direction = this.table.sort.direction
       searchCond +=
-        "&offset=" +
+        '&offset=' +
         offset +
-        "&limit=" +
+        '&limit=' +
         limit +
-        "&sort=" +
+        '&sort=' +
         sort +
-        "&direction=" +
+        '&direction=' +
         direction
       if (
         Object.entries(queryNew).sort().toString() !=
@@ -1097,10 +1097,10 @@ export default {
       const oldKey = this.table.sort.key
       const oldDirection = this.table.sort.direction
       if (oldKey === newSortKey) {
-        this.table.sort.direction = oldDirection === "asc" ? "desc" : "asc" // reverse direction
+        this.table.sort.direction = oldDirection === 'asc' ? 'desc' : 'asc' // reverse direction
       } else {
         this.table.sort.key = newSortKey
-        this.table.sort.direction = "asc"
+        this.table.sort.direction = 'asc'
       }
       this.refleshList()
     },
@@ -1108,7 +1108,7 @@ export default {
       this.refleshList()
     },
     handleNewTag() {
-      this.findingModel.new_tag = "" // clear
+      this.findingModel.new_tag = '' // clear
       this.tagDialog = true
     },
     async handleNewTagSubmit() {
@@ -1119,7 +1119,7 @@ export default {
           this.findingModel.new_tag
         )
         this.finishSuccess(
-          "Success: New Tag `" + this.findingModel.new_tag + "`."
+          'Success: New Tag `' + this.findingModel.new_tag + '`.'
         )
       }
       this.tagDialog = false
@@ -1129,7 +1129,7 @@ export default {
       this.loading = true
       if (item.finding_tag_id) {
         await this.untagFinding(item.finding_tag_id)
-        this.finishSuccess("Success: Untag `" + item.tag + "`.")
+        this.finishSuccess('Success: Untag `' + item.tag + '`.')
       }
       this.viewDialog = false
       this.loading = false
@@ -1142,7 +1142,7 @@ export default {
     async handleDeleteSubmit() {
       this.loading = true
       await this.deleteFinding(this.findingModel.finding_id)
-      this.finishSuccess("Success: Delete.")
+      this.finishSuccess('Success: Delete.')
     },
     async handleDeleteSelected() {
       this.loading = true
@@ -1152,7 +1152,7 @@ export default {
         await this.deleteFinding(item.finding_id)
       })
       this.table.selected = []
-      this.finishSuccess("Success: Delete " + count + " findings.")
+      this.finishSuccess('Success: Delete ' + count + ' findings.')
     },
     async handleActivateItem(row) {
       this.loading = true
@@ -1160,7 +1160,7 @@ export default {
         this.$store.state.project.project_id,
         row.finding_id
       )
-      this.finishSuccess("Success: Activated.")
+      this.finishSuccess('Success: Activated.')
     },
     async handleActivateSelected() {
       this.loading = true
@@ -1173,23 +1173,23 @@ export default {
         )
       })
       this.table.selected = []
-      this.finishSuccess("Success: Activated " + count + " findings.")
+      this.finishSuccess('Success: Activated ' + count + ' findings.')
     },
     // Pend
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
       this.pendAll = false
-      this.pendNote = ""
+      this.pendNote = ''
       this.pendDialog = true
     },
     async handlePendItemSubmit() {
       this.loading = true
       await this.putPendFinding(this.findingModel.finding_id, this.pendNote)
-      this.finishSuccess("Success: Pending.")
+      this.finishSuccess('Success: Pending.')
     },
     async handlePendSelected() {
       this.pendAll = true
-      this.pendNote = ""
+      this.pendNote = ''
       this.pendDialog = true
     },
     async handlePendSelectedSubmit() {
@@ -1200,34 +1200,34 @@ export default {
         await this.putPendFinding(item.finding_id, this.pendNote)
       })
       this.table.selected = []
-      this.finishSuccess("Success: Pend " + count + " findings.")
+      this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
     handleChangeStatus(tabNumber) {
       switch (tabNumber) {
         case 0:
-          this.searchModel.status = this.getFindingStatus("ACTIVE")
+          this.searchModel.status = this.getFindingStatus('ACTIVE')
           break
         case 1:
-          this.searchModel.status = this.getFindingStatus("PENDING")
+          this.searchModel.status = this.getFindingStatus('PENDING')
           break
         case 2:
-          this.searchModel.status = this.getFindingStatus("ALL")
+          this.searchModel.status = this.getFindingStatus('ALL')
           break
         default:
-          this.searchModel.status = this.getFindingStatus("ACTIVE")
+          this.searchModel.status = this.getFindingStatus('ACTIVE')
       }
       this.loadList()
     },
     setStatusTab() {
       const status = this.getFindingStatusText(this.searchModel.status)
       switch (status) {
-        case "ACTIVE":
+        case 'ACTIVE':
           this.searchModel.tab = 0
           break
-        case "PENDING":
+        case 'PENDING':
           this.searchModel.tab = 1
           break
-        case "ALL":
+        case 'ALL':
           this.searchModel.tab = 2
           break
         default:
@@ -1240,31 +1240,31 @@ export default {
       this.loading = true
       const count = this.table.selected.length
       let csv =
-        "\ufeff" +
-        "finding_id,data_source,description,score,status,tags,created_at,updtated_at\n"
+        '\ufeff' +
+        'finding_id,data_source,description,score,status,tags,created_at,updtated_at\n'
       this.table.selected.forEach((item) => {
         let created_at = Util.formatDate(
           new Date(item.created_at * 1000),
-          "yyyy/MM/dd HH:mm"
+          'yyyy/MM/dd HH:mm'
         )
         let updated_at = Util.formatDate(
           new Date(item.updated_at * 1000),
-          "yyyy/MM/dd HH:mm"
+          'yyyy/MM/dd HH:mm'
         )
         if (!item.finding_id) return
-        var tags = ""
-        if (item.tags) tags = item.tags.map((tag) => tag.tag).join(",")
+        var tags = ''
+        if (item.tags) tags = item.tags.map((tag) => tag.tag).join(',')
         var line =
-          "" +
-          item["finding_id"] +
+          '' +
+          item['finding_id'] +
           ',"' +
-          item["data_source"] +
+          item['data_source'] +
           '","' +
-          item["description"] +
+          item['description'] +
           '",' +
-          item["score"] +
+          item['score'] +
           ',"' +
-          item["status"] +
+          item['status'] +
           '","' +
           tags +
           '","' +
@@ -1274,13 +1274,13 @@ export default {
           '"\n'
         csv += line
       })
-      let blob = new Blob([csv], { type: "text/csv" })
-      let link = document.createElement("a")
-      let fileDate = Util.formatDate(new Date(), "yyyyMMddTHHmmss")
+      let blob = new Blob([csv], { type: 'text/csv' })
+      let link = document.createElement('a')
+      let fileDate = Util.formatDate(new Date(), 'yyyyMMddTHHmmss')
       link.href = window.URL.createObjectURL(blob)
-      link.download = "finding_" + fileDate + ".csv"
+      link.download = 'finding_' + fileDate + '.csv'
       link.click()
-      this.finishSuccess("Success: Export " + count + " findings.")
+      this.finishSuccess('Success: Export ' + count + ' findings.')
     },
 
     // finish

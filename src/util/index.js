@@ -41,14 +41,14 @@ const formatDate = (date, format) => {
   format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2))
   format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2))
   format = format.replace(/SSS/g, ('00' + date.getMilliseconds()).slice(-3))
-  return format;
+  return format
 }
 
 const cutLongString = (str, maxLen) => {
   if (!str) {
     return ''
   }
-  if (str.length >= maxLen ) {
+  if (str.length >= maxLen) {
     return str.substring(0, maxLen) + '...'
   }
   return str
@@ -76,11 +76,15 @@ const elapsedTimeText = (from) => {
 const getNavigatorLanguage = () => {
   let lang = ''
   if (navigator.languages && navigator.languages.length) {
-    lang = navigator.languages[0];
+    lang = navigator.languages[0]
   } else {
-    lang = navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en';
+    lang =
+      navigator.userLanguage ||
+      navigator.language ||
+      navigator.browserLanguage ||
+      'en'
   }
-  if (lang && (lang === 'en' || lang === 'ja' ) ) {
+  if (lang && (lang === 'en' || lang === 'ja')) {
     return lang
   } else {
     console.log('Unsupported language, lang=' + lang)
@@ -92,9 +96,9 @@ const generateExternalID = () => {
   const letters = 'abcdefghijklmnopqrstuvwxyz'
   const numbers = '0123456789'
   const len = 32
-  const string  = letters + letters.toUpperCase() + numbers
+  const string = letters + letters.toUpperCase() + numbers
 
-  let externalID=''
+  let externalID = ''
   for (var i = 0; i < len; i++) {
     externalID += string.charAt(Math.floor(Math.random() * string.length))
   }
@@ -105,9 +109,9 @@ const generateVerificationCode = () => {
   const letters = 'abcdefghijklmnopqrstuvwxyz-_'
   const numbers = '0123456789'
   const len = 32
-  const string  = letters + numbers
+  const string = letters + numbers
 
-  let code=''
+  let code = ''
   for (var i = 0; i < len; i++) {
     code += string.charAt(Math.floor(Math.random() * string.length))
   }
@@ -115,7 +119,7 @@ const generateVerificationCode = () => {
 }
 
 const isEmptyString = (str) => {
-  return (!str || str.length === 0 || /^\s*$/.test(str) || str === 'null' )
+  return !str || str.length === 0 || /^\s*$/.test(str) || str === 'null'
 }
 
 const isNumber = (value) => {

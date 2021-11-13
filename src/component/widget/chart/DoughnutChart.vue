@@ -12,11 +12,13 @@ export default {
       default: () => {
         return {
           labels: ['Red', 'Yellow', 'Blue'],
-          datasets: [{
-            data: [10, 20, 30]
-          }],
+          datasets: [
+            {
+              data: [10, 20, 30],
+            },
+          ],
         }
-      }
+      },
     },
     options: {
       type: Object,
@@ -29,11 +31,11 @@ export default {
           //   }
           // },
         }
-      }
+      },
     },
   },
-  mounted () {
+  mounted() {
     this.renderChart(this.chartData, this.options)
-  }
+  },
 }
 </script>

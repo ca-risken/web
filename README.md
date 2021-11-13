@@ -4,28 +4,25 @@
 
 ## Project setup
 ```
-yarn install
+make install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-yarn serve
+make run
 ```
 
 ### Cache clean
 ```
-yarn cache clean
+make clean
 ```
 
-### Compiles and minifies for production
+### Format(Pritter)
 ```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
+make fmt
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Lint(ESLint)
+```
+make lint
+```

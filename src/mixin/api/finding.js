@@ -3,10 +3,15 @@ const finding = {
     return {}
   },
   methods: {
-    // FindingAPI 
+    // FindingAPI
     async listFinding(searchCond) {
-      const res = await this.$axios.get(
-        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond).catch((err) => {
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding/?project_id=' +
+            this.$store.state.project.project_id +
+            searchCond
+        )
+        .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data.data) {
@@ -15,8 +20,13 @@ const finding = {
       return res.data.data
     },
     async listFindingCnt(searchCond) {
-      const res = await this.$axios.get(
-        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id + searchCond).catch((err) => {
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding/?project_id=' +
+            this.$store.state.project.project_id +
+            searchCond
+        )
+        .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data.data.total) {
@@ -25,9 +35,14 @@ const finding = {
       return res.data.data.total
     },
     async listFindingByResouceName(resource_name) {
-      const res = await this.$axios.get(
-        '/finding/list-finding/?project_id=' + this.$store.state.project.project_id +
-        '&resource_name=' + resource_name).catch((err) => {
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding/?project_id=' +
+            this.$store.state.project.project_id +
+            '&resource_name=' +
+            resource_name
+        )
+        .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data.data.finding_id) {
@@ -36,8 +51,14 @@ const finding = {
       return res.data.data.finding_id
     },
     async getFinding(id) {
-      const res = await this.$axios.get(
-        '/finding/get-finding/?project_id=' + this.$store.state.project.project_id + '&finding_id=' + id).catch((err) => {
+      const res = await this.$axios
+        .get(
+          '/finding/get-finding/?project_id=' +
+            this.$store.state.project.project_id +
+            '&finding_id=' +
+            id
+        )
+        .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data.data.finding) {
@@ -49,8 +70,14 @@ const finding = {
       return res.data.data.finding
     },
     async listFindingTag(id) {
-      const res = await this.$axios.get(
-        '/finding/list-finding-tag/?project_id=' + this.$store.state.project.project_id + '&finding_id=' + id).catch((err) => {
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding-tag/?project_id=' +
+            this.$store.state.project.project_id +
+            '&finding_id=' +
+            id
+        )
+        .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data.data.tag) {
@@ -59,19 +86,28 @@ const finding = {
       return res.data.data.tag
     },
     async listFindingTagName() {
-      const res = await this.$axios.get(
-        '/finding/list-finding-tag-name/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding-tag-name/?project_id=' +
+            this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.tag) {
         return [] // empty
       }
       return res.data.data.tag
     },
     async getPendFinding(id) {
-      const res = await this.$axios.get(
-        '/finding/get-pend-finding/?project_id=' + this.$store.state.project.project_id + '&finding_id=' + id).catch((err) => {
+      const res = await this.$axios
+        .get(
+          '/finding/get-pend-finding/?project_id=' +
+            this.$store.state.project.project_id +
+            '&finding_id=' +
+            id
+        )
+        .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data.data.pend_finding) {
@@ -80,20 +116,31 @@ const finding = {
       return res.data.data.pend_finding
     },
     async listResourceID(searchCond) {
-      const res = await this.$axios.get(
-        '/finding/list-resource/?project_id=' + this.$store.state.project.project_id + searchCond
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/finding/list-resource/?project_id=' +
+            this.$store.state.project.project_id +
+            searchCond
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data) {
         return [] // empty
       }
       return res.data.data
     },
     async getResource(id) {
-      const res = await this.$axios.get('/finding/get-resource/?project_id=' + this.$store.state.project.project_id + '&resource_id=' + id).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/finding/get-resource/?project_id=' +
+            this.$store.state.project.project_id +
+            '&resource_id=' +
+            id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.resource) {
         return {} // empty
       }
@@ -107,7 +154,7 @@ const finding = {
           project_id: this.$store.state.project.project_id,
           finding_id: findingID,
           tag: tag,
-        }
+        },
       }
       await this.$axios.post('/finding/tag-finding/', param).catch((err) => {
         this.finishError(err.response.data)
@@ -130,10 +177,12 @@ const finding = {
         project_id: project_id,
         finding_id: finding_id,
       }
-      await this.$axios.post('/finding/delete-pend-finding/', param).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post('/finding/delete-pend-finding/', param)
+        .catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
     },
     async putPendFinding(finding_id, note) {
       const param = {
@@ -142,12 +191,14 @@ const finding = {
           finding_id: finding_id,
           project_id: this.$store.state.project.project_id,
           note: note,
-        }
+        },
       }
-      await this.$axios.post('/finding/put-pend-finding/', param).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post('/finding/put-pend-finding/', param)
+        .catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
     },
     async deleteFinding(finding_id) {
       const param = {
@@ -164,26 +215,33 @@ const finding = {
         project_id: this.$store.state.project.project_id,
         resource_id: resource_id,
       }
-      await this.$axios.post('/finding/delete-resource/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post('/finding/delete-resource/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
     },
 
     // FindingSetting API
     async listFindingSettingAPI(statusParam) {
-      const res = await this.$axios.get(
-        '/finding/list-finding-setting/?project_id=' + this.$store.state.project.project_id + statusParam
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding-setting/?project_id=' +
+            this.$store.state.project.project_id +
+            statusParam
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.finding_setting) {
         return []
       }
       return res.data.data.finding_setting
     },
     async putFindingSettingAPI(param) {
-      await this.$axios.post(
-        '/finding/put-finding-setting/', param).catch((err) => {
+      await this.$axios
+        .post('/finding/put-finding-setting/', param)
+        .catch((err) => {
           return Promise.reject(err)
         })
     },
@@ -192,11 +250,12 @@ const finding = {
         project_id: this.$store.state.project.project_id,
         finding_setting_id: finding_setting_id,
       }
-      await this.$axios.post('/finding/delete-finding-setting/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post('/finding/delete-finding-setting/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
     },
-
   },
 }
 

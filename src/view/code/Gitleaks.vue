@@ -518,11 +518,11 @@
   </div>
 </template>
 <script>
-import Util from "@/util"
-import mixin from "@/mixin"
-import project from "@/mixin/api/project"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import ProjectTag from "@/component/widget/tag/ProjectTag"
+import Util from '@/util'
+import mixin from '@/mixin'
+import project from '@/mixin/api/project'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
   mixins: [mixin, project],
   components: {
@@ -537,131 +537,131 @@ export default {
         isNew: false,
         valid: false,
         name: {
-          label: "Name",
-          placeholder: "Gitleaks setting name",
+          label: 'Name',
+          placeholder: 'Gitleaks setting name',
           validator: [
-            (v) => !!v || "Name is required",
+            (v) => !!v || 'Name is required',
             (v) =>
-              !v || v.length <= 64 || "Name must be less than 64 characters",
+              !v || v.length <= 64 || 'Name must be less than 64 characters',
           ],
         },
         type: {
-          label: "Type",
-          placeholder: "-",
-          list: ["Organization", "User"],
+          label: 'Type',
+          placeholder: '-',
+          list: ['Organization', 'User'],
           validator: [
-            (v) => !!v || "Type is required",
+            (v) => !!v || 'Type is required',
             (v) =>
-              !v || v === "Organization" || v === "User" || "Type is invalid",
+              !v || v === 'Organization' || v === 'User' || 'Type is invalid',
           ],
         },
         base_url: {
-          label: "Base URL",
-          placeholder: "[Optional] https://hostname/api/v3/",
+          label: 'Base URL',
+          placeholder: '[Optional] https://hostname/api/v3/',
           validator: [
             (v) =>
               !v ||
               v.length <= 128 ||
-              "TargetResource must be less than 128 characters",
+              'TargetResource must be less than 128 characters',
           ],
         },
         target_resource: {
-          label: "TargetResource",
-          placeholder: "OrganizationName or UserName",
+          label: 'TargetResource',
+          placeholder: 'OrganizationName or UserName',
           validator: [
-            (v) => !!v || "TargetResource is required",
+            (v) => !!v || 'TargetResource is required',
             (v) =>
               !v ||
               v.length <= 128 ||
-              "TargetResource must be less than 128 characters",
+              'TargetResource must be less than 128 characters',
           ],
         },
         repository_pattern: {
-          label: "RepositoryPattern",
-          placeholder: "-",
+          label: 'RepositoryPattern',
+          placeholder: '-',
           validator: [
             (v) =>
               !v ||
               v.length <= 128 ||
-              "RepositoryPattern must be less than 128 characters",
+              'RepositoryPattern must be less than 128 characters',
           ],
         },
         github_user: {
-          label: "GitHubUser",
-          placeholder: "-",
+          label: 'GitHubUser',
+          placeholder: '-',
           validator: [
             (v) =>
               !v ||
               v.length <= 64 ||
-              "GitHubUser must be less than 64 characters",
+              'GitHubUser must be less than 64 characters',
           ],
         },
         personal_access_token: {
-          label: "PersonalAccessToken",
-          placeholder: "-",
+          label: 'PersonalAccessToken',
+          placeholder: '-',
           validator: [
             (v) =>
               !v ||
               v.length <= 255 ||
-              "PersonalAccessToken must be less than 255 characters",
+              'PersonalAccessToken must be less than 255 characters',
           ],
         },
         scan_public: {
-          label: "Scan Public Repository",
-          placeholder: "-",
+          label: 'Scan Public Repository',
+          placeholder: '-',
           validator: [],
         },
         scan_internal: {
-          label: "Scan Internal Repository",
-          placeholder: "-",
+          label: 'Scan Internal Repository',
+          placeholder: '-',
           validator: [],
         },
         scan_private: {
-          label: "Scan Private Repository",
-          placeholder: "-",
+          label: 'Scan Private Repository',
+          placeholder: '-',
           validator: [],
         },
       },
       codeDataSourceModel: {
-        code_data_source_id: "",
-        name: "",
-        description: "",
-        max_score: "",
-        updated_at: "",
+        code_data_source_id: '',
+        name: '',
+        description: '',
+        max_score: '',
+        updated_at: '',
       },
       gitleaksModel: {
-        gitleaks_id: "",
-        code_data_source_id: "",
-        name: "",
-        type: "",
-        base_url: "",
-        type_text: "",
-        target_resource: "",
-        repository_pattern: "",
-        github_user: "",
-        personal_access_token: "",
-        scan_public: "",
-        scan_internal: "",
-        scan_private: "",
-        gitleaks_config: "",
-        status: "",
-        status_detail: "",
-        scan_at: "",
-        updated_at: "",
+        gitleaks_id: '',
+        code_data_source_id: '',
+        name: '',
+        type: '',
+        base_url: '',
+        type_text: '',
+        target_resource: '',
+        repository_pattern: '',
+        github_user: '',
+        personal_access_token: '',
+        scan_public: '',
+        scan_internal: '',
+        scan_private: '',
+        gitleaks_config: '',
+        status: '',
+        status_detail: '',
+        scan_at: '',
+        updated_at: '',
       },
       table: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 10, sortBy: ["gitleaks_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['gitleaks_id'] },
         actions: [
-          { text: "View Item", icon: "mdi-eye", click: this.handleViewItem },
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
-          { text: "Scan", icon: "mdi-magnify-scan", click: this.handleScan },
+          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -684,28 +684,28 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "gitleaks_id",
+          value: 'gitleaks_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Type"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "type_text",
+          value: 'type_text',
         },
         // {
         //   text: this.$i18n.t('item["Base URL"]'),
@@ -715,33 +715,33 @@ export default {
         // },
         {
           text: this.$i18n.t('item["Target"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "target_resource",
+          value: 'target_resource',
         },
         {
           text: this.$i18n.t('item["Repository"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "repository_pattern",
+          value: 'repository_pattern',
         },
         {
           text: this.$i18n.t('item["Status"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "status",
+          value: 'status',
         },
         {
           text: this.$i18n.t('item["ScanAt"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "scan_at",
+          value: 'scan_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -755,8 +755,8 @@ export default {
     async getGitleaksDataSource() {
       const res = await this.$axios
         .get(
-          "/code/list-datasource/" +
-            "?code_data_source_id=" +
+          '/code/list-datasource/' +
+            '?code_data_source_id=' +
             this.gitleaks_datasource_id
         )
         .catch((err) => {
@@ -774,10 +774,10 @@ export default {
     async listGitleaks() {
       const res = await this.$axios
         .get(
-          "/code/list-gitleaks/" +
-            "?code_data_source_id=" +
+          '/code/list-gitleaks/' +
+            '?code_data_source_id=' +
             this.gitleaks_datasource_id +
-            "&project_id=" +
+            '&project_id=' +
             this.$store.state.project.project_id
         )
         .catch((err) => {
@@ -825,11 +825,11 @@ export default {
         project_id: this.$store.state.project.project_id,
         gitleaks_id: this.gitleaksModel.gitleaks_id,
       }
-      await this.$axios.post("/code/delete-gitleaks/", param).catch((err) => {
+      await this.$axios.post('/code/delete-gitleaks/', param).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess("Success: Deleted.")
+      this.finishSuccess('Success: Deleted.')
     },
     async putItem() {
       let scan_at = 0
@@ -855,23 +855,23 @@ export default {
           gitleaks_config: this.gitleaksModel.gitleaks_config,
           status: 2, // CONFIGURED
           status_detail:
-            "Configured at: " + Util.formatDate(new Date(), "yyyy/MM/dd HH:mm"),
+            'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
           scan_at: scan_at,
         },
       }
-      await this.$axios.post("/code/put-gitleaks/", param).catch((err) => {
+      await this.$axios.post('/code/put-gitleaks/', param).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishSuccess("Success: Updated.")
+      this.finishSuccess('Success: Updated.')
     },
     getGitleaksTypeCode(typeText) {
       switch (typeText) {
-        case "Enterprise":
+        case 'Enterprise':
           return 1
-        case "Organization":
+        case 'Organization':
           return 2
-        case "User":
+        case 'User':
           return 3
         default:
           return 0 // Unknown
@@ -880,13 +880,13 @@ export default {
     getGitleaksTypeText(typeCode) {
       switch (typeCode) {
         case 1:
-          return "Enterprise"
+          return 'Enterprise'
         case 2:
-          return "Organization"
+          return 'Organization'
         case 3:
-          return "User"
+          return 'User'
         default:
-          return "Unknown" // Unknown
+          return 'Unknown' // Unknown
       }
     },
     async scanDataSource() {
@@ -895,19 +895,19 @@ export default {
         gitleaks_id: this.gitleaksModel.gitleaks_id,
       }
       await this.$axios
-        .post("/code/invoke-scan-gitleaks/", param)
+        .post('/code/invoke-scan-gitleaks/', param)
         .catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
-      this.finishSuccess("Success: Invoke scan for Data Source.")
+      this.finishSuccess('Success: Invoke scan for Data Source.')
     },
 
     // Handler
     async handleList() {
       this.loading = true
       await this.listGitleaks()
-      this.finishInfo("Reflesh list")
+      this.finishInfo('Reflesh list')
     },
     handleRowClick(item) {
       this.handleViewItem(item)
@@ -940,8 +940,8 @@ export default {
       this.loading = true
       await this.putItem()
       await this.tagProjectAPI(
-        "github:" + this.gitleaksModel.target_resource,
-        "black"
+        'github:' + this.gitleaksModel.target_resource,
+        'black'
       )
     },
     handleDeleteItem(item) {
@@ -950,7 +950,7 @@ export default {
     },
     async handleDeleteSubmit() {
       this.loading = true
-      await this.untagProjectAPI("github:" + this.gitleaksModel.target_resource)
+      await this.untagProjectAPI('github:' + this.gitleaksModel.target_resource)
       await this.deleteItem()
     },
     handleScan(item) {

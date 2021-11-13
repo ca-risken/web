@@ -446,11 +446,11 @@
 </template>
 
 <script>
-import Util from "@/util"
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
-import ClipBoard from "@/component/widget/clipboard/ClipBoard.vue"
+import Util from '@/util'
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   mixins: [mixin, iam],
   components: {
@@ -460,11 +460,11 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: { keyword: "" },
+      searchModel: { keyword: '' },
       searchForm: {
         keyword: {
-          label: "Keyword",
-          placeholder: "Filter for access token",
+          label: 'Keyword',
+          placeholder: 'Filter for access token',
         },
       },
       now: new Date(),
@@ -472,56 +472,56 @@ export default {
         newToken: false,
         valid: false,
         access_token_id: {
-          label: "ID",
-          placeholder: "-",
+          label: 'ID',
+          placeholder: '-',
         },
         name: {
-          label: "Name",
-          placeholder: "something",
+          label: 'Name',
+          placeholder: 'something',
           validator: [
-            (v) => !!v || "Name is required",
+            (v) => !!v || 'Name is required',
             (v) =>
-              !v || v.length <= 64 || "Name must be less than 64 characters",
-            (v) => !v || !this.duplicatedName(v) || "Name is duplicated",
+              !v || v.length <= 64 || 'Name must be less than 64 characters',
+            (v) => !v || !this.duplicatedName(v) || 'Name is duplicated',
           ],
         },
         description: {
-          label: "Description",
-          placeholder: "note",
+          label: 'Description',
+          placeholder: 'note',
           validator: [
             (v) =>
               !v ||
               v.length <= 255 ||
-              "Description must be less than 255 characters",
+              'Description must be less than 255 characters',
           ],
         },
         expired_at: {
-          label: "Expired At",
-          placeholder: "token exipired date",
+          label: 'Expired At',
+          placeholder: 'token exipired date',
           validator: [],
           datePicker: false,
         },
       },
       dataModel: {
-        access_token_id: "",
-        name: "",
-        description: "",
-        expired_at: "",
-        last_updated_user_id: "",
-        last_updated_user_name: "",
-        created_at: "",
-        updated_at: "",
-        token_hash: "",
+        access_token_id: '',
+        name: '',
+        description: '',
+        expired_at: '',
+        last_updated_user_id: '',
+        last_updated_user_name: '',
+        created_at: '',
+        updated_at: '',
+        token_hash: '',
         role_cnt: 0,
         roles: [],
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ["access_token_id"] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['access_token_id'] },
         actions: [
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
         ],
@@ -539,8 +539,8 @@ export default {
       tokenDialog: false,
       roleTable: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 5, sortBy: ["role_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -557,52 +557,52 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "access_token_id",
+          value: 'access_token_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Roles"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "role_cnt",
+          value: 'role_cnt',
         },
         {
           text: this.$i18n.t('item["Expired At"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "expired_at",
+          value: 'expired_at',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "updated_at",
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Last Updated User"]'),
-          align: "center",
+          align: 'center',
           sortable: true,
-          value: "last_updated_user_name",
+          value: 'last_updated_user_name',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -610,21 +610,21 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "role_id",
+          value: 'role_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
       ]
     },
   },
   mounted() {
-    this.refleshList("")
+    this.refleshList('')
   },
   methods: {
     async refleshList(searchCond) {
@@ -641,7 +641,7 @@ export default {
       this.table.total = tokens.length
       tokens.forEach(async (token) => {
         const roles = await this.listRoleAPI(
-          "&access_token_id=" + token.access_token_id
+          '&access_token_id=' + token.access_token_id
         ).catch((err) => {
           this.clearList()
           return Promise.reject(err)
@@ -658,7 +658,7 @@ export default {
           description: token.description,
           expired_at: Util.formatDate(
             new Date(token.expired_at * 1000),
-            "yyyy-MM-dd"
+            'yyyy-MM-dd'
           ),
           last_updated_user_id: token.last_updated_user_id,
           last_updated_user_name: user.name,
@@ -681,7 +681,7 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      const roles = await this.listRoleAPI("").catch((err) => {
+      const roles = await this.listRoleAPI('').catch((err) => {
         return Promise.reject(err)
       })
 
@@ -709,9 +709,9 @@ export default {
     getExpiredAtColor(timeString) {
       const expiredAt = new Date(timeString)
       if (expiredAt.getTime() <= this.now.getTime()) {
-        return "red"
+        return 'red'
       }
-      return ""
+      return ''
     },
     async putItem() {
       this.loading = true
@@ -777,7 +777,7 @@ export default {
         this.finishGenerateToken(this.dataModel.token_hash)
         return
       }
-      this.finishUpdated("Success: Updated role.")
+      this.finishUpdated('Success: Updated role.')
     },
     async deleteItem(accessTokenID) {
       this.loading = true
@@ -785,7 +785,7 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated("Success: Deleted access token.")
+      this.finishUpdated('Success: Deleted access token.')
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -820,14 +820,14 @@ export default {
       let threeMonthLaater = new Date()
       threeMonthLaater.setDate(threeMonthLaater.getDate() + 90)
       this.dataModel = {
-        access_token_id: "",
-        name: "",
-        description: "",
-        expired_at: Util.formatDate(threeMonthLaater, "yyyy-MM-dd"),
-        last_updated_user_id: "",
-        last_updated_user_name: "",
-        created_at: "",
-        updated_at: "",
+        access_token_id: '',
+        name: '',
+        description: '',
+        expired_at: Util.formatDate(threeMonthLaater, 'yyyy-MM-dd'),
+        last_updated_user_id: '',
+        last_updated_user_name: '',
+        created_at: '',
+        updated_at: '',
         role_cnt: 0,
         roles: [],
       }
@@ -846,19 +846,19 @@ export default {
       this.deleteDialog = true
     },
     handleSearch() {
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.tokenName) {
-        searchCond += "&name=" + this.searchModel.tokenName
+        searchCond += '&name=' + this.searchModel.tokenName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
       this.dataModel = {
-        role_id: "",
-        name: "",
+        role_id: '',
+        name: '',
         role_cnt: 0,
-        roles: "",
-        updated_at: "",
+        roles: '',
+        updated_at: '',
       }
       this.dataModel = Object.assign(this.dataModel, item)
     },

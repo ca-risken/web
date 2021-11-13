@@ -9,7 +9,7 @@
         <v-form v-model="projectTagForm.valid" ref="tagForm">
           <v-text-field
             v-model="projectTagModel.tag"
-            :label="$t(`item['`+projectTagForm.tag.label+`']`) + ' *'"
+            :label="$t(`item['` + projectTagForm.tag.label + `']`) + ' *'"
             :placeholder="projectTagForm.tag.placeholder"
             :counter="64"
             :rules="projectTagForm.tag.validator"
@@ -34,7 +34,8 @@
         </v-btn>
         <v-btn
           color="blue darken-1"
-          text outlined
+          text
+          outlined
           :loading="loading"
           @click="handleTagSubmit"
         >
@@ -52,7 +53,6 @@
           {{ $t(`btn['View registerd project tags']`) }}
         </v-btn>
       </v-card-actions>
-      
     </v-card>
   </v-dialog>
 </template>
@@ -69,7 +69,11 @@ export default {
   data() {
     return {
       loading: false,
-      projectTagModel: {project_id:'', tag:'', created_at:'', updated_at:'',
+      projectTagModel: {
+        project_id: '',
+        tag: '',
+        created_at: '',
+        updated_at: '',
         color: {
           types: ['hex', 'hexa', 'rgba', 'hsla', 'hsva'],
           type: 'hex',
@@ -82,23 +86,45 @@ export default {
       },
       projectTagForm: {
         valid: false,
-        tag: { label: 'Tag', placeholder: 'key:value', validator:[
-            v => !!v || 'Tag is required',
-            v => !v || v.length <= 64 || 'Tag must be less than 64 characters',
-          ]
+        tag: {
+          label: 'Tag',
+          placeholder: 'key:value',
+          validator: [
+            (v) => !!v || 'Tag is required',
+            (v) =>
+              !v || v.length <= 64 || 'Tag must be less than 64 characters',
+          ],
         },
         swatches: [
-          ['#F44336'],['#E91E63'],['#9C27B0'],['#673AB7'],['#3F51B5'],['#2196F3'],
-          ['#03A9F4'],['#00BCD4'],['#009688'],['#4CAF50'],['#8BC34A'],['#CDDC39'],
-          ['#FFEB3B'],['#FFC107'],['#FF9800'],['#FF5722'],['#795548'],['#9E9E9E'],
-        ]
+          ['#F44336'],
+          ['#E91E63'],
+          ['#9C27B0'],
+          ['#673AB7'],
+          ['#3F51B5'],
+          ['#2196F3'],
+          ['#03A9F4'],
+          ['#00BCD4'],
+          ['#009688'],
+          ['#4CAF50'],
+          ['#8BC34A'],
+          ['#CDDC39'],
+          ['#FFEB3B'],
+          ['#FFC107'],
+          ['#FF9800'],
+          ['#FF5722'],
+          ['#795548'],
+          ['#9E9E9E'],
+        ],
       },
     }
   },
   mounted() {},
   methods: {
     async tagProject() {
-      await this.tagProjectAPI(this.projectTagModel.tag, this.projectTagModel.color.hexa).catch((err) =>  {
+      await this.tagProjectAPI(
+        this.projectTagModel.tag,
+        this.projectTagModel.color.hexa
+      ).catch((err) => {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)
       })
@@ -106,14 +132,14 @@ export default {
 
     // Handler
     async handleTagSubmit() {
-      if ( !this.$refs.tagForm.validate() ) {
+      if (!this.$refs.tagForm.validate()) {
         return
       }
       this.loading = true
       await this.tagProject()
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       this.loading = false
-      this.handleUpdated( 'Success: Tag project.' )
+      this.handleUpdated('Success: Tag project.')
     },
 
     handleUpdated(message) {
@@ -127,8 +153,8 @@ export default {
         this.handleCancel()
         return
       }
-      this.$router.push({path: '/project/setting/'})
-    }
-  }
+      this.$router.push({ path: '/project/setting/' })
+    },
+  },
 }
 </script>

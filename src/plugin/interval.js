@@ -1,9 +1,9 @@
 import store from '@/store'
 
 export default {
-  install (vue) {
+  install(vue) {
     vue.prototype.$setInterval = (func, intervalMilliSec) => {
-      if (typeof (process.env.VUE_APP_DISABLE_SET_INTERVAL) !== 'undefined') {
+      if (typeof process.env.VUE_APP_DISABLE_SET_INTERVAL !== 'undefined') {
         console.log(`[DISABLE_SET_INTERVAL] Check environment vars`)
         return null
       }
@@ -12,8 +12,8 @@ export default {
           func()
         }
       }, intervalMilliSec)
-      store.commit('updateInterval', {id: id})
+      store.commit('updateInterval', { id: id })
       return id
     }
-  }
+  },
 }

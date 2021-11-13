@@ -3,13 +3,17 @@ const alert = {
     return {}
   },
   methods: {
-    // AlertAPI 
+    // AlertAPI
     async listAlert(statusParam) {
-      const res = await this.$axios.get(
-        '/alert/list-alert/?project_id=' + this.$store.state.project.project_id + statusParam
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/alert/list-alert/?project_id=' +
+            this.$store.state.project.project_id +
+            statusParam
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.alert) {
         return []
       }
@@ -17,11 +21,16 @@ const alert = {
     },
 
     async listAlertHistory(alert_id) {
-      const res = await this.$axios.get(
-        '/alert/list-history/?alert_id=' + alert_id + '&project_id=' + this.$store.state.project.project_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/alert/list-history/?alert_id=' +
+            alert_id +
+            '&project_id=' +
+            this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.alert_history) {
         return []
       }
@@ -29,11 +38,16 @@ const alert = {
     },
 
     async listRelAlertFinding(alert_id) {
-      const res = await this.$axios.get(
-        '/alert/list-rel_alert_finding/?alert_id=' + alert_id + '&project_id=' + this.$store.state.project.project_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/alert/list-rel_alert_finding/?alert_id=' +
+            alert_id +
+            '&project_id=' +
+            this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.rel_alert_finding) {
         return []
       }
@@ -52,11 +66,15 @@ const alert = {
       if (enabledOnly) {
         enabledParam = '&enabled=true'
       }
-      const res = await this.$axios.get(
-        '/alert/list-condition/?project_id=' + this.$store.state.project.project_id + enabledParam
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/alert/list-condition/?project_id=' +
+            this.$store.state.project.project_id +
+            enabledParam
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.alert_condition) {
         return []
       }
@@ -64,12 +82,16 @@ const alert = {
     },
 
     async listAlertConditionRule(alert_condition_id) {
-      const rules = await this.$axios.get(
-        '/alert/list-condition_rule/?project_id=' + this.$store.state.project.project_id
-        + '&alert_condition_id=' + alert_condition_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const rules = await this.$axios
+        .get(
+          '/alert/list-condition_rule/?project_id=' +
+            this.$store.state.project.project_id +
+            '&alert_condition_id=' +
+            alert_condition_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!rules.data.data.alert_cond_rule) {
         return []
       }
@@ -77,12 +99,16 @@ const alert = {
     },
 
     async listAlertConditionNotification(alert_condition_id) {
-      const notis = await this.$axios.get(
-        '/alert/list-condition_notification/?project_id=' + this.$store.state.project.project_id
-        + '&alert_condition_id=' + alert_condition_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const notis = await this.$axios
+        .get(
+          '/alert/list-condition_notification/?project_id=' +
+            this.$store.state.project.project_id +
+            '&alert_condition_id=' +
+            alert_condition_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!notis.data.data.alert_cond_notification) {
         return []
       }
@@ -100,9 +126,11 @@ const alert = {
     },
 
     async putAlertCondition(param) {
-      const res = await this.$axios.post('/alert/put-condition/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .post('/alert/put-condition/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       return res.data.data.alert_condition
     },
     async putDefaultAlertCondition() {
@@ -117,9 +145,11 @@ const alert = {
           enabled: true,
         },
       }
-      const res = await this.$axios.post('/alert/put-condition/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .post('/alert/put-condition/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       return res.data.data.alert_condition
     },
     async putAlertConditionRule(alert_condition_id, alert_rule_id) {
@@ -131,19 +161,23 @@ const alert = {
           alert_rule_id: alert_rule_id,
         },
       }
-      const res = await this.$axios.post('/alert/put-condition_rule/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .post('/alert/put-condition_rule/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       return res
     },
 
     // AlertRule
     async listAlertRule() {
-      const res = await this.$axios.get(
-        '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.alert_rule) {
         return []
       }
@@ -178,9 +212,11 @@ const alert = {
           finding_cnt: 1,
         },
       }
-      const res = await this.$axios.post('/alert/put-rule/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .post('/alert/put-rule/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.alert_rule) {
         return {}
       }
@@ -189,11 +225,14 @@ const alert = {
 
     // AlertNotification
     async listAlertNotification() {
-      const res = await this.$axios.get(
-        '/alert/list-notification/?project_id=' + this.$store.state.project.project_id
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      const res = await this.$axios
+        .get(
+          '/alert/list-notification/?project_id=' +
+            this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
       if (!res.data.data.notification) {
         return []
       }
@@ -205,9 +244,11 @@ const alert = {
         project_id: this.$store.state.project.project_id,
         notification_id: notification_id,
       }
-      await this.$axios.post('/alert/delete-notification/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post('/alert/delete-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
     },
 
     async putAlertNotification(param) {
@@ -221,9 +262,11 @@ const alert = {
         project_id: this.$store.state.project.project_id,
         notification_id: notification_id,
       }
-      await this.$axios.post('/alert/test-notification/', param).catch((err) => {
-        return Promise.reject(err)
-      })
+      await this.$axios
+        .post('/alert/test-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
     },
 
     // Analyze
@@ -236,8 +279,7 @@ const alert = {
       await this.$axios.post('/alert/analyze-alert/', param).catch((err) => {
         return Promise.reject(err)
       })
-    }
-
+    },
   },
 }
 

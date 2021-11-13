@@ -8,10 +8,10 @@
           </v-card-text>
         </v-col>
         <v-col cols="8" justify="center" align="left">
-          <v-card-text >
+          <v-card-text>
             <span class="headline font-weight-black">{{ description }}</span>
           </v-card-text>
-          <v-card-text >
+          <v-card-text>
             <span class="subtitle font-weight-light">{{ detail }}</span>
           </v-card-text>
         </v-col>
@@ -26,7 +26,7 @@ export default {
     icon: String,
     color: String,
     description: String,
-    detail: String
+    detail: String,
   },
 }
 </script>

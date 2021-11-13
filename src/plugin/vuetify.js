@@ -6,7 +6,7 @@ Vue.use(Vuetify)
 const opts = {
   theme: {
     options: {
-      customProperties: true
+      customProperties: true,
     },
     themes: {
       light: {
@@ -22,9 +22,9 @@ const opts = {
         success: '#4CAF50',
         warning: '#c0ae4c',
         background: '#F5F5F5',
-      }
-    }
-  }
+      },
+    },
+  },
 }
 
 export default new Vuetify(opts)

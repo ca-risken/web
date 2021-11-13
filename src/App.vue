@@ -35,8 +35,8 @@ export default {
       snackbar: {
         show: false,
         text: '',
-        color: ''
-      }
+        color: '',
+      },
     }
   },
   mounted() {},

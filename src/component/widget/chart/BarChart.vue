@@ -10,32 +10,36 @@ export default {
   props: {
     chartData: {
       type: Object,
-      default: null
+      default: null,
     },
     options: {
       type: Object,
       default: () => {
         return {
           scales: {
-            xAxes: [{
-            stacked: true,
-              time: {
-                displayFormats: {
-                  day: 'MM/DD'
-                },
-                unit: 'day'
-              },
-            }],
-            yAxes: [{
+            xAxes: [
+              {
                 stacked: true,
-            }],
+                time: {
+                  displayFormats: {
+                    day: 'MM/DD',
+                  },
+                  unit: 'day',
+                },
+              },
+            ],
+            yAxes: [
+              {
+                stacked: true,
+              },
+            ],
           },
         }
-      }
+      },
     },
   },
-  mounted () {
+  mounted() {
     this.renderChart(this.chartData, this.options)
-  }
+  },
 }
 </script>

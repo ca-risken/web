@@ -305,9 +305,9 @@
 </template>
 
 <script>
-import mixin from "@/mixin"
-import iam from "@/mixin/api/iam"
-import BottomSnackBar from "@/component/widget/snackbar/BottomSnackBar"
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
   mixins: [mixin, iam],
   components: {
@@ -318,37 +318,37 @@ export default {
       loading: false,
       searchModel: { roleName: null },
       searchForm: {
-        roleName: { label: "Name", placeholder: "Filter for role name" },
+        roleName: { label: 'Name', placeholder: 'Filter for role name' },
       },
       roleForm: {
         newRole: false,
         valid: false,
-        role_id: { label: "ID", placeholder: "-" },
+        role_id: { label: 'ID', placeholder: '-' },
         name: {
-          label: "Name",
-          placeholder: "something-policy",
+          label: 'Name',
+          placeholder: 'something-policy',
           validator: [
-            (v) => !!v || "Name is required",
-            (v) => v.length <= 64 || "Name must be less than 64 characters",
+            (v) => !!v || 'Name is required',
+            (v) => v.length <= 64 || 'Name must be less than 64 characters',
           ],
         },
       },
 
       roleNameList: [],
       roleModel: {
-        role_id: "",
-        name: "",
+        role_id: '',
+        name: '',
         policy_cnt: 0,
-        policies: "",
-        updated_at: "",
+        policies: '',
+        updated_at: '',
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ["role_id"] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['role_id'] },
         actions: [
-          { text: "Edit Item", icon: "mdi-pencil", click: this.handleEditItem },
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
-            text: "Delete Item",
-            icon: "mdi-trash-can-outline",
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
         ],
@@ -366,8 +366,8 @@ export default {
       editDialog: false,
       policyTable: {
         selected: [],
-        search: "",
-        options: { page: 1, itemsPerPage: 5, sortBy: ["policy_id"] },
+        search: '',
+        options: { page: 1, itemsPerPage: 5, sortBy: ['policy_id'] },
         total: 0,
         footer: {
           disableItemsPerPage: true,
@@ -384,40 +384,40 @@ export default {
       return [
         {
           text: this.$i18n.t('item[""]'),
-          align: "center",
-          width: "10%",
+          align: 'center',
+          width: '10%',
           sortable: false,
-          value: "avator",
+          value: 'avator',
         },
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "role_id",
+          value: 'role_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: false,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Policies"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "policy_cnt",
+          value: 'policy_cnt',
         },
         {
           text: this.$i18n.t('item["Updated"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "updated_at",
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
-          align: "center",
+          align: 'center',
           sortable: false,
-          value: "action",
+          value: 'action',
         },
       ]
     },
@@ -425,33 +425,33 @@ export default {
       return [
         {
           text: this.$i18n.t('item["ID"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "policy_id",
+          value: 'policy_id',
         },
         {
           text: this.$i18n.t('item["Name"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "name",
+          value: 'name',
         },
         {
           text: this.$i18n.t('item["Action Pattern"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "action_ptn",
+          value: 'action_ptn',
         },
         {
           text: this.$i18n.t('item["Resource Pattern"]'),
-          align: "start",
+          align: 'start',
           sortable: true,
-          value: "resource_ptn",
+          value: 'resource_ptn',
         },
       ]
     },
   },
   mounted() {
-    this.refleshList("")
+    this.refleshList('')
   },
   methods: {
     async refleshList(searchCond) {
@@ -480,7 +480,7 @@ export default {
           this.clearList()
           return Promise.reject(err)
         })
-        const policies = await this.listPolicyAPI("&role_id=" + id).catch(
+        const policies = await this.listPolicyAPI('&role_id=' + id).catch(
           (err) => {
             this.clearList()
             return Promise.reject(err)
@@ -510,7 +510,7 @@ export default {
     async loadPolicyList() {
       this.loading = true
       this.clearPolicyList()
-      const policies = await this.listPolicyAPI("").catch((err) => {
+      const policies = await this.listPolicyAPI('').catch((err) => {
         return Promise.reject(err)
       })
       policies.forEach(async (id) => {
@@ -538,7 +538,7 @@ export default {
       })
 
       if (this.roleForm.newRole) {
-        this.finishUpdated("Success: Created role.")
+        this.finishUpdated('Success: Created role.')
         return
       }
       // Attach/Detach policies
@@ -567,7 +567,7 @@ export default {
         }
       })
 
-      this.finishUpdated("Success: Updated role.")
+      this.finishUpdated('Success: Updated role.')
     },
     async deleteItem(roleID) {
       this.loading = true
@@ -575,7 +575,7 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated("Success: Deleted role.")
+      this.finishUpdated('Success: Deleted role.')
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -588,11 +588,11 @@ export default {
 
     handleNewItem() {
       this.roleModel = {
-        role_id: "",
-        name: "",
+        role_id: '',
+        name: '',
         policy_cnt: 0,
-        policies: "",
-        updated_at: "",
+        policies: '',
+        updated_at: '',
       }
       this.loadPolicyList()
       this.roleForm.newRole = true
@@ -609,19 +609,19 @@ export default {
       this.deleteDialog = true
     },
     handleSearch() {
-      let searchCond = ""
+      let searchCond = ''
       if (this.searchModel.roleName) {
-        searchCond += "&name=" + this.searchModel.roleName
+        searchCond += '&name=' + this.searchModel.roleName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
       this.roleModel = {
-        role_id: "",
-        name: "",
+        role_id: '',
+        name: '',
         policy_cnt: 0,
-        policies: "",
-        updated_at: "",
+        policies: '',
+        updated_at: '',
       }
       this.roleModel = Object.assign(this.roleModel, item)
     },

@@ -5,7 +5,9 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
+              <v-icon large class="pr-2" color="blue lighten-2"
+                >mdi-file-find-outline</v-icon
+              >
               {{ $t(`submenu['Setting']`) }}
             </v-toolbar-title>
           </v-toolbar>
@@ -14,7 +16,9 @@
       <v-row dense justify="center" align-content="center">
         <v-col cols="6">
           <v-text-field
-            outlined clearable dense
+            outlined
+            clearable
+            dense
             background-color="white"
             prepend-icon="mdi-magnify"
             placeholder="Type something..."
@@ -32,7 +36,14 @@
           ></v-checkbox>
         </v-col>
         <v-spacer />
-        <v-btn class="mt-3 mr-4" color="primary darken-3" fab dense small @click="handleNewItem">
+        <v-btn
+          class="mt-3 mr-4"
+          color="primary darken-3"
+          fab
+          dense
+          small
+          @click="handleNewItem"
+        >
           <v-icon>mdi-new-box</v-icon>
         </v-btn>
       </v-row>
@@ -57,18 +68,20 @@
                 @click:row="handleEditItem"
               >
                 <template v-slot:[`item.status`]="{ item }">
-                  <v-icon v-if="getAlertStatusText(item.status)=='ACTIVE'" color="success">mdi-check-circle</v-icon>
+                  <v-icon
+                    v-if="getAlertStatusText(item.status) == 'ACTIVE'"
+                    color="success"
+                    >mdi-check-circle</v-icon
+                  >
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
                 <template v-slot:[`item.score_coefficient`]="{ item }">
-                  <v-chip 
+                  <v-chip
                     class="ma-2"
                     :color="getCoefficientColor(item.score_coefficient)"
                     outlined
                   >
-                    <v-icon left>
-                      mdi-calculator
-                    </v-icon>
+                    <v-icon left> mdi-calculator </v-icon>
                     x {{ item.score_coefficient }}
                   </v-chip>
                 </template>
@@ -91,12 +104,14 @@
                       <v-list-item
                         v-for="action in getActionList(item)"
                         :key="action.text"
-                        @click="action.click( item )"
+                        @click="action.click(item)"
                       >
                         <v-list-item-icon class="mr-2">
                           <v-icon small>{{ action.icon }}</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ $t(`action['`+ action.text +`']`) }}</v-list-item-title>
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -111,16 +126,20 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large class="pr-2" color="blue lighten-2">mdi-file-find-outline</v-icon>
+          <v-icon large class="pr-2" color="blue lighten-2"
+            >mdi-file-find-outline</v-icon
+          >
           <span class="mx-4 headline">{{ $t(`submenu['Setting']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
             <v-text-field
               v-model="dataModel.finding_setting_id"
-              :label="$t(`item['`+form.finding_setting_id.label+`']`)"
+              :label="$t(`item['` + form.finding_setting_id.label + `']`)"
               :placeholder="form.finding_setting_id.placeholder"
-              outlined filled disabled
+              outlined
+              filled
+              disabled
             ></v-text-field>
             <v-combobox
               v-if="form.new"
@@ -128,43 +147,63 @@
               :loading="loading"
               :counter="255"
               :rules="form.resource_name.validator"
-              :label="$t(`item['`+form.resource_name.label+`']`) + ' *'"
+              :label="$t(`item['` + form.resource_name.label + `']`) + ' *'"
               :placeholder="form.resource_name.placeholder"
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
-              persistent-hint outlined clearable
+              persistent-hint
+              outlined
+              clearable
             />
             <v-text-field
               v-if="!form.new"
               v-model="dataModel.resource_name"
-              :label="$t(`item['`+form.resource_name.label+`']`)"
+              :label="$t(`item['` + form.resource_name.label + `']`)"
               :placeholder="form.resource_name.placeholder"
-              outlined filled disabled
+              outlined
+              filled
+              disabled
             ></v-text-field>
             <v-text-field
               v-model.number="dataModel.score_coefficient"
               :counter="3"
               :rules="form.score_coefficient.validator"
-              :label="$t(`item['`+form.score_coefficient.label+`']`) + ' *'"
+              :label="$t(`item['` + form.score_coefficient.label + `']`) + ' *'"
               :placeholder="form.score_coefficient.placeholder"
-              outlined required
-            ></v-text-field>
-            <v-alert
-              dense
               outlined
-              type="info"
-            >
-              {{ $t("view.finding['If you set a `Score Coefficient`, the score will be ']") }}
+              required
+            ></v-text-field>
+            <v-alert dense outlined type="info">
+              {{
+                $t(
+                  "view.finding['If you set a `Score Coefficient`, the score will be ']"
+                )
+              }}
               <strong>{{ $t("view.finding['recalculated']") }}</strong>
-              {{ $t("view.finding[' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.']") }}
+              {{
+                $t(
+                  "view.finding[' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.']"
+                )
+              }}
             </v-alert>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
-              <v-btn text outlined color="grey darken-1" @click="editDialog = false">
+              <v-btn
+                text
+                outlined
+                color="grey darken-1"
+                @click="editDialog = false"
+              >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
-              <v-btn text outlined color="green darken-1" :loading="loading" @click="handleEditSubmit">
+              <v-btn
+                text
+                outlined
+                color="green darken-1"
+                :loading="loading"
+                @click="handleEditSubmit"
+              >
                 <template v-if="form.new">Regist</template>
                 <template v-else>{{ $t(`btn['EDIT']`) }}</template>
               </v-btn>
@@ -181,9 +220,13 @@
         </v-card-title>
         <v-list two-line>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-identifier</v-icon></v-list-item-avatar>
+            <v-list-item-avatar
+              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+            >
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.finding_setting_id"></v-list-item-title>
+              <v-list-item-title
+                v-text="dataModel.finding_setting_id"
+              ></v-list-item-title>
               <v-list-item-subtitle>Finding Setting ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -192,26 +235,38 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.resource_name"></v-list-item-title>
+              <v-list-item-title
+                v-text="dataModel.resource_name"
+              ></v-list-item-title>
               <v-list-item-subtitle>Resource Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar><v-icon>mdi-calculator</v-icon></v-list-item-avatar>
+            <v-list-item-avatar
+              ><v-icon>mdi-calculator</v-icon></v-list-item-avatar
+            >
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.score_coefficient"></v-list-item-title>
+              <v-list-item-title
+                v-text="dataModel.score_coefficient"
+              ></v-list-item-title>
               <v-list-item-subtitle>Score Coefficient</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="deleteDialog = false">
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="deleteDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             color="red darken-1"
-            text outlined
+            text
+            outlined
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -239,15 +294,27 @@ export default {
         new: false,
         valid: false,
         finding_setting_id: { label: 'ID', placeholder: '-' },
-        resource_name: { label: 'Resource Name', placeholder: 'name', validator:[
-            v => !!v || 'Resource Name is required',
-            v => !v || v.length <= 255 || 'Resource Name must be less than 255 characters',
-          ]
+        resource_name: {
+          label: 'Resource Name',
+          placeholder: 'name',
+          validator: [
+            (v) => !!v || 'Resource Name is required',
+            (v) =>
+              !v ||
+              v.length <= 255 ||
+              'Resource Name must be less than 255 characters',
+          ],
         },
-        score_coefficient: { label: 'Score Coefficient', placeholder: '1.5', validator:[
-            v => !!v || 'Score Coefficient is required',
-            v => !v || -1 <= v && v <= 100 || 'Score Coefficient must be between -1 and 100',
-          ]
+        score_coefficient: {
+          label: 'Score Coefficient',
+          placeholder: '1.5',
+          validator: [
+            (v) => !!v || 'Score Coefficient is required',
+            (v) =>
+              !v ||
+              (-1 <= v && v <= 100) ||
+              'Score Coefficient must be between -1 and 100',
+          ],
         },
         resourceNameList: [],
         typing: false,
@@ -271,7 +338,7 @@ export default {
           showCurrentPage: true,
           showFirstLastPage: true,
         },
-        items: []
+        items: [],
       },
       editDialog: false,
       deleteDialog: false,
@@ -280,12 +347,48 @@ export default {
   computed: {
     headers() {
       return [
-        { text: this.$i18n.t('item["ID"]'),  align: 'center', width: '10%', sortable: true, value: 'finding_setting_id' },
-        { text: this.$i18n.t('item["Status"]'), align: 'center', width: '10%', sortable: true, value: 'status' },
-        { text: this.$i18n.t('item["Resource Name"]'), align: 'start', width: '50%', sortable: true, value: 'resource_name' },
-        { text: this.$i18n.t('item["Score Coefficient"]'), align: 'start', width: '10%', sortable: true, value: 'score_coefficient' },
-        { text: this.$i18n.t('item["Updated"]'), align: 'center', width: '10%', sortable: true, value: 'updated_at' },
-        { text: this.$i18n.t('item["Action"]'), align: 'center', width: '10%', sortable: false, value: 'action' },
+        {
+          text: this.$i18n.t('item["ID"]'),
+          align: 'center',
+          width: '10%',
+          sortable: true,
+          value: 'finding_setting_id',
+        },
+        {
+          text: this.$i18n.t('item["Status"]'),
+          align: 'center',
+          width: '10%',
+          sortable: true,
+          value: 'status',
+        },
+        {
+          text: this.$i18n.t('item["Resource Name"]'),
+          align: 'start',
+          width: '50%',
+          sortable: true,
+          value: 'resource_name',
+        },
+        {
+          text: this.$i18n.t('item["Score Coefficient"]'),
+          align: 'start',
+          width: '10%',
+          sortable: true,
+          value: 'score_coefficient',
+        },
+        {
+          text: this.$i18n.t('item["Updated"]'),
+          align: 'center',
+          width: '10%',
+          sortable: true,
+          value: 'updated_at',
+        },
+        {
+          text: this.$i18n.t('item["Action"]'),
+          align: 'center',
+          width: '10%',
+          sortable: false,
+          value: 'action',
+        },
       ]
     },
   },
@@ -302,7 +405,7 @@ export default {
         statusParam = '&status=' + this.getFindingSettingStatus('ACTIVE')
       }
       const list = await this.listFindingSettingAPI(statusParam)
-      list.forEach(async item => {
+      list.forEach(async (item) => {
         let coefficient = '-'
         const settingJSON = JSON.parse(item.setting)
         if (settingJSON && settingJSON.score_coefficient) {
@@ -323,37 +426,51 @@ export default {
       this.table.items = []
       this.loading = false
     },
-    getActionList( item ) {
+    getActionList(item) {
       let list = [
-          { text: 'Edit Item',  icon: 'mdi-pencil', click: this.handleEditItem },
+        { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
       ]
-      if ( !item.status ) {
-        list.push({ text: 'Activate', icon: 'mdi-check-circle-outline', click: this.handleActivateItem })
-      } else if ( this.getFindingSettingStatusText(item.status)=='ACTIVE' ) {
-        list.push({ text: 'Deactivate', icon: 'mdi-cancel', click: this.handleDeactivateItem })
+      if (!item.status) {
+        list.push({
+          text: 'Activate',
+          icon: 'mdi-check-circle-outline',
+          click: this.handleActivateItem,
+        })
+      } else if (this.getFindingSettingStatusText(item.status) == 'ACTIVE') {
+        list.push({
+          text: 'Deactivate',
+          icon: 'mdi-cancel',
+          click: this.handleDeactivateItem,
+        })
       }
-      list.push({ text: 'Delete Item', icon: 'mdi-trash-can-outline', click: this.handleDeleteItem })
+      list.push({
+        text: 'Delete Item',
+        icon: 'mdi-trash-can-outline',
+        click: this.handleDeleteItem,
+      })
       return list
     },
-    getCoefficientColor( coefficient ) {
-      if ( !coefficient ) return 'grey'
-      if ( coefficient > 1.0 ) return 'green'
-      if ( coefficient < 1.0 ) return 'blue'
+    getCoefficientColor(coefficient) {
+      if (!coefficient) return 'grey'
+      if (coefficient > 1.0) return 'green'
+      if (coefficient < 1.0) return 'blue'
       return 'grey' // 1.0
     },
 
     // Update
     async putFindingSetting() {
-      const param = { 
-        project_id:      this.$store.state.project.project_id,
+      const param = {
+        project_id: this.$store.state.project.project_id,
         finding_setting: {
-          project_id:    this.$store.state.project.project_id,
+          project_id: this.$store.state.project.project_id,
           resource_name: this.dataModel.resource_name,
-          setting:       JSON.stringify({score_coefficient: parseFloat(this.dataModel.score_coefficient)}),
-          status:        Number(this.getFindingSettingStatus('ACTIVE')),
+          setting: JSON.stringify({
+            score_coefficient: parseFloat(this.dataModel.score_coefficient),
+          }),
+          status: Number(this.getFindingSettingStatus('ACTIVE')),
         },
       }
-      await this.putFindingSettingAPI(param).catch((err) =>  {
+      await this.putFindingSettingAPI(param).catch((err) => {
         this.finishError(err)
         return Promise.reject(err)
       })
@@ -361,7 +478,9 @@ export default {
     },
     // Delete
     async deleteFindingSetting() {
-      await this.deleteFindingSettingAPI(this.dataModel.finding_setting_id).catch((err) =>  {
+      await this.deleteFindingSettingAPI(
+        this.dataModel.finding_setting_id
+      ).catch((err) => {
         this.finishError(err)
         return Promise.reject(err)
       })
@@ -370,16 +489,16 @@ export default {
 
     // Activate/Deactivate
     async putFindingSettingStatus(status) {
-      const param = { 
+      const param = {
         project_id: this.$store.state.project.project_id,
         finding_setting: {
-          project_id:    this.$store.state.project.project_id,
+          project_id: this.$store.state.project.project_id,
           resource_name: this.dataModel.resource_name,
-          setting:       this.dataModel.setting,
-          status:        Number(this.getFindingSettingStatus(status)),
+          setting: this.dataModel.setting,
+          status: Number(this.getFindingSettingStatus(status)),
         },
       }
-      await this.putFindingSettingAPI(param).catch((err) =>  {
+      await this.putFindingSettingAPI(param).catch((err) => {
         this.finishError(err)
         return Promise.reject(err)
       })
@@ -394,15 +513,15 @@ export default {
     handleNewItem() {
       this.dataModel = {}
       this.form.new = true
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
       this.form.new = false
-      this.editDialog  = true
+      this.editDialog = true
     },
     handleEditSubmit() {
-      if ( !this.$refs.form.validate() ) {
+      if (!this.$refs.form.validate()) {
         return
       }
       this.loading = true
@@ -410,7 +529,7 @@ export default {
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
-      this.deleteDialog  = true
+      this.deleteDialog = true
     },
     handleDeleteSubmit() {
       this.loading = true
@@ -433,23 +552,23 @@ export default {
 
     // finish process
     async finishSuccess(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.finish(true)
     },
     async finishError(msg) {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyError(msg)
       this.finish(false)
     },
     async finish(reflesh) {
       this.loading = false
-      this.editDialog  = false
-      this.deleteDialog  = false
-      if ( reflesh ) {
+      this.editDialog = false
+      this.deleteDialog = false
+      if (reflesh) {
         this.listFindingSetting()
       }
     },
-  }
+  },
 }
 </script>
