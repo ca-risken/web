@@ -29,7 +29,7 @@ phases:
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin  ${REGISTRY}
 
       - make install
-      - make test
+      - make lint
   build:
     commands:
       - echo Build gateway started on `date`
