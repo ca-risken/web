@@ -24,7 +24,7 @@ phases:
       - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REGISTRY}
 
       - make install
-      - make test
+      - make lint
   build:
     commands:
       - echo Build web started on `date`
