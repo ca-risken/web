@@ -6,6 +6,7 @@ const osint = {
       detectWordDefault: ['dev', 'stg', 'jenkins', 'admin'],
       DataSourceReferenceResourceType: new Map([
         ['Domain', new Array('osint:subdomain')],
+        ['Website', new Array('osint:website')],
       ]),
     }
   },
@@ -103,13 +104,18 @@ const osint = {
           this.matchResourceType(dataSource.name, resource_type) &&
           !existRelOsintDataSource
         ) {
+          var isPutDetectWord = false
+          if (resource_type == 'Domain') {
+            isPutDetectWord = true
+          }
           await this.attachRelOSINTDataSource(
             project_id,
             0,
             dataSource.osint_data_source_id,
             osint_id,
             0,
-            true
+            true,
+            isPutDetectWord
           )
         }
       }
@@ -151,7 +157,8 @@ const osint = {
       osint_data_source_id,
       osint_id,
       scan_at,
-      isNew
+      isNew,
+      isPutDetectWord
     ) {
       const ret = await this.putRelOSINTDataSource(
         project_id,
@@ -160,7 +167,7 @@ const osint = {
         osint_id
       )
       const updated = ret.rel_osint_data_source
-      if (isNew && updated.rel_osint_data_source_id) {
+      if (isNew && isPutDetectWord && updated.rel_osint_data_source_id) {
         this.detectWordDefault.forEach(async (word) => {
           await this.putDetectWord(
             project_id,
@@ -249,6 +256,13 @@ const osint = {
         .catch((err) => {
           return Promise.reject(err)
         })
+      if (
+        !resListWord.data ||
+        !resListWord.data.data ||
+        !resListWord.data.data.osint_detect_word
+      ) {
+        return
+      }
       var listWord = resListWord.data.data.osint_detect_word
       listWord.forEach(async (word) => {
         await this.deleteDetectWord(word.project_id, word.osint_detect_word_id)
