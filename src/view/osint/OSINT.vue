@@ -285,10 +285,14 @@ export default {
         resource_type: {
           label: 'ResourceType',
           placeholder: 'something',
-          list: ['Domain'],
+          list: ['Domain', 'Website'],
           validator: [
             (v) => !!v || 'ResourceType is required',
-            (v) => !v || v == 'Domain' || 'ResourceType is not valid type',
+            (v) =>
+              !v ||
+              v == 'Domain' ||
+              v == 'Website' ||
+              'ResourceType is not valid type',
           ],
         },
         resource_name: {

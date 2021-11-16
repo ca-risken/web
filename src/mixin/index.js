@@ -15,6 +15,7 @@ let mixin = {
         'diagnosis:portscan',
         'diagnosis:application-scan',
         'osint:subdomain',
+        'osint:website',
         'code:gitleaks',
         'google:asset',
         'google:cloudsploit',

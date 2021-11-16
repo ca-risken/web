@@ -62,12 +62,10 @@
                 item-key="osint_data_source_id"
                 @click:row="handleAttachItem"
               >
-                <template v-slot:[`item.avator`]="{}">
-                  <v-avatar tile class="ma-1">
-                    <span class="whie--text text-h9 font-weight-black"
-                      >Domain</span
-                    >
-                  </v-avatar>
+                <template v-slot:[`item.resource_type`]="{ item }">
+                  <span class="font-weight-black"
+                    ><v-chip outlined>{{ item.resource_type }}</v-chip></span
+                  >
                 </template>
                 <template v-slot:[`item.max_score`]="{ item }">
                   <v-chip outlined>{{ item.max_score }}</v-chip>
@@ -564,11 +562,11 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          text: this.$i18n.t('item["ResourceType"]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          value: 'resource_type',
         },
         {
           text: this.$i18n.t('item["Data Source"]'),
@@ -681,7 +679,6 @@ export default {
           osint_id: osint.osint_id,
           resource_type: osint.resource_type,
           resource_name: osint.resource_name,
-
           osint_data_source_id: ds.osint_data_source_id,
           name: ds.name,
           description: ds.description,
@@ -695,6 +692,9 @@ export default {
           this.finishError(err.response.data)
           isSuccess = false
         })
+        if (!this.matchResourceType(ds.name, osint.resource_type)) {
+          return
+        }
         if (!isSuccess) {
           return
         }
@@ -730,13 +730,12 @@ export default {
         this.$store.state.project.project_id,
         this.dataModel.rel_osint_data_source_id
       ).catch((err) => {
-        this.finishError(err.response.data)
+        this.finishError(err.response)
         isSuccess = false
       })
       if (!isSuccess) {
         return
       }
-
       this.finishSuccess('Success: Detach Data Source.')
     },
     async attachDataSource() {
@@ -753,13 +752,18 @@ export default {
         scan_at = this.dataModel.scan_at
       }
       var isSuccess = true
+      var isPutDetectWord = false
+      if (this.dataModel.resource_type == 'Domain') {
+        isPutDetectWord = true
+      }
       await this.attachRelOSINTDataSource(
         this.$store.state.project.project_id,
         this.dataModel.rel_osint_data_source_id,
         this.dataModel.osint_data_source_id,
         this.dataModel.osint_id,
         scan_at,
-        isNew
+        isNew,
+        isPutDetectWord
       ).catch((err) => {
         this.finishError(err.response.data)
         isSuccess = false
