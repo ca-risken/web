@@ -15,20 +15,6 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
-          <v-col cols="12" sm="6" md="6">
-            <v-text-field
-              outlined
-              clearable
-              dense
-              background-color="white"
-              prepend-icon="mdi-magnify"
-              placeholder="Type something..."
-              v-model="table.search"
-              hide-details
-              class="hidden-sm-and-down"
-            />
-          </v-col>
-
           <v-spacer />
           <v-btn
             text
@@ -171,7 +157,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="40%">
+    <v-dialog v-model="editDialog" max-width="60%">
       <v-card>
         <v-card-title>
           <v-icon large color="blue darken-1">mdi-bug-check-outline</v-icon>
@@ -181,6 +167,40 @@
         </v-card-title>
         <v-card-text>
           <v-form v-model="applicationScanForm.valid" ref="form">
+            <template v-if="applicationScanModel.status_detail">
+              <v-row dense>
+                <v-col cols="12">
+                  <v-card>
+                    <v-card-title>
+                      <v-icon left>mdi-pin-outline</v-icon>
+                      <span class="font-weight-light">
+                        {{
+                          $t(
+                            `item['` +
+                              applicationScanForm.status_detail.label +
+                              `']`
+                          )
+                        }}
+                        <clip-board
+                          :name="
+                            $t(
+                              `item['` +
+                                applicationScanForm.status_detail.label +
+                                `']`
+                            )
+                          "
+                          :text="String(applicationScanForm.status_detail)"
+                        />
+                      </span>
+                    </v-card-title>
+                    <v-card-text>
+                      {{ applicationScanModel.status_detail }}
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-divider class="mt-3 mb-3"></v-divider>
+            </template>
             <v-text-field
               v-model="applicationScanModel.application_scan_id"
               :label="
@@ -385,6 +405,7 @@ export default {
         newApplicationScan: false,
         valid: false,
         application_scan_id: { label: 'ID', placeholder: '-' },
+        status_detail: { label: 'Status Detail' },
         name: {
           label: 'Name',
           placeholder: 'something',
@@ -564,6 +585,7 @@ export default {
         this.clearList()
         return false
       }
+      console.log(application_scan)
       this.table.items = application_scan
       this.loading = false
     },
