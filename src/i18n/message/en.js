@@ -33,6 +33,7 @@ const en = {
     'AUTO GENERATE EXTERNAL ID': 'AUTO GENERATE EXTERNAL ID',
     'AUTO GENERATE VERIFICATION CODE': 'AUTO GENERATE VERIFICATION CODE',
     'View registerd project tags': 'View registerd project tags',
+    Recommendation: 'Recommendation',
   },
   menu: {
     Home: 'Home',
@@ -147,6 +148,10 @@ const en = {
     'Policy Name': 'Policy Name',
     'Portscan Setting ID': 'Portscan Setting ID',
     'Portscan Target ID': 'Portscan Target ID',
+    Recommend: 'Recommend',
+    Recommendation: 'Recommendation',
+    'Recommend ID': 'Recommend ID',
+    Risk: 'Risk',
     Repository: 'Repository',
     RepositoryPattern: 'RepositoryPattern',
     Region: 'Region',
