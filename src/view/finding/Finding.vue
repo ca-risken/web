@@ -626,9 +626,7 @@
               <v-icon>mdi-image-text</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="findingModel.description"
-              ></v-list-item-title>
+              <v-list-item v-text="findingModel.description"></v-list-item>
               <v-list-item-subtitle>{{
                 $t(`item['Description']`)
               }}</v-list-item-subtitle>
@@ -820,9 +818,10 @@
                   ></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item-title
+                  <v-list-item
+                    class="pa-0 ma-0"
                     v-text="recommendModel.risk"
-                  ></v-list-item-title>
+                  ></v-list-item>
                   <v-list-item-subtitle>{{
                     $t(`item['Risk']`)
                   }}</v-list-item-subtitle>
@@ -838,9 +837,10 @@
                   ><v-icon>mdi-comment-check</v-icon></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item-title
+                  <v-list-item
+                    class="pa-0 ma-0"
                     v-text="recommendModel.recommendation"
-                  ></v-list-item-title>
+                  ></v-list-item>
                   <v-list-item-subtitle>{{
                     $t(`item['Recommendation']`)
                   }}</v-list-item-subtitle>
