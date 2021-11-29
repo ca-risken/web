@@ -33,6 +33,7 @@ const ja = {
     'AUTO GENERATE EXTERNAL ID': '外部IDを自動生成する',
     'AUTO GENERATE VERIFICATION CODE': '検証コードを自動生成する',
     'View registerd project tags': '登録済みのプロジェクトタグを確認する',
+    Recommendation: '推奨アクションを確認する',
   },
   menu: {
     Home: 'ホーム',
@@ -147,6 +148,10 @@ const ja = {
     'Policy Name': 'ポリシー名',
     'Portscan Setting ID': 'ポートスキャン設定ID',
     'Portscan Target ID': 'ポートスキャン対象ID',
+    Recommend: '推奨',
+    Recommendation: '推奨事項',
+    'Recommend ID': 'レコメンドID',
+    Risk: 'リスク',
     Repository: 'リポジトリ',
     RepositoryPattern: 'リポジトリパターン',
     Region: 'リージョン',

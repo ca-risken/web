@@ -371,7 +371,7 @@
             </v-col>
           </v-row>
           <v-row dense class="mx-2">
-            <v-col cols="6">
+            <v-col cols="12">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
@@ -388,6 +388,9 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
+          </v-row>
+
+          <v-row dense class="mx-2">
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-content>
@@ -418,7 +421,27 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
+            <v-col cols="4" v-if="recommendModel.recommend_id">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-run</v-icon>
+                {{ $t(`item['Recommend']`) }}
+              </v-list-item-subtitle>
+              <v-list-item-title>
+                <v-btn
+                  text
+                  outlined
+                  dense
+                  color="purple darken-2"
+                  class="ma-1"
+                  :loading="loading"
+                  @click="handleRecommendItem"
+                >
+                  {{ $t(`btn['Recommendation']`) }}
+                </v-btn>
+              </v-list-item-title>
+            </v-col>
           </v-row>
+
           <v-row v-if="findingModel.pend_note != ''" dense class="mx-4">
             <v-col cols="12">
               <v-alert
@@ -710,6 +733,137 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="recommendDialog" max-width="60%">
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col cols="9">
+              <v-card-title class="headline">
+                <span class="mx-4">
+                  {{ $t(`item['Recommendation']`) }}
+                </span>
+              </v-card-title>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="4">
+              <v-list-item>
+                <v-list-item-avatar
+                  ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+                >
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="recommendModel.recommend_id"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Recommend ID']`) }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4">
+              <v-list-item>
+                <v-list-item-avatar
+                  ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
+                >
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="recommendModel.finding_id"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ $t(`item['Finding ID']`) }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+              <v-list-item>
+                <v-list-item-avatar
+                  ><v-icon>mdi-tag-multiple</v-icon></v-list-item-avatar
+                >
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="recommendModel.type"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    $t(`item['Type']`)
+                  }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+            <v-col cols="6">
+              <v-list-item>
+                <v-list-item-avatar
+                  ><v-icon>mdi-tag-multiple</v-icon></v-list-item-avatar
+                >
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="recommendModel.data_source"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    $t(`item['Data Source']`)
+                  }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <v-list-item>
+                <v-list-item-avatar
+                  ><v-icon
+                    >mdi-comment-alert-outline</v-icon
+                  ></v-list-item-avatar
+                >
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="recommendModel.risk"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    $t(`item['Risk']`)
+                  }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <v-list-item>
+                <v-list-item-avatar
+                  ><v-icon>mdi-comment-check</v-icon></v-list-item-avatar
+                >
+                <v-list-item-content>
+                  <v-list-item-title
+                    v-text="recommendModel.recommendation"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    $t(`item['Recommendation']`)
+                  }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="recommendDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -776,6 +930,15 @@ export default {
       tagDialog: false,
       deleteDialog: false,
       pendDialog: false,
+      recommendDialog: false,
+      recommendModel: {
+        recommend_id: '',
+        finding_id: '',
+        data_source: '',
+        type: '',
+        risk: '',
+        recommendation: '',
+      },
       pendNote: '',
       pendAll: false,
       table: {
@@ -1005,8 +1168,11 @@ export default {
     },
 
     // handler
-    handleViewItem(row) {
+    async handleViewItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
+      this.recommendModel = await this.getRecommend(
+        this.findingModel.finding_id
+      )
       this.viewDialog = true
     },
     parseQuery() {
@@ -1201,6 +1367,9 @@ export default {
       })
       this.table.selected = []
       this.finishSuccess('Success: Pend ' + count + ' findings.')
+    },
+    async handleRecommendItem() {
+      this.recommendDialog = true
     },
     handleChangeStatus(tabNumber) {
       switch (tabNumber) {

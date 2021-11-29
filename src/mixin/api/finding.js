@@ -256,6 +256,22 @@ const finding = {
           return Promise.reject(err)
         })
     },
+    async getRecommend(findingID) {
+      const res = await this.$axios
+        .get(
+          '/finding/get-recommend/?project_id=' +
+            this.$store.state.project.project_id +
+            '&finding_id=' +
+            findingID
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.recommend) {
+        return {} // empty
+      }
+      return res.data.data.recommend
+    },
   },
 }
 
