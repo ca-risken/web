@@ -122,6 +122,10 @@ const isEmptyString = (str) => {
   return !str || str.length === 0 || /^\s*$/.test(str) || str === 'null'
 }
 
+const isString = (obj) => {
+  return typeof obj === 'string' || obj instanceof String
+}
+
 const isNumber = (value) => {
   return !isNaN(value)
 }
@@ -138,4 +142,5 @@ export default {
   generateVerificationCode,
   isEmptyString,
   isNumber,
+  isString,
 }

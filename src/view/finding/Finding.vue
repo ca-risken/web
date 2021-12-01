@@ -794,9 +794,11 @@
             </v-col>
             <v-col cols="6">
               <v-list-item>
-                <v-list-item-avatar
-                  ><v-icon>mdi-tag-multiple</v-icon></v-list-item-avatar
-                >
+                <v-list-item-avatar>
+                  <v-icon
+                    v-text="getDataSourceIcon(recommendModel.data_source)"
+                    :color="getDataSourceIconColor(recommendModel.data_source)"
+                /></v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title
                     v-text="recommendModel.data_source"
@@ -813,15 +815,14 @@
             <v-col cols="12">
               <v-list-item>
                 <v-list-item-avatar
-                  ><v-icon
+                  ><v-icon color="yellow darken-3"
                     >mdi-comment-alert-outline</v-icon
                   ></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item
-                    class="pa-0 ma-0"
-                    v-text="recommendModel.risk"
-                  ></v-list-item>
+                  <v-list-item class="pa-0 ma-0">
+                    <auto-link :text="recommendModel.risk" />
+                  </v-list-item>
                   <v-list-item-subtitle>{{
                     $t(`item['Risk']`)
                   }}</v-list-item-subtitle>
@@ -834,13 +835,14 @@
             <v-col cols="12">
               <v-list-item>
                 <v-list-item-avatar
-                  ><v-icon>mdi-comment-check</v-icon></v-list-item-avatar
+                  ><v-icon color="purple darken-2"
+                    >mdi-run</v-icon
+                  ></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item
-                    class="pa-0 ma-0"
-                    v-text="recommendModel.recommendation"
-                  ></v-list-item>
+                  <v-list-item class="pa-0 ma-0">
+                    <auto-link :text="recommendModel.recommendation" />
+                  </v-list-item>
                   <v-list-item-subtitle>{{
                     $t(`item['Recommendation']`)
                   }}</v-list-item-subtitle>
@@ -873,14 +875,16 @@ import mixin from '@/mixin'
 import Util from '@/util'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard'
 import JsonViewer from 'vue-json-viewer'
+import AutoLink from '@/component/text/AutoLink'
 export default {
   mixins: [mixin, finding],
   components: {
     BottomSnackBar,
     ClipBoard,
     JsonViewer,
+    AutoLink,
   },
   data() {
     return {
