@@ -833,21 +833,17 @@
 
           <v-row>
             <v-col cols="12">
-              <v-list-item>
-                <v-list-item-avatar
-                  ><v-icon color="purple darken-2"
-                    >mdi-run</v-icon
-                  ></v-list-item-avatar
-                >
-                <v-list-item-content>
-                  <v-list-item class="pa-0 ma-0">
-                    <auto-link :text="recommendModel.recommendation" />
-                  </v-list-item>
-                  <v-list-item-subtitle>{{
-                    $t(`item['Recommendation']`)
-                  }}</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+              <v-alert
+                type="info"
+                icon="mdi-run"
+                color="purple lighten-2"
+                prominent
+                outlined
+                border="left"
+                class="mb-4 mt-4 pa-6 font-weight-medium"
+              >
+                <auto-link :text="recommendModel.recommendation" />
+              </v-alert>
             </v-col>
           </v-row>
         </v-container>
