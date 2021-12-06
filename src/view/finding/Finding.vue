@@ -1173,7 +1173,26 @@ export default {
       this.recommendModel = await this.getRecommend(
         this.findingModel.finding_id
       )
+      this.orverrideRecommend()
       this.viewDialog = true
+    },
+    orverrideRecommend() {
+      const d = JSON.parse(this.findingModel.data)
+      switch (this.findingModel.data_source) {
+        case 'google:scc':
+          if (d.source_properties.Recommendation) {
+            this.recommendModel.recommendation =
+              d.source_properties.Recommendation
+          }
+          break
+        case 'aws:guard-duty':
+          if (d.Title && d.Description) {
+            this.recommendModel.risk = d.Title + '\n- ' + d.Description
+          }
+          break
+        default:
+          break
+      }
     },
     parseQuery() {
       if (!this.$route.query) return
