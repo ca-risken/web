@@ -165,11 +165,11 @@
                     {{ $t(`item['` + gcpForm.gcp_id.label + `']`) }}
                     <clip-board
                       :name="$t(`item['` + gcpForm.gcp_id.label + `']`)"
-                      :text="String(gcpModel.gcp_id)"
+                      :text="String(gcpDataSourceModel.gcp_id)"
                     />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ gcpModel.gcp_id }}
+                    {{ gcpDataSourceModel.gcp_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -187,11 +187,11 @@
                           `item['` + gcpForm.google_data_source_id.label + `']`
                         )
                       "
-                      :text="String(gcpModel.google_data_source_id)"
+                      :text="String(gcpDataSourceModel.google_data_source_id)"
                     />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ gcpModel.google_data_source_id }}
+                    {{ gcpDataSourceModel.google_data_source_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -203,11 +203,11 @@
                     {{ $t(`item['` + gcpForm.name.label + `']`) }}
                     <clip-board
                       :name="$t(`item['` + gcpForm.name.label + `']`)"
-                      :text="String(gcpModel.name)"
+                      :text="String(gcpDataSourceModel.name)"
                     />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ gcpModel.name }}
+                    {{ gcpDataSourceModel.name }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -220,7 +220,7 @@
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip outlined>
-                      {{ gcpModel.max_score }}
+                      {{ gcpDataSourceModel.max_score }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -228,7 +228,7 @@
             </v-col>
           </v-row>
           <v-row dense v-if="!gcpForm.setupAll">
-            <v-col cols="2" v-if="gcpModel.status">
+            <v-col cols="2" v-if="gcpDataSourceModel.status">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline">
@@ -237,9 +237,11 @@
                     </v-list-item-subtitle>
                     <v-chip
                       dark
-                      :color="getDataSourceStatusColor(gcpModel.status)"
+                      :color="
+                        getDataSourceStatusColor(gcpDataSourceModel.status)
+                      "
                     >
-                      {{ getDataSourceStatusText(gcpModel.status) }}
+                      {{ getDataSourceStatusText(gcpDataSourceModel.status) }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -256,11 +258,11 @@
                       :name="
                         $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
                       "
-                      :text="String(gcpModel.gcp_organization_id)"
+                      :text="String(gcpDataSourceModel.gcp_organization_id)"
                     />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ gcpModel.gcp_organization_id }}
+                    {{ gcpDataSourceModel.gcp_organization_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -272,16 +274,16 @@
                     {{ $t(`item['` + gcpForm.gcp_project_id.label + `']`) }}
                     <clip-board
                       :name="$t(`item['` + gcpForm.gcp_project_id.label + `']`)"
-                      :text="String(gcpModel.gcp_project_id)"
+                      :text="String(gcpDataSourceModel.gcp_project_id)"
                     />
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
-                    {{ gcpModel.gcp_project_id }}
+                    {{ gcpDataSourceModel.gcp_project_id }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="3" v-if="gcpModel.scan_at">
+            <v-col cols="3" v-if="gcpDataSourceModel.scan_at">
               <v-list-item two-line>
                 <v-list-item-content>
                   <v-list-item-subtitle>
@@ -289,7 +291,7 @@
                   </v-list-item-subtitle>
                   <v-list-item-title class="headline">
                     <v-chip color="grey lighten-3">
-                      {{ gcpModel.scan_at | formatTime }}
+                      {{ gcpDataSourceModel.scan_at | formatTime }}
                     </v-chip>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -297,7 +299,7 @@
             </v-col>
           </v-row>
           <v-row dense>
-            <v-col cols="12" v-if="gcpModel.status_detail">
+            <v-col cols="12" v-if="gcpDataSourceModel.status_detail">
               <v-card>
                 <v-card-title>
                   <v-icon left>mdi-pin-outline</v-icon>
@@ -305,12 +307,12 @@
                     {{ $t(`item['` + gcpForm.status_detail.label + `']`) }}
                     <clip-board
                       :name="$t(`item['` + gcpForm.status_detail.label + `']`)"
-                      :text="String(gcpModel.status_detail)"
+                      :text="String(gcpDataSourceModel.status_detail)"
                     />
                   </span>
                 </v-card-title>
                 <v-card-text>
-                  {{ gcpModel.status_detail }}
+                  {{ gcpDataSourceModel.status_detail }}
                 </v-card-text>
               </v-card>
             </v-col>
@@ -323,7 +325,7 @@
               text
               outlined
               color="blue darken-1"
-              v-if="gcpForm.readOnly"
+              v-if="gcpDataSourceModel.status && gcpForm.readOnly"
               :loading="loading"
               @click="handleScan"
             >
@@ -342,7 +344,7 @@
               text
               outlined
               color="green darken-1"
-              v-if="!gcpForm.readOnly && !gcpForm.setupAll"
+              v-if="!gcpDataSourceModel.status && !gcpForm.setupAll"
               :loading="loading"
               @click="handleAttachSubmit"
             >
@@ -377,7 +379,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title
-                v-text="gcpModel.google_data_source_id"
+                v-text="gcpDataSourceModel.google_data_source_id"
               ></v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Data Source ID']`)
@@ -390,7 +392,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title
-                v-text="gcpModel.gcp_project_id"
+                v-text="gcpDataSourceModel.gcp_project_id"
               ></v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['GCP ProjectID']`)
@@ -470,6 +472,10 @@ export default {
         scan_at: { label: 'ScanAt', placeholder: '-', validator: [] },
       },
       gcpModel: {
+        gcp_id: '',
+        name: '',
+      },
+      gcpDataSourceModel: {
         gcp_id: '',
         gcp_project_id: '',
         google_data_source_id: '',
@@ -667,17 +673,19 @@ export default {
           status_detail: '',
           scan_at: 0,
         }
-        if (res.data.data.gcp_data_source) {
+        if (
+          res.data.data.gcp_data_source &&
+          res.data.data.gcp_data_source.google_data_source_id
+        ) {
           item.gcp_id = res.data.data.gcp_data_source.gcp_id
-          ;(item.gcp_organization_id =
-            res.data.data.gcp_data_source.gcp_organization_id),
-            (item.gcp_project_id = res.data.data.gcp_data_source.gcp_project_id)
+          item.gcp_organization_id =
+            res.data.data.gcp_data_source.gcp_organization_id
+          item.gcp_project_id = res.data.data.gcp_data_source.gcp_project_id
           item.status = res.data.data.gcp_data_source.status
           item.status_detail = res.data.data.gcp_data_source.status_detail
           item.scan_at = res.data.data.gcp_data_source.scan_at
         }
         items.push(item)
-        // })
       }
       this.table.items = items
       this.table.total = this.googleDataSourceList.length
@@ -704,8 +712,8 @@ export default {
     async detachDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
-        gcp_id: this.gcpModel.gcp_id,
-        google_data_source_id: this.gcpModel.google_data_source_id,
+        gcp_id: this.gcpDataSourceModel.gcp_id,
+        google_data_source_id: this.gcpDataSourceModel.google_data_source_id,
       }
       await this.$axios
         .post('/google/detach-gcp-datasource/', param)
@@ -721,21 +729,21 @@ export default {
     },
     async attachAllDataSource() {
       this.table.items.forEach(async (ds) => {
-        this.gcpModel.google_data_source_id = ds.google_data_source_id
+        this.gcpDataSourceModel.google_data_source_id = ds.google_data_source_id
         await this.execAttachDataSource()
       })
       this.finishSuccess('Success: Attach all GCP Data Source.')
     },
     async execAttachDataSource() {
       let scan_at = 0
-      if (this.gcpModel.scan_at > 0) {
-        scan_at = this.gcpModel.scan_at
+      if (this.gcpDataSourceModel.scan_at > 0) {
+        scan_at = this.gcpDataSourceModel.scan_at
       }
       const param = {
         project_id: this.$store.state.project.project_id,
         gcp_data_source: {
-          gcp_id: this.gcpModel.gcp_id,
-          google_data_source_id: this.gcpModel.google_data_source_id,
+          gcp_id: this.gcpDataSourceModel.gcp_id,
+          google_data_source_id: this.gcpDataSourceModel.google_data_source_id,
           project_id: this.$store.state.project.project_id,
           status: 2, // CONFIGURED
           status_detail:
@@ -753,8 +761,8 @@ export default {
     async scanDataSource() {
       const param = {
         project_id: this.$store.state.project.project_id,
-        gcp_id: this.gcpModel.gcp_id,
-        google_data_source_id: this.gcpModel.google_data_source_id,
+        gcp_id: this.gcpDataSourceModel.gcp_id,
+        google_data_source_id: this.gcpDataSourceModel.google_data_source_id,
         scan_only: false, // option
       }
       await this.$axios.post('/google/invoke-scan-gcp/', param).catch((err) => {
@@ -777,7 +785,7 @@ export default {
       this.editDialog = true
     },
     handleSetupAll() {
-      this.gcpModel = { gcp_id: this.gcpModel.gcp_id }
+      this.gcpDataSourceModel = { gcp_id: this.gcpModel.gcp_id }
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = true
       this.editDialog = true
@@ -801,7 +809,7 @@ export default {
       this.deleteDialog = true
     },
     handleDetachSubmit() {
-      if (!this.gcpModel.gcp_id) {
+      if (!this.gcpDataSourceModel.gcp_id) {
         this.$refs.snackbar.notifyError('Error: Not configred.')
         this.deleteDialog = false
         return
@@ -817,13 +825,10 @@ export default {
       this.scanDataSource()
     },
     assignDataModel(item) {
-      this.gcpModel = {
-        gcp_id: this.gcpModel.gcp_id,
-        google_data_source_id: '',
-        data_source: '',
-        max_score: '',
-      }
-      this.gcpModel = Object.assign(this.gcpModel, item)
+      const gcp = this.gcpDataSourceModel
+      this.gcpDataSourceModel = Object.assign(this.gcpDataSourceModel, item)
+      this.gcpDataSourceModel.gcp_id = gcp.gcp_id // override
+      // this.gcpDataSourceModel.name = gcp.name // override
     },
     async finishInfo(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
