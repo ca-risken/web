@@ -585,7 +585,6 @@ export default {
         this.clearList()
         return false
       }
-      console.log(application_scan)
       this.table.items = application_scan
       this.loading = false
     },
