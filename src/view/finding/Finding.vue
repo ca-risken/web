@@ -1190,6 +1190,13 @@ export default {
             this.recommendModel.risk = d.Title + '\n- ' + d.Description
           }
           break
+        case 'diagnosis:application-scan':
+          this.recommendModel.recommendation =
+            this.recommendModel.recommendation.replaceAll(
+              '\nPhase:',
+              '\n\nPhase:'
+            )
+          break
         default:
           break
       }
