@@ -15,6 +15,31 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense>
+          <v-col cols="12" sm="2" md="2">
+            <v-combobox
+              outlined
+              dense
+              hide-details
+              background-color="white"
+              v-model="searchModel.namespace"
+              :loading="loading"
+              :label="$t(`item['` + searchForm.namespace.label + `']`)"
+              :items="searchForm.namespace.items"
+              @change="handleChangeNamespace"
+            />
+          </v-col>
+          <v-col cols="12" sm="2" md="2">
+            <v-combobox
+              outlined
+              dense
+              hide-details
+              background-color="white"
+              v-model="searchModel.resourceType"
+              :loading="loading"
+              :label="$t(`item['` + searchForm.resourceType.label + `']`)"
+              :items="searchForm.resourceType.items"
+            />
+          </v-col>
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               multiple
@@ -34,69 +59,26 @@
               persistent-hint
             />
           </v-col>
-          <v-col cols="12" sm="4" md="4">
-            <v-menu
-              ref="menu"
-              v-model="searchForm.menu"
-              :close-on-content-click="false"
-              :return-value.sync="searchModel.dates"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  outlined
-                  dense
-                  readonly
-                  background-color="white"
-                  v-model="dateRangeText"
-                  :label="$t(`item['` + searchForm.dates.label + `']`)"
-                  prepend-icon="event"
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                range
-                no-title
-                scrollable
-                v-model="searchModel.dates"
-              >
-                <v-btn text color="accent" @click="searchModel.dates = ['', '']"
-                  >Clear</v-btn
-                >
-                <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="searchForm.menu = false"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.menu.save(searchModel.dates)"
-                  >OK</v-btn
-                >
-              </v-date-picker>
-            </v-menu>
-          </v-col>
-
           <v-col cols="12" sm="3" md="3">
-            <v-range-slider
+            <v-combobox
+              multiple
               outlined
               dense
-              thumb-label
-              min="0.0"
-              max="100.0"
-              step="0.1"
-              :label="$t(`item['` + searchForm.score.label + `']`)"
-              :messages="searchForm.score.placeholder"
-              v-model="searchModel.score"
-            ></v-range-slider>
+              clearable
+              small-chips
+              deletable-chips
+              hide-details
+              background-color="white"
+              :label="$t(`item['` + searchForm.tag.label + `']`)"
+              :placeholder="searchForm.tag.placeholder"
+              :items="searchForm.tagList"
+              :loading="loading"
+              v-model="searchModel.tag"
+            />
           </v-col>
-
           <v-spacer />
           <v-btn
-            class="mt-3 mr-4"
+            class="mt-0 mr-4"
             fab
             dense
             small
@@ -107,19 +89,6 @@
           </v-btn>
         </v-row>
       </v-form>
-      <v-row danse justify="center" align-content="center">
-        <v-col cols="12">
-          <v-card>
-            <d3-network
-              :net-nodes="map.nodes"
-              :net-links="map.links"
-              :selection="map.selected"
-              :options="map.options"
-              @node-click="clickNode"
-            />
-          </v-card>
-        </v-col>
-      </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -147,6 +116,16 @@
                     header.text
                   }}</a></template
                 >
+                <template v-slot:[`header.namespace`]="{ header }"
+                  ><a @click="handleSort(header.value)">{{
+                    header.text
+                  }}</a></template
+                >
+                <template v-slot:[`header.resource_type`]="{ header }"
+                  ><a @click="handleSort(header.value)">{{
+                    header.text
+                  }}</a></template
+                >
                 <template v-slot:[`header.resource_name`]="{ header }"
                   ><a @click="handleSort(header.value)">{{
                     header.text
@@ -158,12 +137,52 @@
                   }}</a></template
                 >
                 <template v-slot:[`item.resource_name`]="{ item }">
-                  {{ cutLongText(item.resource_name, 80) }}
+                  {{ cutLongText(item.resource_name, 120) }}
                 </template>
-                <template v-slot:[`item.findings`]="{ item }">
-                  <v-chip :color="getColorByCount(item.findings)" dark>{{
-                    item.findings
-                  }}</v-chip>
+                <template v-slot:[`item.namespace`]="{ item }">
+                  <v-layout justify-center>
+                    <v-avatar
+                      v-if="item.data_source == 'RISKEN'"
+                      tile
+                      class="ma-0"
+                      size="30px"
+                    >
+                      <img src="/static/m.png" :alt="item.data_source" />
+                    </v-avatar>
+                    <v-icon
+                      v-else
+                      v-text="getDataSourceIcon(item.namespace)"
+                      :color="getDataSourceIconColor(item.namespace)"
+                    />
+                  </v-layout>
+                </template>
+                <template v-slot:[`item.check_point`]="{ item }">
+                  <v-card
+                    v-if="item.check_point !== null"
+                    dark
+                    color="grey darken-1"
+                    class="ma-1"
+                  >
+                    <v-card-text class="pa-0">
+                      <json-viewer
+                        :value="item.check_point"
+                        :expand-depth="0"
+                        preview-mode
+                        theme="finding-json-theme"
+                      ></json-viewer>
+                    </v-card-text>
+                  </v-card>
+                </template>
+                <template v-slot:[`item.tags`]="{ item }">
+                  <v-chip
+                    color="indigo lighten-2"
+                    class="ma-1"
+                    small
+                    dark
+                    v-for="t in shortenTags(item.tags, 5)"
+                    :key="t.tag"
+                    >{{ t.tag }}</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -221,6 +240,22 @@
                     @node-click="clickNode"
                   />
                 </v-card>
+              </v-col>
+            </v-row>
+            <!-- TAG -->
+            <v-row danse justify="center" align-content="center">
+              <v-col cols="12">
+                <v-card-text>
+                  <v-chip
+                    v-for="t in resourceModel.tags"
+                    :key="t.tag"
+                    color="indigo lighten-2"
+                    class="ma-2"
+                    dark
+                  >
+                    {{ t.tag }}
+                  </v-chip>
+                </v-card-text>
               </v-col>
             </v-row>
           </v-container>
@@ -498,22 +533,29 @@ import finding from '@/mixin/api/finding'
 import D3Network from 'vue-d3-network'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import JsonViewer from 'vue-json-viewer'
 export default {
   mixins: [mixin, finding],
   components: {
     BottomSnackBar,
     D3Network,
     ClipBoard,
+    JsonViewer,
   },
   data() {
     return {
       loading: false,
       searchModel: {
-        resourceName: null,
+        namespace: '',
+        resourceName: '',
         dates: ['', ''],
         score: [0.0, 100.0],
       },
       searchForm: {
+        namespace: {
+          label: 'Namespace',
+          items: ['aws', 'google', 'diagnosis', 'code', 'osint'],
+        },
         resourceName: {
           label: 'Resource Name',
           placeholder: 'Filter for resource name',
@@ -527,6 +569,12 @@ export default {
           label: 'Sum Score',
           placeholder: 'Filter for score( from - to )',
         },
+        resourceType: {
+          label: 'ResourceType',
+          items: [''],
+        },
+        tag: { label: 'Tag', placeholder: 'Filter tag' },
+        tagList: [],
       },
       resourceNameList: [],
       search: '',
@@ -534,7 +582,7 @@ export default {
         selected: [],
         options: {
           page: 1,
-          itemsPerPage: 5,
+          itemsPerPage: 20,
           sortBy: ['id'],
         },
         sort: {
@@ -561,23 +609,11 @@ export default {
         total: 0,
         footer: {
           disableItemsPerPage: true,
-          itemsPerPageOptions: [8],
+          itemsPerPageOptions: [20],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
         items: [],
-      },
-      // resourceIDs: [],
-      map: {
-        nodes: [],
-        links: [],
-        options: {
-          force: 1200,
-          nodeSize: 20,
-          nodeLabels: true,
-          linkLabels: true,
-          linkWidth: 5,
-        },
       },
 
       resourceMapDialog: false,
@@ -585,8 +621,8 @@ export default {
         nodes: [],
         links: [],
         options: {
-          force: 10000,
-          nodeSize: 30,
+          force: 20000,
+          nodeSize: 25,
           size: { w: 1160, h: 560 },
           nodeLabels: true,
           linkLabels: true,
@@ -613,7 +649,11 @@ export default {
       deleteDialog: false,
       resourceModel: {
         resource_id: '',
+        namespace: '',
+        resource_type: '',
         resource_name: '',
+        check_point: '',
+        tags: [],
         created_at: '',
         updated_at: '',
       },
@@ -628,6 +668,8 @@ export default {
     },
   },
   async mounted() {
+    this.loading = true
+    this.getTag()
     this.listResourceNameForCombobox()
     await this.refleshList()
   },
@@ -637,8 +679,22 @@ export default {
         {
           text: this.$i18n.t('item["ID"]'),
           align: 'center',
-          width: '5%',
+          width: '2%',
           value: 'resource_id',
+        },
+        {
+          text: this.$i18n.t('item["Name space"]'),
+          align: 'center',
+          width: '4%',
+          value: 'namespace',
+          sortable: false,
+        },
+        {
+          text: this.$i18n.t('item["Resource Type"]'),
+          align: 'center',
+          width: '4%',
+          value: 'resource_type',
+          sortable: false,
         },
         {
           text: this.$i18n.t('item["Resource"]'),
@@ -647,22 +703,23 @@ export default {
           value: 'resource_name',
         },
         {
-          text: this.$i18n.t('item["Findings"]'),
-          align: 'center',
-          width: '5%',
-          value: 'findings',
+          text: this.$i18n.t('item["CheckPoint"]'),
+          align: 'start',
+          width: '15%',
+          value: 'check_point',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          text: this.$i18n.t('item["Tags"]'),
           align: 'start',
           width: '10%',
-          value: 'updated_at',
+          value: 'tags',
+          sortable: false,
         },
         {
           text: this.$i18n.t('item["Action"]'),
           align: 'center',
-          width: '10%',
+          width: '2%',
           value: 'action',
           sortable: false,
         },
@@ -716,7 +773,8 @@ export default {
     handleViewItem(item) {
       this.resourceMap.nodes = []
       this.resourceMap.links = []
-      this.loadResouceMap(item.resource_id)
+      this.resourceModel = item
+      this.loadResouceMap(item)
       this.resourceMapDialog = true
     },
     handleSearch() {
@@ -748,9 +806,52 @@ export default {
       )
       this.finishSuccess('Success: Delete.')
     },
+    handleChangeNamespace() {
+      this.searchForm.resourceType.items = []
+      switch (this.searchModel.namespace.toLowerCase()) {
+        case 'aws':
+          this.searchForm.resourceType.items = Array.from(
+            this.awsResourceTypeTagMap.keys()
+          )
+          return
+        case 'google':
+          this.searchForm.resourceType.items = Array.from(
+            this.googleResourceTypeTagMap.keys()
+          )
+          return
+        case 'diagnosis':
+          this.searchForm.resourceType.items = Array.from(
+            this.diagnosisResourceTypeTagMap.keys()
+          )
+          return
+        case 'osint':
+          this.searchForm.resourceType.items = Array.from(
+            this.osintResourceTypeTagMap.keys()
+          )
+          return
+        case 'code':
+          this.searchForm.resourceType.items = Array.from(
+            this.codeResourceTypeTagMap.keys()
+          )
+          return
+        default:
+          this.searchForm.resourceType.items = []
+          return
+      }
+    },
 
     getSearchCondition() {
       let searchCond = ''
+      let tags = ''
+      if (this.searchModel.namespace) {
+        tags += ',' + this.searchModel.namespace
+      }
+      if (this.searchModel.resourceType) {
+        tags += ',' + this.searchModel.resourceType
+      }
+      if (tags !== '') {
+        searchCond += '&tag=' + tags.substring(1)
+      }
       if (this.searchModel.resourceName) {
         searchCond += '&resource_name=' + this.searchModel.resourceName
       }
@@ -808,21 +909,62 @@ export default {
     },
     async getResourceDetail(id) {
       const resource = await this.getResource(id)
-      const findingIDs = await this.listFindingByResouceName(
+      const tags = await this.listResourceTag(id)
+      const namespace = await this.getNamespaceByTags(tags)
+      const resourceType = await this.getResourceTypeByTags(namespace, tags)
+      const checkPoint = await this.getResourceCheckPoint(
+        namespace,
+        resourceType,
         resource.resource_name
       )
-      this.setResourceMap(resource, findingIDs, this.map, 5)
+
       this.resourceNameList.push(resource.resource_name)
       return {
         resource_id: resource.resource_id,
+        namespace: namespace,
+        resource_type: resourceType,
         resource_name: resource.resource_name,
+        check_point: checkPoint,
+        tags: tags,
         updated_at: resource.updated_at,
-        findings: findingIDs.length,
       }
     },
-    async loadResouceMap(resourceID) {
+    shortenTags(tags, maxTags) {
+      if (!tags) return []
+      let shorten = []
+      for (let i = 0; i < maxTags; i++) {
+        if (!tags[i]) return shorten
+        shorten.push(tags[i])
+      }
+      if (tags.length > maxTags) {
+        shorten.push({ tag: '...' })
+      }
+      return shorten
+    },
+    async getResourceCheckPoint(namespace, resourceType, resourceName) {
+      if (namespace === '' || resourceType === '' || resourceName === '') {
+        return null
+      }
+      // Only the following combinations are supported
+      if (namespace === 'aws' || resourceType === 's3') {
+        const fList = await this.listFinding(
+          '&data_source=aws:access-analyzer&resource_name=' + resourceName
+        )
+        if (!fList || !fList.finding_id || fList.finding_id.length === 0) {
+          return null
+        }
+        const f = await this.getFinding(fList.finding_id[0])
+        const d = JSON.parse(f.data)
+        if (d.IsPublic && d.Action) {
+          return { IsPublic: d.IsPublic, AllowedActions: d.Action.length }
+        } else {
+          return { IsPublic: d.IsPublic }
+        }
+      }
+      return null
+    },
+    async loadResouceMap(resource) {
       this.loading = true
-      const resource = await this.getResource(resourceID)
       const findingIDs = await this.listFindingByResouceName(
         resource.resource_name
       )
@@ -832,8 +974,12 @@ export default {
     clearList() {
       this.table.items = []
       this.resourceNameList = []
-      this.map.nodes = []
-      this.map.links = []
+    },
+    async getTag() {
+      this.loading = true
+      this.searchForm.tagList = []
+      const tag = await this.listResourceTagName()
+      this.searchForm.tagList = tag
     },
 
     // finish
@@ -907,7 +1053,7 @@ export default {
   },
 }
 </script>
-<style>
+<style lang="scss">
 .node {
   stroke: rgba(18, 120, 98, 0.7);
   stroke-width: 4px;
@@ -947,5 +1093,76 @@ export default {
   -webkit-transform: translateY(-0.5em);
   transform: translateY(-0.5em);
   text-anchor: middle;
+}
+
+.finding-json-theme {
+  white-space: nowrap;
+  color: rgb(160, 160, 160);
+  font-size: 12px;
+  .jv-ellipsis {
+    color: #eee;
+    display: inline-block;
+    line-height: 0.9;
+    font-size: 0.9em;
+    padding: 0px 2px 1px 2px;
+    border-radius: 1px;
+    vertical-align: 0px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .jv-button {
+    color: #49b3ff;
+  }
+  .jv-key {
+    color: rgb(181, 216, 55);
+  }
+  .jv-link {
+    color: #068cca;
+  }
+  .jv-item {
+    &.jv-array {
+      color: #eee;
+    }
+    &.jv-boolean {
+      color: #b3e5fc;
+    }
+    &.jv-function {
+      color: #068cca;
+    }
+    &.jv-number {
+      color: #42b983;
+    }
+    &.jv-number-float {
+      color: #42b983;
+    }
+    &.jv-number-integer {
+      color: #42b983;
+    }
+    &.jv-object {
+      color: #eee;
+    }
+    &.jv-undefined {
+      color: #e08331;
+    }
+    &.jv-string {
+      color: #eee;
+      word-break: break-word;
+      white-space: normal;
+    }
+  }
+  .jv-code {
+    padding: 1px;
+    .jv-toggle {
+      &:before {
+        padding: 0px 0px;
+        border-radius: 0px;
+      }
+      &:hover {
+        &:before {
+          background: #eee;
+        }
+      }
+    }
+  }
 }
 </style>

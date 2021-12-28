@@ -30,9 +30,135 @@ let mixin = {
       gitleaks_datasource_id: 1001,
       resourceNameCombobox: [],
       projectTagDialog: false,
+      namespaceTagMap: new Map([
+        ['aws', 'aws'],
+        ['google', 'google'],
+        // ['gcp', 'google'],
+        ['diagnosis', 'diagnosis'],
+        ['code', 'code'],
+        ['osint', 'osint'],
+      ]),
+      awsResourceTypeTagMap: new Map([
+        ['access-analyzer', 'access-analyzer'],
+        ['ec2', 'ec2'],
+        ['iam', 'iam'],
+        ['s3', 's3'],
+        ['sqs', 'sqs'],
+        ['lambda', 'lambda'],
+        ['kms', 'kms'],
+        ['acm', 'acm'],
+        ['apigateway', 'apigateway'],
+        ['athena', 'athena'],
+        ['autoscaling', 'autoscaling'],
+        ['cloudformation', 'cloudformation'],
+        ['cloudfront', 'cloudfront'],
+        ['cloudtrail', 'cloudtrail'],
+        ['cloudwatchlogs', 'cloudwatchlogs'],
+        ['comprehend', 'comprehend'],
+        ['configservice', 'configservice'],
+        ['dms', 'dms'],
+        ['dynamodb', 'dynamodb'],
+        ['ecr', 'ecr'],
+        ['efs', 'efs'],
+        ['eks', 'eks'],
+        ['elasticbeanstalk', 'elasticbeanstalk'],
+        ['elb', 'elb'],
+        ['elbv2', 'elbv2'],
+        ['emr', 'emr'],
+        ['es', 'es'],
+        ['firehose', 'firehose'],
+        ['guardduty', 'guardduty'],
+        ['kinesis', 'kinesis'],
+        ['organizations', 'organizations'],
+        ['rds', 'rds'],
+        ['redshift', 'redshift'],
+        ['route53', 'route53'],
+        ['sagemaker', 'sagemaker'],
+        ['securitygroup', 'securitygroup'], // TODO
+        ['ses', 'ses'],
+        ['shield', 'shield'],
+        ['sns', 'sns'],
+        ['ssm', 'ssm'],
+        ['transfer', 'transfer'],
+        ['xray', 'xray'],
+        ['vpc', 'vpc'],
+      ]),
+      googleResourceTypeTagMap: new Map([
+        // Asset ResourceName Format
+        ['aiplatform', 'aiplatform'],
+        ['apigateway', 'apigateway'],
+        ['appengine', 'appengine'],
+        ['artifactregistry', 'artifactregistry'],
+        ['assuredworkloads', 'assuredworkloads'],
+        ['bigquery', 'bigquery'],
+        ['bigtable', 'bigtable'],
+        ['cloudbilling', 'cloudbilling'],
+        ['cloudfunctions', 'cloudfunctions'],
+        ['cloudkms', 'cloudkms'],
+        ['cloudresourcemanager', 'cloudresourcemanager'],
+        ['cloudsql', 'cloudsql'],
+        ['composer', 'composer'],
+        ['compute', 'compute'],
+        ['container', 'container'],
+        ['dataflow', 'dataflow'],
+        ['datafusion', 'datafusion'],
+        ['dataproc', 'dataproc'],
+        ['dialogflow', 'dialogflow'],
+        ['dlp', 'dlp'],
+        ['dns', 'dns'],
+        ['documentai', 'documentai'],
+        ['eventarc', 'eventarc'],
+        ['file', 'file'],
+        ['gameservices', 'gameservices'],
+        ['gkehub', 'gkehub'],
+        ['iam', 'iam'],
+        ['logging', 'logging'],
+        ['managedidentities', 'managedidentities'],
+        ['memcache', 'memcache'],
+        ['metastore', 'metastore'],
+        ['monitoring', 'monitoring'],
+        ['networkmanagement', 'networkmanagement'],
+        ['osconfig', 'osconfig'],
+        ['privateca', 'privateca'],
+        ['pubsub', 'pubsub'],
+        ['redis', 'redis'],
+        ['run', 'run'],
+        ['secretmanager', 'secretmanager'],
+        ['servicedirectory', 'servicedirectory'],
+        ['servicemanagement', 'servicemanagement'],
+        ['serviceusage', 'serviceusage'],
+        ['spanner', 'spanner'],
+        ['storage', 'storage'],
+        ['tpu', 'tpu'],
+        ['vpcaccess', 'vpcaccess'],
+        // CloudSploit
+        ['clb', 'clb'],
+        ['cryptographic keys', 'cryptographic keys'],
+        ['kubernetes', 'kubernetes'],
+        ['sql', 'sql'],
+        ['vpc network', 'vpc network'],
+        ['serviceaccount', 'iam'],
+        // ['compute', 'compute'],
+        // ['dns', 'dns'],
+        // ['iam', 'iam'],
+        // ['logging', 'logging'],
+        // ['storage', 'storage'],
+      ]),
+      codeResourceTypeTagMap: new Map([['repository', 'repository']]),
+      diagnosisResourceTypeTagMap: new Map([['url', 'url']]),
+      osintResourceTypeTagMap: new Map([
+        ['domain', 'domain'],
+        ['website', 'website'],
+      ]),
     }
   },
   filters: {
+    pretty: (v) => {
+      if (!v) {
+        return false
+      }
+      return JSON.stringify(JSON.parse(v), null, 2)
+    },
     formatTime: (unix) => {
       if (unix === '0') {
         return '-'
@@ -324,6 +450,7 @@ let mixin = {
       )
     },
     async listResourceNameForCombobox(event) {
+      this.loading = true
       let input = ''
       if (event && event.target && event.target._value) {
         input = event.target._value
@@ -349,6 +476,7 @@ let mixin = {
         rnList.push(resource.resource_name)
       })
       this.resourceNameCombobox = rnList
+      this.loading = false
     },
     canDisplayActibityByResource(resourceName) {
       if (String(resourceName).startsWith('arn:')) return true
@@ -365,6 +493,60 @@ let mixin = {
     handleProjectTagUpdated(message) {
       this.$refs.snackbar.notifySuccess(message)
       this.projectTagDialog = false
+    },
+    getNamespaceByTags(tags) {
+      let namespace = ''
+      tags.forEach(async (t) => {
+        if (!t.tag) return
+        const lowerTag = t.tag.toLowerCase()
+        if (this.namespaceTagMap.has(lowerTag)) {
+          namespace = this.namespaceTagMap.get(lowerTag)
+          return
+        }
+      })
+      return namespace
+    },
+    getResourceTypeByTags(namespace, tags) {
+      if (namespace === '') return ''
+      let resourceType = ''
+      tags.forEach(async (t) => {
+        if (!t.tag) return
+        const lowerTag = t.tag.toLowerCase()
+        switch (namespace) {
+          case 'aws':
+            if (this.awsResourceTypeTagMap.has(lowerTag)) {
+              resourceType = this.awsResourceTypeTagMap.get(lowerTag)
+              return
+            }
+            break
+          case 'google':
+            if (this.googleResourceTypeTagMap.has(lowerTag)) {
+              resourceType = this.googleResourceTypeTagMap.get(lowerTag)
+              return
+            }
+            break
+          case 'diagnosis':
+            if (this.diagnosisResourceTypeTagMap.has(lowerTag)) {
+              resourceType = this.diagnosisResourceTypeTagMap.get(lowerTag)
+              return
+            }
+            break
+          case 'code':
+            if (this.codeResourceTypeTagMap.has(lowerTag)) {
+              resourceType = this.codeResourceTypeTagMap.get(lowerTag)
+              return
+            }
+            break
+          case 'osint':
+            if (this.osintResourceTypeTagMap.has(lowerTag)) {
+              resourceType = this.osintResourceTypeTagMap.get(lowerTag)
+              return
+            }
+            break
+          default:
+        }
+      })
+      return resourceType
     },
   },
 }

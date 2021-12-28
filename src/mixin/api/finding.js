@@ -146,6 +146,36 @@ const finding = {
       }
       return res.data.data.resource
     },
+    async listResourceTag(id) {
+      const res = await this.$axios
+        .get(
+          '/finding/list-resource-tag/?project_id=' +
+            this.$store.state.project.project_id +
+            '&resource_id=' +
+            id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.tag) {
+        return [] // empty
+      }
+      return res.data.data.tag
+    },
+    async listResourceTagName() {
+      const res = await this.$axios
+        .get(
+          '/finding/list-resource-tag-name/?project_id=' +
+            this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.tag) {
+        return [] // empty
+      }
+      return res.data.data.tag
+    },
 
     async tagFinding(findingID, tag) {
       const param = {

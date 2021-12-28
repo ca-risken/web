@@ -12,13 +12,12 @@ module.exports = {
         target: "http://localhost:8000",
         logLevel: "debug",
         onProxyReq: (proxyReq) => {
-          proxyReq.setHeader("x-amzn-oidc-identity", "alice");
+          // proxyReq.setHeader("x-amzn-oidc-identity", "alice");
+          proxyReq.setHeader("x-amzn-oidc-identity", "fixed-user-sub");
           proxyReq.setHeader(
             "X-Amzn-Oidc-Data",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsInVzZXJuYW1lIjoiYWxpY2UifQo=.iTH5EiE4epl0p7bw-8-x2kpURFZsYibqPQCtrOx52OY"
           );
-          // proxyReq.setHeader("x-amzn-oidc-identity", "bob");
-          // proxyReq.setHeader("X-Amzn-Oidc-Data", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJ1c2VybmFtZSI6ImJvYiJ9Cg==.iTH5EiE4epl0p7bw-8-x2kpURFZsYibqPQCtrOx52OY");
         },
       },
     },
