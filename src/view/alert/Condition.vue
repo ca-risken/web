@@ -37,17 +37,6 @@
             ></v-checkbox>
           </v-col>
           <v-spacer />
-          <!-- 
-          <v-btn 
-            fab dense outlined small 
-            color="blue darken-3" 
-            class="mt-3 mr-4"
-            :loading="loading"
-            @click="handleAnalyze"
-          >
-            <v-icon>mdi-magnify-scan</v-icon>
-          </v-btn>
-          -->
 
           <v-btn
             class="mt-3 mr-4"
@@ -108,18 +97,6 @@
                   <template v-else>
                     <v-icon left color="teal lighten-2">mdi-set-all</v-icon> OR
                   </template>
-                </template>
-                <template v-slot:[`item.rules`]="{ item }">
-                  <v-chip :color="getColorByCount(item.rules.length)" dark>{{
-                    item.rules.length
-                  }}</v-chip>
-                </template>
-                <template v-slot:[`item.notifications`]="{ item }">
-                  <v-chip
-                    :color="getColorByCount(item.notifications.length)"
-                    dark
-                    >{{ item.notifications.length }}</v-chip
-                  >
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -652,18 +629,6 @@ export default {
           value: 'and_or',
         },
         {
-          text: this.$i18n.t('item["Rules"]'),
-          align: 'center',
-          sortable: true,
-          value: 'rules',
-        },
-        {
-          text: this.$i18n.t('item["Notificationns"]'),
-          align: 'center',
-          sortable: true,
-          value: 'notifications',
-        },
-        {
           text: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
@@ -748,39 +713,12 @@ export default {
         return Promise.reject(err)
       })
       alert_condition.forEach(async (cond) => {
-        const [rules, notis] = await Promise.all([
-          this.listAlertConditionRule(cond.alert_condition_id),
-          this.listAlertConditionNotification(cond.alert_condition_id),
-        ]).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        let noti_cache = ''
-        if (notis[0] && notis[0].cache_second) {
-          noti_cache = this.getNotiCacheText(notis[0].cache_second)
-        }
-        if (noti_cache == '') {
-          noti_cache = '1 hour'
-        }
-        let next_noti_time = -1
-        if (
-          notis[0] &&
-          Util.isNumber(notis[0].cache_second) &&
-          Util.isNumber(notis[0].notified_at)
-        ) {
-          next_noti_time =
-            Number(notis[0].notified_at) + Number(notis[0].cache_second)
-        }
         const item = {
           alert_condition_id: cond.alert_condition_id,
           description: cond.description,
           severity: cond.severity,
           and_or: cond.and_or,
-          noti_cache: noti_cache,
-          next_noti_time: next_noti_time,
           enabled: cond.enabled,
-          rules: rules.map((item) => item.alert_rule_id),
-          notifications: notis.map((item) => item.notification_id),
           updated_at: cond.updated_at,
         }
         this.table.items.push(item)
@@ -833,6 +771,10 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
+      const rules = await this.listAlertConditionRule(
+        this.dataModel.alert_condition_id
+      )
+      this.dataModel.rules = rules.map((item) => item.alert_rule_id)
       alert_rule.forEach(async (rule) => {
         this.ruleTable.items.push(rule)
         if (this.dataModel.rules.indexOf(rule.alert_rule_id) !== -1) {
@@ -881,10 +823,32 @@ export default {
     // List Notifications
     async listNotification() {
       this.clearNotiList()
-
       const notification = await this.listAlertNotification().catch((err) => {
         return Promise.reject(err)
       })
+      const notis = await this.listAlertConditionNotification(
+        this.dataModel.alert_condition_id
+      )
+      this.dataModel.notifications = notis.map((item) => item.notification_id)
+      let noti_cache = ''
+      if (notis[0] && notis[0].cache_second) {
+        noti_cache = this.getNotiCacheText(notis[0].cache_second)
+      }
+      if (noti_cache == '') {
+        noti_cache = '1 hour'
+      }
+      let next_noti_time = -1
+      if (
+        notis[0] &&
+        Util.isNumber(notis[0].cache_second) &&
+        Util.isNumber(notis[0].notified_at)
+      ) {
+        next_noti_time =
+          Number(notis[0].notified_at) + Number(notis[0].cache_second)
+      }
+      this.dataModel.noti_cache = noti_cache
+      this.dataModel.next_noti_time = next_noti_time
+
       notification.forEach(async (noti) => {
         this.notiTable.items.push(noti)
         if (this.dataModel.notifications.indexOf(noti.notification_id) !== -1) {
