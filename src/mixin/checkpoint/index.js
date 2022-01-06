@@ -23,9 +23,14 @@ const checkpoint = {
       if (namespace === 'google' && resourceType === 'iam') {
         return this.getGCPIAMCheckPoint(resourceName)
       }
+      if (namespace === 'code' && resourceType === 'repository') {
+        return this.getCodeRepositoryCheckPoint(resourceName)
+      }
+
       return null
     },
 
+    // AWS
     async getAWSS3CheckPoint(resourceName) {
       const fList = await this.listFinding(
         '&data_source=aws:access-analyzer&resource_name=' + resourceName
@@ -35,11 +40,11 @@ const checkpoint = {
       }
       const f = await this.getFinding(fList.finding_id[0])
       const d = JSON.parse(f.data)
-      if (d.IsPublic && d.Action) {
-        return { IsPublic: d.IsPublic, AllowedActions: d.Action.length }
-      } else {
-        return { IsPublic: d.IsPublic }
+      let cp = { IsPublic: d.IsPublic }
+      if (d.Action) {
+        cp.AllowedActions = d.Action.length
       }
+      return cp
     },
     async getAWSIAMCheckPoint(resourceName) {
       const fList = await this.listFinding(
@@ -50,11 +55,11 @@ const checkpoint = {
       }
       const f = await this.getFinding(fList.finding_id[0])
       const d = JSON.parse(f.data)
+      let cp = { AdminUser: false }
       if (d.is_user_admin || d.is_grorup_admin) {
-        return { IsAdmin: true }
-      } else {
-        return { IsAdmin: false }
+        cp.AdminUser = true
       }
+      return cp
     },
     async getAWSGuardDutyCheckPoint(resourceName) {
       const fList = await this.listFinding(
@@ -65,16 +70,10 @@ const checkpoint = {
       }
       const f = await this.getFinding(fList.finding_id[0])
       const d = JSON.parse(f.data)
-      let serverity = ''
-      if (d.Severity) {
-        serverity = d.Severity
-      }
-      let type = ''
-      if (d.Type) {
-        type = d.Type
-      }
-      return { Severity: serverity, Type: type }
+      return { Severity: d.Severity, Type: d.Type }
     },
+
+    // Google
     async getGCPIAMCheckPoint(resourceName) {
       const fList = await this.listFinding(
         '&data_source=google:asset&resource_name=' + resourceName
@@ -84,10 +83,28 @@ const checkpoint = {
       }
       const f = await this.getFinding(fList.finding_id[0])
       const d = JSON.parse(f.data)
+      let cp = { HasKey: d.has_key }
       if (d.asset) {
-        return { State: d.asset.state, HasKey: d.has_key }
+        cp.State = d.asset.state
       }
-      return null
+      return cp
+    },
+
+    // Code
+    async getCodeRepositoryCheckPoint(resourceName) {
+      const fList = await this.listFinding(
+        '&data_source=code:gitleaks&resource_name=' + resourceName
+      )
+      if (!fList || !fList.finding_id || fList.finding_id.length === 0) {
+        return null
+      }
+      const f = await this.getFinding(fList.finding_id[0])
+      const d = JSON.parse(f.data)
+      let c = { language: d.language, visibility: d.visibility }
+      if (d.leak_findings) {
+        c.leaks = d.leak_findings.length
+      }
+      return c
     },
   },
 }
