@@ -137,7 +137,7 @@
                   }}</a></template
                 >
                 <template v-slot:[`item.resource_name`]="{ item }">
-                  {{ cutLongText(item.resource_name, 120) }}
+                  {{ cutLongText(item.resource_name, 80) }}
                 </template>
                 <template v-slot:[`item.namespace`]="{ item }">
                   <v-layout justify-center>
@@ -230,6 +230,46 @@
         </v-card-title>
         <v-card-text>
           <v-container>
+            <v-row danse justify="center" align-content="center">
+              <v-col cols="3">
+                <v-list-item two-line>
+                  <v-list-item-content>
+                    <v-list-item-subtitle>
+                      <v-icon
+                        left
+                        v-text="getDataSourceIcon(resourceModel.namespace)"
+                        :color="getDataSourceIconColor(resourceModel.namespace)"
+                      />
+                      Namespace
+                      <clip-board
+                        name="Namespace"
+                        :text="resourceModel.namespace"
+                      />
+                    </v-list-item-subtitle>
+                    <v-list-item-title class="headline">
+                      {{ resourceModel.namespace }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-col>
+              <v-col cols="9">
+                <v-list-item two-line>
+                  <v-list-item-content>
+                    <v-list-item-subtitle>
+                      <v-icon left>mdi-file-find-outline</v-icon>
+                      Resource Name
+                      <clip-board
+                        name="Resource Name"
+                        :text="resourceModel.resource_name"
+                      />
+                    </v-list-item-subtitle>
+                    <v-list-item-title class="headline">
+                      {{ resourceModel.resource_name }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-col>
+            </v-row>
             <v-row danse justify="center" align-content="center">
               <v-col cols="12">
                 <v-card :loading="loading" height="60vh">
@@ -530,12 +570,13 @@
 <script>
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
+import checkpoint from '@/mixin/checkpoint'
 import D3Network from 'vue-d3-network'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
 export default {
-  mixins: [mixin, finding],
+  mixins: [mixin, finding, checkpoint],
   components: {
     BottomSnackBar,
     D3Network,
@@ -941,28 +982,7 @@ export default {
       }
       return shorten
     },
-    async getResourceCheckPoint(namespace, resourceType, resourceName) {
-      if (namespace === '' || resourceType === '' || resourceName === '') {
-        return null
-      }
-      // Only the following combinations are supported
-      if (namespace === 'aws' || resourceType === 's3') {
-        const fList = await this.listFinding(
-          '&data_source=aws:access-analyzer&resource_name=' + resourceName
-        )
-        if (!fList || !fList.finding_id || fList.finding_id.length === 0) {
-          return null
-        }
-        const f = await this.getFinding(fList.finding_id[0])
-        const d = JSON.parse(f.data)
-        if (d.IsPublic && d.Action) {
-          return { IsPublic: d.IsPublic, AllowedActions: d.Action.length }
-        } else {
-          return { IsPublic: d.IsPublic }
-        }
-      }
-      return null
-    },
+
     async loadResouceMap(resource) {
       this.loading = true
       const findingIDs = await this.listFindingByResouceName(
