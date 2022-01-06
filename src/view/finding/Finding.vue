@@ -35,6 +35,7 @@
               clearable
               background-color="white"
               :placeholder="searchForm.findingID.placeholder"
+              :loading="loading"
               v-model="searchModel.findingID"
               hide-details
             ></v-text-field>
@@ -71,6 +72,7 @@
               :label="$t(`item['` + searchForm.tag.label + `']`)"
               :placeholder="searchForm.tag.placeholder"
               :items="searchForm.tagList"
+              :loading="loading"
               v-model="searchModel.tag"
             />
           </v-col>
@@ -87,6 +89,7 @@
               :label="$t(`item['` + searchForm.dataSource.label + `']`)"
               :placeholder="searchForm.dataSource.placeholder"
               :items="dataSourceList"
+              :loading="loading"
               v-model="searchModel.dataSource"
             />
           </v-col>
@@ -98,6 +101,7 @@
               outlined
               color="indigo darken-2"
               @click="handleSearch"
+              :loading="loading"
             >
               <v-icon>search</v-icon>
             </v-btn>
@@ -112,6 +116,7 @@
                   color="green darken-2"
                   v-bind="attrs"
                   v-on="on"
+                  :loading="loading"
                 >
                   <v-icon>mdi-format-list-bulleted-square</v-icon>
                 </v-btn>
@@ -964,12 +969,6 @@ export default {
     }
   },
   filters: {
-    pretty: (v) => {
-      if (!v) {
-        return false
-      }
-      return JSON.stringify(JSON.parse(v), null, 2)
-    },
     formatScore: (score) => {
       if (!Number.isInteger(score)) {
         return score
