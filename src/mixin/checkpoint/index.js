@@ -20,6 +20,9 @@ const checkpoint = {
       if (namespace === 'aws' && resourceType === 'guardduty') {
         return this.getAWSGuardDutyCheckPoint(resourceName)
       }
+      if (namespace === 'aws' && resourceType === 'securitygroup') {
+        return this.getAWSSecurityGroupCheckPoint(resourceName)
+      }
       if (namespace === 'google' && resourceType === 'iam') {
         return this.getGCPIAMCheckPoint(resourceName)
       }
@@ -72,7 +75,60 @@ const checkpoint = {
       const d = JSON.parse(f.data)
       return { Severity: d.Severity, Type: d.Type }
     },
+    async getAWSSecurityGroupCheckPoint(resourceName) {
+      const fList = await this.listFinding(
+        '&data_source=aws:portscan&resource_name=' + resourceName
+      )
+      if (!fList || !fList.finding_id || fList.finding_id.length === 0) {
+        return null
+      }
+      const f = await this.getFinding(fList.finding_id[0])
+      const d = JSON.parse(f.data)
 
+      let relArnNumber = 0
+      if (
+        !d.security_group ||
+        !d.security_group.IpPermissions ||
+        d.security_group.IpPermissions.length === 0
+      ) {
+        return null
+      }
+      let sourceList = []
+      for (const el of d.security_group.IpPermissions) {
+        let sourceCidrIp = []
+        let sourceGroupId = []
+        let rule = ''
+        if (el.IpProtocol == -1) {
+          rule = 'ALL: 0-65535'
+        } else {
+          rule = `${el.IpProtocol.toUpperCase()}: ${el.FromPort}-${el.ToPort}`
+        }
+        if (el.IpRanges) {
+          sourceCidrIp = el.IpRanges.map((IpRange) => {
+            if (!!IpRange && !!IpRange.CidrIp) {
+              return IpRange.CidrIp
+            }
+          })
+        }
+        if (el.UserIdGroupPairs) {
+          sourceGroupId = el.UserIdGroupPairs.map((UserIdGroupPair) => {
+            if (!!UserIdGroupPair && !!UserIdGroupPair.GroupId) {
+              return UserIdGroupPair.GroupId
+            }
+          })
+        }
+        const source = sourceGroupId.concat(sourceCidrIp)
+        const l = source.map((s) => {
+          return `${s},${rule}`
+        })
+        sourceList = sourceList.concat(l)
+      }
+      if (d.reference_arns && d.reference_arns.length != 0) {
+        relArnNumber = d.reference_arns.length
+      }
+
+      return { Source: sourceList, RefelenceArnNumber: relArnNumber }
+    },
     // Google
     async getGCPIAMCheckPoint(resourceName) {
       const fList = await this.listFinding(
