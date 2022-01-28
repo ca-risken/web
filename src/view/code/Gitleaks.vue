@@ -33,12 +33,13 @@
             outlined
             class="mt-1 mr-4"
             color="blue darken-1"
-            @click="projectTagDialog = true"
+            @click="handleNewProjectTag"
           >
             {{ $t(`btn['TAG']`) }}
           </v-btn>
           <project-tag
             :tagDialog="projectTagDialog"
+            :projectTagModel="projectTagModel"
             @projectTagCancel="projectTagDialog = false"
             @projectTagUpdated="handleProjectTagUpdated"
           />

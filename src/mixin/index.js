@@ -150,6 +150,11 @@ let mixin = {
         ['domain', 'domain'],
         ['website', 'website'],
       ]),
+      projectTagModel: {
+        project_id: '',
+        tag: '',
+        color: {},
+      },
     }
   },
   filters: {
@@ -450,7 +455,6 @@ let mixin = {
       )
     },
     async listResourceNameForCombobox(event) {
-      this.loading = true
       let input = ''
       if (event && event.target && event.target._value) {
         input = event.target._value
@@ -459,7 +463,6 @@ let mixin = {
         input += event.key
       }
       // console.log(input)
-      this.loading = true
       const list = await this.listResourceID(
         '&resource_name=' +
           input +
@@ -467,7 +470,6 @@ let mixin = {
       )
       if (!list.resource_id || list.resource_id.length == 0) {
         this.resourceNameCombobox = []
-        this.loading = false
         return
       }
       let rnList = []
@@ -476,7 +478,6 @@ let mixin = {
         rnList.push(resource.resource_name)
       })
       this.resourceNameCombobox = rnList
-      this.loading = false
     },
     canDisplayActibityByResource(resourceName) {
       if (String(resourceName).startsWith('arn:')) return true
@@ -547,6 +548,20 @@ let mixin = {
         }
       })
       return resourceType
+    },
+    async handleNewProjectTag() {
+      this.projectTagModel = {
+        project_id: this.$store.state.project.project_id,
+        tag: '',
+      }
+      this.projectTagDialog = true
+    },
+    async handleEditProjectTag(tag) {
+      this.projectTagModel = {
+        project_id: this.$store.state.project.project_id,
+        tag: tag.tag,
+      }
+      this.projectTagDialog = true
     },
   },
 }
