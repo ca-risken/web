@@ -150,6 +150,11 @@ let mixin = {
         ['domain', 'domain'],
         ['website', 'website'],
       ]),
+      projectTagModel: {
+        project_id: '',
+        tag: '',
+        color: {},
+      },
     }
   },
   filters: {
@@ -462,8 +467,8 @@ let mixin = {
       this.loading = true
       const list = await this.listResourceID(
         '&resource_name=' +
-          input +
-          '&offset=0&limit=10&sort=resource_name&direction=asc'
+        input +
+        '&offset=0&limit=10&sort=resource_name&direction=asc'
       )
       if (!list.resource_id || list.resource_id.length == 0) {
         this.resourceNameCombobox = []
@@ -547,6 +552,20 @@ let mixin = {
         }
       })
       return resourceType
+    },
+    async handleNewProjectTag() {
+      this.projectTagModel = {
+        project_id: this.$store.state.project.project_id,
+        tag: '',
+      }
+      this.projectTagDialog = true
+    },
+    async handleEditProjectTag(tag) {
+      this.projectTagModel = {
+        project_id: this.$store.state.project.project_id,
+        tag: tag.tag,
+      }
+      this.projectTagDialog = true
     },
   },
 }

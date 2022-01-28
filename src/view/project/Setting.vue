@@ -59,7 +59,7 @@
                 class="ma-2"
                 close
                 dark
-                @click="handleTag(t)"
+                @click="handleEditProjectTag(t)"
                 @click:close="handleDeleteTag(t)"
               >
                 {{ t.tag }}
@@ -71,12 +71,13 @@
                   outlined
                   color="blue darken-1"
                   :loading="loading"
-                  @click="projectTagDialog = true"
+                  @click="handleNewProjectTag"
                 >
                   {{ $t(`btn['NEW TAG']`) }}
                 </v-btn>
                 <project-tag
                   :tagDialog="projectTagDialog"
+                  :projectTagModel="projectTagModel"
                   @projectTagCancel="projectTagDialog = false"
                   @projectTagUpdated="handleProjectTagUpdated"
                 />
@@ -196,6 +197,10 @@ export default {
       })
       if (!project[0]) return
       this.projectModel.tag = project[0].tag
+      this.projectTagModel = {
+        project_id: this.projectModel.project_id,
+        tag: '',
+      }
     },
     async editProject() {
       const project = await this.updateProjectAPI(this.projectModel.name).catch(
