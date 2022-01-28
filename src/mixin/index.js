@@ -455,7 +455,6 @@ let mixin = {
       )
     },
     async listResourceNameForCombobox(event) {
-      this.loading = true
       let input = ''
       if (event && event.target && event.target._value) {
         input = event.target._value
@@ -464,15 +463,13 @@ let mixin = {
         input += event.key
       }
       // console.log(input)
-      this.loading = true
       const list = await this.listResourceID(
         '&resource_name=' +
-        input +
-        '&offset=0&limit=10&sort=resource_name&direction=asc'
+          input +
+          '&offset=0&limit=10&sort=resource_name&direction=asc'
       )
       if (!list.resource_id || list.resource_id.length == 0) {
         this.resourceNameCombobox = []
-        this.loading = false
         return
       }
       let rnList = []
@@ -481,7 +478,6 @@ let mixin = {
         rnList.push(resource.resource_name)
       })
       this.resourceNameCombobox = rnList
-      this.loading = false
     },
     canDisplayActibityByResource(resourceName) {
       if (String(resourceName).startsWith('arn:')) return true
