@@ -109,6 +109,7 @@ let mixin = {
         ['documentai', 'documentai'],
         ['eventarc', 'eventarc'],
         ['file', 'file'],
+        ['firewall', 'firewall'],
         ['gameservices', 'gameservices'],
         ['gkehub', 'gkehub'],
         ['iam', 'iam'],
