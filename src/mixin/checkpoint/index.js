@@ -153,14 +153,12 @@ const checkpoint = {
       const f = await this.getFinding(fList.finding_id[0])
       const d = JSON.parse(f.data)
 
-      let ruleAction = "allow"
+      let ruleAction = 'allow'
       let rule = []
-      if (
-        !d.firewall || d.firewall.direction != "INGRESS"
-      ) {
+      if (!d.firewall || d.firewall.direction != 'INGRESS') {
         return null
       }
-      if ( d.firewall.allowed) {
+      if (d.firewall.allowed) {
         rule = d.firewall.allowed.map((a) => {
           if (a.ports) {
             return `${a.IPProtocol}:${a.ports}`
@@ -168,9 +166,8 @@ const checkpoint = {
             return a.IPProtocol
           }
         })
-      }
-      else if ( d.firewall.denied || d.firewall.denied) {
-        ruleAction = "deny"
+      } else if (d.firewall.denied || d.firewall.denied) {
+        ruleAction = 'deny'
         rule = d.firewall.denied.map((d) => {
           if (d.ports) {
             return `${d.IPProtocol}:${d.ports}`
@@ -182,8 +179,11 @@ const checkpoint = {
         return null
       }
 
-      return { action: ruleAction, rules: rule,sourceRanges:d.firewall.sourceRanges }
-
+      return {
+        action: ruleAction,
+        rules: rule,
+        sourceRanges: d.firewall.sourceRanges,
+      }
     },
     // Code
     async getCodeRepositoryCheckPoint(resourceName) {
