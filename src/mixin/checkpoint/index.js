@@ -26,10 +26,12 @@ const checkpoint = {
       if (namespace === 'google' && resourceType === 'iam') {
         return this.getGCPIAMCheckPoint(resourceName)
       }
+      if (namespace === 'google' && resourceType === 'firewall') {
+        return this.getGCPFirewallCheckPoint(resourceName)
+      }
       if (namespace === 'code' && resourceType === 'repository') {
         return this.getCodeRepositoryCheckPoint(resourceName)
       }
-
       return null
     },
 
@@ -85,7 +87,6 @@ const checkpoint = {
       const f = await this.getFinding(fList.finding_id[0])
       const d = JSON.parse(f.data)
 
-      let relArnNumber = 0
       if (
         !d.security_group ||
         !d.security_group.IpPermissions ||
@@ -123,11 +124,8 @@ const checkpoint = {
         })
         sourceList = sourceList.concat(l)
       }
-      if (d.reference_arns && d.reference_arns.length != 0) {
-        relArnNumber = d.reference_arns.length
-      }
 
-      return { Source: sourceList, RefelenceArnNumber: relArnNumber }
+      return { Source: sourceList }
     },
     // Google
     async getGCPIAMCheckPoint(resourceName) {
@@ -145,7 +143,48 @@ const checkpoint = {
       }
       return cp
     },
+    async getGCPFirewallCheckPoint(resourceName) {
+      const fList = await this.listFinding(
+        '&data_source=google:portscan&resource_name=' + resourceName
+      )
+      if (!fList || !fList.finding_id || fList.finding_id.length === 0) {
+        return null
+      }
+      const f = await this.getFinding(fList.finding_id[0])
+      const d = JSON.parse(f.data)
 
+      let ruleAction = "allow"
+      let rule = []
+      if (
+        !d.firewall || d.firewall.direction != "INGRESS"
+      ) {
+        return null
+      }
+      if ( d.firewall.allowed) {
+        rule = d.firewall.allowed.map((a) => {
+          if (a.ports) {
+            return `${a.IPProtocol}:${a.ports}`
+          } else {
+            return a.IPProtocol
+          }
+        })
+      }
+      else if ( d.firewall.denied || d.firewall.denied) {
+        ruleAction = "deny"
+        rule = d.firewall.denied.map((d) => {
+          if (d.ports) {
+            return `${d.IPProtocol}:${d.ports}`
+          } else {
+            return d.IPProtocol
+          }
+        })
+      } else {
+        return null
+      }
+
+      return { action: ruleAction, rules: rule,sourceRanges:d.firewall.sourceRanges }
+
+    },
     // Code
     async getCodeRepositoryCheckPoint(resourceName) {
       const fList = await this.listFinding(
