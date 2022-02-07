@@ -36,6 +36,14 @@ build-ci:
 push-image:
 	docker push $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG)
 
+PHONY: pull-image
+pull-image:
+	docker pull $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG)
+
+PHONY: tag-image
+tag-image:
+	docker tag $(SOURCE_IMAGE_PREFIX)/$(TARGET):$(SOURCE_IMAGE_TAG) $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG)
+
 .PHONY: create-manifest
 create-manifest:
 	docker manifest create $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(MANIFEST_TAG) $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG_BASE)_linux_amd64 $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG_BASE)_linux_arm64
