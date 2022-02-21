@@ -227,15 +227,6 @@ export const appRoute = [
         },
         children: [
           {
-            path: '/diagnosis/jira',
-            name: 'JIRA',
-            meta: {
-              title: 'JIRA',
-              hiddenInMenu: true,
-            },
-            component: () => import('@/view/diagnosis/JIRA.vue'),
-          },
-          {
             path: '/diagnosis/wpscan',
             name: 'Diagnosis',
             meta: {
