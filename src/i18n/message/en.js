@@ -65,7 +65,6 @@ const en = {
     'AWS Activity': 'AWS Activity', // AWS
     GCP: 'GCP',
     'GCP DataSource': 'GCP DataSource',
-    JIRA: 'JIRA', // Diagnosis
     WPScan: 'WPScan', // Diagnosis
     Portscan: 'Portscan', // Diagnosis
     'Portscan Target': 'Portscan Target', // Diagnosis
@@ -130,8 +129,6 @@ const en = {
     'Google Data Source ID': 'Google Data Source ID',
     Keyword: 'Keyword',
     ID: 'ID',
-    'JIRA Setting ID': 'JIRA Setting ID',
-    'JIRA Project': 'JIRA Project',
     'Last Updated User': 'Last Updated User',
     'MAX Score': 'MAX Score',
     'Max Depth': 'MAX Depth',
