@@ -11,7 +11,7 @@
             v-model="projectTagModel.tag"
             :label="$t(`item['` + projectTagForm.tag.label + `']`) + ' *'"
             :placeholder="projectTagForm.tag.placeholder"
-            :counter="64"
+            :counter="512"
             :rules="projectTagForm.tag.validator"
             outlined
           ></v-text-field>
@@ -114,7 +114,7 @@ export default {
           validator: [
             (v) => !!v || 'Tag is required',
             (v) =>
-              !v || v.length <= 64 || 'Tag must be less than 64 characters',
+              !v || v.length <= 512 || 'Tag must be less than 512 characters',
           ],
         },
         swatches: [
