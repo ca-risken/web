@@ -1220,9 +1220,6 @@ export default {
       if (query.from_score) {
         this.searchModel.scoreFrom = query.from_score
       }
-      // if ( query.to_score ) {
-      //   this.searchModel.score[1] = query.to_score
-      // }
       this.searchModel.status = this.getFindingStatus('ACTIVE')
       if (query.status) {
         this.searchModel.status = query.status
@@ -1238,15 +1235,17 @@ export default {
         queryNew.finding_id = this.searchModel.findingID
       }
       if (this.searchModel.dataSource) {
-        searchCond += '&data_source=' + this.searchModel.dataSource
+        searchCond +=
+          '&data_source=' + encodeURIComponent(this.searchModel.dataSource)
         queryNew.data_source = this.searchModel.dataSource
       }
       if (this.searchModel.tag) {
-        searchCond += '&tag=' + this.searchModel.tag
+        searchCond += '&tag=' + encodeURIComponent(this.searchModel.tag)
         queryNew.tag = this.searchModel.tag
       }
       if (this.searchModel.resourceName) {
-        searchCond += '&resource_name=' + this.searchModel.resourceName
+        searchCond +=
+          '&resource_name=' + encodeURIComponent(this.searchModel.resourceName)
         queryNew.resource_name = this.searchModel.resourceName
       }
       if (!this.searchModel.scoreFrom) {
@@ -1254,10 +1253,6 @@ export default {
       }
       searchCond += '&from_score=' + this.searchModel.scoreFrom
       queryNew.from_score = this.searchModel.scoreFrom
-      // if (this.searchModel.score[1]) {
-      //   searchCond += '&to_score=' + this.searchModel.score[1]
-      //   queryNew.to_score = this.searchModel.score[1]
-      // }
       if (this.searchModel.status) {
         searchCond += '&status=' + this.searchModel.status
         queryNew.status = this.searchModel.status
