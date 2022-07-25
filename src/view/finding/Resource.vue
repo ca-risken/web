@@ -894,7 +894,8 @@ export default {
         searchCond += '&tag=' + tags.substring(1)
       }
       if (this.searchModel.resourceName) {
-        searchCond += '&resource_name=' + this.searchModel.resourceName
+        searchCond +=
+          '&resource_name=' + encodeURIComponent(this.searchModel.resourceName)
       }
       if (this.searchModel.dates[0]) {
         searchCond +=
