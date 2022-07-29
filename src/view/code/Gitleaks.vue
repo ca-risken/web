@@ -440,11 +440,8 @@
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
         <v-card-title class="headline">
-          <span class="mx-4" v-if="isDeleteGitHubSetting">
+          <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
-          </span>
-          <span class="mx-4" v-else>
-            {{ $t(`message['Do you really want to detach this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
@@ -465,16 +462,10 @@
             <v-list-item-avatar>
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
-            <v-list-item-content v-if="isDeleteGitHubSetting">
+            <v-list-item-content>
               <v-list-item-title v-text="gitHubModel.name"></v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-content v-else>
-              <v-list-item-title>Gitleaks</v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Data Source']`)
               }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -495,19 +486,8 @@
             outlined
             :loading="loading"
             @click="handleDeleteGitHubSettingSubmit"
-            v-if="isDeleteGitHubSetting"
           >
             {{ $t(`btn['DELETE']`) }}
-          </v-btn>
-          <v-btn
-            color="red darken-1"
-            text
-            outlined
-            :loading="loading"
-            @click="handleDeleteGitleaksSettingSubmit"
-            v-else
-          >
-            {{ $t(`btn['DETACH']`) }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -664,11 +644,6 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteGitHubSetting,
           },
-          {
-            text: 'Deactivate Gitleaks',
-            icon: 'mdi-trash-can-outline',
-            click: this.handleDeleteGitleaksSetting,
-          },
           { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         footer: {
@@ -678,7 +653,6 @@ export default {
         },
         items: [],
       },
-      isDeleteGitHubSetting: false,
       deleteDialog: false,
       editDialog: false,
     }
@@ -849,19 +823,6 @@ export default {
         })
       this.finishSuccess('Success: Deleted.')
     },
-    async deleteGitleaksSetting() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        github_setting_id: this.gitHubModel.github_setting_id,
-      }
-      await this.$axios
-        .post('/code/delete-gitleaks-setting/', param)
-        .catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
-      this.finishSuccess('Success: Deleted.')
-    },
     async putItem() {
       const paramGitHubSetting = {
         project_id: this.$store.state.project.project_id,
@@ -1011,22 +972,12 @@ export default {
     },
     handleDeleteGitHubSetting(item) {
       this.assignDataModel(item)
-      this.isDeleteGitHubSetting = true
       this.deleteDialog = true
     },
     async handleDeleteGitHubSettingSubmit() {
       this.loading = true
       await this.untagProjectAPI('github:' + this.gitHubModel.target_resource)
       await this.deleteGitHubSetting()
-    },
-    handleDeleteGitleaksSetting(item) {
-      this.assignDataModel(item)
-      this.isDeleteGitHubSetting = false
-      this.deleteDialog = true
-    },
-    async handleDeleteGitleaksSettingSubmit() {
-      this.loading = true
-      await this.deleteGitleaksSetting()
     },
     handleScan(item) {
       this.loading = true
