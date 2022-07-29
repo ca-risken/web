@@ -100,29 +100,12 @@
                   }}</v-chip>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
-                  <v-chip
-                    v-if="item.status"
-                    :color="getDataSourceStatusColor(item.status)"
-                    dark
-                  >
-                    <v-progress-circular
-                      v-if="isInProgressDataSourceStatus(item.status)"
-                      indeterminate
-                      size="20"
-                      width="2"
-                      color="white"
-                      class="mr-2"
-                    ></v-progress-circular>
-                    <v-icon v-else small color="white" class="mr-2">{{
-                      getDataSourceStatusIcon(item.status)
-                    }}</v-icon>
-                    {{ getDataSourceStatusText(item.status) }}
-                  </v-chip>
-                  <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <scan-status :status="getStatus(item.gitleaksSetting)">
+                  </scan-status>
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{
-                    item.scan_at | formatTime
+                  <v-chip v-if="getScanAt(item.gitleaksSetting)">{{
+                    getScanAt(item.gitleaksSetting) | formatTime
                   }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
@@ -348,7 +331,7 @@
               <v-col cols="4">
                 <v-text-field
                   outlined
-                  v-model="gitHubModel.repository_pattern"
+                  v-model="gitHubModel.gitleaksSetting.repository_pattern"
                   :counter="128"
                   :rules="gitHubForm.repository_pattern.validator"
                   :label="
@@ -391,7 +374,7 @@
             <v-row>
               <v-col cols="3">
                 <v-checkbox
-                  v-model="gitHubModel.scan_public"
+                  v-model="gitHubModel.gitleaksSetting.scan_public"
                   :label="$t(`item['` + gitHubForm.scan_public.label + `']`)"
                   :placeholder="gitHubForm.scan_public.placeholder"
                   :disabled="gitHubForm.readOnly"
@@ -400,7 +383,7 @@
               </v-col>
               <v-col cols="3">
                 <v-checkbox
-                  v-model="gitHubModel.scan_internal"
+                  v-model="gitHubModel.gitleaksSetting.scan_internal"
                   :label="$t(`item['` + gitHubForm.scan_internal.label + `']`)"
                   :placeholder="gitHubForm.scan_internal.placeholder"
                   :disabled="gitHubForm.readOnly"
@@ -409,7 +392,7 @@
               </v-col>
               <v-col cols="3">
                 <v-checkbox
-                  v-model="gitHubModel.scan_private"
+                  v-model="gitHubModel.gitleaksSetting.scan_private"
                   :label="$t(`item['` + gitHubForm.scan_private.label + `']`)"
                   :placeholder="gitHubForm.scan_private.placeholder"
                   :disabled="gitHubForm.readOnly"
@@ -482,10 +465,16 @@
             <v-list-item-avatar>
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
-            <v-list-item-content>
+            <v-list-item-content v-if="isDeleteGitHubSetting">
               <v-list-item-title v-text="gitHubModel.name"></v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-content v-else>
+              <v-list-item-title>Gitleaks</v-list-item-title>
+              <v-list-item-subtitle>{{
+                $t(`item['Data Source']`)
               }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -532,11 +521,13 @@ import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
+import ScanStatus from '@/component/widget/datasource/Status'
 export default {
   mixins: [mixin, project],
   components: {
     BottomSnackBar,
     ProjectTag,
+    ScanStatus,
   },
   data() {
     return {
@@ -648,14 +639,18 @@ export default {
         target_resource: '',
         github_user: '',
         personal_access_token: '',
-        scan_public: '',
-        scan_internal: '',
-        scan_private: '',
-        gitleaks_config: '',
-        status: '',
-        status_detail: '',
-        scan_at: '',
         updated_at: '',
+        gitleaksSetting: {
+          repository_pattern: '',
+          scan_public: '',
+          scan_internal: '',
+          scan_private: '',
+          status: '',
+          status_detail: '',
+          scan_at: '',
+          updated_at: '',
+        },
+        isEnabledGitleaks: false,
       },
       table: {
         selected: [],
@@ -804,9 +799,7 @@ export default {
         return false
       }
       let items = []
-      console.log(res.data.data.github_setting)
       res.data.data.github_setting.forEach(async (github_setting) => {
-        console.log(github_setting)
         const item = {
           github_setting_id: github_setting.github_setting_id,
           name: github_setting.name,
@@ -818,19 +811,22 @@ export default {
           personal_access_token: github_setting.personal_access_token,
         }
         if (github_setting.gitleaks_setting) {
-          item.github_setting_id =
-            github_setting.gitleaks_setting.github_setting_id
-          item.code_data_source_id =
-            github_setting.gitleaks_setting.code_data_source_id
-          item.repository_pattern =
-            github_setting.gitleaks_setting.repository_pattern
-          item.scan_public = github_setting.gitleaks_setting.scan_public
-          item.scan_internal = github_setting.gitleaks_setting.scan_internal
-          item.scan_private = github_setting.gitleaks_setting.scan_private
-          item.status = github_setting.gitleaks_setting.status
-          item.status_detail = github_setting.gitleaks_setting.status_detail
-          item.scan_at = github_setting.gitleaks_setting.scan_at
-          item.updated_at = github_setting.gitleaks_setting.updated_at
+          item.isEnabledGitleaks = true
+          item.gitleaksSetting = {
+            github_setting_id:
+              github_setting.gitleaks_setting.github_setting_id,
+            code_data_source_id:
+              github_setting.gitleaks_setting.code_data_source_id,
+            repository_pattern:
+              github_setting.gitleaks_setting.repository_pattern,
+            scan_public: github_setting.gitleaks_setting.scan_public,
+            scan_internal: github_setting.gitleaks_setting.scan_internal,
+            scan_private: github_setting.gitleaks_setting.scan_private,
+            status: github_setting.gitleaks_setting.status,
+            status_detail: github_setting.gitleaks_setting.status_detail,
+            scan_at: github_setting.gitleaks_setting.scan_at,
+            updated_at: github_setting.gitleaks_setting.updated_at,
+          }
         }
         items.push(item)
       })
@@ -891,8 +887,8 @@ export default {
       }
       const gitHubSettingID = res.data.data.github_setting.github_setting_id
       let scan_at = 0
-      if (this.gitHubModel.scan_at > 0) {
-        scan_at = this.gitHubModel.scan_at
+      if (this.gitHubModel.gitleaksSetting.scan_at) {
+        scan_at = this.gitHubModel.gitleaksSetting.scan_at
       }
       const paramGitleaksSetting = {
         project_id: this.$store.state.project.project_id,
@@ -900,11 +896,13 @@ export default {
           github_setting_id: gitHubSettingID,
           code_data_source_id: this.gitleaks_datasource_id,
           project_id: this.$store.state.project.project_id,
-          repository_pattern: this.gitHubModel.repository_pattern,
-          scan_public: Boolean(this.gitHubModel.scan_public),
-          scan_internal: Boolean(this.gitHubModel.scan_internal),
-          scan_private: Boolean(this.gitHubModel.scan_private),
-          gitleaks_config: this.gitHubModel.gitleaks_config,
+          repository_pattern:
+            this.gitHubModel.gitleaksSetting.repository_pattern,
+          scan_public: Boolean(this.gitHubModel.gitleaksSetting.scan_public),
+          scan_internal: Boolean(
+            this.gitHubModel.gitleaksSetting.scan_internal
+          ),
+          scan_private: Boolean(this.gitHubModel.gitleaksSetting.scan_private),
           status: 2, // CONFIGURED
           status_detail:
             'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
@@ -918,6 +916,18 @@ export default {
           return Promise.reject(err)
         })
       this.finishSuccess('Success: Updated.')
+    },
+    getStatus(setting) {
+      if (!setting) {
+        return 0 // datasource is not configured
+      }
+      return setting.status
+    },
+    getScanAt(setting) {
+      if (!setting || !setting.scan_at) {
+        return 0 // datasource is not configured
+      }
+      return setting.scan_at
     },
     getGitleaksTypeCode(typeText) {
       switch (typeText) {
@@ -972,7 +982,8 @@ export default {
       this.editDialog = true
     },
     handleNewItem() {
-      this.gitHubModel = {
+      this.gitHubModel = {}
+      this.gitHubModel.gitleaksSetting = {
         scan_public: true,
         scan_internal: true,
         scan_private: false,
@@ -1019,6 +1030,10 @@ export default {
     },
     handleScan(item) {
       this.loading = true
+      if (!item.isEnabledGitleaks) {
+        this.finishError('gitleaks setting is not configured.')
+        return
+      }
       if (item && item.github_setting_id) {
         this.assignDataModel(item)
       }
@@ -1028,6 +1043,14 @@ export default {
     assignDataModel(item) {
       this.gitHubModel = {}
       this.gitHubModel = Object.assign(this.gitHubModel, item)
+      if (this.gitHubModel.gitleaksSetting) {
+        this.gitHubModel.gitleaksSetting = Object.assign(
+          this.gitHubModel.gitleaksSetting,
+          item.gitleaksSetting
+        )
+      } else {
+        this.gitHubModel.gitleaksSetting = {}
+      }
     },
 
     async finishInfo(msg) {
