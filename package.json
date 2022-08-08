@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve-prd": "vue-cli-service serve --mode prd",
     "build": "vue-cli-service build",
+    "build-prd": "vue-cli-service build --mode prd",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@datadog/browser-rum": "^4.15.0",
     "axios": "^0.27.2",
     "chart.js": "^2.9.3",
     "chartjs-plugin-colorschemes": "^0.4.0",

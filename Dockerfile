@@ -1,10 +1,8 @@
 FROM node:lts-alpine as builder
 WORKDIR /app
-COPY package*.json yarn.lock *.config.js ./
+COPY ./ ./
 RUN yarn install
-COPY src ./src
-COPY public ./public
-RUN yarn run build
+RUN yarn run build-prd
 
 FROM nginx:stable-alpine as production-stage
 COPY --from=builder /app/dist /usr/share/nginx/html
