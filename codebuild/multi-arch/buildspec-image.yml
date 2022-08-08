@@ -36,8 +36,8 @@ phases:
   build:
     commands:
       - echo Build web started on `date`
-      - echo "VUE_APP_RUM_ID=${VUE_APP_RUM_ID}" > env.prd
-      - echo "VUE_APP_RUM_TOKEN=${VUE_APP_RUM_TOKEN}" >> env.prd
+      - echo "VUE_APP_RUM_ID=${VUE_APP_RUM_ID}" > .env.prd
+      - echo "VUE_APP_RUM_TOKEN=${VUE_APP_RUM_TOKEN}" >> .env.prd
 
       - echo Building the Docker images...
       - make build-ci -j BUILD_OPT="${BUILD_OPT}" IMAGE_PREFIX=${IMAGE_PREFIX} IMAGE_TAG=${TAG} IMAGE_REGISTRY=${REGISTRY}
