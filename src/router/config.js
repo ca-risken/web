@@ -283,7 +283,7 @@ export const appRoute = [
       {
         path: '/code',
         component: RouteWrapper,
-        redirect: '/code/gitleaks',
+        redirect: '/code/github',
         meta: {
           title: 'Code',
           icon: 'mdi-github',
@@ -291,10 +291,10 @@ export const appRoute = [
         },
         children: [
           {
-            path: '/code/gitleaks',
-            name: 'Gitleaks',
+            path: '/code/github',
+            name: 'GitHub',
             meta: {
-              title: 'Gitleaks',
+              title: 'GitHub',
             },
             component: () => import('@/view/code/Gitleaks.vue'),
           },

@@ -24,6 +24,7 @@ const en = {
     ATTACH: 'ATTACH',
     'ATTACH ALL': 'ATTACH ALL',
     DETACH: 'DETACH',
+    DEACTIVATE: 'DEACTIVATE',
     'LOAD MORE ...': 'LOAD MORE ...',
     'CREATE NEW RULE': 'CREATE NEW RULE',
     'CREATE NEW NOTIFICATION': 'CREATE NEW NOTIFICATION',
@@ -72,7 +73,7 @@ const en = {
     'Application Scan Basic Setting': 'Application Scan Basic Setting', // Diagnosis
     OSINT: 'OSINT',
     'OSINT DataSource': 'OSINT DataSource',
-    Gitleaks: 'Gitleaks',
+    GitHub: 'GitHub',
     User: 'User', // IAM
     Role: 'Role', // IAM
     Policy: 'Policy', // IAM
@@ -108,6 +109,7 @@ const en = {
     'Data Source ID': 'DataSource ID',
     'Detect Word': 'Detect Word',
     Description: 'Description',
+    'Dependency Status': 'Dependency Status',
     Duration: 'Duration',
     Enabled: 'Enabled',
     'Expired At': 'Expired At',
@@ -123,8 +125,10 @@ const en = {
     'GCP OrganizationID': 'GCP OrganizationID',
     'GCP Project': 'GCP Project',
     'GCP ProjectID': 'GCP ProjectID',
+    'GitHub Setting': 'GitHub Setting',
     'GitHub Setting ID': 'GitHub Setting ID',
     GitHubUser: 'GitHubUser',
+    'Gitleaks Status': 'Gitleaks Status',
     'Google Data Source': 'Google Data Source',
     'Google Data Source ID': 'Google Data Source ID',
     Keyword: 'Keyword',
@@ -197,7 +201,9 @@ const en = {
   },
   action: {
     '': '',
+    'Activate Dependency': 'Activate Dependency',
     'Activate Finding': 'Activate Finding',
+    'Activate Gitleaks': 'Activate Gitleaks',
     Activate: 'Activate',
     'Activate selected findings': 'Activate selected findings',
     'Analyze Alert': 'Analyze Alert',
@@ -215,6 +221,8 @@ const en = {
     Pending: 'Pending',
     'Resource Map': 'Resource Map',
     Scan: 'Scan',
+    'Scan Gitleaks': 'Scan Gitleaks',
+    'Scan Dependency': 'Scan Dependency',
     'View DataSource': 'View DataSource',
     'View Finding': 'View Finding',
     'View Item': 'View Item',
@@ -222,6 +230,8 @@ const en = {
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
+    'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
+      'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?',
     'Do you want to update PENDING this?':
       'Do you want to update PENDING this?',
     'Do you really want to detach this?': 'Do you really want to detach this?',
