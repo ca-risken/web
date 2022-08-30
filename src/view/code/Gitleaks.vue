@@ -916,8 +916,14 @@ export default {
   watch: {
     editDialog(visible) {
       if (visible) {
-        this.$refs.formGitHub.resetValidation()
-        this.$refs.formGitleaks.resetValidation()
+        this.isDeleteGitleaks = false
+        this.isDeleteDependency = false
+        if (this.$refs.formGitHub) {
+          this.$refs.formGitHub.resetValidation()
+        }
+        if (this.$refs.formGitleaks) {
+          this.$refs.formGitleaks.resetValidation()
+        }
       }
     },
   },
@@ -1280,6 +1286,9 @@ export default {
         })
         return
       }
+      if (!this.gitHubModel.isEnabledGitleaks) {
+        return
+      }
       let scan_at = 0
       if (this.gitHubModel.gitleaksSetting.scan_at) {
         scan_at = this.gitHubModel.gitleaksSetting.scan_at
@@ -1308,6 +1317,9 @@ export default {
         })
         return
       }
+      if (!this.gitHubModel.isEnabledDependency) {
+        return
+      }
       let scan_at = 0
       if (this.gitHubModel.dependencySetting.scan_at) {
         scan_at = this.gitHubModel.gitleaksSetting.scan_at
@@ -1328,7 +1340,6 @@ export default {
       )
     },
     getStatus(setting) {
-      console.log(setting)
       if (!setting) {
         return 0 // datasource is not configured
       }
@@ -1401,6 +1412,8 @@ export default {
     handleNewGitHubSetting() {
       this.gitHubModel = {}
       this.gitHubForm.isNew = true
+      this.newGitleaksSetting()
+      this.newDependencySetting()
       this.isReadOnlyForm = false
       this.editDialog = true
     },
@@ -1443,22 +1456,6 @@ export default {
       this.loading = true
       await this.deleteGitHubSetting()
     },
-    handleDeleteGitleaksSetting(item) {
-      this.assignDataModel(item)
-      this.deleteDialog = true
-    },
-    async handleDeleteGitleaksSettingSubmit() {
-      this.loading = true
-      await this.deleteGitleaksSetting()
-    },
-    handleDeleteDependencySetting(item) {
-      this.assignDataModel(item)
-      this.deleteDialog = true
-    },
-    async handleDeleteDependencySettingSubmit() {
-      this.loading = true
-      await this.deleteDependencySetting()
-    },
     handleScanGitleaks(item) {
       if (item && item.github_setting_id) {
         this.assignDataModel(item)
@@ -1468,7 +1465,6 @@ export default {
         this.finishError('gitleaks setting is not configured.')
         return
       }
-      console.log(this.gitHubModel)
       this.scanGitleaks(this.gitHubModel.github_setting_id)
     },
     handleScanDependency(item) {
@@ -1489,7 +1485,6 @@ export default {
         this.isDeleteGitleaks = false
         return
       }
-
       // 無効化されて、既存のデータが存在する場合に既存データの削除フラグを立てる
       if (!this.gitleaksForm.isNew) {
         this.deleteTarget = dataSourceName
@@ -1530,7 +1525,7 @@ export default {
     assignDataModel(item) {
       this.gitHubModel = {}
       this.gitHubModel = Object.assign(this.gitHubModel, item)
-      if (this.gitHubModel.gitleaksSetting) {
+      if (item.gitleaksSetting) {
         this.gitHubModel.gitleaksSetting = Object.assign(
           this.gitHubModel.gitleaksSetting,
           item.gitleaksSetting
@@ -1538,7 +1533,7 @@ export default {
       } else {
         this.gitHubModel.gitleaksSetting = {}
       }
-      if (this.gitHubModel.dependencySetting) {
+      if (item.dependencySetting) {
         this.gitHubModel.dependencySetting = Object.assign(
           this.gitHubModel.dependencySetting,
           item.dependencySetting
