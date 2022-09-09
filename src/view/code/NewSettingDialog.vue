@@ -728,12 +728,15 @@ export default {
       return setting.status_detail
     },
     async refreshDialogDataSource(github_setting_id) {
-      const github_setting = await this.listGitHubSettingAPI(
-        github_setting_id
-      ).catch((err) => {
-        this.$emit('edit-notify', '', err.response.data)
-        return
-      })
+      this.loading = true
+      const github_setting = await this.listGitHubSettingAPI(github_setting_id)
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+          return
+        })
+        .finally(() => {
+          this.loading = false
+        })
       if (!github_setting) {
         this.$emit('edit-notify', '', 'github_setting is not found.')
         return
