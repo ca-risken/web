@@ -728,19 +728,21 @@ export default {
       return setting.status_detail
     },
     async refreshDialogDataSource(github_setting_id) {
-      const github_setting = await this.listGitHubSettingAPI(github_setting_id).catch((err) => {
-        this.$emit('edit-notify', '',err.response.data)
-        return        
+      const github_setting = await this.listGitHubSettingAPI(
+        github_setting_id
+      ).catch((err) => {
+        this.$emit('edit-notify', '', err.response.data)
+        return
       })
       if (!github_setting) {
-        this.$emit('edit-notify', '','github_setting is not found.')
+        this.$emit('edit-notify', '', 'github_setting is not found.')
         return
       }
       this.gitleaksSetting = github_setting[0].gitleaks_setting
       this.dependencySetting = github_setting[0].dependency_setting
     },
     async editGitHubSetting() {
-    const github_setting = {
+      const github_setting = {
         github_setting_id: this.gitHubSetting.github_setting_id,
         name: this.gitHubSetting.name,
         project_id: this.$store.state.project.project_id,
@@ -888,14 +890,13 @@ export default {
         this.loading = false
         return
       }
-      await this.invokeScanGitleaksAPI(
-        this.gitHubSetting.github_setting_id
-      ).catch((err) => {
-        this.$emit('edit-notify', '', err.response.data)
-      }).finally(() => {
-        this.loading = false
-      }
-      )
+      await this.invokeScanGitleaksAPI(this.gitHubSetting.github_setting_id)
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+        })
+        .finally(() => {
+          this.loading = false
+        })
       this.$emit('edit-notify', 'Success: Invoke scan for Gitleaks.')
       this.refreshDialogDataSource(this.gitHubSetting.github_setting_id)
     },
@@ -905,14 +906,13 @@ export default {
         this.$emit('edit-notify', '', 'Dependency is not enabled.')
         return
       }
-      await this.invokeScanDependencyAPI(
-        this.gitHubSetting.github_setting_id
-      ).catch((err) => {
-        this.$emit('edit-notify', '', err.response.data)
-    }).finally(() => {
-        this.loading = false
-      }
-      )
+      await this.invokeScanDependencyAPI(this.gitHubSetting.github_setting_id)
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+        })
+        .finally(() => {
+          this.loading = false
+        })
       this.$emit('edit-notify', 'Success: Invoke scan for Dependency.')
       this.refreshDialogDataSource(this.gitHubSetting.github_setting_id)
     },

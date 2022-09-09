@@ -21,10 +21,7 @@ const code = {
         query += '&github_setting_id=' + github_setting_id
       }
       const res = await this.$axios
-        .get(
-          '/code/list-github-setting/' +
-            query
-        )
+        .get('/code/list-github-setting/' + query)
         .catch((err) => {
           return Promise.reject(err)
         })

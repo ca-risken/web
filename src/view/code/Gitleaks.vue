@@ -100,26 +100,20 @@
                   }}</v-chip>
                 </template>
                 <template v-slot:[`item.status_gitleaks`]="{ item }">
-                  <scan-status :status="getStatus(item.gitleaksSetting)" v-if="getStatus(item.gitleaksSetting)">
+                  <scan-status
+                    :status="getStatus(item.gitleaksSetting)"
+                    v-if="getStatus(item.gitleaksSetting)"
+                  >
                   </scan-status>
-                  <v-chip
-                                dark
-                                color="grey"
-                                v-else
-                              >
-                                Disabled
-                              </v-chip>
+                  <v-chip dark color="grey" v-else> Disabled </v-chip>
                 </template>
                 <template v-slot:[`item.status_dependency`]="{ item }">
-                  <scan-status :status="getStatus(item.dependencySetting)" v-if="getStatus(item.gitleaksSetting)">
+                  <scan-status
+                    :status="getStatus(item.dependencySetting)"
+                    v-if="getStatus(item.gitleaksSetting)"
+                  >
                   </scan-status>
-                  <v-chip
-                                dark
-                                color="grey"
-                                v-else
-                              >
-                                Disabled
-                              </v-chip>
+                  <v-chip dark color="grey" v-else> Disabled </v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -577,17 +571,21 @@ export default {
       }
       this.loading = true
       if (this.gitHubModel.isEnabledGitleaks) {
-        await this.invokeScanGitleaksAPI(item.github_setting_id).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+        await this.invokeScanGitleaksAPI(item.github_setting_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
       }
       if (this.gitHubModel.isEnabledDependency) {
-        await this.invokeScanDependencyAPI(item.github_setting_id).catch((err) => {
-        this.finishError(err.response.data)
-        return
-      })
-    }
+        await this.invokeScanDependencyAPI(item.github_setting_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return
+          }
+        )
+      }
       this.finishSuccess('Success: Invoke scan for Data Source.')
     },
     assignDataModel(item) {
