@@ -24,6 +24,8 @@ const en = {
     ATTACH: 'ATTACH',
     'ATTACH ALL': 'ATTACH ALL',
     DETACH: 'DETACH',
+    ENABLE: 'ENABLE',
+    DISABLE: 'DISABLE',
     'LOAD MORE ...': 'LOAD MORE ...',
     'CREATE NEW RULE': 'CREATE NEW RULE',
     'CREATE NEW NOTIFICATION': 'CREATE NEW NOTIFICATION',
@@ -72,7 +74,7 @@ const en = {
     'Application Scan Basic Setting': 'Application Scan Basic Setting', // Diagnosis
     OSINT: 'OSINT',
     'OSINT DataSource': 'OSINT DataSource',
-    Gitleaks: 'Gitleaks',
+    GitHub: 'GitHub',
     User: 'User', // IAM
     Role: 'Role', // IAM
     Policy: 'Policy', // IAM
@@ -108,6 +110,7 @@ const en = {
     'Data Source ID': 'DataSource ID',
     'Detect Word': 'Detect Word',
     Description: 'Description',
+    'Dependency Status': 'Dependency Status',
     Duration: 'Duration',
     Enabled: 'Enabled',
     'Expired At': 'Expired At',
@@ -123,8 +126,10 @@ const en = {
     'GCP OrganizationID': 'GCP OrganizationID',
     'GCP Project': 'GCP Project',
     'GCP ProjectID': 'GCP ProjectID',
+    'GitHub Setting': 'GitHub Setting',
     'GitHub Setting ID': 'GitHub Setting ID',
     GitHubUser: 'GitHubUser',
+    'Gitleaks Status': 'Gitleaks Status',
     'Google Data Source': 'Google Data Source',
     'Google Data Source ID': 'Google Data Source ID',
     Keyword: 'Keyword',
@@ -210,6 +215,8 @@ const en = {
     'Detach DataSource': 'Detach DataSource',
     'Download selected findings CSV': 'Download selected findings CSV',
     'Edit Item': 'Edit Item',
+    'Enable Dependency': 'Enable Dependency',
+    'Enable Gitleaks': 'Enable Gitleaks',
     'Pend Finding': 'Pend Finding',
     'Pend selected findings': 'Pend selected findings',
     Pending: 'Pending',
@@ -222,6 +229,8 @@ const en = {
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
+    'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
+      'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?',
     'Do you want to update PENDING this?':
       'Do you want to update PENDING this?',
     'Do you really want to detach this?': 'Do you really want to detach this?',

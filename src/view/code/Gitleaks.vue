@@ -6,7 +6,7 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2" color="black">mdi-github</v-icon>
-              {{ $t(`submenu['Gitleaks']`) }}
+              {{ $t(`submenu['GitHub']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -63,7 +63,7 @@
             fab
             dense
             small
-            @click="handleNewItem"
+            @click="handleNewGitHubSetting"
           >
             <v-icon>mdi-new-box</v-icon>
           </v-btn>
@@ -89,7 +89,7 @@
                 item-key="diagnosis_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3">
                     <v-icon color="black" large>mdi-github</v-icon>
                   </v-avatar>
@@ -99,15 +99,21 @@
                     item.type_text
                   }}</v-chip>
                 </template>
-                <template v-slot:[`item.status`]="{ item }">
-                  <scan-status :status="getStatus(item.gitleaksSetting)">
+                <template v-slot:[`item.status_gitleaks`]="{ item }">
+                  <scan-status
+                    :status="getStatus(item.gitleaksSetting)"
+                    v-if="getStatus(item.gitleaksSetting)"
+                  >
                   </scan-status>
+                  <v-chip dark color="grey" v-else> Disabled </v-chip>
                 </template>
-                <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="getScanAt(item.gitleaksSetting)">{{
-                    getScanAt(item.gitleaksSetting) | formatTime
-                  }}</v-chip>
-                  <v-chip v-else>Not yet scan...</v-chip>
+                <template v-slot:[`item.status_dependency`]="{ item }">
+                  <scan-status
+                    :status="getStatus(item.dependencySetting)"
+                    v-if="getStatus(item.gitleaksSetting)"
+                  >
+                  </scan-status>
+                  <v-chip dark color="grey" v-else> Disabled </v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -146,296 +152,6 @@
         </v-col>
       </v-row>
     </v-container>
-
-    <v-dialog v-model="editDialog" max-width="70%">
-      <v-card>
-        <v-card-title>
-          <v-icon large color="black">mdi-github</v-icon>
-          <span class="mx-4 headline">
-            {{ $t(`submenu['Gitleaks']`) }}
-          </span>
-        </v-card-title>
-        <v-container fluid>
-          <v-row dense>
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['Data Source ID']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ codeDataSourceModel.code_data_source_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['Data Source']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ codeDataSourceModel.name }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="6">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['Description']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ codeDataSourceModel.description }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="3" v-if="gitHubModel.github_setting_id">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['GitHub Setting ID']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ gitHubModel.github_setting_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="3" v-if="gitHubModel.status">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="headline">
-                    <v-list-item-subtitle>
-                      {{ $t(`item['Status']`) }}
-                    </v-list-item-subtitle>
-                    <v-chip
-                      dark
-                      :color="getDataSourceStatusColor(gitHubModel.status)"
-                    >
-                      {{ getDataSourceStatusText(gitHubModel.status) }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="4" v-if="gitHubModel.scan_at">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['ScanAt']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip color="grey lighten-3">
-                      {{ gitHubModel.scan_at | formatTime }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="2">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['MAX Score']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip outlined>
-                      {{ codeDataSourceModel.max_score }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="12" v-if="gitHubModel.status_detail">
-              <v-card>
-                <v-card-title>
-                  <v-icon left>mdi-pin-outline</v-icon>
-                  <span class="font-weight-light">
-                    {{ $t(`item['Status Detail']`) }}
-                  </span>
-                </v-card-title>
-                <v-card-text>
-                  {{ gitHubModel.status_detail }}
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-card-text>
-          <v-form v-model="gitHubForm.valid" ref="form">
-            <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  outlined
-                  v-model="gitHubModel.name"
-                  :counter="64"
-                  :rules="gitHubForm.name.validator"
-                  :label="$t(`item['` + gitHubForm.name.label + `']`) + ' *'"
-                  :placeholder="gitHubForm.name.placeholder"
-                  :disabled="gitHubForm.readOnly || !gitHubForm.isNew"
-                  :filled="gitHubForm.readOnly || !gitHubForm.isNew"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="2">
-                <v-combobox
-                  required
-                  clearable
-                  outlined
-                  v-model="gitHubModel.type_text"
-                  :rules="gitHubForm.type.validator"
-                  :label="$t(`item['` + gitHubForm.type.label + `']`) + ' *'"
-                  :placeholder="gitHubForm.type.placeholder"
-                  :items="gitHubForm.type.list"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-text-field
-                  outlined
-                  v-model="gitHubModel.base_url"
-                  :counter="128"
-                  :rules="gitHubForm.base_url.validator"
-                  :label="$t(`item['` + gitHubForm.base_url.label + `']`)"
-                  :placeholder="gitHubForm.base_url.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="4">
-                <v-text-field
-                  required
-                  outlined
-                  v-model="gitHubModel.target_resource"
-                  :counter="128"
-                  :rules="gitHubForm.target_resource.validator"
-                  :label="
-                    $t(`item['` + gitHubForm.target_resource.label + `']`) +
-                    ' *'
-                  "
-                  :placeholder="gitHubForm.target_resource.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="4">
-                <v-text-field
-                  outlined
-                  v-model="gitHubModel.gitleaksSetting.repository_pattern"
-                  :counter="128"
-                  :rules="gitHubForm.repository_pattern.validator"
-                  :label="
-                    $t(`item['` + gitHubForm.repository_pattern.label + `']`)
-                  "
-                  :placeholder="gitHubForm.repository_pattern.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="4">
-                <v-text-field
-                  outlined
-                  v-model="gitHubModel.github_user"
-                  :counter="64"
-                  :rules="gitHubForm.github_user.validator"
-                  :label="$t(`item['` + gitHubForm.github_user.label + `']`)"
-                  :placeholder="gitHubForm.github_user.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="8">
-                <v-text-field
-                  outlined
-                  v-model="gitHubModel.personal_access_token"
-                  :counter="255"
-                  :rules="gitHubForm.personal_access_token.validator"
-                  :label="
-                    $t(`item['` + gitHubForm.personal_access_token.label + `']`)
-                  "
-                  :placeholder="gitHubForm.personal_access_token.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="3">
-                <v-checkbox
-                  v-model="gitHubModel.gitleaksSetting.scan_public"
-                  :label="$t(`item['` + gitHubForm.scan_public.label + `']`)"
-                  :placeholder="gitHubForm.scan_public.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-checkbox>
-              </v-col>
-              <v-col cols="3">
-                <v-checkbox
-                  v-model="gitHubModel.gitleaksSetting.scan_internal"
-                  :label="$t(`item['` + gitHubForm.scan_internal.label + `']`)"
-                  :placeholder="gitHubForm.scan_internal.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-checkbox>
-              </v-col>
-              <v-col cols="3">
-                <v-checkbox
-                  v-model="gitHubModel.gitleaksSetting.scan_private"
-                  :label="$t(`item['` + gitHubForm.scan_private.label + `']`)"
-                  :placeholder="gitHubForm.scan_private.placeholder"
-                  :disabled="gitHubForm.readOnly"
-                  :filled="gitHubForm.readOnly"
-                ></v-checkbox>
-              </v-col>
-            </v-row>
-            <v-divider class="mt-3 mb-3"></v-divider>
-            <v-card-actions>
-              <v-btn
-                text
-                outlined
-                color="blue darken-1"
-                v-if="gitHubForm.readOnly"
-                :loading="loading"
-                @click="handleScan"
-              >
-                {{ $t(`btn['SCAN']`) }}
-              </v-btn>
-              <v-spacer />
-              <v-btn
-                text
-                outlined
-                color="grey darken-1"
-                @click="editDialog = false"
-              >
-                {{ $t(`btn['CANCEL']`) }}
-              </v-btn>
-              <v-btn
-                text
-                outlined
-                color="green darken-1"
-                v-if="!gitHubForm.readOnly"
-                :loading="loading"
-                @click="handleEditSubmit"
-              >
-                {{ $t(`btn['EDIT']`) }}
-              </v-btn>
-            </v-card-actions>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
@@ -492,117 +208,49 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <new-setting-dialog
+      v-if="settingDialog"
+      :gitHubModel="gitHubModel"
+      :settingDialog="settingDialog"
+      :isReadOnly="isReadOnlyForm"
+      :gitleaksDataSourceModel="gitleaksDataSourceModel"
+      :dependencyDataSourceModel="dependencyDataSourceModel"
+      @closeDialog="closeDialogEdit"
+      v-on:edit-notify="handleEditFinish"
+    ></new-setting-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
+import code from '@/mixin/api/code'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
 import ScanStatus from '@/component/widget/datasource/Status'
+import NewSettingDialog from './NewSettingDialog.vue'
 export default {
-  mixins: [mixin, project],
+  mixins: [mixin, project, code],
   components: {
     BottomSnackBar,
     ProjectTag,
     ScanStatus,
+    NewSettingDialog,
   },
   data() {
     return {
       loading: false,
-      gitHubForm: {
-        readOnly: false,
-        isNew: false,
-        valid: false,
-        name: {
-          label: 'Name',
-          placeholder: 'Gitleaks setting name',
-          validator: [
-            (v) => !!v || 'Name is required',
-            (v) =>
-              !v || v.length <= 64 || 'Name must be less than 64 characters',
-          ],
-        },
-        type: {
-          label: 'Type',
-          placeholder: '-',
-          list: ['Organization', 'User'],
-          validator: [
-            (v) => !!v || 'Type is required',
-            (v) =>
-              !v || v === 'Organization' || v === 'User' || 'Type is invalid',
-          ],
-        },
-        base_url: {
-          label: 'Base URL',
-          placeholder: '[Optional] https://hostname/api/v3/',
-          validator: [
-            (v) =>
-              !v ||
-              v.length <= 128 ||
-              'TargetResource must be less than 128 characters',
-          ],
-        },
-        target_resource: {
-          label: 'TargetResource',
-          placeholder: 'OrganizationName or UserName',
-          validator: [
-            (v) => !!v || 'TargetResource is required',
-            (v) =>
-              !v ||
-              v.length <= 128 ||
-              'TargetResource must be less than 128 characters',
-          ],
-        },
-        repository_pattern: {
-          label: 'RepositoryPattern',
-          placeholder: '-',
-          validator: [
-            (v) =>
-              !v ||
-              v.length <= 128 ||
-              'RepositoryPattern must be less than 128 characters',
-          ],
-        },
-        github_user: {
-          label: 'GitHubUser',
-          placeholder: '-',
-          validator: [
-            (v) =>
-              !v ||
-              v.length <= 64 ||
-              'GitHubUser must be less than 64 characters',
-          ],
-        },
-        personal_access_token: {
-          label: 'PersonalAccessToken',
-          placeholder: '-',
-          validator: [
-            (v) =>
-              !v ||
-              v.length <= 255 ||
-              'PersonalAccessToken must be less than 255 characters',
-          ],
-        },
-        scan_public: {
-          label: 'Scan Public Repository',
-          placeholder: '-',
-          validator: [],
-        },
-        scan_internal: {
-          label: 'Scan Internal Repository',
-          placeholder: '-',
-          validator: [],
-        },
-        scan_private: {
-          label: 'Scan Private Repository',
-          placeholder: '-',
-          validator: [],
-        },
+      isReadOnlyForm: false,
+      gitleaksDataSourceModel: {
+        code_data_source_id: '',
+        name: '',
+        description: '',
+        max_score: '',
+        updated_at: '',
       },
-      codeDataSourceModel: {
+      dependencyDataSourceModel: {
         code_data_source_id: '',
         name: '',
         description: '',
@@ -630,7 +278,16 @@ export default {
           scan_at: '',
           updated_at: '',
         },
+        dependencySetting: {
+          status: '',
+          status_detail: '',
+          scan_at: '',
+          updated_at: '',
+        },
         isEnabledGitleaks: false,
+        isEnabledDependency: false,
+        isDeleteGitleaks: false,
+        isDeleteDependency: false,
       },
       table: {
         selected: [],
@@ -640,11 +297,15 @@ export default {
           { text: 'View Item', icon: 'mdi-eye', click: this.handleViewItem },
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
+            text: 'Scan',
+            icon: 'mdi-magnify-scan',
+            click: this.handleScan,
+          },
+          {
             text: 'Delete Item',
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteGitHubSetting,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -654,7 +315,12 @@ export default {
         items: [],
       },
       deleteDialog: false,
+      deactivateDialog: false,
+      deleteTarget: '',
       editDialog: false,
+      editGitleaksDialog: false,
+      editDependencyDialog: false,
+      settingDialog: false,
     }
   },
   created() {
@@ -690,12 +356,6 @@ export default {
           sortable: true,
           value: 'type_text',
         },
-        // {
-        //   text: this.$i18n.t('item["Base URL"]'),
-        //   align: "start",
-        //   sortable: true,
-        //   value: "base_url",
-        // },
         {
           text: this.$i18n.t('item["Target"]'),
           align: 'start',
@@ -703,22 +363,22 @@ export default {
           value: 'target_resource',
         },
         {
-          text: this.$i18n.t('item["Repository"]'),
+          text: this.$i18n.t('item["Gitleaks Status"]'),
           align: 'start',
           sortable: true,
-          value: 'repository_pattern',
+          value: 'status_gitleaks',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          text: this.$i18n.t('item["Dependency Status"]'),
           align: 'start',
           sortable: true,
-          value: 'status',
+          value: 'status_dependency',
         },
         {
-          text: this.$i18n.t('item["ScanAt"]'),
+          text: this.$i18n.t('item["Updated"]'),
           align: 'start',
           sortable: true,
-          value: 'scan_at',
+          value: 'updated_at',
         },
         {
           text: this.$i18n.t('item["Action"]'),
@@ -731,58 +391,56 @@ export default {
   },
   async mounted() {
     this.loading = true
-    await this.getGitleaksDataSource()
+    await this.getDataSource()
     await this.listGitHubSetting()
+    this.loading = false
   },
   methods: {
-    async getGitleaksDataSource() {
-      const res = await this.$axios
-        .get(
-          '/code/list-datasource/' +
-            '?code_data_source_id=' +
-            this.gitleaks_datasource_id
-        )
-        .catch((err) => {
-          this.clearList()
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
-      if (!res.data || !res.data.data || !res.data.data.code_data_source) {
+    async getDataSource() {
+      const datasources = await this.getGitleaksDataSourceAPI().catch((err) => {
         this.clearList()
-        return false
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      if (!datasources) {
+        this.clearList()
+        return
       }
-      this.codeDataSourceModel = res.data.data.code_data_source[0]
-      this.loading = false
+      datasources.forEach(async (datasource) => {
+        switch (datasource.code_data_source_id) {
+          case this.gitleaks_datasource_id:
+            this.gitleaksDataSourceModel = datasource
+            break
+          case this.dependency_datasource_id:
+            this.dependencyDataSourceModel = datasource
+            break
+          default:
+            break
+        }
+      })
     },
     async listGitHubSetting() {
-      const res = await this.$axios
-        .get(
-          '/code/list-github-setting/' +
-            '?code_data_source_id=' +
-            this.gitleaks_datasource_id +
-            '&project_id=' +
-            this.$store.state.project.project_id
-        )
-        .catch((err) => {
-          this.clearList()
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
-      if (!res.data || !res.data.data || !res.data.data.github_setting) {
+      const github_setting = await this.listGitHubSettingAPI().catch((err) => {
         this.clearList()
-        return false
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      if (!github_setting) {
+        this.clearList()
+        return
       }
       let items = []
-      res.data.data.github_setting.forEach(async (github_setting) => {
+      github_setting.forEach(async (github_setting) => {
         const item = {
           github_setting_id: github_setting.github_setting_id,
           name: github_setting.name,
           type: github_setting.type,
           base_url: github_setting.base_url,
-          type_text: this.getGitleaksTypeText(github_setting.type),
+          type_text: this.getGitHubTypeText(github_setting.type),
           target_resource: github_setting.target_resource,
           github_user: github_setting.github_user,
           personal_access_token: github_setting.personal_access_token,
+          updated_at: github_setting.updated_at,
         }
         if (github_setting.gitleaks_setting) {
           item.isEnabledGitleaks = true
@@ -802,6 +460,19 @@ export default {
             updated_at: github_setting.gitleaks_setting.updated_at,
           }
         }
+        if (github_setting.dependency_setting) {
+          item.isEnabledDependency = true
+          item.dependencySetting = {
+            github_setting_id:
+              github_setting.dependency_setting.github_setting_id,
+            code_data_source_id:
+              github_setting.dependency_setting.code_data_source_id,
+            status: github_setting.dependency_setting.status,
+            status_detail: github_setting.dependency_setting.status_detail,
+            scan_at: github_setting.dependency_setting.scan_at,
+            updated_at: github_setting.dependency_setting.updated_at,
+          }
+        }
         items.push(item)
       })
       this.table.items = items
@@ -811,72 +482,13 @@ export default {
       this.loading = false
     },
     async deleteGitHubSetting() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        github_setting_id: this.gitHubModel.github_setting_id,
-      }
-      await this.$axios
-        .post('/code/delete-github-setting/', param)
-        .catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
+      await this.deleteGitHubSettingAPI(
+        this.gitHubModel.github_setting_id
+      ).catch((err) => {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
       this.finishSuccess('Success: Deleted.')
-    },
-    async putItem() {
-      const paramGitHubSetting = {
-        project_id: this.$store.state.project.project_id,
-        github_setting: {
-          github_setting_id: this.gitHubModel.github_setting_id,
-          name: this.gitHubModel.name,
-          project_id: this.$store.state.project.project_id,
-          type: this.getGitleaksTypeCode(this.gitHubModel.type_text),
-          base_url: this.gitHubModel.base_url,
-          target_resource: this.gitHubModel.target_resource,
-          github_user: this.gitHubModel.github_user,
-          personal_access_token: this.gitHubModel.personal_access_token,
-        },
-      }
-      const res = await this.$axios
-        .post('/code/put-github-setting/', paramGitHubSetting)
-        .catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
-      if (!res.data || !res.data.data || !res.data.data.github_setting) {
-        this.finishError('failed to put github setting.')
-      }
-      const gitHubSettingID = res.data.data.github_setting.github_setting_id
-      let scan_at = 0
-      if (this.gitHubModel.gitleaksSetting.scan_at) {
-        scan_at = this.gitHubModel.gitleaksSetting.scan_at
-      }
-      const paramGitleaksSetting = {
-        project_id: this.$store.state.project.project_id,
-        gitleaks_setting: {
-          github_setting_id: gitHubSettingID,
-          code_data_source_id: this.gitleaks_datasource_id,
-          project_id: this.$store.state.project.project_id,
-          repository_pattern:
-            this.gitHubModel.gitleaksSetting.repository_pattern,
-          scan_public: Boolean(this.gitHubModel.gitleaksSetting.scan_public),
-          scan_internal: Boolean(
-            this.gitHubModel.gitleaksSetting.scan_internal
-          ),
-          scan_private: Boolean(this.gitHubModel.gitleaksSetting.scan_private),
-          status: 2, // CONFIGURED
-          status_detail:
-            'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
-          scan_at: scan_at,
-        },
-      }
-      await this.$axios
-        .post('/code/put-gitleaks-setting/', paramGitleaksSetting)
-        .catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
-      this.finishSuccess('Success: Updated.')
     },
     getStatus(setting) {
       if (!setting) {
@@ -884,25 +496,19 @@ export default {
       }
       return setting.status
     },
+    getStatusDetail(setting) {
+      if (!setting) {
+        return 0 // datasource is not configured
+      }
+      return setting.status_detail
+    },
     getScanAt(setting) {
       if (!setting || !setting.scan_at) {
         return 0 // datasource is not configured
       }
       return setting.scan_at
     },
-    getGitleaksTypeCode(typeText) {
-      switch (typeText) {
-        case 'Enterprise':
-          return 1
-        case 'Organization':
-          return 2
-        case 'User':
-          return 3
-        default:
-          return 0 // Unknown
-      }
-    },
-    getGitleaksTypeText(typeCode) {
+    getGitHubTypeText(typeCode) {
       switch (typeCode) {
         case 1:
           return 'Enterprise'
@@ -914,24 +520,9 @@ export default {
           return 'Unknown' // Unknown
       }
     },
-    async scanDataSource() {
-      const param = {
-        project_id: this.$store.state.project.project_id,
-        github_setting_id: this.gitHubModel.github_setting_id,
-      }
-      await this.$axios
-        .post('/code/invoke-scan-gitleaks/', param)
-        .catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
-      this.finishSuccess('Success: Invoke scan for Data Source.')
-    },
-
     // Handler
     async handleList() {
       this.loading = true
-      await this.listGitHubSetting()
       this.finishInfo('Reflesh list')
     },
     handleRowClick(item) {
@@ -940,35 +531,31 @@ export default {
     handleViewItem(item) {
       this.assignDataModel(item)
       this.isReadOnlyForm = true
-      this.editDialog = true
+      this.settingDialog = true
     },
-    handleNewItem() {
+    handleNewGitHubSetting() {
       this.gitHubModel = {}
+      this.newGitleaksSetting()
+      this.newDependencySetting()
+      this.isReadOnlyForm = false
+      this.settingDialog = true
+    },
+    newGitleaksSetting() {
       this.gitHubModel.gitleaksSetting = {
         scan_public: true,
         scan_internal: true,
         scan_private: false,
       }
-      this.gitHubForm.isNew = true
-      this.gitHubForm.ReadOnly = false
-      this.editDialog = true
+      this.gitHubModel.isEnabledGitleaks = true
+    },
+    newDependencySetting() {
+      this.gitHubModel.dependencySetting = {}
+      this.gitHubModel.isEnabledDependency = true
     },
     handleEditItem(item) {
       this.assignDataModel(item)
-      this.gitHubForm.isNew = false
-      this.gitHubForm.ReadOnly = false
-      this.editDialog = true
-    },
-    async handleEditSubmit() {
-      if (!this.$refs.form.validate()) {
-        return
-      }
-      this.loading = true
-      await this.putItem()
-      await this.tagProjectAPI(
-        'github:' + this.gitHubModel.target_resource,
-        'black'
-      )
+      this.isReadOnlyForm = false
+      this.settingDialog = true
     },
     handleDeleteGitHubSetting(item) {
       this.assignDataModel(item)
@@ -976,25 +563,35 @@ export default {
     },
     async handleDeleteGitHubSettingSubmit() {
       this.loading = true
-      await this.untagProjectAPI('github:' + this.gitHubModel.target_resource)
       await this.deleteGitHubSetting()
     },
-    handleScan(item) {
-      this.loading = true
-      if (!item.isEnabledGitleaks) {
-        this.finishError('gitleaks setting is not configured.')
-        return
-      }
+    async handleScan(item) {
       if (item && item.github_setting_id) {
         this.assignDataModel(item)
       }
-      this.scanDataSource()
+      this.loading = true
+      if (this.gitHubModel.isEnabledGitleaks) {
+        await this.invokeScanGitleaksAPI(item.github_setting_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      }
+      if (this.gitHubModel.isEnabledDependency) {
+        await this.invokeScanDependencyAPI(item.github_setting_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return
+          }
+        )
+      }
+      this.finishSuccess('Success: Invoke scan for Data Source.')
     },
-
     assignDataModel(item) {
       this.gitHubModel = {}
       this.gitHubModel = Object.assign(this.gitHubModel, item)
-      if (this.gitHubModel.gitleaksSetting) {
+      if (item.gitleaksSetting) {
         this.gitHubModel.gitleaksSetting = Object.assign(
           this.gitHubModel.gitleaksSetting,
           item.gitleaksSetting
@@ -1002,8 +599,15 @@ export default {
       } else {
         this.gitHubModel.gitleaksSetting = {}
       }
+      if (item.dependencySetting) {
+        this.gitHubModel.dependencySetting = Object.assign(
+          this.gitHubModel.dependencySetting,
+          item.dependencySetting
+        )
+      } else {
+        this.gitHubModel.dependencySetting = {}
+      }
     },
-
     async finishInfo(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifyInfo(msg)
@@ -1026,6 +630,16 @@ export default {
       if (reflesh) {
         this.listGitHubSetting()
       }
+    },
+    handleEditFinish(msg, err) {
+      if (err) {
+        this.finishError(err)
+        return
+      }
+      this.finishSuccess(msg)
+    },
+    closeDialogEdit() {
+      this.settingDialog = false
     },
   },
 }
