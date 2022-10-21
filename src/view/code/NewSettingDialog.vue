@@ -42,8 +42,10 @@
                           $t(`item['` + gitHubForm.name.label + `']`) + ' *'
                         "
                         :placeholder="gitHubForm.name.placeholder"
-                        :disabled="isReadOnly || !!gitHubSetting.name"
-                        :filled="isReadOnly || !!gitHubSetting.name"
+                        :disabled="
+                          isReadOnly || gitHubSetting.github_setting_id
+                        "
+                        :filled="isReadOnly || gitHubSetting.github_setting_id"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="5">
