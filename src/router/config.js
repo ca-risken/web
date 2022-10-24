@@ -296,7 +296,7 @@ export const appRoute = [
             meta: {
               title: 'GitHub',
             },
-            component: () => import('@/view/code/Gitleaks.vue'),
+            component: () => import('@/view/code/GitHub.vue'),
           },
         ],
       },
