@@ -110,7 +110,7 @@
                 <template v-slot:[`item.status_dependency`]="{ item }">
                   <scan-status
                     :status="getStatus(item.dependencySetting)"
-                    v-if="getStatus(item.gitleaksSetting)"
+                    v-if="getStatus(item.dependencySetting)"
                   >
                   </scan-status>
                   <v-chip dark color="grey" v-else> Disabled </v-chip>
