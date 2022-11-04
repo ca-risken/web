@@ -1,8 +1,9 @@
 FROM node:lts-alpine as builder
 WORKDIR /app
 COPY ./ ./
+RUN yarn config set ignore-engines true
 RUN yarn install
-RUN yarn run build-prd
+RUN NODE_OPTIONS=--openssl-legacy-provider yarn run build-prd
 
 FROM nginx:stable-alpine as production-stage
 COPY --from=builder /app/dist /usr/share/nginx/html
