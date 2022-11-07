@@ -128,42 +128,38 @@ export default {
   },
   methods: {
     async refleshList(searchCond) {
+      this.loading = true
+      this.table.options.page = 1
+      this.clearList()
+
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
-        this.clearList()
         return Promise.reject(err)
       })
       if (!userIDs) {
-        this.clearList()
         return false
       }
       this.table.total = userIDs.length
       this.users = userIDs
-      this.loadList()
-    },
-    async loadList() {
-      this.loading = true
-      let items = []
-      let userNames = []
       const from =
         (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
-      ids.forEach(async (id) => {
-        const user = await this.getUserAPI(id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const item = {
-          user_id: user.user_id,
-          name: user.name,
-          updated_at: user.updated_at,
-        }
-        items.push(item)
-        userNames.push(item.name)
-      })
-      this.table.items = items
-      this.userNameList = userNames
+
+      let userList = []
+      for (const id of ids) {
+        userList.push(this.getUserDetail(id))
+      }
+      this.table.items = await Promise.all(userList) // Parallel API call
       this.loading = false
+    },
+    async getUserDetail(id) {
+      const [user] = await Promise.all([this.getUserAPI(id)])
+      this.userNameList.push(user.name)
+      return {
+        user_id: user.user_id,
+        name: user.name,
+        updated_at: user.updated_at,
+      }
     },
     clearList() {
       this.users = []
