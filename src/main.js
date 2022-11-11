@@ -20,6 +20,7 @@ if (process.env.VUE_APP_RUM_ID !== '' && process.env.VUE_APP_RUM_TOKEN !== '') {
     premiumSampleRate: 100,
     trackInteractions: true,
     defaultPrivacyLevel: 'mask-user-input',
+    actionNameAttribute: 'risken-action-name',
   })
   datadogRum.startSessionReplayRecording()
 }

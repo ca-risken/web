@@ -29,16 +29,19 @@
       <v-form ref="searchForm">
         <v-row justify="center" align-content="center">
           <v-col cols="2" class="px-2">
-            <v-text-field
+            <v-combobox
+              multiple
               outlined
               dense
               clearable
+              small-chips
+              deletable-chips
+              hide-details
               background-color="white"
               :placeholder="searchForm.findingID.placeholder"
               :loading="loading"
               v-model="searchModel.findingID"
-              hide-details
-            ></v-text-field>
+            />
           </v-col>
           <v-col cols="3" class="px-2">
             <v-combobox
@@ -891,7 +894,7 @@ export default {
     return {
       loading: false,
       searchModel: {
-        findingID: '',
+        findingID: [],
         dataSource: [],
         resourceName: [],
         tag: [],
@@ -1055,7 +1058,10 @@ export default {
       if (parse) {
         this.parseQuery()
       }
-      const list = await this.listFinding(this.getSearchCondition())
+      const list = await this.listFindingForMultiIDs(
+        this.parseQueryFindingIDs(),
+        this.getSearchCondition()
+      )
       if (!list.finding_id || list.finding_id.length == 0) {
         this.loading = false
         return
@@ -1204,7 +1210,7 @@ export default {
       if (!this.$route.query) return
       const query = this.$route.query
       if (query.finding_id && query.finding_id != '') {
-        this.searchModel.findingID = query.finding_id
+        this.searchModel.findingID = String(query.finding_id).split(',')
       }
       if (query.data_source && query.data_source != '') {
         this.searchModel.dataSource = String(query.data_source).split(',')
@@ -1226,12 +1232,20 @@ export default {
       }
       this.setStatusTab()
     },
+    parseQueryFindingIDs() {
+      if (!this.$route.query) return
+      const query = this.$route.query
+      if (query.finding_id && query.finding_id != '') {
+        return String(query.finding_id).split(',')
+      }
+      return []
+    },
     getSearchCondition() {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
       if (this.searchModel.findingID) {
-        searchCond += '&finding_id=' + this.searchModel.findingID
+        // searchCond += '&finding_id=' + encodeURIComponent(this.searchModel.findingID)
         queryNew.finding_id = this.searchModel.findingID
       }
       if (this.searchModel.dataSource) {
