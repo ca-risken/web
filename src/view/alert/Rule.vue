@@ -169,6 +169,7 @@
               persistent-hint
               outlined
               required
+              ref="resourceComboBox"
             />
 
             <v-combobox
@@ -181,6 +182,7 @@
               item-text="tag"
               item-value="finding_tag_id"
               v-model="dataModel.tag"
+              ref="tagComboBox"
             />
             <v-text-field
               v-model="dataModel.finding_cnt"
@@ -545,11 +547,14 @@ export default {
       this.editDialog = true
     },
     handleEditSubmit() {
+      this.$refs.resourceComboBox.blur()
+      this.$refs.tagComboBox.blur()
       if (!this.$refs.form.validate()) {
         return
       }
       this.loading = true
-      this.putItem()
+      this.$nextTick(() => {this.putItem()})
+
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
