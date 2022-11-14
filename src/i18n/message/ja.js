@@ -20,6 +20,7 @@ const ja = {
     'NEW WORD': '新規キーワード',
     TAG: 'タグ',
     SCAN: 'スキャン',
+    'SHOW SCAN RESULT': 'スキャン結果を見る',
     'Set ARN': 'ARN設定',
     ATTACH: '有効化',
     'ATTACH ALL': '全て有効化',

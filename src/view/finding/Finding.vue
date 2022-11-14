@@ -528,6 +528,12 @@
                   @update:active="handleUntag(tag)"
                   class="mx-1"
                   close
+                  link
+                  :to="{
+                    path: '/finding/finding/',
+                    query: { tag: tag.tag, from_score: 0 },
+                  }"
+                  risken-action-name="search-finding-by-tag-from-finding"
                 >
                   {{ tag.tag }}
                 </v-chip>
