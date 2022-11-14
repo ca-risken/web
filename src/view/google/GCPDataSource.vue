@@ -329,17 +329,29 @@
               :loading="loading"
               @click="handleScan"
             >
+              <v-icon left>mdi-magnify-scan</v-icon>
               {{ $t(`btn['SCAN']`) }}
             </v-btn>
-            <v-spacer />
             <v-btn
               text
               outlined
-              color="grey darken-1"
-              @click="editDialog = false"
+              color="cyan darken-2"
+              v-if="gcpDataSourceModel.status && gcpForm.readOnly"
+              :loading="loading"
+              link
+              :to="{
+                path: '/finding/finding/',
+                query: {
+                  data_source: gcpDataSourceModel.name,
+                  tag: gcpDataSourceModel.gcp_project_id,
+                },
+              }"
+              risken-action-name="search-finding-by-datasource-from-google"
             >
-              {{ $t(`btn['CANCEL']`) }}
+              <v-icon left>mdi-magnify</v-icon>
+              {{ $t(`btn['SHOW SCAN RESULT']`) }}
             </v-btn>
+            <v-spacer />
             <v-btn
               text
               outlined
@@ -359,6 +371,14 @@
               @click="handleAttachAll"
             >
               {{ $t(`btn['ATTACH ALL']`) }}
+            </v-btn>
+            <v-btn
+              text
+              outlined
+              color="grey darken-1"
+              @click="editDialog = false"
+            >
+              {{ $t(`btn['CANCEL']`) }}
             </v-btn>
           </v-card-actions>
         </v-card-text>

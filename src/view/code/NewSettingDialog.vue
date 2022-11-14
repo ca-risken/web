@@ -144,21 +144,21 @@
               <v-col class="text-right">
                 <v-btn
                   outlined
-                  color="grey darken-1"
-                  class="mr-2"
-                  @click="$emit('closeDialog')"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-                <v-btn
-                  outlined
                   color="blue darken-1"
                   @click="handleGitHubEditSubmit"
                   v-if="!isReadOnly"
                   :loading="loading"
                 >
                   {{ $t(`btn['EDIT']`) }}
+                </v-btn>
+                <v-btn
+                  outlined
+                  color="grey darken-1"
+                  class="ml-2"
+                  @click="$emit('closeDialog')"
+                  :loading="loading"
+                >
+                  {{ $t(`btn['CANCEL']`) }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -348,23 +348,36 @@
             <v-row>
               <v-col class="text-right">
                 <v-btn
-                  outlined
-                  color="grey darken-1"
                   class="mr-2"
-                  @click="$emit('closeDialog')"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-                <v-btn
                   outlined
                   color="blue darken-1"
                   @click="handleScanGitleaks"
                   v-if="isReadOnly"
                   :disabled="!isEnabledGitleaks"
                   :loading="loading"
-                  >{{ $t(`btn['SCAN']`) }}
+                >
+                  <v-icon left>mdi-magnify-scan</v-icon>
+                  {{ $t(`btn['SCAN']`) }}
                 </v-btn>
+                <v-btn
+                  class="mr-2"
+                  outlined
+                  color="cyan darken-2"
+                  v-if="isReadOnly"
+                  :loading="loading"
+                  link
+                  :to="{
+                    path: '/finding/finding/',
+                    query: {
+                      data_source: gitleaksDataSourceModel.name,
+                    },
+                  }"
+                  risken-action-name="search-finding-by-datasource-from-gitleaks"
+                >
+                  <v-icon left>mdi-magnify</v-icon>
+                  {{ $t(`btn['SHOW SCAN RESULT']`) }}
+                </v-btn>
+
                 <v-btn
                   outlined
                   color="blue darken-1"
@@ -373,6 +386,15 @@
                   :loading="loading"
                   v-else
                   >{{ $t(`btn['EDIT']`) }}
+                </v-btn>
+                <v-btn
+                  class="ml-2"
+                  outlined
+                  color="grey darken-1"
+                  @click="$emit('closeDialog')"
+                  :loading="loading"
+                >
+                  {{ $t(`btn['CANCEL']`) }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -496,25 +518,38 @@
                 </v-row>
               </v-card-text>
             </v-card>
-            <v-row class="text-right">
+            <v-row class="text-right mx-2">
               <v-col>
                 <v-btn
-                  outlined
-                  color="grey darken-1"
                   class="mr-2"
-                  @click="$emit('closeDialog')"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-                <v-btn
                   outlined
                   color="blue darken-1"
                   @click="handleScanDependency"
                   v-if="isReadOnly"
                   :disabled="!isEnabledDependency"
                   :loading="loading"
-                  >{{ $t(`btn['SCAN']`) }}
+                >
+                  <v-icon left>mdi-magnify-scan</v-icon>
+                  {{ $t(`btn['SCAN']`) }}
+                </v-btn>
+                <v-btn
+                  class="mr-2"
+                  outlined
+                  color="cyan darken-2"
+                  v-if="isReadOnly"
+                  :loading="loading"
+                  link
+                  :to="{
+                    path: '/finding/finding/',
+                    query: {
+                      data_source: dependencyDataSourceModel.name,
+                      tag: '',
+                    },
+                  }"
+                  risken-action-name="search-finding-by-datasource-from-dependency"
+                >
+                  <v-icon left>mdi-magnify</v-icon>
+                  {{ $t(`btn['SHOW SCAN RESULT']`) }}
                 </v-btn>
                 <v-btn
                   outlined
@@ -524,6 +559,15 @@
                   :loading="loading"
                   v-else
                   >{{ $t(`btn['EDIT']`) }}
+                </v-btn>
+                <v-btn
+                  outlined
+                  color="grey darken-1"
+                  class="ml-2"
+                  @click="$emit('closeDialog')"
+                  :loading="loading"
+                >
+                  {{ $t(`btn['CANCEL']`) }}
                 </v-btn>
               </v-col>
             </v-row>

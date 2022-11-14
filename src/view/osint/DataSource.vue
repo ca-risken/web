@@ -335,7 +335,27 @@
               :loading="loading"
               @click="handleScan"
             >
+              <v-icon left>mdi-magnify-scan</v-icon>
               {{ $t(`btn['SCAN']`) }}
+            </v-btn>
+            <v-btn
+              text
+              outlined
+              color="cyan darken-2"
+              v-if="dataModel.rel_osint_data_source_id"
+              :loading="loading"
+              link
+              :to="{
+                path: '/finding/finding/',
+                query: {
+                  data_source: dataModel.name,
+                  tag: getScanIdentifyTag(dataModel),
+                },
+              }"
+              risken-action-name="search-finding-by-datasource-from-osint"
+            >
+              <v-icon left>mdi-magnify</v-icon>
+              {{ $t(`btn['SHOW SCAN RESULT']`) }}
             </v-btn>
             <v-spacer />
             <v-btn
@@ -821,6 +841,14 @@ export default {
         return Promise.reject(err)
       })
       this.finishSuccess('Success: Invoke scan for Data Source.')
+    },
+    getScanIdentifyTag(dataModel) {
+      if (dataModel.resource_type === 'Domain') {
+        return dataModel.resource_name
+      } else if (dataModel.resource_type === 'Website') {
+        return 'osint_id:' + dataModel.osint_id
+      }
+      return ''
     },
 
     // Handler

@@ -21,6 +21,7 @@ const en = {
     TAG: 'TAG',
     SCAN: 'SCAN',
     'Set ARN': 'Set ARN',
+    'SHOW SCAN RESULT': 'SHOW SCAN RESULT',
     ATTACH: 'ATTACH',
     'ATTACH ALL': 'ATTACH ALL',
     DETACH: 'DETACH',

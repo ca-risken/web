@@ -367,7 +367,27 @@
                 :loading="loading"
                 @click="handleScan"
               >
+                <v-icon left>mdi-magnify-scan</v-icon>
                 {{ $t(`btn['SCAN']`) }}
+              </v-btn>
+              <v-btn
+                text
+                outlined
+                color="cyan darken-2"
+                v-if="awsForm.readOnly && scanSupported(awsModel.data_source)"
+                :loading="loading"
+                link
+                :to="{
+                  path: '/finding/finding/',
+                  query: {
+                    data_source: awsModel.data_source,
+                    tag: awsModel.aws_account_id,
+                  },
+                }"
+                risken-action-name="search-finding-by-datasource-from-aws"
+              >
+                <v-icon left>mdi-magnify</v-icon>
+                {{ $t(`btn['SHOW SCAN RESULT']`) }}
               </v-btn>
               <v-spacer />
               <v-btn
@@ -809,7 +829,6 @@ export default {
           icon: 'mdi-trash-can-outline',
           click: this.handleDetachItem,
         },
-        // { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
       ]
       if (this.scanSupported(data_source)) {
         actions.push({
