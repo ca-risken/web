@@ -15,6 +15,7 @@ const store = new Vuex.Store({
     project: {},
     interval: {},
     locale: {},
+    findingHistory: [],
   },
   mutations: {
     storeUser: (state, payload) => {
@@ -28,6 +29,9 @@ const store = new Vuex.Store({
     },
     updateLocale: (state, payload) => {
       state.locale = payload
+    },
+    updateFindingHistory: (state, payload) => {
+      state.findingHistory = payload
     },
   },
   plugins: [vuexLocal.plugin],
