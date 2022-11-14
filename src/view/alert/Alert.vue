@@ -157,6 +157,7 @@
                 query: { resource_name: resouruce, from_score: 0 },
               }"
               @click="handleClickFinding(resouruce)"
+              risken-action-name="search-finding-by-resource-from-alert"
             >
               {{ resouruce }}
             </v-chip>
@@ -198,9 +199,24 @@
                     }"
                     color="indigo"
                     class="px-1 mx-0"
-                    v-for="id of item.findingsIDs"
+                    v-for="id of item.findingsIDs.slice(0, 5)"
                     :key="id"
+                    risken-action-name="search-finding-by-finding-id-from-alert"
                     >{{ id }}</v-btn
+                  >
+                  ...
+                  <v-btn
+                    text
+                    link
+                    style="text-transform: none"
+                    :to="{
+                      path: '/finding/finding/',
+                      query: { alert_id: item.alert_id, from_score: 0 },
+                    }"
+                    color="grey darken-3"
+                    class="px-1 mx-0"
+                    risken-action-name="search-finding-by-alert-id-from-alert"
+                    >all ({{ item.findingsIDs.length }})</v-btn
                   >
                 </v-col>
                 <v-col cols="2">
@@ -424,9 +440,9 @@ export default {
       const alertHistory = await this.listAlertHistory(this.alertModel.alert_id)
       alertHistory.forEach(async (history) => {
         const json = JSON.parse(history.finding_history)
-        let findingsIDs = ''
+        let findingsIDs = []
         if (json && json.finding_id) {
-          findingsIDs = this.formatFindingIDs(json.finding_id)
+          findingsIDs = json.finding_id
         }
         this.alertHistoryModel.push({
           alert_history_id: history.alert_history_id,
@@ -441,17 +457,6 @@ export default {
           findingsIDs: findingsIDs,
         })
       })
-    },
-    formatFindingIDs(ids) {
-      if (ids.length <= this.findingMaxCount) {
-        return ids
-      }
-      let formated = []
-      for (let i = 0; i < this.findingMaxCount; i++) {
-        formated.push(ids[i])
-      }
-      formated.push('...')
-      return formated
     },
 
     // alert finding list
