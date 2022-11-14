@@ -533,9 +533,12 @@
                     path: '/finding/finding/',
                     query: { tag: tag.tag, from_score: 0 },
                   }"
+                  target="_blank"
+                  rel="noopener"
                   risken-action-name="search-finding-by-tag-from-finding"
                 >
                   {{ tag.tag }}
+                  <v-icon class="ml-1" color="grey">mdi-open-in-new</v-icon>
                 </v-chip>
               </v-list-item-title>
             </v-col>
