@@ -553,8 +553,9 @@ export default {
         return
       }
       this.loading = true
-      this.$nextTick(() => {this.putItem()})
-
+      this.$nextTick(() => {
+        this.putItem()
+      })
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
