@@ -201,7 +201,7 @@
                     class="px-1 mx-0"
                     v-for="id of item.findingsIDs.slice(0, 5)"
                     :key="id"
-                    risken-action-name="search-finding-by-id-from-alert"
+                    risken-action-name="search-finding-by-finding-id-from-alert"
                     >{{ id }}</v-btn
                   >
                   ...
@@ -211,11 +211,11 @@
                     style="text-transform: none"
                     :to="{
                       path: '/finding/finding/',
-                      query: { finding_id: item.findingsIDs, from_score: 0 },
+                      query: { alert_id: item.alert_id, from_score: 0 },
                     }"
                     color="grey darken-3"
                     class="px-1 mx-0"
-                    risken-action-name="search-finding-by-all-id-from-alert"
+                    risken-action-name="search-finding-by-alert-id-from-alert"
                     >all ({{ item.findingsIDs.length }})</v-btn
                   >
                 </v-col>

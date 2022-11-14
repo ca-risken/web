@@ -19,25 +19,6 @@ const finding = {
       }
       return res.data.data
     },
-    async listFindingForMultiIDs(findingIDs, searchCond) {
-      let resp = { total: 0, finding_id: [] }
-      if (typeof findingIDs !== 'undefined' && findingIDs.length > 0) {
-        // multi finding ids
-        for (const id of findingIDs) {
-          let sc = searchCond
-          sc += '&finding_id=' + id
-          const r = await this.listFinding(sc)
-          if (!r) {
-            continue
-          }
-          resp.total += r.total
-          resp.finding_id.push(...r.finding_id)
-        }
-        return resp
-      }
-      resp = await this.listFinding(searchCond)
-      return resp
-    },
     async listFindingCnt(searchCond) {
       const res = await this.$axios
         .get(

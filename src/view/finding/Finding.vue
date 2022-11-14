@@ -12,71 +12,19 @@
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
-        <v-col cols="3" align-self="end" class="text-right">
-          <v-slider
-            outlined
-            hide-details
-            min="0.0"
-            max="1.0"
-            step="0.1"
-            :label="$t(`item['` + searchForm.score.label + `']`)"
-            v-model="searchModel.scoreFrom"
-            thumb-label="always"
-            :thumb-color="getColorByScore(searchModel.scoreFrom)"
-          ></v-slider>
-        </v-col>
       </v-row>
       <v-form ref="searchForm">
         <v-row justify="center" align-content="center">
           <v-col cols="2" class="px-2">
-            <v-combobox
-              multiple
+            <v-text-field
               outlined
               dense
               clearable
-              small-chips
-              deletable-chips
               hide-details
               background-color="white"
               :placeholder="searchForm.findingID.placeholder"
               :loading="loading"
               v-model="searchModel.findingID"
-            />
-          </v-col>
-          <v-col cols="3" class="px-2">
-            <v-combobox
-              multiple
-              outlined
-              dense
-              clearable
-              small-chips
-              deletable-chips
-              hide-details
-              background-color="white"
-              v-model="searchModel.resourceName"
-              :loading="loading"
-              :label="$t(`item['` + searchForm.resourceName.label + `']`)"
-              :placeholder="searchForm.resourceName.placeholder"
-              :items="resourceNameCombobox"
-              @keydown="listResourceNameForCombobox"
-              persistent-hint
-            />
-          </v-col>
-          <v-col cols="2" class="px-2">
-            <v-combobox
-              multiple
-              outlined
-              dense
-              clearable
-              small-chips
-              deletable-chips
-              hide-details
-              background-color="white"
-              :label="$t(`item['` + searchForm.tag.label + `']`)"
-              :placeholder="searchForm.tag.placeholder"
-              :items="searchForm.tagList"
-              :loading="loading"
-              v-model="searchModel.tag"
             />
           </v-col>
           <v-col cols="3" class="px-2">
@@ -96,18 +44,74 @@
               v-model="searchModel.dataSource"
             />
           </v-col>
-          <v-col cols="2" class="px-1 text-right">
-            <v-btn
-              fab
-              small
-              depressed
+          <v-col cols="2" class="px-2">
+            <v-combobox
+              multiple
               outlined
-              color="indigo darken-2"
-              @click="handleSearch"
+              dense
+              clearable
+              small-chips
+              deletable-chips
+              hide-details
+              background-color="white"
+              :label="$t(`item['` + searchForm.tag.label + `']`)"
+              :placeholder="searchForm.tag.placeholder"
+              :items="searchForm.tagList"
               :loading="loading"
-            >
-              <v-icon>search</v-icon>
-            </v-btn>
+              v-model="searchModel.tag"
+            />
+          </v-col>
+          <v-col cols="3" align-self="end" class="text-right">
+            <v-slider
+              outlined
+              hide-details
+              min="0.0"
+              max="1.0"
+              step="0.1"
+              :label="$t(`item['` + searchForm.score.label + `']`)"
+              v-model="searchModel.scoreFrom"
+              thumb-label="always"
+              :thumb-color="getColorByScore(searchModel.scoreFrom)"
+            ></v-slider>
+          </v-col>
+          <v-col cols="2" class="px-1 text-right">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  fab
+                  small
+                  depressed
+                  outlined
+                  color="grey darken-2"
+                  @click="searchMenuDetail = !searchMenuDetail"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon v-if="searchMenuDetail">mdi-chevron-up</v-icon>
+                  <v-icon v-else>mdi-chevron-down</v-icon>
+                </v-btn>
+              </template>
+              <span>search detail</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  class="ml-2"
+                  fab
+                  small
+                  depressed
+                  outlined
+                  color="indigo darken-2"
+                  @click="handleSearch"
+                  :loading="loading"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>search</v-icon>
+                </v-btn>
+              </template>
+              <span>search</span>
+            </v-tooltip>
             <v-menu :disabled="!table.selected || table.selected.length <= 0">
               <template v-slot:activator="{ attrs, on }">
                 <v-btn
@@ -141,6 +145,41 @@
             </v-menu>
           </v-col>
         </v-row>
+        <transition name="fade">
+          <v-row v-show="searchMenuDetail">
+            <v-col cols="2" class="px-2">
+              <v-text-field
+                outlined
+                dense
+                clearable
+                hide-details
+                background-color="white"
+                :placeholder="searchForm.alertID.placeholder"
+                :loading="loading"
+                v-model="searchModel.alertID"
+              />
+            </v-col>
+            <v-col cols="4" class="px-2">
+              <v-combobox
+                multiple
+                outlined
+                dense
+                clearable
+                small-chips
+                deletable-chips
+                hide-details
+                background-color="white"
+                v-model="searchModel.resourceName"
+                :loading="loading"
+                :label="$t(`item['` + searchForm.resourceName.label + `']`)"
+                :placeholder="searchForm.resourceName.placeholder"
+                :items="resourceNameCombobox"
+                @keydown="listResourceNameForCombobox"
+                persistent-hint
+              />
+            </v-col>
+          </v-row>
+        </transition>
       </v-form>
       <v-row class="mt-2">
         <v-tabs
@@ -893,8 +932,10 @@ export default {
   data() {
     return {
       loading: false,
+      searchMenuDetail: false,
       searchModel: {
-        findingID: [],
+        findingID: '',
+        alertID: '',
         dataSource: [],
         resourceName: [],
         tag: [],
@@ -906,6 +947,7 @@ export default {
       },
       searchForm: {
         findingID: { label: 'ID', placeholder: 'ID' },
+        alertID: { label: 'AlertID', placeholder: 'AlertID' },
         dataSource: {
           label: 'Data Source',
           placeholder: 'Filter data sources',
@@ -1058,10 +1100,7 @@ export default {
       if (parse) {
         this.parseQuery()
       }
-      const list = await this.listFindingForMultiIDs(
-        this.parseQueryFindingIDs(),
-        this.getSearchCondition()
-      )
+      const list = await this.listFinding(this.getSearchCondition())
       if (!list.finding_id || list.finding_id.length == 0) {
         this.loading = false
         return
@@ -1210,7 +1249,10 @@ export default {
       if (!this.$route.query) return
       const query = this.$route.query
       if (query.finding_id && query.finding_id != '') {
-        this.searchModel.findingID = String(query.finding_id).split(',')
+        this.searchModel.findingID = query.finding_id
+      }
+      if (query.alert_id && query.alert_id != '') {
+        this.searchModel.alertID = query.alert_id
       }
       if (query.data_source && query.data_source != '') {
         this.searchModel.dataSource = String(query.data_source).split(',')
@@ -1232,21 +1274,17 @@ export default {
       }
       this.setStatusTab()
     },
-    parseQueryFindingIDs() {
-      if (!this.$route.query) return
-      const query = this.$route.query
-      if (query.finding_id && query.finding_id != '') {
-        return String(query.finding_id).split(',')
-      }
-      return []
-    },
     getSearchCondition() {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
       if (this.searchModel.findingID) {
-        // searchCond += '&finding_id=' + encodeURIComponent(this.searchModel.findingID)
+        searchCond += '&finding_id=' + this.searchModel.findingID
         queryNew.finding_id = this.searchModel.findingID
+      }
+      if (this.searchModel.alertID) {
+        searchCond += '&alert_id=' + this.searchModel.alertID
+        queryNew.alert_id = this.searchModel.alertID
       }
       if (this.searchModel.dataSource) {
         searchCond +=
