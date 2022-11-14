@@ -771,9 +771,12 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
-      const rules = await this.listAlertConditionRule(
-        this.dataModel.alert_condition_id
-      )
+      let rules = []
+      if (this.dataModel.alert_condition_id != 0) {
+        rules = await this.listAlertConditionRule(
+          this.dataModel.alert_condition_id
+        )
+      }
       this.dataModel.rules = rules.map((item) => item.alert_rule_id)
       alert_rule.forEach(async (rule) => {
         this.ruleTable.items.push(rule)
@@ -826,9 +829,12 @@ export default {
       const notification = await this.listAlertNotification().catch((err) => {
         return Promise.reject(err)
       })
-      const notis = await this.listAlertConditionNotification(
-        this.dataModel.alert_condition_id
-      )
+      let notis = []
+      if (this.dataModel.alert_condition_id != 0) {
+        notis = await this.listAlertConditionNotification(
+          this.dataModel.alert_condition_id
+        )
+      }
       this.dataModel.notifications = notis.map((item) => item.notification_id)
       let noti_cache = ''
       if (notis[0] && notis[0].cache_second) {
@@ -972,6 +978,7 @@ export default {
       this.analyze(alertConditionID)
     },
     assignDataModel(item) {
+      console.log(item)
       this.dataModel = {}
       this.dataModel = Object.assign(this.dataModel, item)
     },
