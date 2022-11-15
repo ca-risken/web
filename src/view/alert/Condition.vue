@@ -978,7 +978,6 @@ export default {
       this.analyze(alertConditionID)
     },
     assignDataModel(item) {
-      console.log(item)
       this.dataModel = {}
       this.dataModel = Object.assign(this.dataModel, item)
     },
