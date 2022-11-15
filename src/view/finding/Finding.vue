@@ -189,13 +189,11 @@
               <v-tooltip :key="history.search_at" bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <v-chip
-                    filter
                     outlined
                     close
                     close-icon="mdi-close-circle-outline"
                     v-bind="attrs"
                     v-on="on"
-                    :key="history.search_at"
                     @click="searchByHistory(history)"
                     @click:close="deleteSearchHistory(history)"
                     risken-action-name="search-finding-by-history-from-finding"
@@ -1589,7 +1587,10 @@ export default {
       this.findingHistory = history
     },
     async searchByHistory(target) {
-      this.searchModel = target.search_condition
+      this.searchModel = Object.assign(
+        this.searchModel,
+        target.search_condition
+      ) // merge & ovveride
       this.refleshList()
       await this.updateSearchHistory()
     },
@@ -1599,19 +1600,19 @@ export default {
         search_at: Date.now(),
         label: this.getSearchHistoryLabel(),
         tooltip: this.getSearchHistoryTooltip(),
-        search_condition: this.searchModel,
+        search_condition: Object.assign({}, this.searchModel), // copy obj
       }
       let history = []
-      let exitsHistory = false
+      let existsHistory = false
       for (const h of this.getSearchHistory()) {
-        if (h.tooltip == currentSearch.tooltip) {
+        if (h.tooltip === currentSearch.tooltip) {
           history.push(currentSearch)
-          exitsHistory = true
+          existsHistory = true
         } else {
           history.push(h)
         }
       }
-      if (!exitsHistory) {
+      if (!existsHistory) {
         history.push(currentSearch)
       }
 
