@@ -106,6 +106,7 @@
                   :loading="loading"
                   v-bind="attrs"
                   v-on="on"
+                  risken-action-name="search-finding-by-condition-from-finding"
                 >
                   <v-icon>search</v-icon>
                 </v-btn>
@@ -181,6 +182,31 @@
           </v-row>
         </transition>
       </v-form>
+      <v-row justify="space-around">
+        <v-col cols="12">
+          <v-chip-group show-arrows>
+            <template v-for="history in sortedFindingHistory">
+              <v-tooltip :key="history.search_at" bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-chip
+                    outlined
+                    close
+                    close-icon="mdi-close-circle-outline"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="searchByHistory(history)"
+                    @click:close="deleteSearchHistory(history)"
+                    risken-action-name="search-finding-by-history-from-finding"
+                  >
+                    {{ history.label }}
+                  </v-chip>
+                </template>
+                <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
+              </v-tooltip>
+            </template>
+          </v-chip-group>
+        </v-col>
+      </v-row>
       <v-row class="mt-2">
         <v-tabs
           v-model="searchModel.tab"
@@ -925,6 +951,7 @@
 <script>
 import mixin from '@/mixin'
 import Util from '@/util'
+import store from '@/store'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard'
@@ -1020,6 +1047,7 @@ export default {
         },
         items: [],
       },
+      findingHistory: [],
     }
   },
   filters: {
@@ -1092,8 +1120,14 @@ export default {
         },
       ]
     },
+    sortedFindingHistory() {
+      return this.findingHistory.slice().sort((a, b) => {
+        return b.search_at - a.search_at // desc
+      })
+    },
   },
   mounted() {
+    this.findingHistory = this.getSearchHistory()
     this.getTag()
     this.listResourceNameForCombobox()
     this.refleshList(true)
@@ -1353,6 +1387,7 @@ export default {
     },
     handleSearch() {
       this.refleshList()
+      this.updateSearchHistory()
     },
     handleNewTag() {
       this.findingModel.new_tag = '' // clear
@@ -1531,6 +1566,129 @@ export default {
       link.download = 'finding_' + fileDate + '.csv'
       link.click()
       this.finishSuccess('Success: Export ' + count + ' findings.')
+    },
+
+    // searchHistory
+    getSearchHistory() {
+      if (this.$store.state.findingHistory) {
+        return this.$store.state.findingHistory
+      }
+      return []
+    },
+    async deleteSearchHistory(target) {
+      let history = []
+      for (const h of this.getSearchHistory()) {
+        if (h.search_at == target.search_at) {
+          continue
+        }
+        history.push(h)
+      }
+      await store.commit('updateFindingHistory', history)
+      this.findingHistory = history
+    },
+    async searchByHistory(target) {
+      this.searchModel = Object.assign(
+        this.searchModel,
+        target.search_condition
+      ) // merge & ovveride
+      this.refleshList()
+      await this.updateSearchHistory()
+    },
+
+    async updateSearchHistory() {
+      const currentSearch = {
+        search_at: Date.now(),
+        label: this.getSearchHistoryLabel(),
+        tooltip: this.getSearchHistoryTooltip(),
+        search_condition: Object.assign({}, this.searchModel), // copy obj
+      }
+      let history = []
+      let existsHistory = false
+      for (const h of this.getSearchHistory()) {
+        if (h.tooltip === currentSearch.tooltip) {
+          history.push(currentSearch)
+          existsHistory = true
+        } else {
+          history.push(h)
+        }
+      }
+      if (!existsHistory) {
+        history.push(currentSearch)
+      }
+
+      this.findingHistory = []
+      await this.findingHistory.push(...history)
+      this.findingHistory = await this.findingHistory.slice().sort((a, b) => {
+        return b.search_at - a.search_at
+      }) // desc
+      if (this.findingHistory.length > 30) {
+        this.findingHistory.pop()
+      }
+      await store.commit('updateFindingHistory', this.findingHistory)
+    },
+    getSearchHistoryLabel() {
+      let labels = []
+      if (this.searchModel.findingID) {
+        labels.push(this.searchModel.findingID)
+      }
+      if (this.searchModel.dataSource) {
+        for (const ds of this.searchModel.dataSource) {
+          labels.push(ds)
+        }
+      }
+      if (this.searchModel.tag) {
+        for (const t of this.searchModel.tag) {
+          labels.push(t)
+        }
+      }
+      if (this.searchModel.resourceName) {
+        for (const rn of this.searchModel.resourceName) {
+          labels.push(rn)
+        }
+      }
+      if (this.searchModel.alertID) {
+        labels.push('alert:' + this.searchModel.alertID)
+      }
+      labels.push('score:' + this.searchModel.scoreFrom)
+
+      let formatedLabel = ''
+      for (const l of labels) {
+        if (formatedLabel.length > 0) {
+          formatedLabel = formatedLabel + ', '
+        }
+        formatedLabel = formatedLabel + l
+        if (formatedLabel.length > 15) {
+          formatedLabel = formatedLabel + '...'
+          return formatedLabel
+        }
+      }
+      return formatedLabel
+    },
+    getSearchHistoryTooltip() {
+      let tooltip = ''
+      if (this.searchModel.findingID) {
+        tooltip += '- finding_id: ' + this.searchModel.findingID + '\n'
+      }
+      if (
+        this.searchModel.dataSource &&
+        this.searchModel.dataSource.length > 0
+      ) {
+        tooltip += '- data_source: ' + this.searchModel.dataSource + '\n'
+      }
+      if (this.searchModel.tag && this.searchModel.tag.length > 0) {
+        tooltip += '- tag: ' + this.searchModel.tag + '\n'
+      }
+      if (
+        this.searchModel.resourceName &&
+        this.searchModel.resourceName.length > 0
+      ) {
+        tooltip += '- resource_name: ' + this.searchModel.resourceName + '\n'
+      }
+      if (this.searchModel.alertID) {
+        tooltip += '- alert_id: ' + this.searchModel.alertID + '\n'
+      }
+      tooltip += '- score: ' + this.searchModel.scoreFrom + '\n'
+      return tooltip
     },
 
     // finish
