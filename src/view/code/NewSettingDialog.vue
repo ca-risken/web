@@ -351,13 +351,25 @@
                   class="mr-2"
                   outlined
                   color="blue darken-1"
-                  @click="handleScanGitleaks"
+                  @click="handleScanGitleaks(false)"
                   v-if="isReadOnly"
                   :disabled="!isEnabledGitleaks"
                   :loading="loading"
                 >
                   <v-icon left>mdi-magnify-scan</v-icon>
                   {{ $t(`btn['SCAN']`) }}
+                </v-btn>
+                <v-btn
+                  class="mr-2"
+                  outlined
+                  color="blue darken-1"
+                  @click="handleScanGitleaks(true)"
+                  v-if="isReadOnly"
+                  :disabled="!isEnabledGitleaks"
+                  :loading="loading"
+                >
+                  <v-icon left>mdi-magnify-scan</v-icon>
+                  {{ $t(`btn['FULL SCAN']`) }}
                 </v-btn>
                 <v-btn
                   class="mr-2"
@@ -932,14 +944,17 @@ export default {
       this.$emit('edit-notify', 'Success: Updated.')
       this.$emit('closeDialog')
     },
-    async handleScanGitleaks() {
+    async handleScanGitleaks(fullscan) {
       this.loading = true
       if (!this.isEnabledGitleaks) {
         this.$emit('edit-notify', '', 'Gitleaks is not enabled.')
         this.loading = false
         return
       }
-      await this.invokeScanGitleaksAPI(this.gitHubSetting.github_setting_id)
+      await this.invokeScanGitleaksAPI(
+        this.gitHubSetting.github_setting_id,
+        fullscan
+      )
         .catch((err) => {
           this.$emit('edit-notify', '', err.response.data)
         })

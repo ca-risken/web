@@ -108,10 +108,11 @@ const code = {
           return Promise.reject(err)
         })
     },
-    async invokeScanGitleaksAPI(github_setting_id) {
+    async invokeScanGitleaksAPI(github_setting_id, fullscan) {
       const param = {
         project_id: this.$store.state.project.project_id,
         github_setting_id: github_setting_id,
+        full_scan: fullscan,
       }
       await this.$axios
         .post('/code/invoke-scan-gitleaks/', param)
