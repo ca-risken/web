@@ -20,6 +20,7 @@ const en = {
     'NEW WORD': 'NEW WORD',
     TAG: 'TAG',
     SCAN: 'SCAN',
+    'FULL SCAN': 'FULL SCAN',
     'Set ARN': 'Set ARN',
     'SHOW SCAN RESULT': 'SHOW SCAN RESULT',
     ATTACH: 'ATTACH',
