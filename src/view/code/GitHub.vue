@@ -511,10 +511,8 @@ export default {
     getGitHubTypeText(typeCode) {
       switch (typeCode) {
         case 1:
-          return 'Enterprise'
-        case 2:
           return 'Organization'
-        case 3:
+        case 2:
           return 'User'
         default:
           return 'Unknown' // Unknown

@@ -992,12 +992,10 @@ export default {
     },
     getGitHubTypeCode(typeText) {
       switch (typeText) {
-        case 'Enterprise':
-          return 1
         case 'Organization':
-          return 2
+          return 1
         case 'User':
-          return 3
+          return 2
         default:
           return 0 // Unknown
       }
