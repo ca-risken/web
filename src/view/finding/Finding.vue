@@ -1537,9 +1537,11 @@ export default {
           'yyyy/MM/dd HH:mm'
         )
         if (!item.finding_id) return
-        var tags = ''
-        if (item.tags) tags = item.tags.map((tag) => tag.tag).join(',')
-        var line =
+        let tags = ''
+        if (item.tags && Array.isArray(item.tags)) {
+          tags = item.tags.map((tag) => tag.tag).join(',')
+        }
+        const line =
           '' +
           item['finding_id'] +
           ',"' +
