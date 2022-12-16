@@ -38,6 +38,7 @@ const ja = {
     'AUTO GENERATE VERIFICATION CODE': '検証コードを自動生成する',
     'View registerd project tags': '登録済みのプロジェクトタグを確認する',
     Recommendation: '推奨アクションを確認する',
+    Upgrade: 'アップグレード',
   },
   menu: {
     Home: 'ホーム',
@@ -201,6 +202,11 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
+  },
+  version: {
+    version: 'バージョン',
+    latest: '最新',
+    old: '旧',
   },
   action: {
     '': '',
