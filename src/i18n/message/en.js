@@ -38,6 +38,7 @@ const en = {
     'AUTO GENERATE VERIFICATION CODE': 'AUTO GENERATE VERIFICATION CODE',
     'View registerd project tags': 'View registerd project tags',
     Recommendation: 'Recommendation',
+    Upgrade: 'Upgrade',
   },
   menu: {
     Home: 'Home',
@@ -201,6 +202,11 @@ const en = {
     'WPScan Random User Agent': 'Use a random user-agent for each scan',
     'WPScan WP Content Dir':
       'The wp-content directory if custom or not detected, such as "wp-content"',
+  },
+  version: {
+    version: 'version',
+    latest: 'latest',
+    old: 'old',
   },
   action: {
     '': '',

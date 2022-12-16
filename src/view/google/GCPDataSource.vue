@@ -107,6 +107,12 @@
                   </v-chip>
                   <v-chip v-else color="grey" dark>Not configured</v-chip>
                 </template>
+                <template v-slot:[`item.specific_version`]="{ item }">
+                  <template v-if="item.specific_version">
+                    {{ $t(`version["old"]`) }} ({{ item.specific_version }})
+                  </template>
+                  <template v-else> {{ $t(`version["latest"]`) }} </template>
+                </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
                   <v-chip v-if="item.scan_at">{{
                     item.scan_at | formatTime
@@ -293,6 +299,38 @@
                     <v-chip color="grey lighten-3">
                       {{ gcpDataSourceModel.scan_at | formatTime }}
                     </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+          <v-row dense v-if="!gcpForm.setupAll">
+            <v-col cols="8">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    {{ $t(`version['version']`) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-title
+                    class="headline"
+                    v-if="gcpDataSourceModel.specific_version"
+                  >
+                    {{ $t(`version['old']`) }} ({{
+                      gcpDataSourceModel.specific_version
+                    }})
+                    <v-btn
+                      text
+                      outlined
+                      color="blue darken-1"
+                      :loading="loading"
+                      @click="handleAttachSubmit"
+                    >
+                      <v-icon left>mdi-update</v-icon>
+                      {{ $t(`btn['Upgrade']`) }}
+                    </v-btn>
+                  </v-list-item-title>
+                  <v-list-item-title class="headline" v-else>
+                    {{ $t(`version['latest']`) }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -504,6 +542,7 @@ export default {
         status: 0,
         status_detail: '',
         scan_at: 0,
+        specific_version: '',
       },
       table: {
         selected: [],
@@ -589,10 +628,10 @@ export default {
           value: 'gcp_id',
         },
         {
-          text: this.$i18n.t('item["GCP Organization"]'),
+          text: this.$i18n.t('version["version"]'),
           align: 'start',
           sortable: true,
-          value: 'gcp_organization_id',
+          value: 'specific_version',
         },
         {
           text: this.$i18n.t('item["GCP Project"]'),
@@ -692,6 +731,7 @@ export default {
           status: 0,
           status_detail: '',
           scan_at: 0,
+          specific_version: '',
         }
         if (
           res.data.data.gcp_data_source &&
@@ -704,6 +744,7 @@ export default {
           item.status = res.data.data.gcp_data_source.status
           item.status_detail = res.data.data.gcp_data_source.status_detail
           item.scan_at = res.data.data.gcp_data_source.scan_at
+          item.specific_version = res.data.data.gcp_data_source.specific_version
         }
         items.push(item)
       }
