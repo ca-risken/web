@@ -9,6 +9,7 @@ const ja = {
     'VIEW FINDING': 'VIEW FINDING',
     ADD: '追加',
     REGIST: '登録',
+    RESERVE: '予約',
     EDIT: '編集',
     SUBMIT: '送信',
     PEND: 'ペンディング',
@@ -79,6 +80,7 @@ const ja = {
     'OSINT DataSource': 'OSINTデータソース',
     GitHub: 'GitHub',
     User: 'ユーザ',
+    'User Reservation': 'ユーザ予約',
     Role: 'ロール',
     Policy: 'ポリシー',
     AccessToken: 'アクセストークン',
@@ -194,6 +196,7 @@ const ja = {
     Type: 'タイプ',
     Updated: '更新日時',
     'UpdatedAt Range': '更新日（範囲）',
+    'User Key': 'ユーザキー',
     'Verification Code': '検証コード',
     'Webhook URL': 'ウェブフックURL',
     'WPScan Setting ID': 'ワードプレス設定ID',
@@ -318,12 +321,16 @@ const ja = {
       'Project Tag': 'プロジェクトタグ',
     },
     iam: {
+      'About User Reservation': 'ユーザ予約機能について',
       'Please select one or more roles. If you do not select any role, the user will be ':
         '一つ以上のロールを選択してください。何もロールを選択しない場合、対象ユーザはこのプロジェクトから',
       removed: '削除',
       'from the project.': 'されます.',
       'Make sure to copy your access token now. You won’t be able to see it again!':
         'アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.',
+      'User Reservation Description': `新規ユーザに対してロールを予約することができます
+      新規ユーザのアクセス時に予約されたロールへの割り当てが行われます
+      既存のユーザに対しては、ユーザ画面からロールの紐付けを行ってください`,
     },
     gcp: {
       'Register the verification code in the label of your GCP project with the key `risken`.':
