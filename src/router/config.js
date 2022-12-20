@@ -351,6 +351,14 @@ export const appRoute = [
             },
             component: () => import('@/view/iam/Profile.vue'),
           },
+          {
+            path: '/iam/user-reservation',
+            name: 'UserReservation',
+            meta: {
+              title: 'UserReservation',
+            },
+            component: () => import('@/view/iam/UserReservation.vue'),
+          },
         ],
       },
       {

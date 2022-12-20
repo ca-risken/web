@@ -328,6 +328,42 @@ const iam = {
         })
       return res
     },
+
+    // UserReserved API
+    async listUserReservedAPI() {
+      const res = await this.$axios
+        .get(
+          '/iam/list-user-reserved/?project_id=' +
+            this.$store.state.project.project_id
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.user_reserved) {
+        return []
+      }
+      return res.data.data.user_reserved
+    },
+    async putUserReservedAPI(param) {
+      const res = await this.$axios
+        .post('/iam/put-user-reserved/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res
+    },
+    async deleteUserReservedAPI(reservedID) {
+      const param = {
+        project_id: this.$store.state.project.project_id,
+        reserved_id: reservedID,
+      }
+      const res = await this.$axios
+        .post('/iam/delete-user-reserved/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res
+    },
   },
 }
 

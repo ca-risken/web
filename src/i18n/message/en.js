@@ -79,6 +79,7 @@ const en = {
     'OSINT DataSource': 'OSINT DataSource',
     GitHub: 'GitHub',
     User: 'User', // IAM
+    UserReservation: 'UserReservation', //IAM
     Role: 'Role', // IAM
     Policy: 'Policy', // IAM
     AccessToken: 'AccessToken', // IAM
@@ -194,6 +195,7 @@ const en = {
     Type: 'Type',
     Updated: 'Updated',
     'UpdatedAt Range': 'UpdatedAt Range',
+    'User Key': 'User Key',
     'Verification Code': 'Verification Code',
     'Webhook URL': 'Webhook URL',
     'WPScan Setting ID': 'WPScan Setting ID',
