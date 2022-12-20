@@ -9,6 +9,7 @@ const en = {
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
     REGIST: 'REGIST',
+    RESERVE: 'RESERVE',
     EDIT: 'EDIT',
     SUBMIT: 'SUBMIT',
     PEND: 'PEND',
@@ -79,7 +80,7 @@ const en = {
     'OSINT DataSource': 'OSINT DataSource',
     GitHub: 'GitHub',
     User: 'User', // IAM
-    UserReservation: 'UserReservation', //IAM
+    'User Reservation': 'User Reservation', //IAM
     Role: 'Role', // IAM
     Policy: 'Policy', // IAM
     AccessToken: 'AccessToken', // IAM
@@ -321,12 +322,17 @@ const en = {
       'Project Tag': 'Project Tag',
     },
     iam: {
+      'About User Reservation': 'About User Reservation',
       'Please select one or more roles. If you do not select any role, the user will be ':
         'Please select one or more roles. If you do not select any role, the user will be ',
       removed: 'removed',
       'from the project.': 'from the project.',
       'Make sure to copy your access token now. You won’t be able to see it again!':
         'Make sure to copy your access token now. You won’t be able to see it again!',
+      'User Reservation Description': `Roles can be reserved for new users.
+        New users will be assigned to the reserved roles when they access the system.
+        For existing users, please attach the role from the user screen.
+`,
     },
     gcp: {
       'Register the verification code in the label of your GCP project with the key `risken`.':

@@ -6,14 +6,13 @@
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
               <v-icon large class="pr-2">mdi-account-clock</v-icon>
-              {{ $t(`submenu['UserReservation']`) }}
+              {{ $t(`submenu['User Reservation']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
       </v-row>
       <v-form ref="searchForm">
         <v-row>
-          <v-spacer />
           <v-col offset="11">
             <v-btn
               class="mt-3 mr-4"
@@ -88,6 +87,18 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-row>
+        <v-col>
+          <div
+            class="text-h5"
+            v-text="$t(`view.iam['About User Reservation']`)"
+          ></div>
+          <div
+            style="white-space: pre-line"
+            v-text="$t(`view.iam['User Reservation Description']`)"
+          ></div>
+        </v-col>
+      </v-row>
     </v-container>
 
     <!-- Edit Dialog -->
@@ -96,7 +107,7 @@
         <v-card-title>
           <v-icon large>mdi-account-clock</v-icon>
           <span class="mx-4 headline">
-            {{ $t(`submenu['UserReservation']`) }}
+            {{ $t(`submenu['User Reservation']`) }}
           </span>
         </v-card-title>
         <v-card-text>
@@ -178,7 +189,9 @@
                 :loading="loading"
                 @click="putItem"
               >
-                <template v-if="form.isNew">Regist</template>
+                <template v-if="form.isNew">
+                  {{ $t(`btn['RESERVE']`) }}
+                </template>
                 <template v-else>Edit</template>
               </v-btn>
             </v-card-actions>
