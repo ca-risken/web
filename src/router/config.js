@@ -462,3 +462,18 @@ export const appRoute = [
     ],
   },
 ]
+
+export const staticRoutes = getStaticRoutes()
+
+function getStaticRoutes() {
+  if (process.env.VUE_APP_STATIC_LINK == '') {
+    return []
+  }
+  try {
+    const jsonRoutes = JSON.parse(process.env.VUE_APP_STATIC_LINK)
+    return jsonRoutes
+    // エラー時は空のリストを返す
+  } catch (e) {
+    return []
+  }
+}
