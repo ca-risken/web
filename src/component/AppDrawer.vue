@@ -96,6 +96,29 @@
           </v-list-item>
         </template>
       </template>
+      <v-list-group
+        prepend-icon="mdi-open-in-new"
+        no-action
+        v-if="staticRoutes.length > 0"
+      >
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title v-text="$t(`item['Link']`)" />
+          </v-list-item-content>
+        </template>
+        <v-list-item
+          v-for="(item, key) in staticRoutes"
+          :key="`static-${key}`"
+          :href="item.url"
+          target="_blank"
+          rel="noopener"
+          :risken-action-name="`click-link-${item.title}-from-menu-bar`"
+        >
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
     </v-list>
     <!-- <template v-slot:append>
       <template v-if="drawerWidth === 64">
@@ -123,7 +146,7 @@
   </v-navigation-drawer>
 </template>
 <script>
-import { appRoute as routes } from '@/router/config'
+import { appRoute as routes, staticRoutes } from '@/router/config'
 export default {
   name: 'AppDrawer',
   components: {},
@@ -142,6 +165,7 @@ export default {
       scrollSettings: {
         maxScrollbarLength: 160,
       },
+      staticRoutes: staticRoutes,
     }
   },
   computed: {
@@ -160,7 +184,6 @@ export default {
       immediate: true,
     },
   },
-  created() {},
   methods: {
     handleDrawerCollapse() {
       this.drawerWidth = this.drawerWidth === 256 ? 64 : 256

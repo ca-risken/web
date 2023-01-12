@@ -68,6 +68,36 @@
           </v-list-item-group>
         </v-list>
       </v-menu>
+      <v-menu
+        offset-y
+        origin="center center"
+        class="elelvation-1"
+        transition="scale-transition"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn text slot="activator" v-on="on">
+            <v-icon>mdi-open-in-new</v-icon>
+            <span class="ml-2"> {{ $t(`item['Link']`) }} </span>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, key) in staticRoutes"
+            :key="`static-${key}`"
+            :href="item.url"
+            rel="noopener"
+            target="_blank"
+            :risken-action-name="`click-link-${item.title}-from-header`"
+          >
+            <v-list-item-action class="mr-4">
+              <v-icon>mdi-open-in-new</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-menu offset-y origin="center center" transition="scale-transition">
         <template v-slot:activator="{ on }">
           <v-btn icon large text slot="activator" v-on="on">
@@ -198,6 +228,7 @@
   </v-app-bar>
 </template>
 <script>
+import { staticRoutes } from '@/router/config'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import Util from '@/util'
 import store from '@/store'
@@ -251,6 +282,7 @@ export default {
         },
       ],
       isAdmin: false,
+      staticRoutes: staticRoutes,
     }
   },
   computed: {

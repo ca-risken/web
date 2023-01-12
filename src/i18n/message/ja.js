@@ -139,6 +139,7 @@ const ja = {
     Keyword: 'キーワード',
     'Gitleaks Status': 'Gitleaksステータス',
     ID: 'ID',
+    Link: 'リンク',
     'Last Updated User': '最終更新者',
     'MAX Score': 'MAXスコア',
     'Max Depth': 'スキャンの最大階層',
