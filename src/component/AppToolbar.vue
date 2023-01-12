@@ -87,6 +87,7 @@
             :href="item.url"
             rel="noopener"
             target="_blank"
+            :risken-action-name="`click-link-${item.title}-from-header`"
           >
             <v-list-item-action class="mr-4">
               <v-icon>mdi-open-in-new</v-icon>

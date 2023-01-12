@@ -112,6 +112,7 @@
           :href="item.url"
           target="_blank"
           rel="noopener"
+          :risken-action-name="`click-link-${item.title}-from-menu-bar`"
         >
           <v-list-item-content>
             <v-list-item-title v-text="item.title"></v-list-item-title>
