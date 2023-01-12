@@ -96,19 +96,28 @@
           </v-list-item>
         </template>
       </template>
-      <v-list-item
-        v-for="(item, key) in staticRoutes"
-        :key="`static-${key}`"
-        :href="item.url"
-        target="_blank"
+      <v-list-group
+        prepend-icon="mdi-open-in-new"
+        no-action
+        v-if="staticRoutes.length > 0"
       >
-        <v-list-item-icon>
-          <v-icon>mdi-open-in-new</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title v-text="item.title"></v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title v-text="$t(`item['Link']`)" />
+          </v-list-item-content>
+        </template>
+        <v-list-item
+          v-for="(item, key) in staticRoutes"
+          :key="`static-${key}`"
+          :href="item.url"
+          target="_blank"
+          rel="noopener"
+        >
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
     </v-list>
     <!-- <template v-slot:append>
       <template v-if="drawerWidth === 64">

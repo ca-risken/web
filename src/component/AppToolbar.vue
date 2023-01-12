@@ -85,6 +85,7 @@
             v-for="(item, key) in staticRoutes"
             :key="`static-${key}`"
             :href="item.url"
+            rel="noopener"
             target="_blank"
           >
             <v-list-item-action class="mr-4">
