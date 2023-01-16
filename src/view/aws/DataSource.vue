@@ -722,10 +722,6 @@ export default {
           return '/static/aws/guard-duty.png'
         case 'aws:access-analyzer':
           return '/static/aws/s3.webp'
-        case 'aws:prowler':
-          return '/static/aws/prowler.png'
-        case 'aws:iam-activity':
-          return '/static/aws/iam.png'
         case 'aws:admin-checker':
           return '/static/aws/iam.png'
         case 'aws:cloudsploit':

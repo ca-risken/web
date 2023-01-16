@@ -32,7 +32,6 @@ const ja = {
     'LOAD MORE ...': '次を読み込む...',
     'CREATE NEW RULE': '新規ルール',
     'CREATE NEW NOTIFICATION': '新規通知先',
-    'Check Resource Activity': 'リソースのアクティビティを確認する',
     'DOWNLOAD REPORT (PROJECT)': 'レポート ダウンロード (現在のプロジェクト)',
     'DOWNLOAD REPORT (ALL)': 'レポート ダウンロード (全てのプロジェクト)',
     'AUTO GENERATE EXTERNAL ID': '外部IDを自動生成する',
@@ -68,7 +67,6 @@ const ja = {
     Notification: '通知',
     AWS: 'AWS',
     'AWS DataSource': 'AWSデータソース',
-    'AWS Activity': 'アクティビティ',
     GCP: 'GCP',
     'GCP DataSource': 'GCPデータソース',
     WPScan: 'ワードプレス診断',
@@ -338,8 +336,6 @@ const ja = {
         'あなたのGCPプロジェクトのラベルに `risken` というキーで検証コードの値を登録してください',
     },
     aws: {
-      'You must configure the DataSource for `aws:activity`.':
-        'アクティビティを参照するためには `aws:activity` データソース設定が必要です',
       'Please access to the ': '次のリンクへアクセスし設定を完了してください。',
       'No data ...': 'データがありません',
     },

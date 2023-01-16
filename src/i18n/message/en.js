@@ -32,7 +32,6 @@ const en = {
     'LOAD MORE ...': 'LOAD MORE ...',
     'CREATE NEW RULE': 'CREATE NEW RULE',
     'CREATE NEW NOTIFICATION': 'CREATE NEW NOTIFICATION',
-    'Check Resource Activity': 'Check Resource Activity',
     'DOWNLOAD REPORT (PROJECT)': 'DOWNLOAD REPORT (PROJECT)',
     'DOWNLOAD REPORT (ALL)': 'DOWNLOAD REPORT (ALL)',
     'AUTO GENERATE EXTERNAL ID': 'AUTO GENERATE EXTERNAL ID',
@@ -68,7 +67,6 @@ const en = {
     Notification: 'Notification', // Alert
     AWS: 'AWS', // AWS
     'AWS DataSource': 'AWS DataSource', // AWS
-    'AWS Activity': 'AWS Activity', // AWS
     GCP: 'GCP',
     'GCP DataSource': 'GCP DataSource',
     WPScan: 'WPScan', // Diagnosis
@@ -340,8 +338,6 @@ const en = {
         'Register the verification code in the label of your GCP project with the key `risken`.',
     },
     aws: {
-      'You must configure the DataSource for `aws:activity`.':
-        'You must configure the DataSource for `aws:activity`.',
       'Please access to the ': 'Please access to the ',
       'No data ...': 'No data ...',
     },

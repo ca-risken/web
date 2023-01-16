@@ -480,18 +480,6 @@ let mixin = {
       })
       this.resourceNameCombobox = rnList
     },
-    canDisplayActibityByResource(resourceName) {
-      if (String(resourceName).startsWith('arn:')) return true
-      return false // others not supported.
-    },
-    getRouterByResource(resourceName, id) {
-      if (String(resourceName).startsWith('arn:'))
-        return {
-          path: '/aws/activity',
-          query: { aws_id: id, arn: resourceName },
-        }
-      return {} // others not supported.
-    },
     handleProjectTagUpdated(message) {
       this.$refs.snackbar.notifySuccess(message)
       this.projectTagDialog = false
