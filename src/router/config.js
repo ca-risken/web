@@ -465,7 +465,6 @@ function getStaticRoutes() {
   try {
     const jsonRoutes = JSON.parse(process.env.VUE_APP_STATIC_LINK)
     return jsonRoutes
-    // エラー時は空のリストを返す
   } catch (e) {
     return routes
   }
