@@ -371,19 +371,6 @@
       <v-card>
         <v-toolbar>
           <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
-          <v-spacer />
-          <v-btn
-            text
-            outlined
-            color="info"
-            style="text-transform: none"
-            link
-            :to="getRouterByResource(findingModel.resource_name)"
-            v-if="canDisplayActibityByResource(findingModel.resource_name)"
-          >
-            <v-icon left>mdi-timeline-clock-outline</v-icon>
-            {{ $t(`btn['Check Resource Activity']`) }}
-          </v-btn>
         </v-toolbar>
         <v-container fluid>
           <v-row dense class="mx-2">

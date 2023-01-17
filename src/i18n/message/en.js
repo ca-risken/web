@@ -5,7 +5,6 @@ const en = {
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',
     'CREATE NEW PROJECT': 'CREATE NEW PROJECT',
-    'CloudTrail Filter': 'CloudTrail Filter',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
     REGIST: 'REGIST',
@@ -22,17 +21,14 @@ const en = {
     TAG: 'TAG',
     SCAN: 'SCAN',
     'FULL SCAN': 'FULL SCAN',
-    'Set ARN': 'Set ARN',
     'SHOW SCAN RESULT': 'SHOW SCAN RESULT',
     ATTACH: 'ATTACH',
     'ATTACH ALL': 'ATTACH ALL',
     DETACH: 'DETACH',
     ENABLE: 'ENABLE',
     DISABLE: 'DISABLE',
-    'LOAD MORE ...': 'LOAD MORE ...',
     'CREATE NEW RULE': 'CREATE NEW RULE',
     'CREATE NEW NOTIFICATION': 'CREATE NEW NOTIFICATION',
-    'Check Resource Activity': 'Check Resource Activity',
     'DOWNLOAD REPORT (PROJECT)': 'DOWNLOAD REPORT (PROJECT)',
     'DOWNLOAD REPORT (ALL)': 'DOWNLOAD REPORT (ALL)',
     'AUTO GENERATE EXTERNAL ID': 'AUTO GENERATE EXTERNAL ID',
@@ -68,7 +64,6 @@ const en = {
     Notification: 'Notification', // Alert
     AWS: 'AWS', // AWS
     'AWS DataSource': 'AWS DataSource', // AWS
-    'AWS Activity': 'AWS Activity', // AWS
     GCP: 'GCP',
     'GCP DataSource': 'GCP DataSource',
     WPScan: 'WPScan', // Diagnosis
@@ -125,7 +120,6 @@ const en = {
     'Finding ID': 'Finding ID',
     Findings: 'Findings',
     Format: 'Formmat',
-    FromDate: 'FromDate',
     'GCP ID': 'GCP ID',
     'GCP Organization': 'GCP Organization',
     'GCP OrganizationID': 'GCP OrganizationID',
@@ -165,7 +159,6 @@ const en = {
     Risk: 'Risk',
     Repository: 'Repository',
     RepositoryPattern: 'RepositoryPattern',
-    Region: 'Region',
     'Resource Name': 'Resource Name',
     'Resource Pattern': 'Resource Pattern',
     Resource: 'Resource',
@@ -192,7 +185,6 @@ const en = {
     'Target URL': 'Target URL',
     Target: 'Target',
     TargetResource: 'TargetResource',
-    ToDate: 'ToDate',
     Token: 'Token',
     Type: 'Type',
     Updated: 'Updated',
@@ -340,9 +332,6 @@ const en = {
         'Register the verification code in the label of your GCP project with the key `risken`.',
     },
     aws: {
-      'You must configure the DataSource for `aws:activity`.':
-        'You must configure the DataSource for `aws:activity`.',
-      'Please access to the ': 'Please access to the ',
       'No data ...': 'No data ...',
     },
     osint: {
