@@ -458,14 +458,14 @@ export const appRoute = [
 export const staticRoutes = getStaticRoutes()
 
 function getStaticRoutes() {
+  const routes = [{ title: 'Document', url: 'https://docs.security-hub.jp/' }]
   if (process.env.VUE_APP_STATIC_LINK == '') {
-    return []
+    return routes
   }
   try {
     const jsonRoutes = JSON.parse(process.env.VUE_APP_STATIC_LINK)
     return jsonRoutes
-    // エラー時は空のリストを返す
   } catch (e) {
-    return []
+    return routes
   }
 }
