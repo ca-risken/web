@@ -371,7 +371,6 @@
       <v-card>
         <v-toolbar>
           <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
-          <v-spacer />
         </v-toolbar>
         <v-container fluid>
           <v-row dense class="mx-2">
