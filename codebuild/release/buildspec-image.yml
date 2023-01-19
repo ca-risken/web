@@ -2,38 +2,42 @@ version: 0.2
 
 env:
   variables:
-    PRIVATE_IMAGE_PREFIX: 'risken-gateway'
     PUBLIC_REGISTRY: 'public.ecr.aws/risken'
     PUBLIC_IMAGE_PREFIX: 'gateway'
+  parameter-store:
+    DOCKER_USER: "/build/DOCKER_USER"
+    DOCKER_TOKEN: "/build/DOCKER_TOKEN"
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 12
   pre_build:
     commands:
       - echo Setting environment variables
-      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-      - PRIVATE_REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+      - BUILD_OPT="--no-cache --pull"
       - TAG=${CODEBUILD_WEBHOOK_TRIGGER#tag/}
       - IMAGE_TAG=${TAG}_${OS}_${ARCH}
 
-      - echo Logging in to private Amazon ECR...
-      - aws --version
-      - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${PRIVATE_REGISTRY}
-  build:
-    commands:
-      - echo Build started on `date`
-      - echo pull images...
-      - make pull-image -j IMAGE_PREFIX=${PRIVATE_IMAGE_PREFIX} IMAGE_REGISTRY=${PRIVATE_REGISTRY} IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}
-
-      - echo tag images...
-      - SOURCE_IMAGE_PREFIX=${PRIVATE_REGISTRY}/${PRIVATE_IMAGE_PREFIX}
-      - make tag-image -j SOURCE_IMAGE_PREFIX=${SOURCE_IMAGE_PREFIX} SOURCE_IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION} IMAGE_REGISTRY=${PUBLIC_REGISTRY} IMAGE_TAG=${IMAGE_TAG}
-
-  post_build:
-    commands:
       - echo Logging in to public Amazon ECR ...
       - aws --version
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${PUBLIC_REGISTRY}
 
+      - |
+        #!/bin/bash
+        if [[ -n "${DOCKER_USER}" ]] && [[ -n "${DOCKER_TOKEN}" ]]; then
+          echo 'Logging in to Docker Hub...'
+          echo "$DOCKER_TOKEN" | docker login -u $DOCKER_USER --password-stdin
+        fi
+      - make install
+      - make lint
+  build:
+    commands:
+      - echo Building the Docker images...
+      - make build-ci -j BUILD_OPT="${BUILD_OPT}" IMAGE_PREFIX=${PUBLIC_IMAGE_PREFIX} IMAGE_TAG=${IMAGE_TAG} IMAGE_REGISTRY=${PUBLIC_REGISTRY}
+
+  post_build:
+    commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - make push-image -j IMAGE_PREFIX=${PUBLIC_IMAGE_PREFIX} IMAGE_REGISTRY=${PUBLIC_REGISTRY} IMAGE_TAG=${IMAGE_TAG}
