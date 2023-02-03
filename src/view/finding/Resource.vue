@@ -578,6 +578,7 @@ export default {
         resourceName: '',
         dates: ['', ''],
         score: [0.0, 100.0],
+        tag: [],
       },
       searchForm: {
         namespace: {
@@ -876,6 +877,12 @@ export default {
       }
       if (this.searchModel.resourceType) {
         tags += ',' + this.searchModel.resourceType
+      }
+      if (
+        Array.isArray(this.searchModel.tag) &&
+        this.searchModel.tag.length > 0
+      ) {
+        tags += ',' + encodeURIComponent(this.searchModel.tag)
       }
       if (tags !== '') {
         searchCond += '&tag=' + tags.substring(1)
