@@ -89,7 +89,7 @@
                 </template>
                 <template v-slot:[`item.score`]="{ item }">
                   <v-chip :color="getColorByScore(item.score)" dark>{{
-                    item.score
+                    item.score || 0.0
                   }}</v-chip>
                 </template>
                 <template v-slot:[`item.finding_cnt`]="{ item }">
@@ -331,7 +331,6 @@ export default {
           label: 'Score',
           placeholder: 'Select score ( 0.0 ~ 1.0 )',
           validator: [
-            (v) => !!v || 'Score is required',
             (v) =>
               !v ||
               (0.0 <= v && v <= 1.0) ||
@@ -369,7 +368,7 @@ export default {
       dataModel: {
         alert_rule_id: 0,
         name: '',
-        score: 0,
+        score: 0.0,
         resource_name: '',
         tag: '',
         finding_cnt: 0,
