@@ -350,7 +350,7 @@ export default {
         },
         tag: {
           label: 'Tag',
-          placeholder: 'key:value',
+          placeholder: 'tag-name',
           list: [],
           validator: [
             (v) =>
