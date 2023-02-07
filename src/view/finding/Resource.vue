@@ -575,9 +575,10 @@ export default {
       loading: false,
       searchModel: {
         namespace: '',
+        resourceType: '',
         resourceName: '',
         dates: ['', ''],
-        score: [0.0, 100.0],
+        tag: [],
       },
       searchForm: {
         namespace: {
@@ -592,10 +593,6 @@ export default {
           label: 'UpdatedAt Range',
           placeholder: 'Filter for dates range',
           menu: false,
-        },
-        score: {
-          label: 'Sum Score',
-          placeholder: 'Filter for score( from - to )',
         },
         resourceType: {
           label: 'ResourceType',
@@ -870,15 +867,16 @@ export default {
 
     getSearchCondition() {
       let searchCond = ''
-      let tags = ''
       if (this.searchModel.namespace) {
-        tags += ',' + this.searchModel.namespace
+        searchCond +=
+          '&namespace=' + encodeURIComponent(this.searchModel.namespace)
       }
       if (this.searchModel.resourceType) {
-        tags += ',' + this.searchModel.resourceType
+        searchCond +=
+          '&resource_type=' + encodeURIComponent(this.searchModel.resourceType)
       }
-      if (tags !== '') {
-        searchCond += '&tag=' + tags.substring(1)
+      if (this.searchModel.tag) {
+        searchCond += '&tag=' + encodeURIComponent(this.searchModel.tag)
       }
       if (this.searchModel.resourceName) {
         searchCond +=
@@ -891,12 +889,6 @@ export default {
       if (this.searchModel.dates[1]) {
         searchCond +=
           '&to_at=' + Math.floor(Date.parse(this.searchModel.dates[1]) / 1000)
-      }
-      if (this.searchModel.score[0]) {
-        searchCond += '&from_sum_score=' + this.searchModel.score[0]
-      }
-      if (this.searchModel.score[1]) {
-        searchCond += '&to_sum_score=' + this.searchModel.score[1]
       }
       const offset =
         (this.table.options.page - 1) * this.table.options.itemsPerPage
@@ -918,6 +910,7 @@ export default {
     // Service
     async refleshList() {
       this.table.options.page = 1
+      this.table.total = 0
       await this.loadList()
     },
     async loadList() {
