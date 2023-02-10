@@ -317,7 +317,7 @@ export default {
         clickNew: false,
         user_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name', placeholder: 'Please select user...' },
-        user_idp_key: { label: 'User Key'},
+        user_idp_key: { label: 'User Key' },
       },
       userIDList: [],
       userNameList: [],
