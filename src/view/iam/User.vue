@@ -169,6 +169,15 @@
             filled
             disabled
           ></v-text-field>
+          <v-text-field
+            v-model="userModel.user_idp_key"
+            :counter="64"
+            :rules="userForm.user_idp_key.validator"
+            :label="$t(`item['` + userForm.user_idp_key.label + `']`) + ' *'"
+            :placeholder="userForm.user_idp_key.placeholder"
+            filled
+            disabled
+          ></v-text-field>
           <!-- Role List -->
           <div v-show="userModel.user_id">
             <v-toolbar flat color="white" v-show="userModel.user_id">
@@ -308,12 +317,14 @@ export default {
         clickNew: false,
         user_id: { label: 'ID', placeholder: '-' },
         name: { label: 'Name', placeholder: 'Please select user...' },
+        user_idp_key: { label: 'User Key'},
       },
       userIDList: [],
       userNameList: [],
       userModel: {
         user_id: '',
         name: '',
+        user_idp_key: '',
         role_cnt: 0,
         roles: '',
         updated_at: '',
@@ -372,6 +383,12 @@ export default {
           align: 'start',
           sortable: false,
           value: 'name',
+        },
+        {
+          text: this.$i18n.t('item["User Key"]'),
+          align: 'start',
+          sortable: false,
+          value: 'user_idp_key',
         },
         {
           text: this.$i18n.t('item["Roles"]'),
@@ -450,6 +467,7 @@ export default {
         const item = {
           user_id: user.user_id,
           name: user.name,
+          user_idp_key: user.user_idp_key,
           updated_at: user.updated_at,
           role_cnt: roles.length,
           roles: roles,
@@ -475,7 +493,6 @@ export default {
       const roles = await this.listRoleAPI('').catch((err) => {
         return Promise.reject(err)
       })
-
       roles.forEach(async (id) => {
         const role = await this.getRoleAPI(id).catch((err) => {
           return Promise.reject(err)
@@ -540,6 +557,7 @@ export default {
       this.userModel = {
         user_id: '',
         name: '',
+        user_idp_key: '',
         role_cnt: 0,
         roles: '',
         updated_at: '',
@@ -564,13 +582,13 @@ export default {
       if (this.searchModel.userID) {
         searchCond += '&user_id=' + this.searchModel.userID
       }
-
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
-      this.awsuserModelModel = {
+      this.userModel = {
         user_id: '',
         name: '',
+        user_idp_key: '',
         role_cnt: 0,
         roles: '',
         updated_at: '',
