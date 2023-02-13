@@ -502,20 +502,41 @@
             </v-col>
           </v-row>
 
-          <v-row v-if="findingModel.pend_note != ''" dense class="mx-4">
-            <v-col cols="12">
-              <v-alert
-                border="left"
-                colored-border
-                elevation="2"
-                type="warning"
+          <template v-if="findingModel.status != 'ACTIVE'">
+            <v-row dense class="mx-4">
+              <v-col v-if="findingModel.pend_note != ''" cols="8">
+                <v-list-item-subtitle>
+                  <v-icon left>mdi-check-circle-outline</v-icon>
+                  {{ $t(`view.finding['PENDING']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title>
+                  <v-alert
+                    border="left"
+                    colored-border
+                    elevation="2"
+                    type="warning"
+                  >
+                    <p>
+                      {{ findingModel.pend_note }}
+                    </p>
+                  </v-alert>
+                </v-list-item-title>
+              </v-col>
+              <v-col
+                v-if="findingModel.pend_expired != 0"
+                cols="3"
+                class="mx-4"
               >
-                <p>
-                  {{ findingModel.pend_note }}
-                </p>
-              </v-alert>
-            </v-col>
-          </v-row>
+                <v-list-item-subtitle>
+                  <v-icon left>mdi-clock-outline</v-icon>
+                  {{ $t(`item['Expired At']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="mt-4">
+                  <v-chip>{{ findingModel.pend_expired | formatTime }}</v-chip>
+                </v-list-item-title>
+              </v-col>
+            </v-row>
+          </template>
 
           <v-row dense class="mx-4">
             <v-col cols="12">
@@ -760,9 +781,29 @@
                   outlined
                   clearable
                   clear-icon="mdi-close-circle"
-                  v-model="pendNote"
+                  v-model="pendModel.note"
                   label="pending note"
                 ></v-textarea>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-avatar
+                ><v-icon
+                  >mdi-clock-time-eight-outline</v-icon
+                ></v-list-item-avatar
+              >
+              <v-list-item-content>
+                <v-combobox
+                  outlined
+                  dense
+                  hide-details
+                  clearable
+                  background-color="white"
+                  v-model="pendModel.expired_at"
+                  :loading="loading"
+                  :label="$t(`item['Expired At']`)"
+                  :items="pendExpiredItems"
+                />
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -1012,7 +1053,18 @@ export default {
         risk: '',
         recommendation: '',
       },
-      pendNote: '',
+      pendModel: {
+        finding_id: '',
+        note: '',
+        expired_at: '',
+      },
+      pendExpiredItems: [
+        '3 days',
+        '7 days',
+        '30 days',
+        '90 days',
+        'No expiration',
+      ],
       pendAll: false,
       table: {
         selected: [],
@@ -1152,7 +1204,7 @@ export default {
       ])
       return {
         finding_id: id,
-        status: !pend.finding_id ? 'ACTIVE' : 'PENDING',
+        status: this.isPending(pend),
         score: finding.score,
         original_score: finding.original_score,
         data_source: finding.data_source,
@@ -1162,7 +1214,8 @@ export default {
         data: finding.data,
         updated_at: finding.updated_at,
         created_at: finding.created_at,
-        pend_note: !pend.note ? '' : pend.note,
+        pend_note: pend.note ? pend.note : '',
+        pend_expired: pend.expired_at ? pend.expired_at : 0,
       }
     },
     clearList() {
@@ -1170,6 +1223,15 @@ export default {
       this.table.total = 0
       this.table.items = []
       this.searchForm.resourceNameList = []
+    },
+    isPending(pend) {
+      if (!pend.finding_id) {
+        return 'ACTIVE'
+      }
+      if (pend.expired_at && pend.expired_at < Math.floor(Date.now() / 1000)) {
+        return 'ACTIVE'
+      }
+      return 'PENDING'
     },
 
     async getTag() {
@@ -1448,17 +1510,21 @@ export default {
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
       this.pendAll = false
-      this.pendNote = ''
+      this.pendModel.note = ''
       this.pendDialog = true
     },
     async handlePendItemSubmit() {
       this.loading = true
-      await this.putPendFinding(this.findingModel.finding_id, this.pendNote)
+      await this.putPendFinding(
+        this.findingModel.finding_id,
+        this.pendModel.note,
+        this.getPendExpiredSecound(this.pendModel.expired_at)
+      )
       this.finishSuccess('Success: Pending.')
     },
     async handlePendSelected() {
       this.pendAll = true
-      this.pendNote = ''
+      this.pendModel.note = ''
       this.pendDialog = true
     },
     async handlePendSelectedSubmit() {
@@ -1466,11 +1532,34 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-        await this.putPendFinding(item.finding_id, this.pendNote)
+        await this.putPendFinding(
+          item.finding_id,
+          this.pendModel.note,
+          this.getPendExpiredSecound(this.pendModel.expired_at)
+        )
       })
       this.table.selected = []
       this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
+    getPendExpiredSecound(expiredAt) {
+      const nowUnix = Math.floor(Date.now() / 1000)
+      const oneDaySec = 86400
+      switch (expiredAt) {
+        case 'No expiration':
+          return null
+        case '3 days':
+          return nowUnix + oneDaySec * 3
+        case '7 days':
+          return nowUnix + oneDaySec * 7
+        case '30 days':
+          return nowUnix + oneDaySec * 30
+        case '90 days':
+          return nowUnix + oneDaySec * 90
+        default:
+          return null
+      }
+    },
+
     async handleRecommendItem() {
       this.recommendDialog = true
     },

@@ -214,7 +214,7 @@ const finding = {
           return Promise.reject(err)
         })
     },
-    async putPendFinding(finding_id, note) {
+    async putPendFinding(finding_id, note, expired_at) {
       const param = {
         project_id: this.$store.state.project.project_id,
         pend_finding: {
@@ -222,6 +222,9 @@ const finding = {
           project_id: this.$store.state.project.project_id,
           note: note,
         },
+      }
+      if (expired_at) {
+        param.pend_finding.expired_at = expired_at
       }
       await this.$axios
         .post('/finding/put-pend-finding/', param)
