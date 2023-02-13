@@ -760,7 +760,7 @@
                   outlined
                   clearable
                   clear-icon="mdi-close-circle"
-                  v-model="pendNote"
+                  v-model="pendModel.note"
                   label="pending note"
                 ></v-textarea>
               </v-list-item-content>
@@ -1012,7 +1012,11 @@ export default {
         risk: '',
         recommendation: '',
       },
-      pendNote: '',
+      pendModel: {
+        finding_id: '',
+        note: '',
+        expired_at: '',
+      },
       pendAll: false,
       table: {
         selected: [],
@@ -1448,17 +1452,17 @@ export default {
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row)
       this.pendAll = false
-      this.pendNote = ''
+      this.pendModel.note = ''
       this.pendDialog = true
     },
     async handlePendItemSubmit() {
       this.loading = true
-      await this.putPendFinding(this.findingModel.finding_id, this.pendNote)
+      await this.putPendFinding(this.findingModel.finding_id, this.pendModel.note)
       this.finishSuccess('Success: Pending.')
     },
     async handlePendSelected() {
       this.pendAll = true
-      this.pendNote = ''
+      this.pendModel.note = ''
       this.pendDialog = true
     },
     async handlePendSelectedSubmit() {
@@ -1466,7 +1470,7 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-        await this.putPendFinding(item.finding_id, this.pendNote)
+        await this.putPendFinding(item.finding_id, this.pendModel.note)
       })
       this.table.selected = []
       this.finishSuccess('Success: Pend ' + count + ' findings.')
