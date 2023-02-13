@@ -48,7 +48,7 @@
           class="elevation-1"
           item-key="user_id"
           @click:row="handleSelectItem"
-          @update:page="loadList"
+          @update:page="refleshList"
         >
           <template v-slot:[`item.updated_at`]="{ item }">
             <v-chip>{{ item.updated_at | formatTime }}</v-chip>
@@ -115,6 +115,12 @@ export default {
           value: 'name',
         },
         {
+          text: this.$i18n.t('item["User Key"]'),
+          align: 'start',
+          sortable: false,
+          value: 'user_idp_key',
+        },
+        {
           text: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
@@ -158,6 +164,7 @@ export default {
       return {
         user_id: user.user_id,
         name: user.name,
+        user_idp_key: user.user_idp_key,
         updated_at: user.updated_at,
       }
     },
