@@ -523,7 +523,7 @@
                 </v-list-item-title>
               </v-col>
               <v-col
-                v-if="findingModel.pend_expired != ''"
+                v-if="findingModel.pend_expired != 0"
                 cols="3"
                 class="mx-4"
               >
@@ -1214,8 +1214,8 @@ export default {
         data: finding.data,
         updated_at: finding.updated_at,
         created_at: finding.created_at,
-        pend_note: !pend.note ? '' : pend.note,
-        pend_expired: !pend.expired_at ? '' : pend.expired_at,
+        pend_note: pend.note ? pend.note : '',
+        pend_expired: pend.expired_at ? pend.expired_at : 0,
       }
     },
     clearList() {
