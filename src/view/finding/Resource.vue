@@ -57,6 +57,7 @@
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
               persistent-hint
+              ref="refResourceName"
             />
           </v-col>
           <v-col cols="12" sm="3" md="3">
@@ -74,6 +75,7 @@
               :items="searchForm.tagList"
               :loading="loading"
               v-model="searchModel.tag"
+              ref="refTag"
             />
           </v-col>
           <v-spacer />
@@ -803,6 +805,12 @@ export default {
       this.resourceMapDialog = true
     },
     handleSearch() {
+      this.$refs.refResourceName.blur()
+      this.$refs.refTag.blur()
+      this.$nextTick(() => {
+        this.refleshList()
+        this.updateSearchHistory()
+      })
       this.refleshList()
     },
     handleSort(newSortKey) {

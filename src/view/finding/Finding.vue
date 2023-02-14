@@ -42,6 +42,7 @@
               :items="dataSourceList"
               :loading="loading"
               v-model="searchModel.dataSource"
+              ref="refDataSource"
             />
           </v-col>
           <v-col cols="2" class="px-2">
@@ -59,6 +60,7 @@
               :items="searchForm.tagList"
               :loading="loading"
               v-model="searchModel.tag"
+              ref="refTag"
             />
           </v-col>
           <v-col cols="3" align-self="end" class="text-right">
@@ -177,6 +179,7 @@
                 :items="resourceNameCombobox"
                 @keydown="listResourceNameForCombobox"
                 persistent-hint
+                ref="refResourceName"
               />
             </v-col>
           </v-row>
@@ -1435,8 +1438,13 @@ export default {
       this.refleshList()
     },
     handleSearch() {
-      this.refleshList()
-      this.updateSearchHistory()
+      this.$refs.refDataSource.blur()
+      this.$refs.refTag.blur()
+      this.$refs.refResourceName.blur()
+      this.$nextTick(() => {
+        this.refleshList()
+        this.updateSearchHistory()
+      })
     },
     handleNewTag() {
       this.findingModel.new_tag = '' // clear
