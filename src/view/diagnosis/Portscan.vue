@@ -756,7 +756,8 @@ export default {
       this.tableTargets.items = []
       this.loading = false
     },
-    async deleteItem(portscanSettingID) {
+    async deleteItem(portscanSettingID, name) {
+      await await this.untagProjectAPI('portscan:' + name)
       await this.deletePortscanSettingAPI(portscanSettingID).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -773,6 +774,10 @@ export default {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
+      await this.tagProjectAPI(
+        'portscan:' + this.portscanSettingModel.name,
+        'cyan darken-2'
+      )
       let msg = 'Success: Updated PortscanSetting.'
       if (this.portscanSettingForm.newPortscanSetting) {
         msg = 'Success: Created new PortscanSetting.'
@@ -841,12 +846,15 @@ export default {
       await this.putItem()
     },
     handleDeleteItem(item) {
-      this.assignTargetDataModel(item)
+      this.assignDataModel(item)
       this.deleteDialog = true
     },
     async handleDeleteSubmit() {
       this.loading = true
-      await this.deleteItem(this.portscanSettingModel.portscan_setting_id)
+      await this.deleteItem(
+        this.portscanSettingModel.portscan_setting_id,
+        this.portscanSettingModel.name
+      )
     },
     handleNewTarget() {
       this.portscanTargetModel = {
