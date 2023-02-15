@@ -707,6 +707,7 @@ export default {
     },
     async handleDeleteSubmit() {
       this.loading = true
+      await this.untagProjectAPI(this.getApplicationScanTag())
       await this.deleteItem(this.applicationScanModel.application_scan_id)
     },
     handleScan(item) {
