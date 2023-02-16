@@ -819,7 +819,7 @@ export default {
         return Promise.reject(err)
       })
       await this.tagProjectAPI(
-        'github:' + this.gitHubSetting.target_resource,
+        'github:' + this.gitHubSetting.name,
         'black'
       ).catch((err) => {
         return Promise.reject(err)
