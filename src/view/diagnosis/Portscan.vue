@@ -427,6 +427,17 @@
               outlined
               required
             ></v-text-field>
+            <v-textarea
+              v-if="portscanTargetModel.status_detail"
+              v-model="portscanTargetModel.status_detail"
+              :label="
+                $t(`item['` + portscanTargetForm.status_detail.label + `']`) +
+                ' *'
+              "
+              :placeholder="portscanTargetForm.status_detail.placeholder"
+              outlined
+              disabled
+            ></v-textarea>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
@@ -565,6 +576,7 @@ export default {
               !v || v.length <= 255 || 'Name must be less than 255 characters',
           ],
         },
+        status_detail: { label: 'Status Detail', placeholder: '-' },
       },
       portscanSettingModel: {
         portscan_setting_id: 0,
@@ -862,7 +874,7 @@ export default {
         portscan_target_id: 0,
         target: '',
         updated_at: '',
-        statys: '',
+        status: '',
       }
       this.portscanTargetForm.newPortscanTarget = true
       this.editTargetDialog = true
