@@ -301,6 +301,10 @@ const ja = {
         '特別な理由がない場合はデフォルトチャンネルをご利用ください.',
       'The next notification will be after':
         '次の日時まで通知はOFFになります: ',
+      'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
+        'ルール条件を確認したい場合は、ANALYZEボタンで関連するFindingを見ることができます。',
+      'Running ANALYZE will move to the alert screen.':
+        'ANALYZEを実行するとアラート画面に移動します。',
     },
     report: {
       'Download Finding Report': 'レポートのダウンロード',
