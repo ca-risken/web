@@ -349,7 +349,7 @@
                     />
                   </span>
                 </v-card-title>
-                <v-card-text>
+                <v-card-text class="wrap">
                   {{ gcpDataSourceModel.status_detail }}
                 </v-card-text>
               </v-card>
@@ -917,3 +917,9 @@ export default {
   },
 }
 </script>
+<style lang="scss">
+.wrap {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+</style>
