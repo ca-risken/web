@@ -327,9 +327,9 @@ const ja = {
       'from the project.': 'されます.',
       'Make sure to copy your access token now. You won’t be able to see it again!':
         'アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.',
-      'No users found for your search criteria.':
+      'No users found for your search condition.':
         '検索した条件でユーザーが見つかりませんでした。',
-      'To reserve a user with a user key in the search criteria, press the Reserve button.':
+      'To reserve a user with a user key in the search condition, press the RESERVE button.':
         '検索条件のユーザーキーでユーザーの予約を行う場合には、予約ボタンを押してください。',
       'User Reservation Description': `新規ユーザに対してロールを予約することができます
       新規ユーザのアクセス時に予約されたロールへの割り当てが行われます

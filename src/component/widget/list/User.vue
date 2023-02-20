@@ -34,7 +34,7 @@
         <v-spacer />
       </v-card-title>
       <v-divider></v-divider>
-      <v-card-text class="pa-0" v-if="!isUserNotFound">
+      <v-card-text class="pa-0" v-if="!noUser">
         <v-data-table
           :headers="headers"
           :items="table.items"
@@ -55,13 +55,13 @@
           </template>
         </v-data-table>
       </v-card-text>
-      <template v-if="isUserNotFound">
+      <template v-if="noUser">
         <v-alert
-          >{{ $t("view.iam['No users found for your search criteria.']")
+          >{{ $t("view.iam['No users found for your search condition.']")
           }}<br />
           {{
             $t(
-              "view.iam['To reserve a user with a user key in the search criteria, press the Reserve button.']"
+              "view.iam['To reserve a user with a user key in the search condition, press the RESERVE button.']"
             )
           }}
         </v-alert>
@@ -119,7 +119,7 @@ export default {
         items: [],
       },
       users: [],
-      isUserNotFound: false,
+      noUser: false,
     }
   },
   computed: {
@@ -158,7 +158,7 @@ export default {
   methods: {
     async refleshList(searchCond) {
       this.loading = true
-      this.isUserNotFound = false
+      this.noUser = false
       this.table.options.page = 1
       this.clearList()
 
@@ -185,7 +185,7 @@ export default {
         this.searchModel.userName &&
         userIDs.length == 0
       ) {
-        this.isUserNotFound = true
+        this.noUser = true
       }
 
       this.loading = false

@@ -328,10 +328,10 @@ const en = {
       'from the project.': 'from the project.',
       'Make sure to copy your access token now. You won’t be able to see it again!':
         'Make sure to copy your access token now. You won’t be able to see it again!',
-      'No users found for your search criteria.':
-        'No users found for your search criteria.',
-      'To reserve a user with a user key in the search criteria, press the Reserve button.':
-        'To reserve a user with a user key in the search criteria, press the Reserve button.',
+      'No users found for your search condition.':
+        'No users found for your search condition.',
+      'To reserve a user with a user key in the search condition, press the RESERVE button.':
+        'To reserve a user with a user key in the search condition, press the RESERVE button.',
       'User Reservation Description': `Roles can be reserved for new users.
         New users will be assigned to the reserved roles when they access the system.
         For existing users, please attach the role from the user screen.

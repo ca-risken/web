@@ -615,15 +615,6 @@ export default {
       // Create/Delete User Reserved
       var searchCond = '&user_idp_key=' + this.userModel.user_idp_key
       const registeredUserReserveds = await this.listUserReservedAPI(searchCond)
-      // if (this.roleTable.selected.length == 0) {
-      //   registeredUserReserveds.forEach(async (ur) => {
-      //     await this.deleteUserReservedAPI(ur.user_reserved_id).catch((err) => {
-      //       this.$refs.snackbar.notifyError(err.response.data)
-      //       return Promise.reject(err)
-      //     })
-      //   })
-      //   return
-      // }
       this.roleTable.items.forEach(async (item) => {
         let attachRole = false
         this.roleTable.selected.some((selected) => {
