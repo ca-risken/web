@@ -66,7 +66,13 @@
           }}
         </v-alert>
         <v-card-actions class="justify-center">
-          <v-btn text outlined color="teal darken-1" @click="handleUserReserve">
+          <v-btn
+            text
+            outlined
+            color="teal darken-1"
+            risken-action-name="`click-handle-user-reserve"
+            @click="handleUserReserve"
+          >
             {{ $t(`btn['RESERVE']`) }}
           </v-btn>
         </v-card-actions>
