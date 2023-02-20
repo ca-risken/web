@@ -330,11 +330,12 @@ const iam = {
     },
 
     // UserReserved API
-    async listUserReservedAPI() {
+    async listUserReservedAPI(searchCond) {
       const res = await this.$axios
         .get(
           '/iam/list-user-reserved/?project_id=' +
-            this.$store.state.project.project_id
+            this.$store.state.project.project_id +
+            searchCond
         )
         .catch((err) => {
           return Promise.reject(err)

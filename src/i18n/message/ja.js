@@ -159,6 +159,7 @@ const ja = {
     Risk: 'リスク',
     Repository: 'リポジトリ',
     RepositoryPattern: 'リポジトリパターン',
+    Reserved: '予約済み',
     'Resource Name': 'リソース名',
     'Resource Pattern': 'リソースパターン',
     Resource: 'リソース',
@@ -189,6 +190,7 @@ const ja = {
     Type: 'タイプ',
     Updated: '更新日時',
     'UpdatedAt Range': '更新日（範囲）',
+    User: 'ユーザー',
     'User Key': 'ユーザキー',
     'Verification Code': '検証コード',
     'Webhook URL': 'ウェブフックURL',
@@ -325,6 +327,10 @@ const ja = {
       'from the project.': 'されます.',
       'Make sure to copy your access token now. You won’t be able to see it again!':
         'アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.',
+      'No users found for your search criteria.':
+        '検索した条件でユーザーが見つかりませんでした。',
+      'To reserve a user with a user key in the search criteria, press the Reserve button.':
+        '検索条件のユーザーキーでユーザーの予約を行う場合には、予約ボタンを押してください。',
       'User Reservation Description': `新規ユーザに対してロールを予約することができます
       新規ユーザのアクセス時に予約されたロールへの割り当てが行われます
       既存のユーザに対しては、ユーザ画面からロールの紐付けを行ってください`,

@@ -13,25 +13,13 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
-          <v-col cols="4" sm="3" md="3">
-            <v-combobox
-              outlined
-              dense
-              clearable
-              background-color="white"
-              :label="$t(`item['` + searchForm.userID.label + `']`)"
-              :placeholder="searchForm.userID.placeholder"
-              :items="userIDList"
-              v-model="searchModel.userID"
-            />
-          </v-col>
           <v-col cols="8" sm="4" md="4">
             <v-combobox
               outlined
               dense
               clearable
               background-color="white"
-              :label="$t(`item['` + searchForm.userName.label + `']`)"
+              :label="$t(`item['User']`)"
               :placeholder="searchForm.userName.placeholder"
               :items="userNameList"
               v-model="searchModel.userName"
@@ -88,6 +76,14 @@
                 <template v-slot:[`item.role_cnt`]="{ item }">
                   <v-chip :color="getColorByCount(item.role_cnt)" dark>{{
                     item.role_cnt
+                  }}</v-chip>
+                </template>
+                <template v-slot:[`item.reserved`]="{ item }">
+                  <v-icon v-if="!item.reserved" color="success"
+                    >mdi-check-circle</v-icon
+                  >
+                  <v-chip v-else color="grey lighten-1" dark>{{
+                    $t("item['Reserved']")
                   }}</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
@@ -153,34 +149,51 @@
           </template>
         </v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="userModel.user_id"
-            :label="$t(`item['` + userForm.user_id.label + `']`)"
-            :placeholder="userForm.user_id.placeholder"
-            filled
-            disabled
-          ></v-text-field>
-          <v-text-field
-            v-model="userModel.name"
-            :counter="64"
-            :rules="userForm.name.validator"
-            :label="$t(`item['` + userForm.name.label + `']`) + ' *'"
-            :placeholder="userForm.name.placeholder"
-            filled
-            disabled
-          ></v-text-field>
-          <v-text-field
-            v-model="userModel.user_idp_key"
-            :counter="64"
-            :rules="userForm.user_idp_key.validator"
-            :label="$t(`item['` + userForm.user_idp_key.label + `']`) + ' *'"
-            :placeholder="userForm.user_idp_key.placeholder"
-            filled
-            disabled
-          ></v-text-field>
+          <v-row no-gutters>
+            <v-col v-show="!userModel.reserved">
+              <v-text-field
+                v-model="userModel.user_id"
+                :label="$t(`item['` + userForm.user_id.label + `']`)"
+                :placeholder="userForm.user_id.placeholder"
+                filled
+                disabled
+                dense
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row no-gutters v-if="!userModel.reserved">
+            <v-col>
+              <v-text-field
+                v-model="userModel.name"
+                :counter="64"
+                :rules="userForm.name.validator"
+                :label="$t(`item['` + userForm.name.label + `']`) + ' *'"
+                :placeholder="userForm.name.placeholder"
+                filled
+                disabled
+                dense
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col>
+              <v-text-field
+                v-model="userModel.user_idp_key"
+                :counter="255"
+                :rules="userForm.user_idp_key.validator"
+                :label="
+                  $t(`item['` + userForm.user_idp_key.label + `']`) + ' *'
+                "
+                :placeholder="userForm.user_idp_key.placeholder"
+                filled
+                disabled
+                dense
+              ></v-text-field>
+            </v-col>
+          </v-row>
           <!-- Role List -->
-          <div v-show="userModel.user_id">
-            <v-toolbar flat color="white" v-show="userModel.user_id">
+          <div v-show="userModel.user_idp_key">
+            <v-toolbar flat color="white" v-show="userModel.user_idp_key">
               <v-toolbar-title class="grey--text text--darken-4">
                 <v-icon large>mdi-alpha-r-circle</v-icon>
                 <span class="mx-4">
@@ -327,6 +340,7 @@ export default {
         user_idp_key: '',
         role_cnt: 0,
         roles: '',
+        reserved: false,
         updated_at: '',
       },
       table: {
@@ -344,6 +358,7 @@ export default {
         items: [],
       },
       users: [],
+      userReserved: [],
       deleteDialog: false,
       editDialog: false,
       userDialog: false,
@@ -373,10 +388,10 @@ export default {
           value: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          text: this.$i18n.t('item["User Key"]'),
           align: 'start',
           sortable: false,
-          value: 'user_id',
+          value: 'user_idp_key',
         },
         {
           text: this.$i18n.t('item["Name"]'),
@@ -384,11 +399,12 @@ export default {
           sortable: false,
           value: 'name',
         },
+
         {
-          text: this.$i18n.t('item["User Key"]'),
-          align: 'start',
+          text: this.$i18n.t('item["Status"]'),
+          align: 'center',
           sortable: false,
-          value: 'user_idp_key',
+          value: 'reserved',
         },
         {
           text: this.$i18n.t('item["Roles"]'),
@@ -428,21 +444,26 @@ export default {
     },
   },
   mounted() {
-    this.refleshList('')
+    this.refleshList('', '')
   },
   methods: {
-    async refleshList(searchCond) {
-      searchCond +=
-        '&project_id=' + this.$store.state.project.project_id + searchCond
+    async refleshList(userName, userID) {
+      let searchCond = '&project_id=' + this.$store.state.project.project_id
+      if (userName) {
+        searchCond += '&name=' + userName
+      }
+      if (userID) {
+        searchCond += '&user_id=' + userID
+      }
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      if (!userIDs) {
-        this.clearList()
-        return false
+      this.userReserved = await this.listUserReserved(userName)
+      if (userIDs.length + this.userReserved.length == 0) {
+        return
       }
-      this.table.total = userIDs.length
+      this.table.total = userIDs.length + this.userReserved.length
       this.users = userIDs
       this.loadList()
     },
@@ -455,31 +476,75 @@ export default {
         (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
-      ids.forEach(async (id) => {
-        const user = await this.getUserAPI(id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
+      items = await Promise.all(
+        ids.map(async (id) => {
+          return await this.getUser(id)
         })
-        const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const item = {
-          user_id: user.user_id,
-          name: user.name,
-          user_idp_key: user.user_idp_key,
-          updated_at: user.updated_at,
-          role_cnt: roles.length,
-          roles: roles,
-        }
-        items.push(item)
+      )
+      items.forEach((item) => {
         userIDs.push(item.user_id)
         userNames.push(item.name)
       })
+      items = items.concat(
+        this.appendUserReserved(this.users.length - items.length, items.length)
+      )
       this.table.items = items
       this.userIDList = userIDs
       this.userNameList = userNames
       this.loading = false
+    },
+    async getUser(id) {
+      const user = await this.getUserAPI(id).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      const item = {
+        user_id: user.user_id,
+        name: user.name,
+        user_idp_key: user.user_idp_key,
+        updated_at: user.updated_at,
+        role_cnt: roles.length,
+        roles: roles,
+        reserved: false,
+      }
+      return item
+    },
+    appendUserReserved(start, itemLength) {
+      const displayRemain = this.table.options.itemsPerPage - itemLength
+      if (displayRemain < 0) {
+        return []
+      }
+      const userReserved = this.userReserved.slice(start, displayRemain)
+      return userReserved
+    },
+    async listUserReserved(userIdpKey) {
+      var searchCond = ''
+      if (userIdpKey) {
+        searchCond = '&user_idp_key=' + userIdpKey
+      }
+      const userReserved = await this.listUserReservedAPI(searchCond)
+      let mapUserReserved = {}
+      userReserved.forEach((ur) => {
+        if (mapUserReserved[ur.user_idp_key]) {
+          mapUserReserved[ur.user_idp_key].roles.push(ur.role_id)
+          mapUserReserved[ur.user_idp_key].role_cnt =
+            mapUserReserved[ur.user_idp_key].roles.length
+        } else {
+          mapUserReserved[ur.user_idp_key] = {
+            name: '-',
+            user_idp_key: ur.user_idp_key,
+            updated_at: ur.updated_at,
+            roles: [ur.role_id],
+            role_cnt: 1,
+            reserved: true,
+          }
+        }
+      })
+      return Object.values(mapUserReserved)
     },
     clearList() {
       this.users = []
@@ -512,6 +577,14 @@ export default {
 
     async putItem() {
       this.loading = true
+      if (this.userModel.reserved) {
+        await this.putUserReserved()
+      } else {
+        this.putUserRole()
+      }
+      this.finishUpdated('Success: Updated role.')
+    },
+    async putUserRole() {
       // Attach/Detach roles
       this.roleTable.items.forEach(async (item) => {
         let attachRole = false
@@ -537,8 +610,60 @@ export default {
           )
         }
       })
-
-      this.finishUpdated('Success: Updated role.')
+    },
+    async putUserReserved() {
+      // Create/Delete User Reserved
+      var searchCond = '&user_idp_key=' + this.userModel.user_idp_key
+      const registeredUserReserveds = await this.listUserReservedAPI(searchCond)
+      // if (this.roleTable.selected.length == 0) {
+      //   registeredUserReserveds.forEach(async (ur) => {
+      //     await this.deleteUserReservedAPI(ur.user_reserved_id).catch((err) => {
+      //       this.$refs.snackbar.notifyError(err.response.data)
+      //       return Promise.reject(err)
+      //     })
+      //   })
+      //   return
+      // }
+      this.roleTable.items.forEach(async (item) => {
+        let attachRole = false
+        this.roleTable.selected.some((selected) => {
+          if (item.role_id === selected.role_id) {
+            attachRole = true
+            return true
+          }
+        })
+        const registered = registeredUserReserveds.find(
+          (registered) => registered.role_id === item.role_id
+        )
+        if (attachRole) {
+          // PutUserReserved
+          if (registered) {
+            return
+          }
+          const param = {
+            project_id: this.$store.state.project.project_id,
+            user_reserved: {
+              role_id: item.role_id,
+              user_idp_key: this.userModel.user_idp_key,
+            },
+          }
+          await this.putUserReservedAPI(param).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          })
+          return
+        }
+        // deleteUserReserved
+        if (!registered) {
+          return
+        }
+        await this.deleteUserReservedAPI(registered.reserved_id).catch(
+          (err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      })
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -560,6 +685,7 @@ export default {
         user_idp_key: '',
         role_cnt: 0,
         roles: '',
+        reserved: false,
         updated_at: '',
       }
       this.loadRoleList()
@@ -575,14 +701,7 @@ export default {
       this.putItem()
     },
     handleSearch() {
-      let searchCond = ''
-      if (this.searchModel.userName) {
-        searchCond += '&name=' + this.searchModel.userName
-      }
-      if (this.searchModel.userID) {
-        searchCond += '&user_id=' + this.searchModel.userID
-      }
-      this.refleshList(searchCond)
+      this.refleshList(this.searchModel.userName, this.searchModel.userID)
     },
     assignDataModel(item) {
       this.userModel = {
@@ -591,6 +710,7 @@ export default {
         user_idp_key: '',
         role_cnt: 0,
         roles: '',
+        reserved: false,
         updated_at: '',
       }
       this.userModel = Object.assign(this.userModel, item)
