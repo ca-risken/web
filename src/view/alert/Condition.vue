@@ -98,9 +98,6 @@
                     <v-icon left color="teal lighten-2">mdi-set-all</v-icon> OR
                   </template>
                 </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
-                </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ on: menu }">
@@ -366,28 +363,48 @@
         </v-card-text>
 
         <v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              text
-              outlined
-              color="grey darken-1"
-              @click="editDialog = false"
-            >
-              {{ $t(`btn['CANCEL']`) }}
-            </v-btn>
-            <v-btn
-              text
-              outlined
-              color="green darken-1"
-              :loading="loading"
-              @click="handleEditSubmit"
-            >
-              <template v-if="form.new">{{ $t(`btn['REGIST']`) }}</template>
-              <template v-else>{{ $t(`btn['EDIT']`) }}</template>
-            </v-btn>
-          </v-card-actions>
+          <v-alert dense outlined type="info" v-if="!form.new">
+            {{
+              $t(
+                "view.alert['If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.']"
+              )
+            }}
+            {{
+              $t("view.alert['Running ANALYZE will move to the alert screen.']")
+            }}
+          </v-alert>
         </v-card-text>
+
+        <v-card-actions class="pb-12">
+          <v-btn
+            v-if="!form.new"
+            text
+            outlined
+            color="red darken-1"
+            @click="handleAnalyze()"
+          >
+            ANALYZE
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="editDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            text
+            outlined
+            color="green darken-1"
+            :loading="loading"
+            @click="handleEditSubmit"
+          >
+            <template v-if="form.new">{{ $t(`btn['REGIST']`) }}</template>
+            <template v-else>{{ $t(`btn['EDIT']`) }}</template>
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -972,7 +989,9 @@ export default {
     handleAnalyze(item) {
       this.loading = true
       let alertConditionID = ''
-      if (item.alert_condition_id) {
+      if (!item) {
+        alertConditionID = this.dataModel.alert_condition_id
+      } else if (item.alert_condition_id) {
         alertConditionID = item.alert_condition_id
       }
       this.analyze(alertConditionID)

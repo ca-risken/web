@@ -302,6 +302,10 @@ const en = {
         '... It is recommended to use the default channels.',
       'The next notification will be after':
         'The next notification will be after',
+      'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
+        'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.',
+      'Running ANALYZE will move to the alert screen.':
+        'Running ANALYZE will move to the alert screen.',
     },
     report: {
       'Download Finding Report': 'Download Finding Report',
