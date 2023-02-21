@@ -323,8 +323,28 @@ let mixin = {
           return 'Unknown'
       }
     },
+    isOKStatus: (status) => {
+      if (Number(status) === 1) return true
+      return false
+    },
     isInProgressDataSourceStatus: (status) => {
       if (Number(status) === 3) return true
+      return false
+    },
+    isErrorStatus: (status) => {
+      if (Number(status) === 4) return true
+      return false
+    },
+    hasDataSourceWarning(datasource) {
+      if (
+        !this.isOKStatus(datasource.status) &&
+        !this.isErrorStatus(datasource.status)
+      ) {
+        return false
+      }
+      if (datasource.status_detail && datasource.status_detail != '') {
+        return true
+      }
       return false
     },
     getDataSourceStatusColor: (status) => {

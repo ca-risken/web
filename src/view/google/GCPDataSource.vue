@@ -106,6 +106,11 @@
                     {{ getDataSourceStatusText(item.status) }}
                   </v-chip>
                   <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <v-icon
+                    v-if="hasDataSourceWarning(item)"
+                    color="yellow darken-2"
+                    >mdi-alert</v-icon
+                  >
                 </template>
                 <template v-slot:[`item.specific_version`]="{ item }">
                   <template v-if="item.specific_version">
@@ -617,7 +622,7 @@ export default {
         {
           text: this.$i18n.t('item["Status"]'),
           align: 'start',
-          width: '12%',
+          width: '14%',
           sortable: true,
           value: 'status',
         },
