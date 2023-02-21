@@ -34,7 +34,7 @@
         <v-spacer />
       </v-card-title>
       <v-divider></v-divider>
-      <v-card-text class="pa-0">
+      <v-card-text class="pa-0" v-if="!noUser">
         <v-data-table
           :headers="headers"
           :items="table.items"
@@ -55,6 +55,28 @@
           </template>
         </v-data-table>
       </v-card-text>
+      <template v-if="noUser">
+        <v-alert
+          >{{ $t("view.iam['No users found for your search condition.']")
+          }}<br />
+          {{
+            $t(
+              "view.iam['To reserve a user with a user key in the search condition, press the RESERVE button.']"
+            )
+          }}
+        </v-alert>
+        <v-card-actions class="justify-center">
+          <v-btn
+            text
+            outlined
+            color="teal darken-1"
+            risken-action-name="`click-handle-user-reserve"
+            @click="handleUserReserve"
+          >
+            {{ $t(`btn['RESERVE']`) }}
+          </v-btn>
+        </v-card-actions>
+      </template>
       <v-card-actions>
         <v-spacer />
         <v-btn text outlined color="grey darken-1" @click="handleCancel">
@@ -97,6 +119,7 @@ export default {
         items: [],
       },
       users: [],
+      noUser: false,
     }
   },
   computed: {
@@ -135,6 +158,7 @@ export default {
   methods: {
     async refleshList(searchCond) {
       this.loading = true
+      this.noUser = false
       this.table.options.page = 1
       this.clearList()
 
@@ -156,6 +180,14 @@ export default {
         userList.push(this.getUserDetail(id))
       }
       this.table.items = await Promise.all(userList) // Parallel API call
+      if (
+        !this.searchModel.userID &&
+        this.searchModel.userName &&
+        userIDs.length == 0
+      ) {
+        this.noUser = true
+      }
+
       this.loading = false
     },
     async getUserDetail(id) {
@@ -186,6 +218,12 @@ export default {
     },
     handleSelectItem(item) {
       this.$emit('handleUserDialogResponse', item)
+    },
+    handleUserReserve() {
+      this.$emit('handleUserDialogResponse', {
+        user_idp_key: this.searchModel.userName,
+        reserved: true,
+      })
     },
     handleCancel() {
       this.$emit('handleUserDialogResponse', { user_id: '', name: '' })

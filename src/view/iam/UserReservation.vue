@@ -408,7 +408,7 @@ export default {
     async refleshList() {
       this.loading = true
       this.clearList()
-      const userReserveds = await this.listUserReservedAPI().catch((err) => {
+      const userReserveds = await this.listUserReservedAPI('').catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })

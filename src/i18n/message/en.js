@@ -159,6 +159,7 @@ const en = {
     Risk: 'Risk',
     Repository: 'Repository',
     RepositoryPattern: 'RepositoryPattern',
+    Reserved: 'Reserved',
     'Resource Name': 'Resource Name',
     'Resource Pattern': 'Resource Pattern',
     Resource: 'Resource',
@@ -189,6 +190,7 @@ const en = {
     Type: 'Type',
     Updated: 'Updated',
     'UpdatedAt Range': 'UpdatedAt Range',
+    User: 'User',
     'User Key': 'User Key',
     'Verification Code': 'Verification Code',
     'Webhook URL': 'Webhook URL',
@@ -326,6 +328,10 @@ const en = {
       'from the project.': 'from the project.',
       'Make sure to copy your access token now. You won’t be able to see it again!':
         'Make sure to copy your access token now. You won’t be able to see it again!',
+      'No users found for your search condition.':
+        'No users found for your search condition.',
+      'To reserve a user with a user key in the search condition, press the RESERVE button.':
+        'To reserve a user with a user key in the search condition, press the RESERVE button.',
       'User Reservation Description': `Roles can be reserved for new users.
         New users will be assigned to the reserved roles when they access the system.
         For existing users, please attach the role from the user screen.
