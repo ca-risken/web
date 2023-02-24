@@ -10,7 +10,6 @@
       right="right"
       color="pink lighten-2"
       v-show="fab"
-      v-scroll="onScroll"
       @click="toTop"
     >
       <v-icon>keyboard_arrow_up</v-icon>
@@ -24,16 +23,19 @@ export default {
   data() {
     return {
       fab: false,
+      scroll: 0,
     }
+  },
+  mounted() {
+    window.addEventListener('scroll', this.onScroll)
   },
   methods: {
     onScroll() {
       if (typeof window === 'undefined') return
-      const top = window.pageYOffset || document.documentElement.offsetTop || 0
-      this.fab = top > 40
+      this.scroll = window.scrollY
+      this.fab = this.scroll > 40
     },
     toTop() {
-      this.$router.push({ hash: '' })
       this.$vuetify.goTo(0)
     },
   },
