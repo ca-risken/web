@@ -368,7 +368,7 @@
                 text
                 outlined
                 color="blue darken-1"
-                v-if="awsForm.readOnly && scanSupported(awsModel.data_source)"
+                v-if="awsForm.readOnly"
                 :loading="loading"
                 @click="handleScan"
               >
@@ -379,7 +379,7 @@
                 text
                 outlined
                 color="cyan darken-2"
-                v-if="awsForm.readOnly && scanSupported(awsModel.data_source)"
+                v-if="awsForm.readOnly"
                 :loading="loading"
                 link
                 :to="{
@@ -733,8 +733,6 @@ export default {
           return '/static/aws/cloudsploit.png'
         case 'aws:portscan':
           return '/static/aws/nmap.png'
-        case 'aws:activity':
-          return '/static/aws/activity.svg'
         default:
           return '/static/aws/default.png'
       }
@@ -791,12 +789,6 @@ export default {
       })
     },
     async scanDataSource() {
-      if (!this.scanSupported(this.awsModel.data_source)) {
-        this.finishError(
-          'Unsupported DataSource: data_source=' + this.awsModel.data_source
-        )
-        return
-      }
       await this.invokeAWSScanAPI(
         this.awsModel.aws_id,
         this.awsModel.aws_data_source_id
@@ -806,14 +798,8 @@ export default {
       })
       this.finishSuccess('Success: Invoke scan for Data Source.')
     },
-    scanSupported(data_source) {
-      if (data_source === 'aws:activity') {
-        return false
-      }
-      return true
-    },
 
-    getActionList(data_source) {
+    getActionList() {
       let actions = [
         {
           text: 'View DataSource',
@@ -830,14 +816,12 @@ export default {
           icon: 'mdi-trash-can-outline',
           click: this.handleDetachItem,
         },
-      ]
-      if (this.scanSupported(data_source)) {
-        actions.push({
+        {
           text: 'Scan',
           icon: 'mdi-magnify-scan',
           click: this.handleScan,
-        })
-      }
+        },
+      ]
       return actions
     },
 
