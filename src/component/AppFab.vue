@@ -23,7 +23,6 @@ export default {
   data() {
     return {
       fab: false,
-      scroll: 0,
     }
   },
   mounted() {
@@ -32,8 +31,7 @@ export default {
   methods: {
     onScroll() {
       if (typeof window === 'undefined') return
-      this.scroll = window.scrollY
-      this.fab = this.scroll > 40
+      this.fab = window.scrollY > 40
     },
     toTop() {
       this.$vuetify.goTo(0)
