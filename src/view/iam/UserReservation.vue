@@ -299,8 +299,7 @@ export default {
         },
       },
       dataModel: {
-        reserved_id: '',
-        role_id: '',
+        role_id: 0,
         user_idp_key: '',
         created_at: '',
         updated_at: '',
@@ -522,8 +521,7 @@ export default {
     // handler
     handleNewItem() {
       this.dataModel = {
-        reserved_id: '',
-        role_id: '',
+        role_id: 0,
         user_idp_key: '',
         created_at: '',
         updated_at: '',
@@ -544,8 +542,7 @@ export default {
     },
     assignDataModel(item) {
       this.dataModel = {
-        reserved_id: '',
-        role_id: '',
+        role_id: 0,
         user_idp_key: '',
       }
       this.dataModel = Object.assign(this.dataModel, item)

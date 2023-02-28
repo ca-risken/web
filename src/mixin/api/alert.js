@@ -138,7 +138,6 @@ const alert = {
         project_id: this.$store.state.project.project_id,
         alert_condition: {
           project_id: this.$store.state.project.project_id,
-          alert_condition_id: '',
           description: 'RISKEN Alert',
           severity: 'medium',
           and_or: 'and',
@@ -204,7 +203,6 @@ const alert = {
         project_id: this.$store.state.project.project_id,
         alert_rule: {
           project_id: this.$store.state.project.project_id,
-          alert_rule_id: '',
           name: 'over0.8',
           score: 0.8,
           resource_name: '',
