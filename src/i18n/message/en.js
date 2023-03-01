@@ -92,6 +92,7 @@ const en = {
     AccountID: 'AccountID',
     Action: 'Action',
     'Action Pattern': 'Action Pattern',
+    Activate: 'Activate',
     'Alert ID': 'Alert ID',
     'Alert Condition ID': 'Alert Condition ID',
     'Alert Rule ID': 'Alert Rule ID',
