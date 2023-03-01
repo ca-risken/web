@@ -404,69 +404,69 @@
               <v-chip v-else color="grey" dark>Not configured</v-chip>
             </template>
           </v-data-table>
-          <v-divider class="mt-3 mb-3"></v-divider>
-          <v-card-actions>
-            <v-btn
-              text
-              outlined
-              color="blue darken-1"
-              v-if="gcpDataSourceModel.status && gcpForm.readOnly"
-              :loading="loading"
-              @click="handleScan"
-            >
-              <v-icon left>mdi-magnify-scan</v-icon>
-              {{ $t(`btn['SCAN']`) }}
-            </v-btn>
-            <v-btn
-              text
-              outlined
-              color="cyan darken-2"
-              v-if="gcpDataSourceModel.status && gcpForm.readOnly"
-              :loading="loading"
-              link
-              :to="{
-                path: '/finding/finding/',
-                query: {
-                  data_source: gcpDataSourceModel.name,
-                  tag: gcpDataSourceModel.gcp_project_id,
-                },
-              }"
-              risken-action-name="search-finding-by-datasource-from-google"
-            >
-              <v-icon left>mdi-magnify</v-icon>
-              {{ $t(`btn['SHOW SCAN RESULT']`) }}
-            </v-btn>
-            <v-spacer />
-            <v-btn
-              text
-              outlined
-              color="green darken-1"
-              v-if="!gcpDataSourceModel.status && !gcpForm.setupAll"
-              :loading="loading"
-              @click="handleAttachSubmit"
-            >
-              {{ $t(`btn['ATTACH']`) }}
-            </v-btn>
-            <v-btn
-              text
-              outlined
-              color="green darken-1"
-              v-if="gcpForm.setupAll"
-              :loading="loading"
-              @click="handleAttachAll"
-            >
-              {{ $t(`btn['ATTACH ALL']`) }}
-            </v-btn>
-            <v-btn
-              text
-              outlined
-              color="grey darken-1"
-              @click="editDialog = false"
-            >
-              {{ $t(`btn['CANCEL']`) }}
-            </v-btn>
-          </v-card-actions>
         </v-card-text>
+        <v-divider class="mt-3 mb-3"></v-divider>
+        <v-card-actions>
+          <v-btn
+            text
+            outlined
+            color="blue darken-1"
+            v-if="gcpDataSourceModel.status && gcpForm.readOnly"
+            :loading="loading"
+            @click="handleScan"
+          >
+            <v-icon left>mdi-magnify-scan</v-icon>
+            {{ $t(`btn['SCAN']`) }}
+          </v-btn>
+          <v-btn
+            text
+            outlined
+            color="cyan darken-2"
+            v-if="gcpDataSourceModel.status && gcpForm.readOnly"
+            :loading="loading"
+            link
+            :to="{
+              path: '/finding/finding/',
+              query: {
+                data_source: gcpDataSourceModel.name,
+                tag: gcpDataSourceModel.gcp_project_id,
+              },
+            }"
+            risken-action-name="search-finding-by-datasource-from-google"
+          >
+            <v-icon left>mdi-magnify</v-icon>
+            {{ $t(`btn['SHOW SCAN RESULT']`) }}
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            text
+            outlined
+            color="green darken-1"
+            v-if="!gcpDataSourceModel.status && !gcpForm.setupAll"
+            :loading="loading"
+            @click="handleAttachSubmit"
+          >
+            {{ $t(`btn['ATTACH']`) }}
+          </v-btn>
+          <v-btn
+            text
+            outlined
+            color="green darken-1"
+            v-if="gcpForm.setupAll"
+            :loading="loading"
+            @click="handleAttachAll"
+          >
+            {{ $t(`btn['ATTACH ALL']`) }}
+          </v-btn>
+          <v-btn
+            text
+            outlined
+            color="grey darken-1"
+            @click="editDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
