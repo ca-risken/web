@@ -92,6 +92,7 @@ const ja = {
     AccountID: 'アカウントID',
     Action: 'アクション',
     'Action Pattern': 'アクションパターン',
+    Activate: '有効化',
     'Alert ID': 'アラートID',
     'Alert Condition ID': 'アラート条件ID',
     'Alert Rule ID': 'アラートルールID',

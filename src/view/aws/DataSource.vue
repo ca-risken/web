@@ -304,7 +304,6 @@
                   class="pt-4 pl-6"
                   :name="$t(`item['` + awsForm.assume_role_arn.label + `']`)"
                   :text="String(awsModel.assume_role_arn)"
-                  size="x-large"
                 />
               </v-col>
               <v-col cols="11">
@@ -317,6 +316,7 @@
                   :disabled="awsForm.readOnly"
                   :filled="awsForm.readOnly"
                   outlined
+                  dense
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -326,7 +326,6 @@
                   class="pt-4 pl-6"
                   :name="$t(`item['` + awsForm.external_id.label + `']`)"
                   :text="String(awsModel.external_id)"
-                  size="x-large"
                 />
               </v-col>
               <v-col cols="11">
@@ -339,6 +338,7 @@
                   :disabled="awsForm.readOnly"
                   :filled="awsForm.readOnly"
                   outlined
+                  dense
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -356,6 +356,51 @@
                 </v-btn>
               </v-col>
             </v-row>
+            <v-data-table
+              v-model="setupAllTable.selected"
+              show-select
+              :headers="setupAllHeaders"
+              :items="setupAllTable.items"
+              :server-items-length="setupAllTable.total"
+              :loading="loading"
+              :hide-default-footer="true"
+              locale="ja-jp"
+              loading-text="Loading..."
+              no-data-text="No data."
+              class="elevation-1"
+              item-key="aws_data_source_id"
+              v-if="awsForm.setupAll"
+            >
+              <template v-slot:[`item.avator`]="{ item }">
+                <v-avatar tile class="ma-3" size="40px">
+                  <img
+                    :src="getAWSDataSourceIcon(item.data_source)"
+                    :alt="item.data_source"
+                  />
+                </v-avatar>
+              </template>
+              <template v-slot:[`item.status`]="{ item }">
+                <v-chip
+                  v-if="item.aws_id"
+                  :color="getDataSourceStatusColor(item.status)"
+                  dark
+                >
+                  <v-progress-circular
+                    v-if="isInProgressDataSourceStatus(item.status)"
+                    indeterminate
+                    size="20"
+                    width="2"
+                    color="white"
+                    class="mr-2"
+                  ></v-progress-circular>
+                  <v-icon v-else small color="white" class="mr-2">{{
+                    getDataSourceStatusIcon(item.status)
+                  }}</v-icon>
+                  {{ getDataSourceStatusText(item.status) }}
+                </v-chip>
+                <v-chip v-else color="grey" dark>Not configured</v-chip>
+              </template>
+            </v-data-table>
             <v-checkbox
               v-if="awsForm.setupAll"
               v-model="awsModel.overrideDataSource"
@@ -604,6 +649,10 @@ export default {
         },
         items: [],
       },
+      setupAllTable: {
+        selected: [],
+        items: [],
+      },
       deleteDialog: false,
       editDialog: false,
     }
@@ -685,6 +734,30 @@ export default {
         },
       ]
     },
+    setupAllHeaders() {
+      return [
+        {
+          text: this.$i18n.t('item[""]'),
+          align: 'center',
+          width: '10%',
+          sortable: false,
+          value: 'avator',
+        },
+        {
+          text: this.$i18n.t('item["Data Source"]'),
+          align: 'start',
+          sortable: false,
+          value: 'data_source',
+        },
+        {
+          text: this.$i18n.t('item["Status"]'),
+          align: 'start',
+          width: '14%',
+          sortable: false,
+          value: 'status',
+        },
+      ]
+    },
   },
   methods: {
     async listAWS() {
@@ -752,7 +825,8 @@ export default {
       this.finishSuccess('Success: Attach AWS Data Source.')
     },
     async attachAllDataSource() {
-      this.table.items.forEach(async (ds) => {
+      this.finishSuccess('Success: Attach AWS Data Source.')
+      this.setupAllTable.selected.forEach(async (ds) => {
         if (
           this.awsModel.overrideDataSource ||
           ds.assume_role_arn == undefined ||
@@ -843,6 +917,8 @@ export default {
       }
       this.awsForm.readOnly = false
       this.awsForm.setupAll = true
+      this.setupAllTable.items = [...this.table.items]
+      this.setupAllTable.selected = [...this.table.items]
       this.editDialog = true
     },
     handleViewItem(item) {
