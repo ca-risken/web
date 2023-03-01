@@ -825,11 +825,7 @@ export default {
       this.finishSuccess('Success: Attach AWS Data Source.')
     },
     async attachAllDataSource() {
-      console.log(this.setupAllTable)
-      if (this.setupAllTable.items.length == 6) {
-        this.finishSuccess('Success: Attach AWS Data Source.')
-        return
-      }
+      this.finishSuccess('Success: Attach AWS Data Source.')
       this.setupAllTable.items.forEach(async (ds) => {
         if (
           this.awsModel.overrideDataSource ||
