@@ -826,7 +826,7 @@ export default {
     },
     async attachAllDataSource() {
       this.finishSuccess('Success: Attach AWS Data Source.')
-      this.setupAllTable.items.forEach(async (ds) => {
+      this.setupAllTable.selected.forEach(async (ds) => {
         if (
           this.awsModel.overrideDataSource ||
           ds.assume_role_arn == undefined ||

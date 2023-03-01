@@ -362,6 +362,51 @@
           </v-row>
         </v-container>
         <v-card-text>
+          <v-data-table
+              v-model="setupAllTable.selected"
+              show-select
+              :headers="setupAllHeaders"
+              :items="setupAllTable.items"
+              :server-items-length="setupAllTable.total"
+              :loading="loading"
+              :hide-default-footer="true"
+              locale="ja-jp"
+              loading-text="Loading..."
+              no-data-text="No data."
+              class="elevation-1"
+              item-key="google_data_source_id"
+              v-if="gcpForm.setupAll"
+            >
+              <template v-slot:[`item.avator`]="{ item }">
+                <v-avatar tile class="ma-3" size="40px">
+                  <img
+                    :src="getGCPDataSourceIcon(item.name)"
+                    :alt="item.name"
+                  />
+                </v-avatar>
+              </template>
+              <template v-slot:[`item.status`]="{ item }">
+                <v-chip
+                  v-if="item.gcp_id"
+                  :color="getDataSourceStatusColor(item.status)"
+                  dark
+                >
+                  <v-progress-circular
+                    v-if="isInProgressDataSourceStatus(item.status)"
+                    indeterminate
+                    size="20"
+                    width="2"
+                    color="white"
+                    class="mr-2"
+                  ></v-progress-circular>
+                  <v-icon v-else small color="white" class="mr-2">{{
+                    getDataSourceStatusIcon(item.status)
+                  }}</v-icon>
+                  {{ getDataSourceStatusText(item.status) }}
+                </v-chip>
+                <v-chip v-else color="grey" dark>Not configured</v-chip>
+              </template>
+            </v-data-table>
           <v-divider class="mt-3 mb-3"></v-divider>
           <v-card-actions>
             <v-btn
@@ -580,6 +625,10 @@ export default {
         },
         items: [],
       },
+      setupAllTable: {
+        selected: [],
+        items: [],
+      },
       deleteDialog: false,
       editDialog: false,
     }
@@ -655,6 +704,30 @@ export default {
           align: 'center',
           sortable: false,
           value: 'action',
+        },
+      ]
+    },
+    setupAllHeaders() {
+      return [
+        {
+          text: this.$i18n.t('item[""]'),
+          align: 'center',
+          width: '10%',
+          sortable: false,
+          value: 'avator',
+        },
+        {
+          text: this.$i18n.t('item["Google Data Source"]'),
+          align: 'start',
+          sortable: true,
+          value: 'name',
+        },
+        {
+          text: this.$i18n.t('item["Status"]'),
+          align: 'start',
+          width: '14%',
+          sortable: false,
+          value: 'status',
         },
       ]
     },
@@ -794,7 +867,7 @@ export default {
       this.finishSuccess('Success: Attach GCP Data Source.')
     },
     async attachAllDataSource() {
-      this.table.items.forEach(async (ds) => {
+      this.setupAllTable.selected.forEach(async (ds) => {
         this.gcpDataSourceModel.google_data_source_id = ds.google_data_source_id
         await this.execAttachDataSource()
       })
@@ -854,6 +927,8 @@ export default {
       this.gcpDataSourceModel = { gcp_id: this.gcpModel.gcp_id }
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = true
+      this.setupAllTable.items = [...this.table.items]
+      this.setupAllTable.selected = [...this.table.items]
       this.editDialog = true
     },
     handleAttachItem(item) {
