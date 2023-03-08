@@ -460,9 +460,9 @@ export default {
     // Update
     async putFindingSetting() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         finding_setting: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           resource_name: this.dataModel.resource_name,
           setting: JSON.stringify({
             score_coefficient: parseFloat(this.dataModel.score_coefficient),
@@ -490,9 +490,9 @@ export default {
     // Activate/Deactivate
     async putFindingSettingStatus(status) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         finding_setting: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           resource_name: this.dataModel.resource_name,
           setting: this.dataModel.setting,
           status: Number(this.getFindingSettingStatus(status)),

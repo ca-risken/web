@@ -844,11 +844,11 @@ export default {
         scan_at = this.awsModel.scan_at
       }
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         attach_data_source: {
           aws_id: this.awsModel.aws_id,
           aws_data_source_id: this.awsModel.aws_data_source_id,
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           assume_role_arn: this.awsModel.assume_role_arn,
           external_id: this.awsModel.external_id,
           status: 2, // CONFIGURED

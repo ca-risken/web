@@ -716,10 +716,10 @@ export default {
     async putItem() {
       this.loading = true
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         access_token: {
           access_token_id: this.dataModel.access_token_id,
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           name: this.dataModel.name,
           description: this.dataModel.description,
           expired_at: this.convertToUnixTime(this.dataModel.expired_at),

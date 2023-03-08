@@ -33,7 +33,7 @@ const project = {
 
     async updateProjectAPI(name) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         name: name,
       }
       const res = await this.$axios
@@ -49,7 +49,7 @@ const project = {
 
     async tagProjectAPI(tag, color) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         tag: tag,
         color: color,
       }
@@ -62,7 +62,7 @@ const project = {
     },
     async untagProjectAPI(tag) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         tag: tag,
       }
       const res = await this.$axios
@@ -74,7 +74,7 @@ const project = {
     },
     async deleteProjectAPI() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
       }
       const res = await this.$axios
         .post('/project/delete-project/', param)

@@ -648,13 +648,13 @@ export default {
   methods: {
     async displayOSINT() {
       var isSuccess = true
-      const list = await this.listOSINT(
-        this.$store.state.project.project_id
-      ).catch((err) => {
-        this.finishError(err.response.data)
-        this.clearList()
-        isSuccess = false
-      })
+      const list = await this.listOSINT(this.getCurrentProjectID()).catch(
+        (err) => {
+          this.finishError(err.response.data)
+          this.clearList()
+          isSuccess = false
+        }
+      )
       if (!isSuccess || !list.osint) {
         this.osintList = []
         return
@@ -669,7 +669,7 @@ export default {
         return
       }
       const resOsint = await this.getOSINT(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.osint_id
       ).catch((err) => {
         this.finishError(err.response.data)
@@ -681,7 +681,7 @@ export default {
         return
       }
       const resListDS = await this.listOSINTDataSource(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.osint_id
       ).catch((err) => {
         this.finishError(err.response.data)
@@ -705,7 +705,7 @@ export default {
           max_score: ds.max_score,
         }
         const rel = await this.listRelOSINTDataSource(
-          this.$store.state.project.project_id,
+          this.getCurrentProjectID(),
           this.dataModel.osint_id,
           ds.osint_data_source_id
         ).catch((err) => {
@@ -737,7 +737,7 @@ export default {
     async detachDataSource() {
       var isSuccess = true
       await this.deleteRelOSINTDataSource(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.rel_osint_data_source_id
       ).catch((err) => {
         this.finishError(err.response.data)
@@ -747,7 +747,7 @@ export default {
         return
       }
       await this.deleteDetectWordByRelOsintDataSourceID(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.rel_osint_data_source_id
       ).catch((err) => {
         this.finishError(err.response)
@@ -777,7 +777,7 @@ export default {
         isPutDetectWord = true
       }
       await this.attachRelOSINTDataSource(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.rel_osint_data_source_id,
         this.dataModel.osint_data_source_id,
         this.dataModel.osint_id,
@@ -800,7 +800,7 @@ export default {
       var isSuccess = true
       this.dataModel.detectWords = []
       const detectWords = await this.listDetectWord(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.rel_osint_data_source_id
       ).catch((err) => {
         this.finishError(err.response.data)
@@ -814,7 +814,7 @@ export default {
     },
     async putWord(rel_osint_data_source_id, word) {
       await this.putDetectWord(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         rel_osint_data_source_id,
         word
       ).catch((err) => {
@@ -823,7 +823,7 @@ export default {
     },
     async deleteWord(osint_detect_word_id) {
       await this.deleteDetectWord(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         osint_detect_word_id
       ).catch((err) => {
         this.finishError(err.response.data)
@@ -833,7 +833,7 @@ export default {
     // Scan
     async scanDataSource() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         rel_osint_data_source_id: this.dataModel.rel_osint_data_source_id,
       }
       await this.$axios.post('/osint/invoke-scan/', param).catch((err) => {

@@ -762,9 +762,7 @@ export default {
     },
     async listGCP() {
       const res = await this.$axios
-        .get(
-          '/google/list-gcp/?project_id=' + this.$store.state.project.project_id
-        )
+        .get('/google/list-gcp/?project_id=' + this.getCurrentProjectID())
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -785,7 +783,7 @@ export default {
         const res = await this.$axios
           .get(
             '/google/get-gcp-datasource/?project_id=' +
-              this.$store.state.project.project_id +
+              this.getCurrentProjectID() +
               '&gcp_id=' +
               this.gcpModel.gcp_id +
               '&google_data_source_id=' +
@@ -847,7 +845,7 @@ export default {
     },
     async detachDataSource() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         gcp_id: this.gcpDataSourceModel.gcp_id,
         google_data_source_id: this.gcpDataSourceModel.google_data_source_id,
       }
@@ -876,11 +874,11 @@ export default {
         scan_at = this.gcpDataSourceModel.scan_at
       }
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         gcp_data_source: {
           gcp_id: this.gcpDataSourceModel.gcp_id,
           google_data_source_id: this.gcpDataSourceModel.google_data_source_id,
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           status: 2, // CONFIGURED
           status_detail:
             'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
@@ -896,7 +894,7 @@ export default {
     },
     async scanDataSource() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         gcp_id: this.gcpDataSourceModel.gcp_id,
         google_data_source_id: this.gcpDataSourceModel.google_data_source_id,
         scan_only: false, // option

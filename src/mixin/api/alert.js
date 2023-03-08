@@ -8,7 +8,7 @@ const alert = {
       const res = await this.$axios
         .get(
           '/alert/list-alert/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             statusParam
         )
         .catch((err) => {
@@ -26,7 +26,7 @@ const alert = {
           '/alert/list-history/?alert_id=' +
             alert_id +
             '&project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -43,7 +43,7 @@ const alert = {
           '/alert/list-rel_alert_finding/?alert_id=' +
             alert_id +
             '&project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -69,7 +69,7 @@ const alert = {
       const res = await this.$axios
         .get(
           '/alert/list-condition/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             enabledParam
         )
         .catch((err) => {
@@ -85,7 +85,7 @@ const alert = {
       const rules = await this.$axios
         .get(
           '/alert/list-condition_rule/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&alert_condition_id=' +
             alert_condition_id
         )
@@ -102,7 +102,7 @@ const alert = {
       const notis = await this.$axios
         .get(
           '/alert/list-condition_notification/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&alert_condition_id=' +
             alert_condition_id
         )
@@ -117,7 +117,7 @@ const alert = {
 
     async deleteAlertCondition(alert_condition_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_condition_id: alert_condition_id,
       }
       await this.$axios.post('/alert/delete-condition/', param).catch((err) => {
@@ -135,9 +135,9 @@ const alert = {
     },
     async putDefaultAlertCondition() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_condition: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           description: 'RISKEN Alert',
           severity: 'medium',
           and_or: 'and',
@@ -153,9 +153,9 @@ const alert = {
     },
     async putAlertConditionRule(alert_condition_id, alert_rule_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_cond_rule: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           alert_condition_id: alert_condition_id,
           alert_rule_id: alert_rule_id,
         },
@@ -171,9 +171,7 @@ const alert = {
     // AlertRule
     async listAlertRule() {
       const res = await this.$axios
-        .get(
-          '/alert/list-rule/?project_id=' + this.$store.state.project.project_id
-        )
+        .get('/alert/list-rule/?project_id=' + this.getCurrentProjectID())
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -185,7 +183,7 @@ const alert = {
 
     async deleteAlertRule(alert_rule_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_rule_id: alert_rule_id,
       }
       await this.$axios.post('/alert/delete-rule/', param).catch((err) => {
@@ -200,9 +198,9 @@ const alert = {
     },
     async putDefaultAlertRule() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_rule: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           name: 'over0.8',
           score: 0.8,
           resource_name: '',
@@ -225,8 +223,7 @@ const alert = {
     async listAlertNotification() {
       const res = await this.$axios
         .get(
-          '/alert/list-notification/?project_id=' +
-            this.$store.state.project.project_id
+          '/alert/list-notification/?project_id=' + this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -239,7 +236,7 @@ const alert = {
 
     async deleteAlertNotification(notification_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         notification_id: notification_id,
       }
       await this.$axios
@@ -257,7 +254,7 @@ const alert = {
 
     async testAlertNotification(notification_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         notification_id: notification_id,
       }
       await this.$axios
@@ -271,7 +268,7 @@ const alert = {
     async analyzeAlert(alert_condition_id) {
       const cond_ids = [alert_condition_id]
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_condition_id: cond_ids,
       }
       await this.$axios.post('/alert/analyze-alert/', param).catch((err) => {

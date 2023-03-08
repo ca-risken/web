@@ -544,9 +544,9 @@ export default {
     },
     async putItem() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         gcp: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           name: this.gcpModel.name,
           gcp_organization_id: this.gcpModel.gcp_organization_id,
           gcp_project_id: this.gcpModel.gcp_project_id,

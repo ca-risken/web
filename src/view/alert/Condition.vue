@@ -761,9 +761,9 @@ export default {
     // Put Condition
     async putItem() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_condition: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           alert_condition_id: this.dataModel.alert_condition_id,
           description: this.dataModel.description,
           severity: this.dataModel.severity,
@@ -814,7 +814,7 @@ export default {
         // Set param for delete request.
         let uri = '/alert/delete-condition_rule/'
         let param = {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           alert_condition_id: this.dataModel.alert_condition_id,
           alert_rule_id: item.alert_rule_id,
         }
@@ -823,9 +823,9 @@ export default {
             // If the rule is selected, change to param for put request.
             uri = '/alert/put-condition_rule/'
             param = {
-              project_id: this.$store.state.project.project_id,
+              project_id: this.getCurrentProjectID(),
               alert_cond_rule: {
-                project_id: this.$store.state.project.project_id,
+                project_id: this.getCurrentProjectID(),
                 alert_condition_id: this.dataModel.alert_condition_id,
                 alert_rule_id: item.alert_rule_id,
               },
@@ -891,7 +891,7 @@ export default {
         // Set param for delete request.
         let uri = '/alert/delete-condition_notification/'
         let param = {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           alert_condition_id: this.dataModel.alert_condition_id,
           notification_id: item.notification_id,
         }
@@ -900,9 +900,9 @@ export default {
             // If the rule is selected, change to param for put request.
             uri = '/alert/put-condition_notification/'
             param = {
-              project_id: this.$store.state.project.project_id,
+              project_id: this.getCurrentProjectID(),
               alert_cond_notification: {
-                project_id: this.$store.state.project.project_id,
+                project_id: this.getCurrentProjectID(),
                 alert_condition_id: this.dataModel.alert_condition_id,
                 notification_id: item.notification_id,
                 cache_second: this.getNotiCacheSecound(

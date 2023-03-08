@@ -5,9 +5,7 @@ const google = {
   methods: {
     async listGCPAPI() {
       const res = await this.$axios
-        .get(
-          '/google/list-gcp/?project_id=' + this.$store.state.project.project_id
-        )
+        .get('/google/list-gcp/?project_id=' + this.getCurrentProjectID())
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -28,7 +26,7 @@ const google = {
 
     async deleteGCPAPI(gcpID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         gcp_id: gcpID,
       }
       const res = await this.$axios

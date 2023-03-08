@@ -540,9 +540,9 @@ export default {
     // put
     async putItem() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         notification: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           notification_id: this.dataModel.notification_id,
           type: this.dataModel.type,
           name: this.dataModel.name,

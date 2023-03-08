@@ -806,7 +806,7 @@ export default {
       const github_setting = {
         github_setting_id: this.gitHubSetting.github_setting_id,
         name: this.gitHubSetting.name,
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         type: this.getGitHubTypeCode(this.gitHubSetting.type_text),
         base_url: this.gitHubSetting.base_url,
         target_resource: this.gitHubSetting.target_resource,
@@ -843,7 +843,7 @@ export default {
       const paramGitleaksSetting = {
         github_setting_id: gitHubSettingID,
         code_data_source_id: this.gitleaks_datasource_id,
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         repository_pattern: this.gitleaksSetting.repository_pattern,
         scan_public: Boolean(this.gitleaksSetting.scan_public),
         scan_internal: Boolean(this.gitleaksSetting.scan_internal),
@@ -877,7 +877,7 @@ export default {
       const paramDependencySetting = {
         github_setting_id: gitHubSettingID,
         code_data_source_id: this.dependency_datasource_id,
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         status: 2, // CONFIGURED
         status_detail:
           'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),

@@ -514,9 +514,9 @@ export default {
     // Pending alert
     async putAlertStatus(status) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           alert_id: this.alertModel.alert_id,
           alert_condition_id: this.alertModel.alert_condition_id,
           description: this.alertModel.description,

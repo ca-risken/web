@@ -8,7 +8,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-finding/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -23,7 +23,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-finding/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -38,7 +38,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-finding/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&resource_name=' +
             resource_name
         )
@@ -54,7 +54,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/get-finding/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&finding_id=' +
             id
         )
@@ -73,7 +73,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-finding-tag/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&finding_id=' +
             id
         )
@@ -89,7 +89,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-finding-tag-name/?project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -103,7 +103,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/get-pend-finding/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&finding_id=' +
             id
         )
@@ -119,7 +119,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-resource/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -134,7 +134,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/get-resource/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&resource_id=' +
             id
         )
@@ -150,7 +150,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-resource-tag/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&resource_id=' +
             id
         )
@@ -166,7 +166,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-resource-tag-name/?project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -179,9 +179,9 @@ const finding = {
 
     async tagFinding(findingID, tag) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         tag: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           finding_id: findingID,
           tag: tag,
         },
@@ -194,7 +194,7 @@ const finding = {
 
     async untagFinding(finding_tag_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         finding_tag_id: finding_tag_id,
       }
       await this.$axios.post('/finding/untag-finding/', param).catch((err) => {
@@ -216,10 +216,10 @@ const finding = {
     },
     async putPendFinding(finding_id, note, expired_at) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         pend_finding: {
           finding_id: finding_id,
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           note: note,
         },
       }
@@ -235,7 +235,7 @@ const finding = {
     },
     async deleteFinding(finding_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         finding_id: finding_id,
       }
       await this.$axios.post('/finding/delete-finding/', param).catch((err) => {
@@ -245,7 +245,7 @@ const finding = {
     },
     async deleteResourceAPI(resource_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         resource_id: resource_id,
       }
       await this.$axios
@@ -260,7 +260,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/list-finding-setting/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             statusParam
         )
         .catch((err) => {
@@ -280,7 +280,7 @@ const finding = {
     },
     async deleteFindingSettingAPI(finding_setting_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         finding_setting_id: finding_setting_id,
       }
       await this.$axios
@@ -293,7 +293,7 @@ const finding = {
       const res = await this.$axios
         .get(
           '/finding/get-recommend/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&finding_id=' +
             findingID
         )
