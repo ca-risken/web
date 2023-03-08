@@ -524,7 +524,7 @@ export default {
       let url = ''
       url = '/report/get-report/?project_id='
       const res = await this.$axios
-        .get(url + this.$store.state.project.project_id + searchCond)
+        .get(url + this.getCurrentProjectID() + searchCond)
         .catch((err) => {
           this.clearList()
           return Promise.reject(err)
@@ -559,9 +559,7 @@ export default {
         let condDate = '&from_date=' + Util.formatDate(fDate, 'yyyy-MM-dd')
         condDate += '&to_date=' + Util.formatDate(tDate, 'yyyy-MM-dd')
         const res = await this.$axios
-          .get(
-            url + this.$store.state.project.project_id + searchCond + condDate
-          )
+          .get(url + this.getCurrentProjectID() + searchCond + condDate)
           .catch((err) => {
             this.clearList()
             return Promise.reject(err)
@@ -658,7 +656,7 @@ export default {
       const res = await this.$axios
         .get(
           '/report/get-report/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&from_date=' +
             this.lastMonth +
             '&to_date=' +

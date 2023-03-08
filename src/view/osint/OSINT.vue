@@ -390,14 +390,14 @@ export default {
   methods: {
     async displayList() {
       var isSuccess = true
-      const list = await this.listOSINT(
-        this.$store.state.project.project_id
-      ).catch((err) => {
-        this.finishError(err.response.data)
-        this.clearList()
-        isSuccess = false
-        return
-      })
+      const list = await this.listOSINT(this.getCurrentProjectID()).catch(
+        (err) => {
+          this.finishError(err.response.data)
+          this.clearList()
+          isSuccess = false
+          return
+        }
+      )
       if (!isSuccess || !list.osint) {
         this.clearList()
         return
@@ -411,13 +411,12 @@ export default {
     },
     async deleteItem(osintID) {
       var isSuccess = true
-      await this.deleteOSINT(
-        this.$store.state.project.project_id,
-        osintID
-      ).catch((err) => {
-        this.finishError(err.response.data)
-        isSuccess = false
-      })
+      await this.deleteOSINT(this.getCurrentProjectID(), osintID).catch(
+        (err) => {
+          this.finishError(err.response.data)
+          isSuccess = false
+        }
+      )
       if (!isSuccess) {
         return
       }
@@ -425,7 +424,7 @@ export default {
     },
     async putItem() {
       const res = await this.putOSINT(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         this.dataModel.osint_id,
         this.dataModel.resource_type,
         this.dataModel.resource_name
@@ -434,7 +433,7 @@ export default {
         return
       }
       await this.AttachReferenceDataSource(
-        this.$store.state.project.project_id,
+        this.getCurrentProjectID(),
         res.osint.osint_id,
         this.dataModel.resource_type
       )

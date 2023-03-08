@@ -5,9 +5,7 @@ const aws = {
   methods: {
     async listAWSAPI() {
       const res = await this.$axios
-        .get(
-          '/aws/list-aws/?project_id=' + this.$store.state.project.project_id
-        )
+        .get('/aws/list-aws/?project_id=' + this.getCurrentProjectID())
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -18,7 +16,7 @@ const aws = {
     },
     async deleteAWSAPI(awsID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         aws_id: awsID,
       }
       const res = await this.$axios
@@ -30,9 +28,9 @@ const aws = {
     },
     async putAWSAPI(name, aws_account_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         aws: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           name: name,
           aws_account_id: aws_account_id,
         },
@@ -50,7 +48,7 @@ const aws = {
         .get(
           '/aws/list-datasource/' +
             '?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&aws_id=' +
             aws_id +
             '&data_source=' +
@@ -66,7 +64,7 @@ const aws = {
     },
     async detachAWSDataSourceAPI(aws_id, aws_data_source_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         aws_id: aws_id,
         aws_data_source_id: aws_data_source_id,
       }
@@ -88,7 +86,7 @@ const aws = {
 
     async invokeAWSScanAPI(aws_id, aws_data_source_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         aws_id: aws_id,
         aws_data_source_id: aws_data_source_id,
         scan_only: false, // optional

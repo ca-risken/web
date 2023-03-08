@@ -370,7 +370,7 @@ export default {
     async setUser() {
       this.raw.invitedUser = []
       const userIDs = await this.listUserAPI(
-        '&project_id=' + this.$store.state.project.project_id
+        '&project_id=' + this.getCurrentProjectID()
       ).catch((err) => {
         return Promise.reject(err)
       })

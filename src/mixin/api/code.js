@@ -16,7 +16,7 @@ const code = {
       return res.data.data.code_data_source
     },
     async listGitHubSettingAPI(github_setting_id) {
-      let query = '?project_id=' + this.$store.state.project.project_id
+      let query = '?project_id=' + this.getCurrentProjectID()
       if (github_setting_id) {
         query += '&github_setting_id=' + github_setting_id
       }
@@ -32,7 +32,7 @@ const code = {
     },
     async putGitHubSettingAPI(github_setting) {
       const paramGitHubSetting = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         github_setting: github_setting,
       }
       const res = await this.$axios
@@ -47,7 +47,7 @@ const code = {
     },
     async deleteGitHubSettingAPI(github_setting_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         github_setting_id: github_setting_id,
       }
       await this.$axios
@@ -58,7 +58,7 @@ const code = {
     },
     async putGitleaksSettingAPI(gitleaks_setting) {
       const paramGitleaksSetting = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         gitleaks_setting: gitleaks_setting,
       }
       const res = await this.$axios
@@ -73,7 +73,7 @@ const code = {
     },
     async deleteGitleaksSettingAPI(github_setting_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         github_setting_id: github_setting_id,
       }
       await this.$axios
@@ -84,7 +84,7 @@ const code = {
     },
     async putDependencySettingAPI(dependency_setting) {
       const paramDependencySetting = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         dependency_setting: dependency_setting,
       }
       const res = await this.$axios
@@ -99,7 +99,7 @@ const code = {
     },
     async deleteDependencySettingAPI(github_setting_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         github_setting_id: github_setting_id,
       }
       await this.$axios
@@ -110,7 +110,7 @@ const code = {
     },
     async invokeScanGitleaksAPI(github_setting_id, fullscan) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         github_setting_id: github_setting_id,
         full_scan: fullscan,
       }
@@ -122,7 +122,7 @@ const code = {
     },
     async invokeScanDependencyAPI(github_setting_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         github_setting_id: github_setting_id,
       }
       await this.$axios

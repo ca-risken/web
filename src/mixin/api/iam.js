@@ -60,7 +60,7 @@ const iam = {
       const res = await this.$axios
         .get(
           '/iam/list-role/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -86,7 +86,7 @@ const iam = {
       const res = await this.$axios
         .get(
           '/iam/get-role/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&role_id=' +
             roleID
         )
@@ -105,10 +105,10 @@ const iam = {
     },
     async putRoleAPI(name) {
       const roleParam = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         role: {
           name: name,
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
         },
       }
       const res = await this.$axios
@@ -120,7 +120,7 @@ const iam = {
     },
     async attachRoleAPI(userID, roleID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         user_id: userID,
         role_id: roleID,
       }
@@ -145,7 +145,7 @@ const iam = {
     },
     async detachRoleAPI(userID, roleID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         user_id: userID,
         role_id: roleID,
       }
@@ -170,7 +170,7 @@ const iam = {
     },
     async deleteRoleAPI(roleID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         role_id: roleID,
       }
       const res = await this.$axios
@@ -186,7 +186,7 @@ const iam = {
       const res = await this.$axios
         .get(
           '/iam/list-policy/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -201,7 +201,7 @@ const iam = {
       const res = await this.$axios
         .get(
           '/iam/get-policy/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             '&policy_id=' +
             policyID
         )
@@ -212,7 +212,7 @@ const iam = {
     },
     async attachPolicyAPI(roleID, policyID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         role_id: roleID,
         policy_id: policyID,
       }
@@ -225,7 +225,7 @@ const iam = {
     },
     async detachPolicyAPI(roleID, policyID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         role_id: roleID,
         policy_id: policyID,
       }
@@ -238,7 +238,7 @@ const iam = {
     },
     async deletePolicyAPI(policyID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         policy_id: policyID,
       }
       const res = await this.$axios
@@ -262,7 +262,7 @@ const iam = {
       const res = await this.$axios
         .get(
           '/iam/list-access-token/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -291,7 +291,7 @@ const iam = {
     },
     async attachTokenRoleAPI(accessTokenID, roleID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         access_token_id: accessTokenID,
         role_id: roleID,
       }
@@ -304,7 +304,7 @@ const iam = {
     },
     async detachTokenRoleAPI(accessTokenID, roleID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         access_token_id: accessTokenID,
         role_id: roleID,
       }
@@ -318,7 +318,7 @@ const iam = {
 
     async deleteAccessTokenAPI(accessTokenID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         access_token_id: accessTokenID,
       }
       const res = await this.$axios
@@ -334,7 +334,7 @@ const iam = {
       const res = await this.$axios
         .get(
           '/iam/list-user-reserved/?project_id=' +
-            this.$store.state.project.project_id +
+            this.getCurrentProjectID() +
             searchCond
         )
         .catch((err) => {
@@ -355,7 +355,7 @@ const iam = {
     },
     async deleteUserReservedAPI(reservedID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         reserved_id: reservedID,
       }
       const res = await this.$axios

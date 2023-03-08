@@ -486,7 +486,7 @@ export default {
 
       this.loading = true
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         user_reserved: {
           reserved_id: this.dataModel.reserved_id,
           role_id: this.roleTable.selected[0].role_id,

@@ -467,10 +467,10 @@ export default {
     },
     async putItem() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         policy: {
           name: this.policyModel.name,
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           action_ptn: this.policyModel.action_ptn,
           resource_ptn: '.*', //this.policyModel.resource_ptn,
         },

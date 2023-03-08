@@ -560,17 +560,23 @@ let mixin = {
     },
     async handleNewProjectTag() {
       this.projectTagModel = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         tag: '',
       }
       this.projectTagDialog = true
     },
     async handleEditProjectTag(tag) {
       this.projectTagModel = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         tag: tag.tag,
       }
       this.projectTagDialog = true
+    },
+    getCurrentProjectID() {
+      if (this.$store.state.project.project_id) {
+        return this.$store.state.project.project_id
+      }
+      return ''
     },
   },
 }

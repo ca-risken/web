@@ -448,7 +448,7 @@ export default {
   },
   methods: {
     async refleshList(userName, userID) {
-      let searchCond = '&project_id=' + this.$store.state.project.project_id
+      let searchCond = '&project_id=' + this.getCurrentProjectID()
       if (userName) {
         searchCond += '&name=' + userName
       }
@@ -632,7 +632,7 @@ export default {
             return
           }
           const param = {
-            project_id: this.$store.state.project.project_id,
+            project_id: this.getCurrentProjectID(),
             user_reserved: {
               role_id: item.role_id,
               user_idp_key: this.userModel.user_idp_key,

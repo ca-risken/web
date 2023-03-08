@@ -11,7 +11,7 @@ const diagnosis = {
             '?diagnosis_data_source_id=' +
             this.wpscan_datasource_id +
             '&project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -26,7 +26,7 @@ const diagnosis = {
         .get(
           '/diagnosis/list-wpscan-setting/' +
             '?project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -38,9 +38,9 @@ const diagnosis = {
     },
     async putWPScanSettingAPI(wpscan_setting_id, target_url, options, scan_at) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         wpscan_setting: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           wpscan_setting_id: wpscan_setting_id,
           diagnosis_data_source_id: this.wpscan_datasource_id,
           target_url: target_url,
@@ -61,7 +61,7 @@ const diagnosis = {
     },
     async deleteWPScanSettingAPI(wpscan_setting_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         wpscan_setting_id: wpscan_setting_id,
       }
       await this.$axios
@@ -76,7 +76,7 @@ const diagnosis = {
       const res = await this.$axios
         .get(
           '/diagnosis/list-portscan-setting/?project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -93,9 +93,9 @@ const diagnosis = {
       target
     ) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         portscan_setting: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           diagnosis_data_source_id: diagnosisDataSourceID,
           portscan_setting_id: portscanSettingID,
           name: name,
@@ -117,7 +117,7 @@ const diagnosis = {
     },
     async deletePortscanSettingAPI(portscanSettingID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         portscan_setting_id: portscanSettingID,
       }
       const res = await this.$axios
@@ -130,7 +130,7 @@ const diagnosis = {
     async listPortscanTargetAPI(portscan_setting_id) {
       var url =
         '/diagnosis/list-portscan-target/?project_id=' +
-        this.$store.state.project.project_id
+        this.getCurrentProjectID()
       if (portscan_setting_id != 0) {
         url = url + '&portscan_setting_id=' + portscan_setting_id
       }
@@ -144,9 +144,9 @@ const diagnosis = {
     },
     async putPortscanTargetAPI(portscanSettingID, portscanTargetID, target) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         portscan_target: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           portscan_setting_id: portscanSettingID,
           portscan_target_id: portscanTargetID,
           target: target,
@@ -162,7 +162,7 @@ const diagnosis = {
     },
     async deletePortscanTargetAPI(portscanTargetID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         portscan_target_id: portscanTargetID,
       }
       const res = await this.$axios
@@ -176,7 +176,7 @@ const diagnosis = {
       const res = await this.$axios
         .get(
           '/diagnosis/list-application-scan/?project_id=' +
-            this.$store.state.project.project_id
+            this.getCurrentProjectID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -193,9 +193,9 @@ const diagnosis = {
       scanType
     ) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         application_scan: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           diagnosis_data_source_id: diagnosisDataSourceID,
           application_scan_id: applicationScanSettingID,
           name: name,
@@ -214,7 +214,7 @@ const diagnosis = {
     },
     async deleteApplicationScanAPI(applicationScanSettingID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         application_scan_id: applicationScanSettingID,
       }
       const res = await this.$axios
@@ -227,7 +227,7 @@ const diagnosis = {
     async getApplicationScanBasicSettingAPI(application_scan_id) {
       var url =
         '/diagnosis/get-application-scan-basic-setting/?project_id=' +
-        this.$store.state.project.project_id
+        this.getCurrentProjectID()
       if (application_scan_id != 0) {
         url = url + '&application_scan_id=' + application_scan_id
       }
@@ -247,9 +247,9 @@ const diagnosis = {
       max_children
     ) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         application_scan_basic_setting: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           application_scan_id: applicationScanSettingID,
           application_scan_basic_setting_id: applicationScanBasicSettingID,
           target: target,
@@ -267,7 +267,7 @@ const diagnosis = {
     },
     async deleteApplicationScanBasicSettingAPI(applicationScanBasicSettingID) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         application_scan_basic_setting_id: applicationScanBasicSettingID,
       }
       const res = await this.$axios
@@ -279,7 +279,7 @@ const diagnosis = {
     },
     async invokeDiagnosisScanAPI(setting_id, diagnosis_data_source_id) {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         setting_id: setting_id,
         diagnosis_data_source_id: diagnosis_data_source_id,
       }

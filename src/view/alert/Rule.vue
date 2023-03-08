@@ -501,9 +501,9 @@ export default {
     // put
     async putItem() {
       const param = {
-        project_id: this.$store.state.project.project_id,
+        project_id: this.getCurrentProjectID(),
         alert_rule: {
-          project_id: this.$store.state.project.project_id,
+          project_id: this.getCurrentProjectID(),
           alert_rule_id: this.dataModel.alert_rule_id,
           name: this.dataModel.name,
           score: this.dataModel.score,

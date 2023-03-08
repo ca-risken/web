@@ -1495,10 +1495,7 @@ export default {
     },
     async handleActivateItem(row) {
       this.loading = true
-      await this.deletePendFinding(
-        this.$store.state.project.project_id,
-        row.finding_id
-      )
+      await this.deletePendFinding(this.getCurrentProjectID(), row.finding_id)
       this.finishSuccess('Success: Activated.')
     },
     async handleActivateSelected() {
@@ -1507,7 +1504,7 @@ export default {
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
         await this.deletePendFinding(
-          this.$store.state.project.project_id,
+          this.getCurrentProjectID(),
           item.finding_id
         )
       })
