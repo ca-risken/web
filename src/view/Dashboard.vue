@@ -72,45 +72,8 @@
           />
         </v-col>
       </v-row>
-
-      <!-- Chart -->
-      <v-row justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon x-large class="pr-2" color="indigo darken-2"
-                >mdi-chart-areaspline</v-icon
-              >
-              {{ $t(`view.dashboard['Chart']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="6" class="ml-6">
-          <v-card>
-            <v-card-text>
-              <time-line-chart
-                v-if="chart.loaded"
-                :height="chart.height"
-                :chart-data="chart.finding.data"
-              ></time-line-chart>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="5">
-          <v-card>
-            <v-card-text>
-              <doughnut-chart
-                v-if="chart.loaded"
-                :height="chart.height"
-                :chart-data="chart.alert.data"
-              ></doughnut-chart>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
     </v-container>
+
     <v-dialog v-model="settingDialog" max-width="600px">
       <v-card>
         <v-card-title class="headline">
@@ -183,6 +146,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-spacer class="my-16" />
   </div>
 </template>
 
@@ -195,8 +159,6 @@ import iam from '@/mixin/api/iam'
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
-import TimeLineChart from '@/component/widget/chart/TimeLineChart'
-import DoughnutChart from '@/component/widget/chart/DoughnutChart'
 export default {
   name: 'PageDashboard',
   mixins: [mixin, finding, alert, iam],
@@ -204,8 +166,6 @@ export default {
     StatusStatistic,
     MiniStatistic,
     CategoryStatistic,
-    TimeLineChart,
-    DoughnutChart,
   },
   data() {
     return {
@@ -239,7 +199,7 @@ export default {
         tutorial: {
           // [Total 5 setting steps]
           invitedUsers: 0, // 1. User invited,
-          storeFindings: 0, // 2, Setting DataSources ( = Store some Findings),
+          storeFindings: false, // 2, Setting DataSources ( = exists some findings),
           alertConditions: 0, // 3. Setting Alert Condition,
           alertRules: 0, // 4. Setting Alert Rule,
           notifications: 0, // 5. Setting Alert Notification
@@ -298,7 +258,6 @@ export default {
     await this.setRawData()
     this.setStatus()
     this.setCategory()
-    this.setChart()
   },
   methods: {
     // -- Raw Data ---------------------------------
@@ -322,21 +281,41 @@ export default {
     async setHighScoreFinding() {
       // await this.getFindingReport(this.oneMonthAgoDate, this.nowDate, 0.79)
       const [all, aws, diagnosis, osint, code, google] = await Promise.all([
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, ''),
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'aws:'),
+        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, '', 200),
         this.getFindingCount(
           this.oneMonthAgoUnix,
           this.nowUnix,
           0.8,
-          'diagnosis:'
+          'aws:',
+          200
         ),
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'osint:'),
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, 'code:'),
         this.getFindingCount(
           this.oneMonthAgoUnix,
           this.nowUnix,
           0.8,
-          'google:'
+          'diagnosis:',
+          200
+        ),
+        this.getFindingCount(
+          this.oneMonthAgoUnix,
+          this.nowUnix,
+          0.8,
+          'osint:',
+          200
+        ),
+        this.getFindingCount(
+          this.oneMonthAgoUnix,
+          this.nowUnix,
+          0.8,
+          'code:',
+          200
+        ),
+        this.getFindingCount(
+          this.oneMonthAgoUnix,
+          this.nowUnix,
+          0.8,
+          'google:',
+          200
         ),
       ])
       this.raw.highScoreFinding = all
@@ -347,12 +326,17 @@ export default {
       this.raw.highScoreFindingGoogle = google
     },
     async setStoreFinding() {
-      const storeFindings = await this.getFindingCount(0, this.nowUnix, 0, '')
-      this.raw.storeFinding = storeFindings
-      this.status.tutorial.storeFindings = storeFindings
+      const storeFindings = await this.getFindingCount(
+        0,
+        this.nowUnix,
+        0,
+        '',
+        1
+      )
+      this.status.tutorial.storeFindings = storeFindings > 0
     },
-    async getFindingCount(fromAt, toAt, fromScore, dataSource) {
-      const searceCondition =
+    async getFindingCount(fromAt, toAt, fromScore, dataSource, limit) {
+      let searceCondition =
         '&from_at=' +
         fromAt +
         '&to_at=' +
@@ -361,7 +345,10 @@ export default {
         fromScore +
         '&data_source=' +
         dataSource +
-        '&status=1&offset=0&limit=200'
+        '&status=1&offset=0'
+      if (limit) {
+        searceCondition += '&limit=' & limit
+      }
       const count = await this.listFindingCnt(searceCondition)
       return count
     },
@@ -443,7 +430,7 @@ export default {
       if (this.raw.invitedUser && this.raw.invitedUser.length > 0) {
         completed++
       }
-      if (this.raw.storeFinding > 0) {
+      if (this.status.tutorial.storeFindings) {
         completed++
       }
       if (this.raw.alertCondition && this.raw.alertCondition.length > 0) {
@@ -558,81 +545,6 @@ export default {
         dark: true,
         link: '/finding/finding/?from_score=0.8&data_source=google:',
       })
-      this.category.push({
-        category: 'Azure',
-        title: '-',
-        subTitle: 'Not yet supported...',
-        icon: 'mdi-microsoft-azure',
-        color: 'blue darken-1',
-        dark: true,
-        link: '/finding/finding/?from_score=0.8&data_source=azure:',
-      })
-    },
-
-    // -- Chart ---------------------------------
-    async setChart() {
-      await this.setFindingChart()
-      await this.setAlertChart()
-      this.chart.loaded = true
-    },
-    async setFindingChart() {
-      const now = new Date()
-      for (let day = 7; day >= 0; day--) {
-        const from = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate() - day,
-          0,
-          0,
-          0
-        )
-        const to = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate() - day + 1,
-          0,
-          0,
-          0
-        )
-        await this.setFindingChartByDayNumber(from, to)
-      }
-    },
-    async setFindingChartByDayNumber(from, to) {
-      const fromUnix = Math.floor(from / 1000)
-      const toUnix = Math.floor(to / 1000)
-      const findingCount = await this.getFindingCount(
-        fromUnix,
-        toUnix - 1,
-        0,
-        ''
-      )
-      this.chart.finding.data.labels.push(from)
-      this.chart.finding.data.datasets[0].data.push(findingCount)
-    },
-    // getDateLabel(dt) {
-    //   return dt.getMonth()+1 + '/' + dt.getDate() // `getMonth()` will return 0~11, because need +1 month for display label
-    // }
-    setAlertChart() {
-      this.chart.alert.data.labels = ['high', 'medium', 'low']
-      let highCnt = 0
-      let mediumCnt = 0
-      let lowCnt = 0
-      this.raw.activeAlert.forEach(async (alert) => {
-        switch (alert.severity) {
-          case 'high':
-            highCnt++
-            break
-          case 'medium':
-            mediumCnt++
-            break
-          case 'low':
-            lowCnt++
-            break
-          default:
-            console.log('Unknown serverity: ' + alert.severity)
-        }
-      })
-      this.chart.alert.data.datasets[0].data = [highCnt, mediumCnt, lowCnt]
     },
 
     // handler

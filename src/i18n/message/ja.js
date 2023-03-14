@@ -255,7 +255,6 @@ const ja = {
     dashboard: {
       Status: 'ステータス',
       Category: 'カテゴリ',
-      Chart: 'チャート',
       // Status
       'There is nothing to display.': '表示項目がありません.',
       'You need to configure some settings 🔜':
