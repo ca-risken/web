@@ -169,14 +169,9 @@ export default {
   },
   data() {
     return {
-      nowUnix: 0,
-      oneMonthAgoUnix: 0,
-      nowDate: '',
-      oneMonthAgoDate: '',
       raw: {
         activeAlert: [],
         highScoreFinding: [],
-
         settingStep: 5, // [Total 5 setting steps]
         invitedUser: [], // 1. User invited,
         storeFinding: 0, // 2, Setting DataSources ( = Store some Findings),
@@ -245,16 +240,6 @@ export default {
     if (!this.$store.state.project.project_id) {
       return false
     }
-    this.nowUnix = Math.floor(new Date() / 1000)
-    this.oneMonthAgoUnix = Math.floor(
-      new Date().setMonth(new Date().getMonth() - 1) / 1000
-    )
-    this.nowDate = Util.formatDate(new Date(this.nowUnix * 1000), 'yyyy-MM-dd')
-    this.oneMonthAgoDate = Util.formatDate(
-      new Date(this.oneMonthAgoUnix * 1000),
-      'yyyy-MM-dd'
-    )
-
     await this.setRawData()
     this.setStatus()
     this.setCategory()
@@ -279,44 +264,13 @@ export default {
     },
     // Findings
     async setHighScoreFinding() {
-      // await this.getFindingReport(this.oneMonthAgoDate, this.nowDate, 0.79)
       const [all, aws, diagnosis, osint, code, google] = await Promise.all([
-        this.getFindingCount(this.oneMonthAgoUnix, this.nowUnix, 0.8, '', 200),
-        this.getFindingCount(
-          this.oneMonthAgoUnix,
-          this.nowUnix,
-          0.8,
-          'aws:',
-          200
-        ),
-        this.getFindingCount(
-          this.oneMonthAgoUnix,
-          this.nowUnix,
-          0.8,
-          'diagnosis:',
-          200
-        ),
-        this.getFindingCount(
-          this.oneMonthAgoUnix,
-          this.nowUnix,
-          0.8,
-          'osint:',
-          200
-        ),
-        this.getFindingCount(
-          this.oneMonthAgoUnix,
-          this.nowUnix,
-          0.8,
-          'code:',
-          200
-        ),
-        this.getFindingCount(
-          this.oneMonthAgoUnix,
-          this.nowUnix,
-          0.8,
-          'google:',
-          200
-        ),
+        this.getFindingCount(0.8, '', 200),
+        this.getFindingCount(0.8, 'aws:', 200),
+        this.getFindingCount(0.8, 'diagnosis:', 200),
+        this.getFindingCount(0.8, 'osint:', 200),
+        this.getFindingCount(0.8, 'code:', 200),
+        this.getFindingCount(0.8, 'google:', 200),
       ])
       this.raw.highScoreFinding = all
       this.raw.highScoreFindingAWS = aws
@@ -326,21 +280,11 @@ export default {
       this.raw.highScoreFindingGoogle = google
     },
     async setStoreFinding() {
-      const storeFindings = await this.getFindingCount(
-        0,
-        this.nowUnix,
-        0,
-        '',
-        1
-      )
+      const storeFindings = await this.getFindingCount(0, '', 1)
       this.status.tutorial.storeFindings = storeFindings > 0
     },
-    async getFindingCount(fromAt, toAt, fromScore, dataSource, limit) {
+    async getFindingCount(fromScore, dataSource, limit) {
       let searceCondition =
-        '&from_at=' +
-        fromAt +
-        '&to_at=' +
-        toAt +
         '&from_score=' +
         fromScore +
         '&data_source=' +
