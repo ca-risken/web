@@ -284,15 +284,13 @@ export default {
       this.status.tutorial.storeFindings = storeFindings > 0
     },
     async getFindingCount(fromScore, dataSource, limit) {
-      let searceCondition =
+      const searceCondition =
         '&from_score=' +
         fromScore +
         '&data_source=' +
         dataSource +
-        '&status=1&offset=0'
-      if (limit) {
-        searceCondition += '&limit=' & limit
-      }
+        '&status=1&offset=0&limit=' +
+        limit
       const count = await this.listFindingCnt(searceCondition)
       return count
     },
