@@ -229,6 +229,7 @@ const ja = {
     Pending: 'ペンディング化',
     'Resource Map': 'リソースマップを表示',
     Scan: 'スキャン',
+    'See findings': 'findingを見る',
     'View DataSource': 'データソース詳細を見る',
     'View Finding': '詳細を見る',
     'View Item': '詳細を見る',
