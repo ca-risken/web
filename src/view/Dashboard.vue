@@ -151,7 +151,6 @@
 </template>
 
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
