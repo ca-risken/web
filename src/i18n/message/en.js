@@ -229,6 +229,7 @@ const en = {
     Pending: 'Pending',
     'Resource Map': 'Resource Map',
     Scan: 'Scan',
+    'See findings': 'See findings',
     'View DataSource': 'View DataSource',
     'View Finding': 'View Finding',
     'View Item': 'View Item',

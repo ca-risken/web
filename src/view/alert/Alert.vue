@@ -201,7 +201,7 @@
                     color="grey darken-3"
                     class="px-1 mx-0"
                     risken-action-name="search-finding-by-alert-id-from-alert"
-                    >all ({{ item.finding_history.count }})</v-btn
+                    >{{ $t(`action['See findings']`) }} ({{ item.finding_history.count }})</v-btn
                   >
                 </v-col>
                 <v-col cols="2">
