@@ -258,7 +258,6 @@ const en = {
     dashboard: {
       Status: 'Status',
       Category: 'Category',
-      Chart: 'Chart',
       // Status
       'There is nothing to display.': 'There is nothing to display.',
       'You need to configure some settings 🔜':
