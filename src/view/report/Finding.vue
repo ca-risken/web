@@ -340,7 +340,7 @@ export default {
         dataSource: [],
         score: 0.0,
         fromDate: '',
-        toDate: new Date().toISOString().substr(0, 10),
+        toDate: '',
         format: 'csv',
       },
       searchForm: {
@@ -354,18 +354,18 @@ export default {
         toDate: { label: 'ToDate', placeholder: 'Filter date( to )' },
       },
       // for visual
-      now: 0,
+      yesterday: 0,
       dateLastMonth: 0,
       latest: '',
-      yesterday: '',
+      lastDay: '',
       lastMonth: '',
       todayReportFindings: [],
-      yesterdayReportFindings: [],
+      lastDayReportFindings: [],
       ReportFindings: [],
       totalFindings: 0,
       totalHighFindings: 0,
-      yesterdayTotalFindings: 0,
-      yesterdayTotalHighFindings: 0,
+      lastDayTotalFindings: 0,
+      lastDayTotalHighFindings: 0,
       category: ['aws', 'diagnosis', 'osint', 'code', 'google'],
       severity: ['Low', 'Medium', 'High'],
       categorystatistics: [],
@@ -376,7 +376,7 @@ export default {
         osint: 0,
         code: 0,
       },
-      yesterdayCategoryFinding: {
+      lastDayCategoryFinding: {
         aws: 0,
         google: 0,
         diagnosis: 0,
@@ -491,15 +491,23 @@ export default {
   },
   mounted() {
     this.setFlagAdmin()
-    this.now = new Date()
-    this.now.setDate(this.now.getDate() - 1)
-    var yesterdayDate = new Date()
-    yesterdayDate.setDate(this.now.getDate() - 1)
-    this.yesterday = Util.formatDate(yesterdayDate, 'yyyy-MM-dd')
+    const now = new Date()
+
+    // latest
+    this.yesterday = new Date()
+    this.yesterday.setDate(now.getDate() - 1)
+    this.latest = Util.formatDate(this.yesterday, 'yyyy-MM-dd')
+
+    // last day
+    let dateLastDay = new Date()
+    dateLastDay.setDate(now.getDate() - 2)
+    this.lastDay = Util.formatDate(dateLastDay, 'yyyy-MM-dd')
+
+    // last month
     this.dateLastMonth = new Date()
-    this.dateLastMonth.setMonth(this.now.getMonth() - 1)
-    this.latest = Util.formatDate(this.now, 'yyyy-MM-dd')
+    this.dateLastMonth.setMonth(now.getMonth() - 1)
     this.lastMonth = Util.formatDate(this.dateLastMonth, 'yyyy-MM-dd')
+
     this.setData()
   },
   methods: {
@@ -647,6 +655,10 @@ export default {
     },
     // -- Raw Data ---------------------------------
     async setData() {
+      // default date condition
+      this.searchModel.toDate = this.latest
+      this.searchModel.fromDate = this.lastMonth
+
       await this.setReportFinding()
       this.SetTableData()
       this.SetDoughnutChart()
@@ -681,14 +693,14 @@ export default {
           category = reportFinding.data_source.split(':')[0]
           this.categoryFinding[category] += reportFinding.count
         }
-        if (reportFinding.date.indexOf(this.yesterday) > -1) {
+        if (reportFinding.date.indexOf(this.lastDay) > -1) {
           this.todayReportFindings.push(reportFinding)
-          this.yesterdayTotalFindings += reportFinding.count
+          this.lastDayTotalFindings += reportFinding.count
           if (reportFinding.score >= 0.8) {
-            this.yesterdayTotalHighFindings += reportFinding.count
+            this.lastDayTotalHighFindings += reportFinding.count
           }
           category = reportFinding.data_source.split(':')[0]
-          this.yesterdayCategoryFinding[category] += reportFinding.count
+          this.lastDayCategoryFinding[category] += reportFinding.count
         }
       }
     },
@@ -709,11 +721,11 @@ export default {
       this.category.map((category) =>
         this.ReportFindingTable.itemsPerCategory.push({
           category: category,
-          previous: this.yesterdayCategoryFinding[category],
+          previous: this.lastDayCategoryFinding[category],
           latest: this.categoryFinding[category],
           change:
             this.categoryFinding[category] -
-            this.yesterdayCategoryFinding[category],
+            this.lastDayCategoryFinding[category],
         })
       )
     },
@@ -721,11 +733,11 @@ export default {
       this.severity.map((severity) =>
         this.ReportFindingTable.itemsPerSeverity.push({
           severity: severity,
-          previous: this.CountFindingsPerSeverityDate(severity, this.yesterday),
+          previous: this.CountFindingsPerSeverityDate(severity, this.lastDay),
           latest: this.CountFindingsPerSeverityDate(severity, this.latest),
           change:
             this.CountFindingsPerSeverityDate(severity, this.latest) -
-            this.CountFindingsPerSeverityDate(severity, this.yesterday),
+            this.CountFindingsPerSeverityDate(severity, this.lastDay),
         })
       )
     },
@@ -791,19 +803,19 @@ export default {
     },
     SetLabelBarChart() {
       var label = []
-      var day = new Date(this.now.getTime())
+      var day = new Date(this.yesterday.getTime())
       switch (this.visibleDuration) {
         case 'week':
-          day.setDate(this.now.getDate() - 6)
+          day.setDate(this.yesterday.getDate() - 6)
           break
         case 'month':
         default:
-          day.setMonth(this.now.getMonth() - 1)
+          day.setMonth(this.yesterday.getMonth() - 1)
           break
       }
-      var nowDate = Util.formatDate(this.now, 'yyyy-MM-dd')
+      var yesterdayDate = Util.formatDate(this.yesterday, 'yyyy-MM-dd')
       var date = ''
-      while (date != nowDate) {
+      while (date != yesterdayDate) {
         date = Util.formatDate(day, 'yyyy-MM-dd')
         label.push(date)
         day.setDate(day.getDate() + 1)
