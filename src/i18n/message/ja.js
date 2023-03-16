@@ -145,7 +145,7 @@ const ja = {
     Namespace: 'ネームスペース',
     Notificationns: '通知設定',
     'Notification ID': '通知ID',
-    'Notification cache term': '通知キャッシュ期間',
+    'Notification throttle': '通知の抑制期間',
     'Original Score': 'オリジナルスコア',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT関連ID',

@@ -145,7 +145,7 @@ const en = {
     Namespace: 'Namespace',
     Notificationns: 'Notificationns',
     'Notification ID': 'Notification ID',
-    'Notification cache term': 'Notification cache term',
+    'Notification throttle': 'Notification throttle',
     'Original Score': 'Original Score',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT Reration ID',
