@@ -518,19 +518,19 @@ export default {
           ],
         },
         noti_cache: {
-          label: 'Notification cache term',
+          label: 'Notification throttle',
           placeholder: '1 hour',
-          list: ['No Cache', '1 hour', '1 day', '1 week', '1 month'],
+          list: ['None', '1 hour', '1 day', '1 week', '1 month'],
           validator: [
-            (v) => !!v || 'Notification cache term is required',
+            (v) => !!v || 'Notification throttle is required',
             (v) =>
               !v ||
-              v === 'No Cache' ||
+              v === 'None' ||
               v === '1 hour' ||
               v === '1 day' ||
               v === '1 week' ||
               v === '1 month' ||
-              'Notification cache term is invalid',
+              'Notification throttle is invalid',
           ],
         },
         enabled: { label: 'Enabled', placeholder: 'true' },
@@ -1005,7 +1005,7 @@ export default {
     getNotiCacheText(sec) {
       switch (sec) {
         case 1:
-          return 'No Cache'
+          return 'None'
         case 60 * 60:
           return '1 hour'
         case 60 * 60 * 24:
@@ -1020,7 +1020,7 @@ export default {
     },
     getNotiCacheSecound(text) {
       switch (text) {
-        case 'No Cache':
+        case 'None':
           return 1
         case '1 hour':
           return 60 * 60
