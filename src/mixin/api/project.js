@@ -4,6 +4,9 @@ const project = {
   },
   methods: {
     async listProjectAPI(param) {
+      if (!param) {
+        param = ''
+      }
       const res = await this.$axios
         .get('/project/list-project/' + param)
         .catch((err) => {

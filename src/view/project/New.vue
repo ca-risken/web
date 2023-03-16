@@ -75,10 +75,21 @@ export default {
           validator: [
             (v) => !!v || 'Name is required',
             (v) => v.length <= 64 || 'Name must be less than 64 characters',
+            (v) => !this.existsProjectName(v) || 'Name is already exists.',
           ],
         },
       },
+      projectList: [],
     }
+  },
+  async mounted() {
+    this.loading = true
+    this.projectList = await this.listProjectAPI().catch((err) => {
+      this.$refs.snackbar.notifyError(err.response.data)
+      this.loading = false
+      return Promise.reject(err)
+    })
+    this.loading = false
   },
   methods: {
     async createProject() {
@@ -124,6 +135,16 @@ export default {
         this.loading = false
         return Promise.reject(err)
       })
+    },
+
+    existsProjectName(name) {
+      if (name === '') {
+        return false
+      }
+      for (const pj of this.projectList) {
+        if (pj.name == name) return true
+      }
+      return false
     },
 
     handleCreate() {
