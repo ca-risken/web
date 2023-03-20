@@ -110,6 +110,12 @@
                     >mdi-alert</v-icon
                   >
                 </template>
+                <template v-slot:[`item.specific_version`]="{ item }">
+                  <template v-if="item.specific_version">
+                    {{ $t(`version["old"]`) }} ({{ item.specific_version }})
+                  </template>
+                  <template v-else> {{ $t(`version["latest"]`) }} </template>
+                </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
                   <v-chip v-if="item.scan_at">{{
                     item.scan_at | formatTime
@@ -270,6 +276,37 @@
                     <v-chip outlined>
                       {{ awsModel.max_score }}
                     </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+
+          <v-row dense v-if="!awsForm.setupAll">
+            <v-col cols="8">
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <v-list-item-subtitle>
+                    {{ $t(`version['version']`) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-title
+                    class="headline"
+                    v-if="awsModel.specific_version"
+                  >
+                    {{ $t(`version['old']`) }} ({{ awsModel.specific_version }})
+                    <v-btn
+                      text
+                      outlined
+                      color="blue darken-1"
+                      :loading="loading"
+                      @click="handleAttachSubmit"
+                    >
+                      <v-icon left>mdi-update</v-icon>
+                      {{ $t(`btn['Upgrade']`) }}
+                    </v-btn>
+                  </v-list-item-title>
+                  <v-list-item-title class="headline" v-else>
+                    {{ $t(`version['latest']`) }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -617,6 +654,7 @@ export default {
         status: 0,
         status_detail: '',
         scan_at: 0,
+        specific_version: '',
       },
       table: {
         selected: [],
@@ -709,16 +747,16 @@ export default {
           value: 'status',
         },
         {
-          text: this.$i18n.t('item["AWS ID"]'),
-          align: 'start',
-          sortable: false,
-          value: 'aws_id',
-        },
-        {
           text: this.$i18n.t('item["Assume Role"]'),
           align: 'start',
           sortable: false,
           value: 'assume_role_arn',
+        },
+        {
+          text: this.$i18n.t('version["version"]'),
+          align: 'start',
+          sortable: true,
+          value: 'specific_version',
         },
         {
           text: this.$i18n.t('item["ScanAt"]'),
