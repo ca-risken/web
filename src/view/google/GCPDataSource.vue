@@ -673,22 +673,16 @@ export default {
           value: 'status',
         },
         {
-          text: this.$i18n.t('item["GCP ID"]'),
+          text: this.$i18n.t('item["GCP Project"]'),
           align: 'start',
           sortable: true,
-          value: 'gcp_id',
+          value: 'gcp_project_id',
         },
         {
           text: this.$i18n.t('version["version"]'),
           align: 'start',
           sortable: true,
           value: 'specific_version',
-        },
-        {
-          text: this.$i18n.t('item["GCP Project"]'),
-          align: 'start',
-          sortable: true,
-          value: 'gcp_project_id',
         },
         {
           text: this.$i18n.t('item["ScanAt"]'),
