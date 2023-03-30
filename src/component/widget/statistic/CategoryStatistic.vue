@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: 'CategoryStastic',
+  name: 'CategoryStatistic',
   props: {
     icon: String,
     category: String,
