@@ -8,11 +8,13 @@
     "extends": [
         "eslint:recommended",
         "plugin:vue/essential",
-        "prettier"
+        "prettier",
+        "@vue/prettier"
     ],
     "parserOptions": {
         "ecmaVersion": 2020,
-        "sourceType": "module"
+        "sourceType": "module",
+        "parser": "@babel/eslint-parser"
     },
     "plugins": [
         "vue"
@@ -20,7 +22,7 @@
     "rules": {
         "no-unused-vars": "error",
         "no-inner-declarations": "error",
-        "vue/multi-word-component-names": "off",
+        "vue/no-v-text-v-html-on-component": "off",
         "vue/no-mutating-props": "off"
         // "eqeqeq": "error"
     }

@@ -232,6 +232,7 @@ import ProjectTag from '@/component/widget/tag/ProjectTag'
 import ScanStatus from '@/component/widget/datasource/Status'
 import NewSettingDialog from './NewSettingDialog.vue'
 export default {
+  name: 'GitHubSetting',
   mixins: [mixin, project, code],
   components: {
     BottomSnackBar,

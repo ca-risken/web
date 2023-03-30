@@ -24,6 +24,7 @@
 
 <script>
 export default {
+  name: 'ErrorDeny',
   methods: {
     goHome() {
       this.$router.push({ path: '/' })

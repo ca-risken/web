@@ -308,6 +308,7 @@ import alert from '@/mixin/api/alert'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'AlertRule',
   mixins: [mixin, alert, finding],
   components: {
     BottomSnackBar,

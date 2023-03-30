@@ -475,6 +475,7 @@ import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'AlertCondition',
   mixins: [mixin, alert],
   components: {
     BottomSnackBar,

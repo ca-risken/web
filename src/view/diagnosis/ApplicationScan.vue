@@ -416,6 +416,7 @@ import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
+  name: 'DiagnosisApplicationScan',
   mixins: [mixin, diagnosis, project],
   components: {
     BottomSnackBar,

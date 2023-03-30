@@ -587,6 +587,7 @@ import aws from '@/mixin/api/aws'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
+  name: 'AWSDataSource',
   mixins: [mixin, aws],
   components: {
     BottomSnackBar,

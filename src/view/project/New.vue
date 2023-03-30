@@ -54,6 +54,7 @@ import project from '@/mixin/api/project'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'NewProject',
   mixins: [mixin, project, alert],
   components: {
     BottomSnackBar,

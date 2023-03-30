@@ -536,6 +536,7 @@ import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
+  name: 'GCPDataSource',
   mixins: [mixin],
   components: {
     BottomSnackBar,

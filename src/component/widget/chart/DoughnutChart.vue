@@ -4,6 +4,7 @@ import 'chartjs-plugin-colorschemes'
 const { reactiveProp } = mixins
 
 export default {
+  name: 'DoughnutChart',
   extends: Doughnut,
   mixins: [reactiveProp],
   props: {

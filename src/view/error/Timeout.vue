@@ -20,6 +20,7 @@
 
 <script>
 export default {
+  name: 'ErrorTimeout',
   methods: {
     goHome() {
       this.$router.push({ path: '/' })

@@ -285,6 +285,7 @@ import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import User from '@/component/widget/list/User'
 export default {
+  name: 'AdminUser',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,

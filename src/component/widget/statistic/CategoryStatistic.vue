@@ -16,6 +16,7 @@
 
 <script>
 export default {
+  name: 'CategoryStastic',
   props: {
     icon: String,
     category: String,

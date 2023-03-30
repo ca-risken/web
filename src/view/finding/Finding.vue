@@ -989,6 +989,7 @@ import ClipBoard from '@/component/widget/clipboard/ClipBoard'
 import JsonViewer from 'vue-json-viewer'
 import AutoLink from '@/component/text/AutoLink'
 export default {
+  name: 'FindingList',
   mixins: [mixin, finding],
   components: {
     BottomSnackBar,

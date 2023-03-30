@@ -20,6 +20,7 @@
 
 <script>
 export default {
+  name: 'ErrorNotFound',
   methods: {
     goHome() {
       this.$router.push({ path: '/' })

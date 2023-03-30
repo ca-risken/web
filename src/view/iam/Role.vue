@@ -309,6 +309,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'RoleList',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,

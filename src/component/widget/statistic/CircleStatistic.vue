@@ -31,6 +31,7 @@
 
 <script>
 export default {
+  name: 'CircleStatistic',
   props: {
     icon: String,
     title: String,

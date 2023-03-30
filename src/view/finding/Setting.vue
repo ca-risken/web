@@ -283,6 +283,7 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'FindingSetting',
   mixins: [mixin, finding],
   components: {
     BottomSnackBar,

@@ -22,6 +22,7 @@
 
 <script>
 export default {
+  name: 'LinearStatistic',
   props: {
     icon: String,
     title: String,

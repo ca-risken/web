@@ -61,7 +61,7 @@
 // import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 export default {
-  // mixins: [mixin, project],
+  name: 'ProjectTag',
   mixins: [project],
   components: {},
   props: {

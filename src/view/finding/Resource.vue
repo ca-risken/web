@@ -565,6 +565,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
 export default {
+  name: 'ResourceList',
   mixins: [mixin, finding, checkpoint],
   components: {
     BottomSnackBar,

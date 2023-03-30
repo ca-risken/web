@@ -452,6 +452,7 @@ import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
+  name: 'AccessTokenList',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,

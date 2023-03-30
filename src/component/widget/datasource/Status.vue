@@ -20,6 +20,7 @@
 import mixin from '@/mixin'
 export default {
   mixins: [mixin],
+  name: 'DataSourceStatus',
   props: {
     status: {
       type: Number,

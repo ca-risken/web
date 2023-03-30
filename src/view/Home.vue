@@ -3,7 +3,7 @@
 import mixin from '@/mixin'
 
 export default {
-  name: 'Home',
+  name: 'AppHome',
   mounted() {
     this.redirectDashBoard()
   },

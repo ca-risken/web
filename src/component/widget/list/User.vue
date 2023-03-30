@@ -92,6 +92,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 export default {
   mixins: [mixin, iam],
+  name: 'UserList',
   props: {
     userDialog: Boolean,
   },
