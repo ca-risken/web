@@ -637,6 +637,9 @@
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text outlined @click="pendDialog = true">
+            {{ $t(`btn['PEND']`) }}
+          </v-btn>
           <v-btn
             text
             outlined
