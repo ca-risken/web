@@ -20,6 +20,7 @@ const ja = {
     'NEW WORD': '新規キーワード',
     TAG: 'タグ',
     SCAN: 'スキャン',
+    'Summarize with ChatGPT': 'ChatGPTに聞いてみる',
     'FULL SCAN': 'フルスキャン',
     'SHOW SCAN RESULT': 'スキャン結果を見る',
     ATTACH: '有効化',
@@ -288,6 +289,10 @@ const ja = {
       recalculated: 'スコアが再計算',
       ' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.':
         'されます.（各リソースの実際のリスクに応じてスコア調整が可能です）',
+      'ChatGPT Question-1':
+        '私のクラウド環境でセキュリティの問題を検知しました。500字以内の日本語で内容を要約してください。',
+      'ChatGPT Question-2': 'また、問題の対処方法もあれば含めてください。',
+      'ChatGPT Examples': '（略）Findingの詳細...',
     },
     alert: {
       'Active Only': 'アクティブのみ',

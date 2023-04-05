@@ -374,6 +374,22 @@
       <v-card>
         <v-toolbar>
           <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
+          <v-spacer />
+          <v-btn
+            color="blue-grey"
+            outlined
+            style="text-transform: none"
+            @click="handleChatGPT"
+          >
+            <v-avatar class="mr-2" size="x-small">
+              <img
+                color="white"
+                src="/static/icon/question_answer_black_24dp.svg"
+                alt="question"
+              />
+            </v-avatar>
+            {{ $t(`btn['Summarize with ChatGPT']`) }}
+          </v-btn>
         </v-toolbar>
         <v-container fluid>
           <v-row dense class="mx-2">
@@ -637,6 +653,9 @@
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text outlined @click="pendDialog = true">
+            {{ $t(`btn['PEND']`) }}
+          </v-btn>
           <v-btn
             text
             outlined
@@ -975,6 +994,64 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="aiDialog" max-width="60%">
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-list-item>
+                <v-list-item-avatar>
+                  <v-icon color="blue-gray darken-4">mdi-chat</v-icon>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item class="px-0 pt-10 ma-0">
+                    {{ $t(`view.finding['ChatGPT Question-1']`) }}<br />
+                    {{ $t(`view.finding['ChatGPT Question-2']`) }}<br />
+                    <br />
+                    {{ $t(`view.finding['ChatGPT Examples']`) }}
+                  </v-list-item>
+                </v-list-item-content>
+              </v-list-item>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12">
+              <v-alert
+                title="ChatGPT"
+                type="success"
+                icon="$success"
+                variant="outlined"
+                outlined
+                border="right"
+                border-color="green lighten-2"
+                class="my-4 pl-6 pr-8 font-weight-medium"
+              >
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="40"
+                  width="4"
+                  color="green darken-2"
+                  class="ma-6 px-12"
+                ></v-progress-circular>
+                <v-card-text v-else class="text-sm-h6 ma-0 pa-0">
+                  <auto-link :text="aiAnswer" />
+                </v-card-text>
+              </v-alert>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text outlined color="grey darken-1" @click="aiDialog = false">
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -1090,6 +1167,8 @@ export default {
         items: [],
       },
       findingHistory: [],
+      aiDialog: false,
+      aiAnswer: '',
     }
   },
   filters: {
@@ -1599,6 +1678,23 @@ export default {
         default:
           this.searchModel.tab = 0
       }
+    },
+
+    // ChatGPT
+    async handleChatGPT() {
+      this.aiAnswer = ''
+      this.loading = true
+      this.aiDialog = true
+
+      // api
+      this.aiAnswer = await this.getAISummary(
+        this.findingModel.finding_id,
+        this.$i18n.locale
+      ).catch((err) => {
+        this.loading = false
+        return Promise.reject(err)
+      })
+      this.loading = false
     },
 
     // CSV
