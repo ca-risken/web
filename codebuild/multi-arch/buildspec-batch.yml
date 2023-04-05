@@ -4,7 +4,7 @@ batch:
       buildspec: codebuild/multi-arch/buildspec-image.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
-        image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
         privileged-mode: true
         type: LINUX_CONTAINER
         variables:
@@ -24,7 +24,7 @@ batch:
       buildspec: codebuild/multi-arch/buildspec-manifest.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
-        image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
         privileged-mode: true
         type: LINUX_CONTAINER
       depend-on:
