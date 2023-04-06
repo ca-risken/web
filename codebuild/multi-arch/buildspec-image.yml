@@ -11,9 +11,6 @@ env:
     VUE_APP_STATIC_LINK: "/build/web/VUE_APP_STATIC_LINK"
 
 phases:
-  install:
-    runtime-versions:
-      nodejs: 12
   pre_build:
     commands:
       - echo Setting environment variables
@@ -32,8 +29,6 @@ phases:
           echo 'Logging in to Docker Hub...'
           echo "$DOCKER_TOKEN" | docker login -u $DOCKER_USER --password-stdin
         fi
-      - make install
-      - make lint
   build:
     commands:
       - echo Build web started on `date`

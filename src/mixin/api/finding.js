@@ -1,3 +1,10 @@
+import axios from 'axios'
+
+const longAxios = axios.create({
+  baseURL: '/api/v1',
+  timeout: 120000,
+})
+
 const finding = {
   data: () => {
     return {}
@@ -304,6 +311,24 @@ const finding = {
         return {} // empty
       }
       return res.data.data.recommend
+    },
+    async getAISummary(findingID, lang) {
+      const res = await longAxios
+        .get(
+          '/finding/get-ai-summary/?project_id=' +
+            this.getCurrentProjectID() +
+            '&finding_id=' +
+            findingID +
+            '&lang=' +
+            lang
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.answer) {
+        return '' // empty
+      }
+      return res.data.data.answer
     },
   },
 }
