@@ -271,6 +271,7 @@ import osint from '@/mixin/api/osint'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
+  name: 'OSINTTarget',
   mixins: [mixin, project, osint],
   components: {
     BottomSnackBar,

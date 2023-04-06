@@ -478,6 +478,7 @@ import mixin from '@/mixin'
 import osint from '@/mixin/api/osint'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'OSINTDataSource',
   mixins: [mixin, osint],
   components: {
     BottomSnackBar,
