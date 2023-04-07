@@ -39,7 +39,6 @@
           </v-btn>
           <project-tag
             :tagDialog="projectTagDialog"
-            :projectTagModel="projectTagModel"
             @projectTagCancel="projectTagDialog = false"
             @projectTagUpdated="handleProjectTagUpdated"
           />
