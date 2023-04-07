@@ -427,9 +427,9 @@
           <v-list-item>
             <v-list-item-avatar><v-icon>http</v-icon></v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.resource_name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.resource_name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Resource Name']`)
               }}</v-list-item-subtitle>
@@ -440,7 +440,9 @@
               ><v-icon>mdi-dns-outline</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Data Source']`)
               }}</v-list-item-subtitle>

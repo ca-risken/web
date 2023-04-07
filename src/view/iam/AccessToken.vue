@@ -336,9 +336,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.access_token_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.access_token_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -349,7 +349,9 @@
               <v-icon>mdi-alpha-r-circle</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Name']`) }}
               </v-list-item-subtitle>
@@ -397,7 +399,9 @@
               <v-icon>mdi-image-text</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name" />
+              <v-list-item-title>
+                {{ dataModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Name']`) }}
               </v-list-item-subtitle>

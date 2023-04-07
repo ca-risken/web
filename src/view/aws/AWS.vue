@@ -215,7 +215,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.aws_id"></v-list-item-title>
+              <v-list-item-title>
+                {{ awsModel.aws_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['AWS ID']`)
               }}</v-list-item-subtitle>
@@ -226,7 +228,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="awsModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ awsModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>
@@ -237,9 +241,9 @@
               <v-icon>mdi-aws</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="awsModel.aws_account_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ awsModel.aws_account_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['AWS Account ID']`)
               }}</v-list-item-subtitle>

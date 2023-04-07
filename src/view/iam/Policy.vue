@@ -235,9 +235,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="policyModel.policy_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ policyModel.policy_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -248,7 +248,9 @@
               <v-icon>mdi-certificate-outline</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="policyModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ policyModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Name']`) }}
               </v-list-item-subtitle>

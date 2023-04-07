@@ -292,9 +292,10 @@
                     </v-avatar>
                     <v-icon
                       v-else
-                      v-text="getDataSourceIcon(item.data_source)"
                       :color="getDataSourceIconColor(item.data_source)"
-                    />
+                    >
+                      {{ getDataSourceIcon(item.data_source) }}
+                    </v-icon>
                   </v-layout>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
@@ -416,9 +417,10 @@
                   <v-list-item-subtitle>
                     <v-icon
                       left
-                      v-text="getDataSourceIcon(findingModel.data_source)"
                       :color="getDataSourceIconColor(findingModel.data_source)"
-                    />
+                    >
+                      {{ getDataSourceIcon(findingModel.data_source) }}
+                    </v-icon>
                     {{ $t(`item['Data Source']`) }}
                     <clip-board
                       :name="$t(`item['Data Source']`)"
@@ -712,9 +714,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="findingModel.finding_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ findingModel.finding_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Finding ID']`) }}
               </v-list-item-subtitle>
@@ -725,9 +727,9 @@
               <v-icon>mdi-file-find-outline</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="findingModel.resource_name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ findingModel.resource_name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Resource Name']`) }}
               </v-list-item-subtitle>
@@ -738,7 +740,9 @@
               <v-icon>mdi-image-text</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item v-text="findingModel.description"></v-list-item>
+              <v-list-item>
+                {{ findingModel.description }}
+              </v-list-item>
               <v-list-item-subtitle>{{
                 $t(`item['Description']`)
               }}</v-list-item-subtitle>
@@ -785,10 +789,9 @@
                 <v-list-item-title v-if="pendAll">
                   {{ table.selected.length }} findings selected...
                 </v-list-item-title>
-                <v-list-item-title
-                  v-else
-                  v-text="findingModel.finding_id"
-                ></v-list-item-title>
+                <v-list-item-title v-else>
+                  {{ findingModel.finding_id }}
+                </v-list-item-title>
                 <v-list-item-subtitle>
                   {{ $t(`item['Finding ID']`) }}
                 </v-list-item-subtitle>
@@ -883,9 +886,9 @@
                   ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="recommendModel.recommend_id"
-                  ></v-list-item-title>
+                  <v-list-item-title>
+                    {{ recommendModel.recommend_id }}
+                  </v-list-item-title>
                   <v-list-item-subtitle>
                     {{ $t(`item['Recommend ID']`) }}
                   </v-list-item-subtitle>
@@ -898,9 +901,9 @@
                   ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="recommendModel.finding_id"
-                  ></v-list-item-title>
+                  <v-list-item-title>
+                    {{ recommendModel.finding_id }}
+                  </v-list-item-title>
                   <v-list-item-subtitle>
                     {{ $t(`item['Finding ID']`) }}
                   </v-list-item-subtitle>
@@ -915,9 +918,9 @@
                   ><v-icon>mdi-tag-multiple</v-icon></v-list-item-avatar
                 >
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="recommendModel.type"
-                  ></v-list-item-title>
+                  <v-list-item-title>
+                    {{ recommendModel.type }}
+                  </v-list-item-title>
                   <v-list-item-subtitle>{{
                     $t(`item['Type']`)
                   }}</v-list-item-subtitle>
@@ -928,13 +931,15 @@
               <v-list-item>
                 <v-list-item-avatar>
                   <v-icon
-                    v-text="getDataSourceIcon(recommendModel.data_source)"
                     :color="getDataSourceIconColor(recommendModel.data_source)"
-                /></v-list-item-avatar>
+                  >
+                    {{ getDataSourceIcon(recommendModel.data_source) }}
+                  </v-icon>
+                </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="recommendModel.data_source"
-                  ></v-list-item-title>
+                  <v-list-item-title>
+                    {{ recommendModel.data_source }}
+                  </v-list-item-title>
                   <v-list-item-subtitle>{{
                     $t(`item['Data Source']`)
                   }}</v-list-item-subtitle>

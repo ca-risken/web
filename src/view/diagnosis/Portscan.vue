@@ -335,9 +335,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="portscanSettingModel.portscan_setting_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ portscanSettingModel.portscan_setting_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Portscan Setting ID']`)
               }}</v-list-item-subtitle>
@@ -348,9 +348,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="portscanSettingModel.name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ portscanSettingModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>
@@ -480,9 +480,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="portscanTargetModel.portscan_target_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ portscanTargetModel.portscan_target_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Portscan Target ID']`)
               }}</v-list-item-subtitle>
@@ -493,9 +493,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="portscanTargetModel.target"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ portscanTargetModel.target }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Target']`)
               }}</v-list-item-subtitle>

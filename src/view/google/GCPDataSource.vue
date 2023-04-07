@@ -483,9 +483,9 @@
               <v-icon>mdi-google-cloud</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="gcpDataSourceModel.google_data_source_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ gcpDataSourceModel.google_data_source_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Data Source ID']`)
               }}</v-list-item-subtitle>
@@ -496,9 +496,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="gcpDataSourceModel.gcp_project_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ gcpDataSourceModel.gcp_project_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['GCP ProjectID']`)
               }}</v-list-item-subtitle>

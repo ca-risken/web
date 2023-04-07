@@ -224,9 +224,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.finding_setting_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.finding_setting_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>Finding Setting ID</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -235,9 +235,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.resource_name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.resource_name }}
+              </v-list-item-title>
               <v-list-item-subtitle>Resource Name</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -246,9 +246,9 @@
               ><v-icon>mdi-calculator</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.score_coefficient"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.score_coefficient }}
+              </v-list-item-title>
               <v-list-item-subtitle>Score Coefficient</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>

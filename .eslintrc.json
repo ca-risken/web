@@ -22,7 +22,6 @@
     "rules": {
         "no-unused-vars": "error",
         "no-inner-declarations": "error",
-        "vue/no-v-text-v-html-on-component": "off",
         "vue/no-mutating-props": "off"
         // "eqeqeq": "error"
     }

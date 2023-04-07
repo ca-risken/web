@@ -214,9 +214,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.reserved_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.reserved_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -227,9 +227,9 @@
               <v-icon>mdi-alpha-r-circle</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.role_name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.role_name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Roles']`) }}
               </v-list-item-subtitle>

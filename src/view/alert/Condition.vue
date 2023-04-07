@@ -421,9 +421,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.alert_condition_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.alert_condition_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Alert Condition ID']`)
               }}</v-list-item-subtitle>
@@ -434,9 +434,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.description"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.description }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Description']`)
               }}</v-list-item-subtitle>

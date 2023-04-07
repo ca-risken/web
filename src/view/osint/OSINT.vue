@@ -204,9 +204,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.osint_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.osint_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -217,9 +217,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.resource_type"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.resource_type }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ResourceType']`) }}
               </v-list-item-subtitle>
@@ -230,9 +230,9 @@
               <v-icon>http</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.resource_name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.resource_name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ResourceName']`) }}
               </v-list-item-subtitle>

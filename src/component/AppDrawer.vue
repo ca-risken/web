@@ -29,16 +29,18 @@
             <template v-slot:prepend-icon>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on" v-text="item.meta.icon" />
+                  <v-icon v-bind="attrs" v-on="on">
+                    {{ item.meta.icon }}
+                  </v-icon>
                 </template>
                 <span>{{ $t(`menu['` + item.meta.title + `']`) }}</span>
               </v-tooltip>
             </template>
             <template v-slot:activator>
               <v-list-item-content>
-                <v-list-item-title
-                  v-text="$t(`menu['` + item.meta.title + `']`)"
-                />
+                <v-list-item-title>
+                  {{ $t(`menu['` + item.meta.title + `']`) }}
+                </v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item
@@ -52,11 +54,9 @@
                 <v-list-item-icon>
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-icon
-                        v-bind="attrs"
-                        v-on="on"
-                        v-text="subItem.meta.icon"
-                      />
+                      <v-icon v-bind="attrs" v-on="on">
+                        {{ subItem.meta.icon }}
+                      </v-icon>
                     </template>
                     <span>{{
                       $t(`submenu['` + subItem.meta.title + `']`)
@@ -66,9 +66,9 @@
               </template>
               <template v-else>
                 <v-list-item-content>
-                  <v-list-item-title
-                    v-text="$t(`submenu['` + subItem.meta.title + `']`)"
-                  />
+                  <v-list-item-title>
+                    {{ $t(`submenu['` + subItem.meta.title + `']`) }}
+                  </v-list-item-title>
                 </v-list-item-content>
               </template>
             </v-list-item>
@@ -83,15 +83,17 @@
             <v-list-item-icon>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on" v-text="item.meta.icon" />
+                  <v-icon v-bind="attrs" v-on="on">
+                    {{ item.meta.icon }}
+                  </v-icon>
                 </template>
                 <span>{{ $t(`menu['` + item.meta.title + `']`) }}</span>
               </v-tooltip>
             </v-list-item-icon>
             <v-list-item-content v-if="drawerWidth !== 64">
-              <v-list-item-title
-                v-text="$t(`menu['` + item.meta.title + `']`)"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ $t(`menu['` + item.meta.title + `']`) }}
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>
@@ -103,7 +105,9 @@
       >
         <template v-slot:activator>
           <v-list-item-content>
-            <v-list-item-title v-text="$t(`item['Link']`)" />
+            <v-list-item-title>
+              {{ $t(`item['Link']`) }}
+            </v-list-item-title>
           </v-list-item-content>
         </template>
         <v-list-item
@@ -115,7 +119,9 @@
           :risken-action-name="`click-link-${item.title}-from-menu-bar`"
         >
           <v-list-item-content>
-            <v-list-item-title v-text="item.title"></v-list-item-title>
+            <v-list-item-title>
+              {{ item.title }}
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-group>

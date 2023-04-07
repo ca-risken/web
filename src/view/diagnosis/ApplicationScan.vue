@@ -361,9 +361,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="applicationScanModel.application_scan_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ applicationScanModel.application_scan_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Application Scan ID']`)
               }}</v-list-item-subtitle>
@@ -374,9 +374,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="applicationScanModel.name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ applicationScanModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>

@@ -257,9 +257,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.alert_rule_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.alert_rule_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Alert Rule ID']`)
               }}</v-list-item-subtitle>
@@ -270,7 +270,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>

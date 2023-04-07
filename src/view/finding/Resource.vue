@@ -153,9 +153,10 @@
                     </v-avatar>
                     <v-icon
                       v-else
-                      v-text="getDataSourceIcon(item.namespace)"
                       :color="getDataSourceIconColor(item.namespace)"
-                    />
+                    >
+                      {{ getDataSourceIcon(item.namespace) }}
+                    </v-icon>
                   </v-layout>
                 </template>
                 <template v-slot:[`item.check_point`]="{ item }">
@@ -239,9 +240,10 @@
                     <v-list-item-subtitle>
                       <v-icon
                         left
-                        v-text="getDataSourceIcon(resourceModel.namespace)"
                         :color="getDataSourceIconColor(resourceModel.namespace)"
-                      />
+                      >
+                        {{ getDataSourceIcon(resourceModel.namespace) }}
+                      </v-icon>
                       Namespace
                       <clip-board
                         name="Namespace"
@@ -398,9 +400,10 @@
                   <v-list-item-subtitle>
                     <v-icon
                       left
-                      v-text="getDataSourceIcon(findingModel.data_source)"
                       :color="getDataSourceIconColor(findingModel.data_source)"
-                    />
+                    >
+                      {{ getDataSourceIcon(findingModel.data_source) }}
+                    </v-icon>
                     Data Source
                     <clip-board
                       name="Data Source"
@@ -508,9 +511,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="resourceModel.resource_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ resourceModel.resource_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Resource ID']`) }}
               </v-list-item-subtitle>
@@ -521,9 +524,9 @@
               <v-icon>mdi-file-find-outline</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="resourceModel.resource_name"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ resourceModel.resource_name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Resource Name']`) }}
               </v-list-item-subtitle>
