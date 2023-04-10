@@ -245,9 +245,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="alertModel.alert_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ alertModel.alert_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Alert ID']`) }}
               </v-list-item-subtitle>
@@ -276,9 +276,9 @@
               <v-icon>mdi-image-text</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="alertModel.description"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ alertModel.description }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Description']`)
               }}</v-list-item-subtitle>
@@ -317,6 +317,7 @@ import alert from '@/mixin/api/alert'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'AlertList',
   mixins: [mixin, alert, finding],
   components: {
     BottomSnackBar,

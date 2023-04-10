@@ -259,7 +259,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title v-text="roleModel.role_id"></v-list-item-title>
+              <v-list-item-title>
+                {{ roleModel.role_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['ID']`) }}
               </v-list-item-subtitle>
@@ -270,7 +272,9 @@
               <v-icon>mdi-alpha-r-circle</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="roleModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ roleModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>
                 {{ $t(`item['Name']`) }}
               </v-list-item-subtitle>
@@ -309,6 +313,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'RoleList',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,

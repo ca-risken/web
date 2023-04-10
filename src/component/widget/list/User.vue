@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="50%" v-model="userDialog" @click:outside="handleCancel">
+  <v-dialog max-width="50%" :value="userDialog" @click:outside="handleCancel">
     <v-card>
       <v-card-title>
         <v-row justify="center" align="center">
@@ -92,6 +92,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 export default {
   mixins: [mixin, iam],
+  name: 'UserList',
   props: {
     userDialog: Boolean,
   },

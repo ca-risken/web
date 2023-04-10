@@ -18,6 +18,7 @@
 
 <script>
 export default {
+  name: 'MiniStatistic',
   props: {
     icon: String,
     title: String,

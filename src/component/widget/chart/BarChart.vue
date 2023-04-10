@@ -5,6 +5,7 @@ import 'chartjs-plugin-colorschemes'
 const { reactiveProp } = mixins
 
 export default {
+  name: 'BarChart',
   extends: Bar,
   mixins: [reactiveProp],
   props: {

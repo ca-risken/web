@@ -22,6 +22,7 @@
 
 <script>
 export default {
+  name: 'StatusStatistic',
   props: {
     icon: String,
     color: String,

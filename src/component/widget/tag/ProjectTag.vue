@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="tagDialog" max-width="400px" @click:outside="handleCancel">
+  <v-dialog :value="tagDialog" max-width="400px" @click:outside="handleCancel">
     <v-card>
       <v-card-title class="headline">
         <v-icon left>mdi-label</v-icon>
@@ -58,20 +58,23 @@
 </template>
 
 <script>
-// import mixin from '@/mixin'
+import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 export default {
-  // mixins: [mixin, project],
-  mixins: [project],
+  name: 'ProjectTag',
+  mixins: [project, mixin],
   components: {},
   props: {
     tagDialog: {
       type: Boolean,
     },
-    projectTagModel: {
-      type: Object,
-      default: () => ({
-        project_id: '',
+  },
+  created() {},
+  data() {
+    return {
+      loading: false,
+      projectTagModel: {
+        project_id: this.getCurrentProjectID(),
         tag: '',
         created_at: '',
         updated_at: '',
@@ -84,28 +87,7 @@ export default {
           hsla: { h: 300, s: 1, l: 0.5, a: 1 },
           hsva: { h: 300, s: 1, v: 1, a: 1 },
         },
-      }),
-    },
-  },
-  data() {
-    return {
-      loading: false,
-      // projectTagModel: this.projectTagModel,
-      // projectTagModel: {
-      //   project_id: '',
-      //   tag: '',
-      //   created_at: '',
-      //   updated_at: '',
-      //   color: {
-      //     types: ['hex', 'hexa', 'rgba', 'hsla', 'hsva'],
-      //     type: 'hex',
-      //     hex: '#FF00FF',
-      //     hexa: '#FF00FFFF',
-      //     rgba: { r: 255, g: 0, b: 255, a: 1 },
-      //     hsla: { h: 300, s: 1, l: 0.5, a: 1 },
-      //     hsva: { h: 300, s: 1, v: 1, a: 1 },
-      //   },
-      // },
+      },
       projectTagForm: {
         valid: false,
         tag: {

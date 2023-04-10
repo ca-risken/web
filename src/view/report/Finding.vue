@@ -321,6 +321,7 @@ import BarChart from '@/component/widget/chart/BarChart'
 import colors from 'vuetify/lib/util/colors'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'ReportFinding',
   mixins: [mixin, finding, alert, iam],
   components: {
     BottomSnackBar,

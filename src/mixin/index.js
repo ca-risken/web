@@ -559,10 +559,6 @@ let mixin = {
       return resourceType
     },
     async handleNewProjectTag() {
-      this.projectTagModel = {
-        project_id: this.getCurrentProjectID(),
-        tag: '',
-      }
       this.projectTagDialog = true
     },
     async handleEditProjectTag(tag) {

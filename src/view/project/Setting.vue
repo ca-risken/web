@@ -77,7 +77,6 @@
                 </v-btn>
                 <project-tag
                   :tagDialog="projectTagDialog"
-                  :projectTagModel="projectTagModel"
                   @projectTagCancel="projectTagDialog = false"
                   @projectTagUpdated="handleProjectTagUpdated"
                 />
@@ -147,6 +146,7 @@ import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
+  name: 'ProjectSetting',
   mixins: [mixin, project],
   components: {
     BottomSnackBar,
@@ -197,10 +197,6 @@ export default {
       })
       if (!project[0]) return
       this.projectModel.tag = project[0].tag
-      this.projectTagModel = {
-        project_id: this.projectModel.project_id,
-        tag: '',
-      }
     },
     async editProject() {
       const project = await this.updateProjectAPI(this.projectModel.name).catch(
@@ -215,8 +211,8 @@ export default {
       }
       store.commit('updateProject', project)
     },
-    async untagProject() {
-      await this.untagProjectAPI(this.projectTagModel.tag).catch((err) => {
+    async untagProject(tag) {
+      await this.untagProjectAPI(tag).catch((err) => {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)
       })
@@ -241,11 +237,7 @@ export default {
 
     async handleDeleteTag(tag) {
       this.loading = true
-      this.projectTagModel = {
-        project_id: this.projectModel.project_id,
-        tag: tag.tag,
-      }
-      await this.untagProject()
+      await this.untagProject(tag.tag)
       await new Promise((resolve) => setTimeout(resolve, 1000))
       await this.setProject()
       this.$refs.snackbar.notifySuccess('Success: Untag project.')

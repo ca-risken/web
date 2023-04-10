@@ -39,7 +39,6 @@
           </v-btn>
           <project-tag
             :tagDialog="projectTagDialog"
-            :projectTagModel="projectTagModel"
             @projectTagCancel="projectTagDialog = false"
             @projectTagUpdated="handleProjectTagUpdated"
           />
@@ -166,9 +165,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="gitHubModel.github_setting_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ gitHubModel.github_setting_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['GitHub Setting ID']`)
               }}</v-list-item-subtitle>
@@ -179,7 +178,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="gitHubModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ gitHubModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>
@@ -232,6 +233,7 @@ import ProjectTag from '@/component/widget/tag/ProjectTag'
 import ScanStatus from '@/component/widget/datasource/Status'
 import NewSettingDialog from './NewSettingDialog.vue'
 export default {
+  name: 'GitHubSetting',
   mixins: [mixin, project, code],
   components: {
     BottomSnackBar,

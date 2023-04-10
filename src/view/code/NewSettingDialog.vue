@@ -602,6 +602,7 @@ import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import code from '@/mixin/api/code'
 export default {
+  name: 'NewSettingDialog',
   mixins: [mixin, project, code],
   props: {
     isReadOnly: {

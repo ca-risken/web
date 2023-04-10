@@ -257,9 +257,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.notification_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.notification_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Notification ID']`)
               }}</v-list-item-subtitle>
@@ -270,7 +270,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>
@@ -312,9 +314,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="dataModel.notification_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.notification_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Notification ID']`)
               }}</v-list-item-subtitle>
@@ -325,7 +327,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title v-text="dataModel.name"></v-list-item-title>
+              <v-list-item-title>
+                {{ dataModel.name }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Name']`)
               }}</v-list-item-subtitle>
@@ -362,6 +366,7 @@ import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'AlertNotification',
   mixins: [mixin, alert],
   components: {
     BottomSnackBar,

@@ -63,7 +63,9 @@
               :key="item.value"
               :value="item.value"
             >
-              <v-list-item-title v-text="item.text" />
+              <v-list-item-title>
+                {{ item.text }}
+              </v-list-item-title>
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -93,7 +95,9 @@
               <v-icon>mdi-open-in-new</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
+              <v-list-item-title>
+                {{ item.title }}
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -133,7 +137,9 @@
       <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
       <v-spacer></v-spacer>
       <v-btn icon small color="black">
-        <v-icon v-text="'mdi-arrow-left'" @click="handleGoBack" />
+        <v-icon @click="handleGoBack">
+          {{ 'mdi-arrow-left' }}
+        </v-icon>
       </v-btn>
     </v-toolbar>
 

@@ -10,6 +10,7 @@
 <script>
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 export default {
+  name: 'ClipBoard',
   components: {
     BottomSnackBar,
   },

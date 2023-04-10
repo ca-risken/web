@@ -41,7 +41,6 @@
           </v-btn>
           <project-tag
             :tagDialog="projectTagDialog"
-            :projectTagModel="projectTagModel"
             @projectTagCancel="projectTagDialog = false"
             @projectTagUpdated="handleProjectTagUpdated"
           />
@@ -411,9 +410,9 @@
               ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
             >
             <v-list-item-content>
-              <v-list-item-title
-                v-text="wpscanModel.wpscan_setting_id"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ wpscanModel.wpscan_setting_id }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['WPScan Setting ID']`)
               }}</v-list-item-subtitle>
@@ -424,9 +423,9 @@
               <v-icon>account_box</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="wpscanModel.target_url"
-              ></v-list-item-title>
+              <v-list-item-title>
+                {{ wpscanModel.target_url }}
+              </v-list-item-title>
               <v-list-item-subtitle>{{
                 $t(`item['Target URL']`)
               }}</v-list-item-subtitle>
@@ -465,6 +464,7 @@ import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
 import ProjectTag from '@/component/widget/tag/ProjectTag'
 export default {
+  name: 'DiagnosisWPScan',
   mixins: [mixin, diagnosis, project],
   components: {
     BottomSnackBar,

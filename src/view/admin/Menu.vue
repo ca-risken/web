@@ -48,6 +48,7 @@
 
 <script>
 export default {
+  name: 'AdminMenu',
   mixins: [],
   components: {},
   data() {
