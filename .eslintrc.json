@@ -8,13 +8,11 @@
     "extends": [
         "eslint:recommended",
         "plugin:vue/essential",
-        "prettier",
-        "@vue/prettier"
+        "prettier"
     ],
     "parserOptions": {
         "ecmaVersion": 2020,
-        "sourceType": "module",
-        "parser": "@babel/eslint-parser"
+        "sourceType": "module"
     },
     "plugins": [
         "vue"
