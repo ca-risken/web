@@ -813,7 +813,6 @@ export default {
       this.$refs.refTag.blur()
       this.$nextTick(() => {
         this.refleshList()
-        this.updateSearchHistory()
       })
       this.refleshList()
     },
