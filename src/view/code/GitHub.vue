@@ -228,9 +228,9 @@
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import code from '@/mixin/api/code'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ProjectTag from '@/component/widget/tag/ProjectTag'
-import ScanStatus from '@/component/widget/datasource/Status'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import ScanStatus from '@/component/widget/datasource/Status.vue'
 import NewSettingDialog from './NewSettingDialog.vue'
 export default {
   name: 'GitHubSetting',

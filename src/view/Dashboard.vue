@@ -155,9 +155,9 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
-import StatusStatistic from '@/component/widget/statistic/StatusStatistic'
-import MiniStatistic from '@/component/widget/statistic/MiniStatistic'
-import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic'
+import StatusStatistic from '@/component/widget/statistic/StatusStatistic.vue'
+import MiniStatistic from '@/component/widget/statistic/MiniStatistic.vue'
+import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic.vue'
 export default {
   name: 'PageDashboard',
   mixins: [mixin, finding, alert, iam],

@@ -235,7 +235,7 @@
 </template>
 <script>
 import { staticRoutes } from '@/router/config'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import Util from '@/util'
 import store from '@/store'
 import mixin from '@/mixin'

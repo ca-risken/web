@@ -143,8 +143,8 @@
 import mixin from '@/mixin'
 import store from '@/store'
 import project from '@/mixin/api/project'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ProjectTag from '@/component/widget/tag/ProjectTag'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
 export default {
   name: 'ProjectSetting',
   mixins: [mixin, project],

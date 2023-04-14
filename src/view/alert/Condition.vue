@@ -473,7 +473,7 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'AlertCondition',
   mixins: [mixin, alert],

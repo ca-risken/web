@@ -564,7 +564,7 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import checkpoint from '@/mixin/checkpoint'
 import D3Network from 'vue-d3-network'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
 export default {

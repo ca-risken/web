@@ -412,8 +412,8 @@
 import mixin from '@/mixin'
 import diagnosis from '@/mixin/api/diagnosis'
 import project from '@/mixin/api/project'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ProjectTag from '@/component/widget/tag/ProjectTag'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
 export default {
   name: 'DiagnosisApplicationScan',
   mixins: [mixin, diagnosis, project],

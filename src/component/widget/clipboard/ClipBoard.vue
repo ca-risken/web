@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'ClipBoard',
   components: {

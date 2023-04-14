@@ -315,7 +315,7 @@
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import finding from '@/mixin/api/finding'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'AlertList',
   mixins: [mixin, alert, finding],

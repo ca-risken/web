@@ -278,8 +278,8 @@
 import mixin from '@/mixin'
 import aws from '@/mixin/api/aws'
 import project from '@/mixin/api/project'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ProjectTag from '@/component/widget/tag/ProjectTag'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
 export default {
   name: 'AWSAccount',
   mixins: [mixin, aws, project],
