@@ -9,11 +9,14 @@ import i18n from '@/i18n'
 import { datadogRum } from '@datadog/browser-rum'
 
 // RUM
-if (process.env.VUE_APP_RUM_ID !== '' && process.env.VUE_APP_RUM_TOKEN !== '') {
+if (
+  import.meta.env.VITE_APP_RUM_ID !== '' &&
+  import.meta.env.VITE_APP_RUM_TOKEN !== ''
+) {
   datadogRum.init({
     // parameters: https://docs.datadoghq.com/real_user_monitoring/browser/#configuration
-    applicationId: process.env.VUE_APP_RUM_ID,
-    clientToken: process.env.VUE_APP_RUM_TOKEN,
+    applicationId: import.meta.env.VITE_APP_RUM_ID,
+    clientToken: import.meta.env.VITE_APP_RUM_TOKEN,
     site: 'datadoghq.com',
     service: 'risken',
     sampleRate: 100,

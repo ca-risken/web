@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "serve-prd": "vue-cli-service serve --mode prd",
-    "build": "vue-cli-service build",
-    "build-prd": "vue-cli-service build --mode prd",
-    "lint": "vue-cli-service lint"
+    "serve": "vite",
+    "serve-prd": "vite --mode prd",
+    "build": "vite build",
+    "build-prd": "vite build --mode prd",
+    "lint": "eslint src src/**/*.js src/**/*.vue"
   },
   "dependencies": {
     "@datadog/browser-rum": "^4.20.0",
@@ -28,31 +28,21 @@
     "vuex-persist": "^2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@babel/preset-env": "^7.11.5",
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "babel-loader": "^8.1.0",
+    "@vitejs/plugin-vue2": "^2.2.0",
     "deepmerge": "^4.2.2",
-    "eslint": "^8.37.0",
+    "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.10.0",
     "prettier": "^2.4.1",
     "sass": "~1.32.12",
     "sass-loader": "^10.0.2",
-    "vue-cli-plugin-vuetify": "~2.5.8",
+    "unplugin-vue-components": "^0.24.1",
+    "vite": "^4.2.1",
+    "vite-plugin-eslint": "^1.8.1",
     "vue-loader": "^15.10.1",
     "vuetify-loader": "^1.3.0"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ],
   "resolutions": {
     "node-ipc": "9.2.1",
     "glob-parent": "^5.1.2",

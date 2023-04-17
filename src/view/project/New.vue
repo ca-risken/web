@@ -52,7 +52,7 @@ import store from '@/store'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import alert from '@/mixin/api/alert'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'NewProject',
   mixins: [mixin, project, alert],

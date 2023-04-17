@@ -307,8 +307,8 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import User from '@/component/widget/list/User'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import User from '@/component/widget/list/User.vue'
 export default {
   name: 'UserList',
   mixins: [mixin, iam],

@@ -316,10 +316,10 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
-import DoughnutChart from '@/component/widget/chart/DoughnutChart'
-import BarChart from '@/component/widget/chart/BarChart'
+import DoughnutChart from '@/component/widget/chart/DoughnutChart.vue'
+import BarChart from '@/component/widget/chart/BarChart.vue'
 import colors from 'vuetify/lib/util/colors'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'ReportFinding',
   mixins: [mixin, finding, alert, iam],

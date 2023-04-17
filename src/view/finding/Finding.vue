@@ -1066,10 +1066,10 @@ import mixin from '@/mixin'
 import Util from '@/util'
 import store from '@/store'
 import finding from '@/mixin/api/finding'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ClipBoard from '@/component/widget/clipboard/ClipBoard'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
-import AutoLink from '@/component/text/AutoLink'
+import AutoLink from '@/component/text/AutoLink.vue'
 export default {
   name: 'FindingList',
   mixins: [mixin, finding],

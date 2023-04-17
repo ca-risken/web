@@ -6,9 +6,9 @@ env:
   parameter-store:
     DOCKER_USER: "/build/DOCKER_USER"
     DOCKER_TOKEN: "/build/DOCKER_TOKEN"
-    VUE_APP_RUM_ID: "/build/datadog/VUE_APP_RUM_ID"
-    VUE_APP_RUM_TOKEN: "/build/datadog/VUE_APP_RUM_TOKEN"
-    VUE_APP_STATIC_LINK: "/build/web/VUE_APP_STATIC_LINK"
+    VITE_RUM_ID: "/build/datadog/VITE_RUM_ID"
+    VITE_RUM_TOKEN: "/build/datadog/VITE_RUM_TOKEN"
+    VITE_STATIC_LINK: "/build/web/VITE_STATIC_LINK"
 
 phases:
   pre_build:
@@ -32,9 +32,9 @@ phases:
   build:
     commands:
       - echo Build web started on `date`
-      - echo "VUE_APP_RUM_ID=${VUE_APP_RUM_ID}" > .env.prd
-      - echo "VUE_APP_RUM_TOKEN=${VUE_APP_RUM_TOKEN}" >> .env.prd
-      - echo "VUE_APP_STATIC_LINK=${VUE_APP_STATIC_LINK}" >> .env.prd
+      - echo "VITE_RUM_ID=${VITE_RUM_ID}" > .env.prd
+      - echo "VITE_RUM_TOKEN=${VITE_RUM_TOKEN}" >> .env.prd
+      - echo "VITE_STATIC_LINK='${VITE_STATIC_LINK}'" >> .env.prd
 
       - echo Building the Docker images...
       - make build-ci -j BUILD_OPT="${BUILD_OPT}" IMAGE_PREFIX=${IMAGE_PREFIX} IMAGE_TAG=${TAG} IMAGE_REGISTRY=${REGISTRY}

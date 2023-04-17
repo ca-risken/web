@@ -281,7 +281,7 @@
 <script>
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'FindingSetting',
   mixins: [mixin, finding],

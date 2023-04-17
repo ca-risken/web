@@ -459,11 +459,11 @@ export const staticRoutes = getStaticRoutes()
 
 function getStaticRoutes() {
   const routes = [{ title: 'Document', url: 'https://docs.security-hub.jp/' }]
-  if (process.env.VUE_APP_STATIC_LINK == '') {
+  if (import.meta.env.VITE_STATIC_LINK == '') {
     return routes
   }
   try {
-    const jsonRoutes = JSON.parse(process.env.VUE_APP_STATIC_LINK)
+    const jsonRoutes = JSON.parse(import.meta.env.VITE_STATIC_LINK)
     return jsonRoutes
   } catch (e) {
     return routes

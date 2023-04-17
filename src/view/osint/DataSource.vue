@@ -478,7 +478,7 @@
 <script>
 import mixin from '@/mixin'
 import osint from '@/mixin/api/osint'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'OSINTDataSource',
   mixins: [mixin, osint],

@@ -533,7 +533,7 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 export default {
   name: 'GCPDataSource',

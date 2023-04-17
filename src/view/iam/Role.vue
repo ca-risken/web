@@ -311,7 +311,7 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'RoleList',
   mixins: [mixin, iam],

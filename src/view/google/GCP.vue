@@ -378,8 +378,8 @@ import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import google from '@/mixin/api/google'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ProjectTag from '@/component/widget/tag/ProjectTag'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
 export default {
   name: 'GCPProject',
   mixins: [mixin, project, google],

@@ -62,7 +62,7 @@ fmt:
 .PHONY: lint
 lint:
 	yarn prettier --check src
-	yarn run eslint src
+	yarn lint
 
 .PHONY: run
 run: clean install lint

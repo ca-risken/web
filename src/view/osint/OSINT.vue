@@ -267,8 +267,8 @@
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import osint from '@/mixin/api/osint'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar'
-import ProjectTag from '@/component/widget/tag/ProjectTag'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
 export default {
   name: 'OSINTTarget',
   mixins: [mixin, project, osint],

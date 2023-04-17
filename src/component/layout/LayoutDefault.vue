@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import AppDrawer from '@/component/AppDrawer'
-import AppToolbar from '@/component/AppToolbar'
-import AppFab from '@/component/AppFab'
+import AppDrawer from '@/component/AppDrawer.vue'
+import AppToolbar from '@/component/AppToolbar.vue'
+import AppFab from '@/component/AppFab.vue'
 export default {
   name: 'LayoutDefault',
   components: {
