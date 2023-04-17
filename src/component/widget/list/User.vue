@@ -10,6 +10,7 @@
               clearable
               :label="searchForm.userID.label"
               :placeholder="searchForm.userID.placeholder"
+              :rules="searchForm.userID.validator"
               v-model="searchModel.userID"
             />
           </v-col>
@@ -88,6 +89,7 @@
 </template>
 
 <script>
+import Util from '@/util'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 export default {
@@ -104,7 +106,13 @@ export default {
         userID: null,
       },
       searchForm: {
-        userID: { label: 'User ID', placeholder: 'Filter for user id' },
+        userID: {
+          label: 'User ID',
+          placeholder: 'Filter for user id',
+          validator: [
+            (v) => !v || Util.isNumber(v) || 'UserID must be a number',
+          ],
+        },
         userName: { label: 'User Name', placeholder: 'Filter for user name' },
       },
       userNameList: [],
