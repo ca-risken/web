@@ -10,13 +10,13 @@ import { datadogRum } from '@datadog/browser-rum'
 
 // RUM
 if (
-  import.meta.env.VITE_APP_RUM_ID !== '' &&
-  import.meta.env.VITE_APP_RUM_TOKEN !== ''
+  import.meta.env.VITE_RUM_ID !== '' &&
+  import.meta.env.VITE_RUM_TOKEN !== ''
 ) {
   datadogRum.init({
     // parameters: https://docs.datadoghq.com/real_user_monitoring/browser/#configuration
-    applicationId: import.meta.env.VITE_APP_RUM_ID,
-    clientToken: import.meta.env.VITE_APP_RUM_TOKEN,
+    applicationId: import.meta.env.VITE_RUM_ID,
+    clientToken: import.meta.env.VITE_RUM_TOKEN,
     site: 'datadoghq.com',
     service: 'risken',
     sampleRate: 100,
