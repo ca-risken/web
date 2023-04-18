@@ -279,7 +279,7 @@ export default {
       this.raw.highScoreFindingGoogle = google
     },
     async setStoreFinding() {
-      const storeFindings = await this.getFindingCount(0, '', 1)
+      const storeFindings = await this.getFindingCount(0, 'RISKEN', 1)
       this.status.tutorial.storeFindings = storeFindings > 0
     },
     async getFindingCount(fromScore, dataSource, limit) {
