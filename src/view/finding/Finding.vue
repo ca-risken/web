@@ -15,7 +15,7 @@
       </v-row>
       <v-form ref="searchForm">
         <v-row justify="center" align-content="center">
-          <v-col cols="2" class="px-2">
+          <v-col cols="2" class="px-1">
             <v-text-field
               outlined
               dense
@@ -27,7 +27,19 @@
               v-model="searchModel.findingID"
             />
           </v-col>
-          <v-col cols="3" class="px-2">
+          <v-col cols="2" class="px-1">
+            <v-text-field
+              outlined
+              dense
+              clearable
+              hide-details
+              background-color="white"
+              :placeholder="searchForm.alertID.placeholder"
+              :loading="loading"
+              v-model="searchModel.alertID"
+            />
+          </v-col>
+          <v-col cols="3" class="px-1">
             <v-combobox
               multiple
               outlined
@@ -43,24 +55,6 @@
               :loading="loading"
               v-model="searchModel.dataSource"
               ref="refDataSource"
-            />
-          </v-col>
-          <v-col cols="2" class="px-2">
-            <v-combobox
-              multiple
-              outlined
-              dense
-              clearable
-              small-chips
-              deletable-chips
-              hide-details
-              background-color="white"
-              :label="$t(`item['` + searchForm.tag.label + `']`)"
-              :placeholder="searchForm.tag.placeholder"
-              :items="searchForm.tagList"
-              :loading="loading"
-              v-model="searchModel.tag"
-              ref="refTag"
             />
           </v-col>
           <v-col cols="3" align-self="end" class="text-right">
@@ -150,19 +144,26 @@
         </v-row>
         <transition name="fade">
           <v-row v-show="searchMenuDetail">
-            <v-col cols="2" class="px-2">
-              <v-text-field
+            <v-col cols="3" class="px-1">
+              <v-combobox
+                multiple
                 outlined
                 dense
                 clearable
+                small-chips
+                deletable-chips
                 hide-details
                 background-color="white"
-                :placeholder="searchForm.alertID.placeholder"
+                :label="$t(`item['` + searchForm.tag.label + `']`)"
+                :placeholder="searchForm.tag.placeholder"
+                :items="searchForm.tagList"
                 :loading="loading"
-                v-model="searchModel.alertID"
+                v-model="searchModel.tag"
+                ref="refTag"
               />
             </v-col>
-            <v-col cols="4" class="px-2">
+
+            <v-col cols="4" class="px-1">
               <v-combobox
                 multiple
                 outlined
