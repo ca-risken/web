@@ -124,8 +124,6 @@ const ja = {
     Format: 'フォーマット',
     FromDate: '日付（From）',
     'GCP ID': 'GCP ID',
-    'GCP Organization': 'GCP組織',
-    'GCP OrganizationID': 'GCP組織ID',
     'GCP Project': 'GCPプロジェクト',
     'GCP ProjectID': 'GCPプロジェクトID',
     GitHubUser: 'GitHubユーザ',

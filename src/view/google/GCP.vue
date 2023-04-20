@@ -177,31 +177,6 @@
               <v-col cols="1">
                 <clip-board
                   class="pt-4 pl-6"
-                  :name="
-                    $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
-                  "
-                  :text="String(gcpModel.gcp_organization_id)"
-                  size="x-large"
-                />
-              </v-col>
-              <v-col cols="11">
-                <v-text-field
-                  v-model="gcpModel.gcp_organization_id"
-                  :counter="128"
-                  :rules="gcpForm.gcp_organization_id.validator"
-                  :label="
-                    $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
-                  "
-                  :placeholder="gcpForm.gcp_organization_id.placeholder"
-                  outlined
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row class="mt-1">
-              <v-col cols="1">
-                <clip-board
-                  class="pt-4 pl-6"
                   :name="$t(`item['` + gcpForm.gcp_project_id.label + `']`)"
                   :text="String(gcpModel.gcp_project_id)"
                   size="x-large"
@@ -404,16 +379,6 @@ export default {
               !v || v.length <= 200 || 'Name must be less than 200 characters',
           ],
         },
-        gcp_organization_id: {
-          label: 'GCP OrganizationID',
-          placeholder: 'your-org',
-          validator: [
-            (v) =>
-              !v ||
-              v.length <= 128 ||
-              'GCP Organization ID must be less than 128 characters',
-          ],
-        },
         gcp_project_id: {
           label: 'GCP ProjectID',
           placeholder: 'your-project',
@@ -441,7 +406,6 @@ export default {
       gcpModel: {
         gcp_id: '',
         name: '',
-        gcp_organization_id: '',
         gcp_project_id: '',
         verification_code: '',
         updated_at: '',
@@ -490,12 +454,6 @@ export default {
           align: 'start',
           sortable: true,
           value: 'name',
-        },
-        {
-          text: this.$i18n.t('item["GCP OrganizationID"]'),
-          align: 'start',
-          sortable: true,
-          value: 'gcp_organization_id',
         },
         {
           text: this.$i18n.t('item["GCP ProjectID"]'),
@@ -552,7 +510,6 @@ export default {
         gcp: {
           project_id: this.getCurrentProjectID(),
           name: this.gcpModel.name,
-          gcp_organization_id: this.gcpModel.gcp_organization_id,
           gcp_project_id: this.gcpModel.gcp_project_id,
           verification_code: this.gcpModel.verification_code,
         },
@@ -592,7 +549,6 @@ export default {
       ;(this.gcpModel = {
         gcp_id: '',
         name: '',
-        gcp_organization_id: '',
         gcp_project_id: '',
         verification_code: '',
         updated_at: '',
