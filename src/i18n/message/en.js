@@ -124,8 +124,6 @@ const en = {
     Format: 'Formmat',
     FromDate: 'FromDate',
     'GCP ID': 'GCP ID',
-    'GCP Organization': 'GCP Organization',
-    'GCP OrganizationID': 'GCP OrganizationID',
     'GCP Project': 'GCP Project',
     'GCP ProjectID': 'GCP ProjectID',
     'GitHub Setting': 'GitHub Setting',

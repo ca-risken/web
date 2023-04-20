@@ -258,26 +258,6 @@
                 </v-list-item-content>
               </v-list-item>
             </v-col>
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{
-                      $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
-                    }}
-                    <clip-board
-                      :name="
-                        $t(`item['` + gcpForm.gcp_organization_id.label + `']`)
-                      "
-                      :text="String(gcpDataSourceModel.gcp_organization_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ gcpDataSourceModel.gcp_organization_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
             <v-col cols="4">
               <v-list-item two-line>
                 <v-list-item-content>
@@ -564,11 +544,6 @@ export default {
           placeholder: '-',
           validator: [],
         },
-        gcp_organization_id: {
-          label: 'GCP OrganizationID',
-          placeholder: '-',
-          validator: [],
-        },
         status: { label: 'Status', placeholder: '-', validator: [] },
         status_detail: {
           label: 'Status Detail',
@@ -794,7 +769,6 @@ export default {
           description: ds.description,
           max_score: ds.max_score,
           gcp_id: this.gcpModel.gcp_id,
-          gcp_organization_id: '',
           gcp_project_id: '',
           status: 0,
           status_detail: '',
@@ -806,8 +780,6 @@ export default {
           res.data.data.gcp_data_source.google_data_source_id
         ) {
           item.gcp_id = res.data.data.gcp_data_source.gcp_id
-          item.gcp_organization_id =
-            res.data.data.gcp_data_source.gcp_organization_id
           item.gcp_project_id = res.data.data.gcp_data_source.gcp_project_id
           item.status = res.data.data.gcp_data_source.status
           item.status_detail = res.data.data.gcp_data_source.status_detail
