@@ -520,8 +520,16 @@ export default {
         },
         noti_cache: {
           label: 'Notification throttle',
-          placeholder: '1 hour',
-          list: ['None', '1 hour', '1 day', '1 week', '1 month'],
+          placeholder: '30 days',
+          list: [
+            'None',
+            '1 hour',
+            '1 day',
+            '1 week',
+            '30 days',
+            '90 days',
+            '1 year',
+          ],
           validator: [
             (v) => !!v || 'Notification throttle is required',
             (v) =>
@@ -530,7 +538,9 @@ export default {
               v === '1 hour' ||
               v === '1 day' ||
               v === '1 week' ||
-              v === '1 month' ||
+              v === '30 days' ||
+              v === '90 days' ||
+              v === '1 year' ||
               'Notification throttle is invalid',
           ],
         },
@@ -542,7 +552,7 @@ export default {
         description: '',
         severity: '',
         and_or: 'and',
-        noti_cache: '1 hour',
+        noti_cache: '30 days',
         next_noti_time: -1,
         enabled: false,
         rules: [],
@@ -859,7 +869,7 @@ export default {
         noti_cache = this.getNotiCacheText(notis[0].cache_second)
       }
       if (noti_cache == '') {
-        noti_cache = '1 hour'
+        noti_cache = '30 days'
       }
       let next_noti_time = -1
       if (
@@ -948,7 +958,7 @@ export default {
         description: '',
         severity: 'medium',
         and_or: 'and',
-        noti_cache: '1 hour',
+        noti_cache: '30 days',
         enabled: true,
         rules: [],
         notifications: [],
@@ -1013,8 +1023,12 @@ export default {
           return '1 day'
         case 60 * 60 * 24 * 7:
           return '1 week'
-        case 60 * 60 * 24 * 7 * 30:
-          return '1 month'
+        case 60 * 60 * 24 * 30:
+          return '30 days'
+        case 60 * 60 * 24 * 90:
+          return '90 days'
+        case 60 * 60 * 24 * 364:
+          return '1 year'
         default:
           return ''
       }
@@ -1029,8 +1043,12 @@ export default {
           return 60 * 60 * 24
         case '1 week':
           return 60 * 60 * 24 * 7
-        case '1 month':
-          return 60 * 60 * 24 * 7 * 30
+        case '30 days':
+          return 60 * 60 * 24 * 30
+        case '90 days':
+          return 60 * 60 * 24 * 90
+        case '1 year':
+          return 60 * 60 * 24 * 365
         default:
           return 60 * 60
       }
