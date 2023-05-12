@@ -7,28 +7,28 @@
     "serve-prd": "vite --mode prd",
     "build": "vite build",
     "build-prd": "vite build --mode prd",
-    "lint": "eslint src src/**/*.js src/**/*.vue"
+    "lint": "eslint 'src/**/*.js' 'src/**/*.vue'"
   },
   "dependencies": {
     "@datadog/browser-rum": "^4.20.0",
+    "@vue/compat": "^3.2.47",
+    "@vuepic/vue-datepicker": "^5.0.1",
     "axios": "^0.27.2",
-    "chart.js": "^2.9.3",
-    "chartjs-plugin-colorschemes": "^0.4.0",
+    "chart.js": "^4.3.0",
     "core-js": "^3.6.5",
     "nprogress": "^0.2.0",
     "private-ip": "^2.2.1",
-    "vue": "2.7.14",
-    "vue-chartjs": "^3.5.1",
-    "vue-d3-network": "^0.1.28",
-    "vue-i18n": "^8.24.1",
-    "vue-json-viewer": "^2.2.19",
-    "vue-router": "^3.4.3",
-    "vuetify": "^2.6.12",
-    "vuex": "^3.5.1",
-    "vuex-persist": "^2.2.0"
+    "vue": "3.2.47",
+    "vue-chartjs": "^5.2.0",
+    "vue-i18n": "9.2.2",
+    "vue-json-viewer": "3.0.4",
+    "vue-router": "4.1.6",
+    "vuetify": "3.2.3",
+    "vuex": "4.1.0",
+    "vuex-persist": "3.1.3"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue2": "^2.2.0",
+    "@vitejs/plugin-vue": "^4.1.0",
     "deepmerge": "^4.2.2",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
@@ -36,12 +36,11 @@
     "eslint-plugin-vue": "^9.10.0",
     "prettier": "^2.4.1",
     "sass": "~1.32.12",
-    "sass-loader": "^10.0.2",
     "unplugin-vue-components": "^0.24.1",
     "vite": "^4.2.1",
     "vite-plugin-eslint": "^1.8.1",
-    "vue-loader": "^15.10.1",
-    "vuetify-loader": "^1.3.0"
+    "vite-plugin-vuetify": "^1.0.2",
+    "vue-loader": "16.0.0"
   },
   "resolutions": {
     "node-ipc": "9.2.1",
