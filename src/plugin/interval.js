@@ -1,8 +1,8 @@
 import store from '@/store'
 
 export default {
-  install(vue) {
-    vue.prototype.$setInterval = (func, intervalMilliSec) => {
+  install(app) {
+    app.config.globalProperties.$setInterval = (func, intervalMilliSec) => {
       if (typeof import.meta.env.VITE_DISABLE_SET_INTERVAL !== 'undefined') {
         console.log(`[DISABLE_SET_INTERVAL] Check environment vars`)
         return null

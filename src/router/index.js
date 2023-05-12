@@ -1,24 +1,19 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { commonRoute, appRoute } from './config'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from '@/store'
 import axios from '@/axios'
-import interval from '@/plugin/interval'
 const routes = commonRoute.concat(appRoute)
 
-Vue.use(Router)
-Vue.use(interval)
-const router = new Router({
-  mode: 'hash',
-  linkActiveClass: 'active',
+const router = createRouter({
+  history: createWebHashHistory(),
   routes: routes,
 })
 
 const handleAPIError = (error) => {
   console.log(
-    'Error: statu=' + error.response.status + ', reponse=' + error.response
+    'Error: status=' + error.response.status + ', reponse=' + error.response
   )
   router.push({ path: '/' })
 }
@@ -50,12 +45,13 @@ router.beforeEach(async (to, from, next) => {
     })
     if (res.data.data.project) {
       await store.commit('updateProject', res.data.data.project[0])
-      let query = await Object.assign({}, to.query)
+      let query = Object.assign({}, to.query)
       // delete query["project_id"]
       query.project_id = store.state.project.project_id
       router.push({ query: query }) // Edit query parameter
       router.go({ path: to.currentRoute })
-      next(false)
+      next()
+      return
     }
   }
   next()
