@@ -158,32 +158,6 @@ let mixin = {
       },
     }
   },
-  filters: {
-    pretty: (v) => {
-      if (!v) {
-        return false
-      }
-      return JSON.stringify(JSON.parse(v), null, 2)
-    },
-    formatTime: (unix) => {
-      if (unix === '0') {
-        return '-'
-      }
-      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
-    },
-    elapsedTimeText: (unix) => {
-      return Util.elapsedTimeText(new Date(unix * 1000))
-    },
-    cutString: (str) => {
-      return Util.cutLongString(str, 10)
-    },
-    formatSmartMaskString: (masked) => {
-      if (!masked) {
-        return ''
-      }
-      return masked.replace(maskedPattern, '*****')
-    },
-  },
   methods: {
     async signinUser() {
       await store.commit('storeUser', {})
@@ -205,26 +179,29 @@ let mixin = {
       return userID
     },
     reload: function () {
-      this.$router.go({ path: this.$router.currentRoute.path, force: true })
+      this.$router.go({
+        path: this.$router.currentRoute.value.path,
+        force: true,
+      })
     },
     getColorByCount(cnt) {
       if (cnt == 0) {
-        return 'grey lighten-1'
+        return 'grey-lighten-1'
       } else if (cnt <= 10) {
-        return 'teal lighten-2'
+        return 'teal-lighten-2'
       } else if (cnt <= 30) {
-        return 'yellow darken-3'
+        return 'yellow-darken-4'
       } else {
-        return 'red darken-2'
+        return 'red-darken-2'
       }
     },
     getColorByScore: (score) => {
       if (score < 0.6) {
-        return 'teal lighten-2'
+        return 'teal-lighten-2'
       } else if (score < 0.8) {
-        return 'yellow darken-3'
+        return 'yellow-darken-4'
       } else {
-        return 'red darken-2'
+        return 'red-darken-2'
       }
     },
     getColorRGBByScore: (score) => {
@@ -251,22 +228,22 @@ let mixin = {
       if (typeof severity !== 'string' || severity === '') return ''
       switch (severity.toLowerCase()) {
         case 'high':
-          return 'red darken-2'
+          return 'red-darken-2'
         case 'medium':
-          return 'yellow darken-3'
+          return 'yellow-darken-4'
         default:
-          return 'teal lighten-2'
+          return 'teal-lighten-2'
       }
     },
     getHistoryTypeColor: (type) => {
       if (typeof type !== 'string' || type === '') return ''
       switch (type.toLowerCase()) {
         case 'created':
-          return 'teal lighten-2'
+          return 'teal-lighten-2'
         case 'updated':
-          return 'yellow darken-3'
+          return 'yellow-darken-4'
         case 'deleted':
-          return 'grey lighten-1'
+          return 'grey-lighten-1'
         default:
           return 'grey'
       }
@@ -281,7 +258,7 @@ let mixin = {
         case 'diagnosis':
           return 'mdi-bug-check-outline'
         case 'osint':
-          return 'http'
+          return 'md:http'
         case 'code':
           return 'mdi-github'
         case 'google':
@@ -483,7 +460,6 @@ let mixin = {
       if (event && event.key) {
         input += event.key
       }
-      // console.log(input)
       const list = await this.listResourceID(
         '&resource_name=' +
           input +
@@ -494,10 +470,13 @@ let mixin = {
         return
       }
       let rnList = []
-      list.resource_id.forEach(async (id) => {
-        const resource = await this.getResource(id)
-        rnList.push(resource.resource_name)
-      })
+      await Promise.all(
+        list.resource_id.map(async (id) => {
+          const resource = await this.getResource(id)
+          rnList.push(resource.resource_name)
+        })
+      )
+
       this.resourceNameCombobox = rnList
     },
     handleProjectTagUpdated(message) {
@@ -573,6 +552,30 @@ let mixin = {
         return this.$store.state.project.project_id
       }
       return ''
+    },
+    pretty: (v) => {
+      if (!v) {
+        return false
+      }
+      return JSON.stringify(JSON.parse(v), null, 2)
+    },
+    formatTime: (unix) => {
+      if (unix === '0') {
+        return '-'
+      }
+      return Util.formatDate(new Date(unix * 1000), 'yyyy/MM/dd HH:mm')
+    },
+    elapsedTimeText: (unix) => {
+      return Util.elapsedTimeText(new Date(unix * 1000))
+    },
+    cutString: (str) => {
+      return Util.cutLongString(str, 10)
+    },
+    formatSmartMaskString: (masked) => {
+      if (!masked) {
+        return ''
+      }
+      return masked.replace(maskedPattern, '*****')
     },
   },
 }

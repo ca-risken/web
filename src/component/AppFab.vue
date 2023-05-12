@@ -1,20 +1,22 @@
 <template>
-  <v-fab-transition>
-    <v-btn
-      fab="fab"
-      medium
-      class="mb-1"
-      dark="dark"
-      fixed="fixed"
-      bottom="bottom"
-      right="right"
-      color="pink lighten-2"
-      v-show="fab"
-      @click="toTop"
-    >
-      <v-icon>keyboard_arrow_up</v-icon>
-    </v-btn>
-  </v-fab-transition>
+  <v-layout-item
+    v-scroll="onScroll"
+    class="text-end"
+    model-value
+    position="bottom"
+    size="60"
+  >
+    <v-fab-transition>
+      <v-btn
+        class="mt-auto"
+        size="large"
+        color="pink-lighten-2"
+        v-show="fab"
+        @click="toTop"
+        icon="mdi-chevron-up"
+      />
+    </v-fab-transition>
+  </v-layout-item>
 </template>
 
 <script>
@@ -34,8 +36,20 @@ export default {
       this.fab = window.scrollY > 40
     },
     toTop() {
-      this.$vuetify.goTo(0)
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
     },
   },
 }
 </script>
+
+<style scoped>
+.pointer-events-none {
+  pointer-events: none;
+}
+.pointer-events-initial {
+  pointer-events: initial;
+}
+</style>

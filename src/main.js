@@ -1,9 +1,9 @@
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router/'
 import store from '@/store/'
 import axios from '@/axios'
- import vuetify from '@/plugin/vuetify'
+import vuetify from '@/plugin/vuetify'
 import interval from '@/plugin/interval'
 import i18n from '@/i18n'
 import { datadogRum } from '@datadog/browser-rum'
@@ -30,11 +30,6 @@ if (
 }
 const app = createApp(App)
 app.config.globalProperties.$axios = axios
-app
-  .use(router)
-  .use(store)
-  .use(vuetify)
-  .use(interval)
-  .use(i18n)
+app.use(router).use(store).use(vuetify).use(interval).use(i18n)
 
 app.mount('#app')

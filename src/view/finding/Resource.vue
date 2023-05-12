@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2"
+              <v-icon large class="pr-2" color="blue-lighten-2"
                 >mdi-file-find-outline</v-icon
               >
               {{ $t(`submenu['Resource']`) }}
@@ -17,23 +17,23 @@
         <v-row dense>
           <v-col cols="12" sm="2" md="2">
             <v-combobox
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               hide-details
-              background-color="white"
+              bg-color="white"
               v-model="searchModel.namespace"
               :loading="loading"
               :label="$t(`item['` + searchForm.namespace.label + `']`)"
               :items="searchForm.namespace.items"
-              @change="handleChangeNamespace"
+              @update:modelValue="handleChangeNamespace"
             />
           </v-col>
           <v-col cols="12" sm="2" md="2">
             <v-combobox
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               hide-details
-              background-color="white"
+              bg-color="white"
               v-model="searchModel.resourceType"
               :loading="loading"
               :label="$t(`item['` + searchForm.resourceType.label + `']`)"
@@ -43,13 +43,11 @@
           <v-col cols="12" sm="4" md="4">
             <v-combobox
               multiple
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              small-chips
-              deletable-chips
               hide-details
-              background-color="white"
+              bg-color="white"
               v-model="searchModel.resourceName"
               :loading="loading"
               :label="$t(`item['` + searchForm.resourceName.label + `']`)"
@@ -63,31 +61,28 @@
           <v-col cols="12" sm="3" md="3">
             <v-combobox
               multiple
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              small-chips
-              deletable-chips
               hide-details
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['` + searchForm.tag.label + `']`)"
               :placeholder="searchForm.tag.placeholder"
               :items="searchForm.tagList"
               :loading="loading"
               v-model="searchModel.tag"
+              persistent-hint
               ref="refTag"
             />
           </v-col>
           <v-spacer />
           <v-btn
             class="mt-0 mr-4"
-            fab
-            dense
-            small
+            size="small"
             :loading="loading"
             @click="handleSearch"
+            icon="mdi-magnify"
           >
-            <v-icon>search</v-icon>
           </v-btn>
         </v-row>
       </v-form>
@@ -96,11 +91,12 @@
           <v-card>
             <v-divider></v-divider>
             <v-card-text class="pa-0">
-              <v-data-table
+              <v-data-table-server
+                v-model:page="table.options.page"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
-                :server-items-length="table.total"
+                v-model:options="table.options"
+                :items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
@@ -108,7 +104,6 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="resource_id"
-                @click:row="handleViewItem"
                 @update:page="loadList"
                 v-model="table.selected"
               >
@@ -139,12 +134,12 @@
                   }}</a></template
                 >
                 <template v-slot:[`item.resource_name`]="{ item }">
-                  {{ cutLongText(item.resource_name, 80) }}
+                  {{ cutLongText(item.value.resource_name, 80) }}
                 </template>
                 <template v-slot:[`item.namespace`]="{ item }">
                   <v-layout justify-center>
                     <v-avatar
-                      v-if="item.data_source == 'RISKEN'"
+                      v-if="item.value.data_source == 'RISKEN'"
                       tile
                       class="ma-0"
                       size="30px"
@@ -153,22 +148,22 @@
                     </v-avatar>
                     <v-icon
                       v-else
-                      :color="getDataSourceIconColor(item.namespace)"
+                      :color="getDataSourceIconColor(item.value.namespace)"
                     >
-                      {{ getDataSourceIcon(item.namespace) }}
+                      {{ getDataSourceIcon(item.value.namespace) }}
                     </v-icon>
                   </v-layout>
                 </template>
                 <template v-slot:[`item.check_point`]="{ item }">
                   <v-card
-                    v-if="item.check_point !== null"
+                    v-if="item.value.check_point !== null"
                     dark
-                    color="grey darken-1"
+                    color="grey-darken-1"
                     class="ma-1"
                   >
                     <v-card-text class="pa-0">
                       <json-viewer
-                        :value="item.check_point"
+                        :value="item.value.check_point"
                         :expand-depth="0"
                         preview-mode
                         theme="finding-json-theme"
@@ -178,325 +173,38 @@
                 </template>
                 <template v-slot:[`item.tags`]="{ item }">
                   <v-chip
-                    color="indigo lighten-2"
+                    color="indigo-lighten-2"
                     class="ma-1"
-                    small
-                    dark
-                    v-for="t in shortenTags(item.tags, 5)"
+                    size="small"
+                    variant="flat"
+                    v-for="t in shortenTags(item.value.tags, 5)"
                     :key="t.tag"
                     >{{ t.tag }}</v-chip
                   >
                 </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
-                </template>
                 <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                  <v-menu location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
+                        :title="$t(`action['` + action.text + `']`)"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
                 </template>
-              </v-data-table>
+              </v-data-table-server>
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
-
-    <v-dialog v-model="resourceMapDialog" max-width="80%">
-      <v-card>
-        <v-card-title class="headline">
-          <v-icon large color="teal darken-2">mdi-file-tree-outline</v-icon>
-          <span class="mx-4">{{ $t(`view.finding["ResourceMap"]`) }}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row danse justify="center" align-content="center">
-              <v-col cols="3">
-                <v-list-item two-line>
-                  <v-list-item-content>
-                    <v-list-item-subtitle>
-                      <v-icon
-                        left
-                        :color="getDataSourceIconColor(resourceModel.namespace)"
-                      >
-                        {{ getDataSourceIcon(resourceModel.namespace) }}
-                      </v-icon>
-                      Namespace
-                      <clip-board
-                        name="Namespace"
-                        :text="resourceModel.namespace"
-                      />
-                    </v-list-item-subtitle>
-                    <v-list-item-title class="headline">
-                      {{ resourceModel.namespace }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-col>
-              <v-col cols="9">
-                <v-list-item two-line>
-                  <v-list-item-content>
-                    <v-list-item-subtitle>
-                      <v-icon left>mdi-file-find-outline</v-icon>
-                      Resource Name
-                      <clip-board
-                        name="Resource Name"
-                        :text="resourceModel.resource_name"
-                      />
-                    </v-list-item-subtitle>
-                    <v-list-item-title class="headline">
-                      {{ resourceModel.resource_name }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-col>
-            </v-row>
-            <v-row danse justify="center" align-content="center">
-              <v-col cols="12">
-                <v-card :loading="loading" height="60vh">
-                  <d3-network
-                    :net-nodes="resourceMap.nodes"
-                    :net-links="resourceMap.links"
-                    :options="resourceMapOptions"
-                    @node-click="clickNode"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-            <!-- TAG -->
-            <v-row danse justify="center" align-content="center">
-              <v-col cols="12">
-                <v-card-text>
-                  <v-chip
-                    v-for="t in resourceModel.tags"
-                    :key="t.tag"
-                    color="indigo lighten-2"
-                    class="ma-2"
-                    dark
-                  >
-                    {{ t.tag }}
-                  </v-chip>
-                </v-card-text>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-card-text>
-            <v-row>
-              <v-col cols="8">
-                <v-slider
-                  class="mx-6"
-                  v-model="resourceMap.options.force"
-                  label="MapSize"
-                  min="1"
-                  max="99999"
-                  step="10"
-                  append-icon="mdi-magnify-plus-outline"
-                  prepend-icon="mdi-magnify-minus-outline"
-                  thumb-color="teal"
-                  thumb-label="always"
-                  thumb-size="42"
-                ></v-slider>
-              </v-col>
-              <v-col cols="3">
-                <v-slider
-                  class="mx-2"
-                  v-model="resourceMap.options.nodeSize"
-                  label="NodeSize"
-                  min="1"
-                  max="99"
-                  step="1"
-                  append-icon="mdi-magnify-plus-outline"
-                  prepend-icon="mdi-magnify-minus-outline"
-                  thumb-color="teal"
-                  thumb-label="always"
-                  thumb-size="42"
-                ></v-slider>
-              </v-col>
-              <v-col cols="1">
-                <v-btn
-                  text
-                  outlined
-                  color="grey darken-1"
-                  @click="resourceMapDialog = false"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="findingDialog" max-width="60%">
-      <v-card>
-        <v-toolbar>
-          <v-card-title>Finding Detail</v-card-title>
-        </v-toolbar>
-        <v-container fluid>
-          <v-row dense class="mx-2">
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon color="black" dark left>mdi-identifier</v-icon>
-                    Finding ID
-                    <clip-board
-                      name="Finding ID"
-                      :text="String(findingModel.finding_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.finding_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon :color="getColorByScore(findingModel.score)"
-                      >mdi-scoreboard</v-icon
-                    >
-                    Score
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip dark :color="getColorByScore(findingModel.score)">{{
-                      findingModel.score | formatScore
-                    }}</v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-            <v-col cols="4">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon
-                      left
-                      :color="getDataSourceIconColor(findingModel.data_source)"
-                    >
-                      {{ getDataSourceIcon(findingModel.data_source) }}
-                    </v-icon>
-                    Data Source
-                    <clip-board
-                      name="Data Source"
-                      :text="findingModel.data_source"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.data_source }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense class="mx-2">
-            <v-col cols="10">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon left>mdi-file-find-outline</v-icon>
-                    Resource Name
-                    <clip-board
-                      name="Resource Name"
-                      :text="findingModel.resource_name"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.resource_name }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense class="mx-2">
-            <v-col cols="10">
-              <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon left>mdi-image-text</v-icon>
-                    Description
-                    <clip-board
-                      name="Description"
-                      :text="findingModel.description"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.description }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row class="ma-2">
-            <v-col cols="4">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-clock-outline</v-icon>
-                Created At
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-chip>{{ findingModel.created_at | formatTime }}</v-chip>
-              </v-list-item-title>
-            </v-col>
-            <v-col cols="4">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-clock-outline</v-icon>
-                Updated At
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
-              </v-list-item-title>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            dark
-            outlined
-            color="light-blue darken-4"
-            @click="handleViewFindingFromNode"
-          >
-            {{ $t(`btn['VIEW FINDING']`) }}
-          </v-btn>
-          <v-btn
-            text
-            outlined
-            color="grey darken-1"
-            @click="findingDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
@@ -506,47 +214,37 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ resourceModel.resource_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Resource ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ resourceModel.resource_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Resource ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-file-find-outline</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ resourceModel.resource_name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Resource Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-file-find-outline">
+            <v-list-item-title>
+              {{ resourceModel.resource_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Resource Name']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -563,18 +261,16 @@
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import checkpoint from '@/mixin/checkpoint'
-import D3Network from 'vue-d3-network'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'ResourceList',
   mixins: [mixin, finding, checkpoint],
   components: {
     BottomSnackBar,
-    D3Network,
-    ClipBoard,
     JsonViewer,
+    VDataTableServer,
   },
   data() {
     return {
@@ -589,6 +285,7 @@ export default {
       searchForm: {
         namespace: {
           label: 'Namespace',
+          placeholder: 'Filter for namespace',
           items: ['aws', 'google', 'diagnosis', 'code', 'osint'],
         },
         resourceName: {
@@ -602,6 +299,7 @@ export default {
         },
         resourceType: {
           label: 'ResourceType',
+          placeholder: 'Filter for resource type',
           items: [''],
         },
         tag: { label: 'Tag', placeholder: 'Filter tag' },
@@ -627,11 +325,6 @@ export default {
             click: this.handleViewFinding,
           },
           {
-            text: 'Resource Map',
-            icon: 'mdi-file-tree-outline',
-            click: this.handleViewItem,
-          },
-          {
             text: 'Delete Item',
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
@@ -646,8 +339,6 @@ export default {
         },
         items: [],
       },
-
-      resourceMapDialog: false,
       resourceMap: {
         nodes: [],
         links: [],
@@ -661,7 +352,6 @@ export default {
           fontSize: 20,
         },
       },
-      findingDialog: false,
       findingModel: {
         finding_id: '',
         status: '',
@@ -708,50 +398,50 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'center',
           width: '2%',
-          value: 'resource_id',
+          key: 'resource_id',
         },
         {
-          text: this.$i18n.t('item["Name space"]'),
+          title: this.$i18n.t('item["Name space"]'),
           align: 'center',
           width: '4%',
-          value: 'namespace',
+          key: 'namespace',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Resource Type"]'),
+          title: this.$i18n.t('item["Resource Type"]'),
           align: 'center',
           width: '4%',
-          value: 'resource_type',
+          key: 'resource_type',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Resource"]'),
+          title: this.$i18n.t('item["Resource"]'),
           align: 'start',
           width: '20%',
-          value: 'resource_name',
+          key: 'resource_name',
         },
         {
-          text: this.$i18n.t('item["CheckPoint"]'),
+          title: this.$i18n.t('item["CheckPoint"]'),
           align: 'start',
           width: '15%',
-          value: 'check_point',
+          key: 'check_point',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Tags"]'),
+          title: this.$i18n.t('item["Tags"]'),
           align: 'start',
           width: '10%',
-          value: 'tags',
+          key: 'tags',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           width: '2%',
-          value: 'action',
+          key: 'action',
           sortable: false,
         },
       ]
@@ -766,47 +456,14 @@ export default {
       }
       return this.searchModel.dates.join(' ~ ')
     },
-    resourceMapOptions() {
-      return {
-        force: this.resourceMap.options.force,
-        size: {
-          w: this.resourceMap.options.size.w,
-          h: this.resourceMap.options.size.h,
-        },
-        nodeSize: this.resourceMap.options.nodeSize,
-        nodeLabels: this.resourceMap.options.nodeLabels,
-        linkLabels: this.resourceMap.options.linkLabels,
-        linkWidth: this.resourceMap.options.linkWidth,
-        fontSize: this.resourceMap.options.fontSize,
-      }
-    },
   },
   methods: {
     // Handler
     handleViewFinding(item) {
       this.$router.push(
-        '/finding/finding?from_score=0&resource_name=' + item.resource_name
+        '/finding/finding?from_score=0&resource_name=' +
+          item.value.resource_name
       )
-    },
-    handleViewFindingFromNode() {
-      this.$router.push(
-        '/finding/finding/' +
-          '?resource_name=' +
-          this.findingModel.resource_name +
-          '&data_source=' +
-          this.findingModel.data_source +
-          '&from_score=' +
-          this.findingModel.from_score +
-          '&to_score=' +
-          this.findingModel.to_score
-      )
-    },
-    handleViewItem(item) {
-      this.resourceMap.nodes = []
-      this.resourceMap.links = []
-      this.resourceModel = item
-      this.loadResouceMap(item)
-      this.resourceMapDialog = true
     },
     handleSearch() {
       this.$refs.refResourceName.blur()
@@ -829,7 +486,7 @@ export default {
     },
     // Delete
     handleDeleteItem(row) {
-      this.resourceModel = Object.assign(this.resourceModel, row)
+      this.resourceModel = Object.assign(this.resourceModel, row.value)
       this.deleteDialog = true
     },
     async handleDeleteSubmit() {
@@ -974,15 +631,6 @@ export default {
       }
       return shorten
     },
-
-    async loadResouceMap(resource) {
-      this.loading = true
-      const findingIDs = await this.listFindingByResouceName(
-        resource.resource_name
-      )
-      await this.setResourceMap(resource, findingIDs, this.resourceMap, 99999)
-      this.loading = false
-    },
     clearList() {
       this.table.items = []
       this.resourceNameList = []
@@ -1012,55 +660,6 @@ export default {
       if (reflesh) {
         this.handleSearch()
       }
-    },
-
-    // ResourceMap
-    async setResourceMap(resource, findingIDs, map, nodeLimits) {
-      const srcID = 'r-' + resource.resource_id
-      map.nodes.push({
-        id: srcID,
-        name: this.getShortName(resource.resource_name),
-        svgSym: 'icons.gitHub',
-      })
-      let count = 0
-      for (let id of findingIDs) {
-        count++
-        if (count > nodeLimits) {
-          const targetID = srcID + '-more...'
-          map.nodes.push({
-            id: targetID,
-            name: 'and more...',
-            _color: '#616161',
-          })
-          map.links.push({
-            sid: srcID,
-            tid: targetID,
-            _svgAttrs: { 'stroke-width': 3, opacity: 2 },
-            _color: '#E0E0E0',
-          })
-          break // limit
-        }
-        const finding = await this.getFinding(id)
-        const targetID = 'f-' + finding.finding_id
-        map.nodes.push({
-          id: targetID,
-          name: finding.score + 'pt (' + finding.data_source + ')',
-          finding: finding,
-          _color: this.getColorRGBByScore(finding.score),
-        })
-        map.links.push({
-          sid: srcID,
-          tid: targetID,
-          _svgAttrs: { 'stroke-width': 3, opacity: 2 },
-          _color: '#E0E0E0',
-        })
-      }
-    },
-    clickNode(event, node) {
-      if (!node.finding) return
-      // console.log('event: ' + event)
-      this.findingModel = Object.assign(this.findingModel, node.finding)
-      this.findingDialog = true
     },
   },
 }

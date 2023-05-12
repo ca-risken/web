@@ -15,30 +15,28 @@
         <v-col cols="12" sm="6" md="6">
           <v-select
             return-object
-            outlined
-            dense
-            background-color="white"
+            variant="outlined"
+            density="compact"
+            bg-color="white"
             v-model="dataModel"
             :items="osintList"
-            item-text="resource_name"
+            item-title="resource_name"
             item-value="osint_id"
             label="Select your OSINT"
-            @change="handleList"
+            @update:modelValue="handleList"
           ></v-select>
         </v-col>
         <v-spacer />
         <v-btn
           class="mt-3 mr-4"
-          color="grey darken-2"
-          dense
+          color="grey-darken-2"
+          density="compact"
           small
-          icon
-          fab
-          outlined
+          variant="outlined"
           :loading="loading"
           @click="handleList"
+          icon="mdi-refresh"
         >
-          <v-icon>mdi-refresh</v-icon>
         </v-btn>
       </v-row>
       <v-row>
@@ -48,10 +46,9 @@
             <v-card-text class="pa-0">
               <v-data-table
                 v-model="table.selected"
-                :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
@@ -59,25 +56,25 @@
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
-                item-key="osint_data_source_id"
-                @click:row="handleAttachItem"
+                @click:row="handleRowClick"
               >
                 <template v-slot:[`item.resource_type`]="{ item }">
-                  <span class="font-weight-black"
-                    ><v-chip outlined>{{ item.resource_type }}</v-chip></span
-                  >
+                  <v-chip variant="outlined">{{
+                    item.value.resource_type
+                  }}</v-chip>
                 </template>
                 <template v-slot:[`item.max_score`]="{ item }">
-                  <v-chip outlined>{{ item.max_score }}</v-chip>
+                  <v-chip variant="outlined">{{ item.value.max_score }}</v-chip>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
                   <v-chip
-                    v-if="item.osint_id"
-                    :color="getDataSourceStatusColor(item.status)"
-                    dark
+                    variant="flat"
+                    class="text-white"
+                    v-if="item.value.osint_id"
+                    :color="getDataSourceStatusColor(item.value.status)"
                   >
                     <v-progress-circular
-                      v-if="isInProgressDataSourceStatus(item.status)"
+                      v-if="isInProgressDataSourceStatus(item.value.status)"
                       indeterminate
                       size="20"
                       width="2"
@@ -85,39 +82,32 @@
                       class="mr-2"
                     ></v-progress-circular>
                     <v-icon v-else small color="white" class="mr-2">{{
-                      getDataSourceStatusIcon(item.status)
+                      getDataSourceStatusIcon(item.value.status)
                     }}</v-icon>
-                    {{ getDataSourceStatusText(item.status) }}
+                    {{ getDataSourceStatusText(item.value.status) }}
                   </v-chip>
-                  <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <v-chip v-else color="grey" variant="flat"
+                    >Not configured</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{
-                    item.scan_at | formatTime
+                  <v-chip v-if="item.value.scan_at">{{
+                    formatTime(item.value.scan_at)
                   }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -145,38 +135,32 @@
           <v-row dense>
             <v-col cols="2">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.osint_id.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ dataModel.osint_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.osint_id.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ dataModel.osint_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.resource_type.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ dataModel.resource_type }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.resource_type.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ dataModel.resource_type }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="7">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.resource_name.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ dataModel.resource_name }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.resource_name.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ dataModel.resource_name }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -184,40 +168,34 @@
           <v-row dense>
             <v-col cols="2">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.max_score.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip outlined>
-                      {{ dataModel.max_score }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.max_score.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip outlined>
+                    {{ dataModel.max_score }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="4">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.name.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ dataModel.name }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.name.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ dataModel.name }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="6">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.description.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ dataModel.description }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.description.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ dataModel.description }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -225,47 +203,42 @@
           <v-row dense>
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{
-                      $t(`item['` + form.rel_osint_data_source_id.label + `']`)
-                    }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ dataModel.rel_osint_data_source_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{
+                    $t(`item['` + form.rel_osint_data_source_id.label + `']`)
+                  }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ dataModel.rel_osint_data_source_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="dataModel.status">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="headline">
-                    <v-list-item-subtitle>
-                      {{ $t(`item['` + form.status.label + `']`) }}
-                    </v-list-item-subtitle>
-                    <v-chip
-                      dark
-                      :color="getDataSourceStatusColor(dataModel.status)"
-                    >
-                      {{ getDataSourceStatusText(dataModel.status) }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-title class="headline">
+                  <v-list-item-subtitle>
+                    {{ $t(`item['` + form.status.label + `']`) }}
+                  </v-list-item-subtitle>
+                  <v-chip
+                    variant="flat"
+                    class="text-white"
+                    :color="getDataSourceStatusColor(dataModel.status)"
+                  >
+                    {{ getDataSourceStatusText(dataModel.status) }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="4" v-if="dataModel.scan_at">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + form.scan_at.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip color="grey lighten-3">
-                      {{ dataModel.scan_at | formatTime }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + form.scan_at.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip color="grey-lighten-3">
+                    {{ formatTime(dataModel.scan_at) }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -297,8 +270,8 @@
             <v-col cals="3">
               <v-btn
                 text
-                outlined
-                color="black lighten-1"
+                variant="outlined"
+                color="black-lighten-1"
                 @click="handleNewWord"
               >
                 {{ $t(`btn['NEW WORD']`) }}
@@ -310,10 +283,10 @@
               <v-list-item-title>
                 <v-chip
                   class="mx-1"
-                  close
+                  closable
                   v-for="(word, idx) in dataModel.detectWords"
                   :key="idx"
-                  @update:active="handleDeleteWord(word)"
+                  @click:close.stop.prevent="handleDeleteWord(word)"
                 >
                   <v-avatar left>
                     <v-icon>mdi-filter-outline</v-icon>
@@ -329,8 +302,8 @@
           <v-card-actions>
             <v-btn
               text
-              outlined
-              color="blue darken-1"
+              variant="outlined"
+              color="blue-darken-1"
               v-if="dataModel.rel_osint_data_source_id"
               :loading="loading"
               @click="handleScan"
@@ -339,9 +312,8 @@
               {{ $t(`btn['SCAN']`) }}
             </v-btn>
             <v-btn
-              text
-              outlined
-              color="cyan darken-2"
+              variant="outlined"
+              color="cyan-darken-2"
               v-if="dataModel.rel_osint_data_source_id"
               :loading="loading"
               link
@@ -352,24 +324,24 @@
                   tag: getScanIdentifyTag(dataModel),
                 },
               }"
+              prepend-icon="mdi-magnify"
               risken-action-name="search-finding-by-datasource-from-osint"
             >
-              <v-icon left>mdi-magnify</v-icon>
               {{ $t(`btn['SHOW SCAN RESULT']`) }}
             </v-btn>
             <v-spacer />
             <v-btn
               text
-              outlined
-              color="grey darken-1"
+              variant="outlined"
+              color="grey-darken-1"
               @click="editDialog = false"
             >
               {{ $t(`btn['CANCEL']`) }}
             </v-btn>
             <v-btn
               text
-              outlined
-              color="green darken-1"
+              variant="outlined"
+              color="green-darken-1"
               :loading="loading"
               @click="handleAttachSubmit"
             >
@@ -390,23 +362,23 @@
             v-model="dataModel.new_word"
             :label="$t(`item['` + form.detect_word.label + `']`) + ' *'"
             :placeholder="form.detect_word.placeholder"
-            outlined
+            variant="outlined"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="detectWordDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="blue darken-1"
+            color="blue-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleNewWordSubmit"
           >
@@ -424,45 +396,37 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar><v-icon>http</v-icon></v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.resource_name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Resource Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="md:http">
+            <v-list-item-title>
+              {{ dataModel.resource_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Resource Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-dns-outline</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Data Source']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-dns-outline">
+            <v-list-item-title>
+              {{ dataModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Data Source']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDetachSubmit"
           >
@@ -479,11 +443,13 @@
 import mixin from '@/mixin'
 import osint from '@/mixin/api/osint'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'OSINTDataSource',
   mixins: [mixin, osint],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -545,7 +511,6 @@ export default {
       },
       table: {
         selected: [],
-        search: '',
         options: { page: 1, itemsPerPage: 10, sortBy: ['osint_id'] },
         actions: [
           {
@@ -560,7 +525,6 @@ export default {
           },
           { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
-        total: 0,
         footer: {
           disableItemsPerPage: false,
           itemsPerPageOptions: [10, 50, 100],
@@ -577,56 +541,56 @@ export default {
   },
   created() {
     this.$setInterval(async () => {
-      this.listDataSource()
-      this.listWord()
+      await this.listDataSource()
+      await this.listWord()
     }, 5000)
   },
   computed: {
     headers() {
       return [
         {
-          text: this.$i18n.t('item["ResourceType"]'),
+          title: this.$i18n.t('item["ResourceType"]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'resource_type',
+          key: 'resource_type',
         },
         {
-          text: this.$i18n.t('item["Data Source"]'),
+          title: this.$i18n.t('item["Data Source"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Description"]'),
+          title: this.$i18n.t('item["Description"]'),
           align: 'start',
           sortable: false,
-          value: 'description',
+          key: 'description',
         },
         {
-          text: this.$i18n.t('item["MAX Score"]'),
+          title: this.$i18n.t('item["MAX Score"]'),
           align: 'center',
           sortable: false,
-          value: 'max_score',
+          key: 'max_score',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           width: '12%',
           sortable: false,
-          value: 'status',
+          key: 'status',
         },
         {
-          text: this.$i18n.t('item["ScanAt"]'),
+          title: this.$i18n.t('item["ScanAt"]'),
           align: 'center',
           sortable: true,
-          value: 'scan_at',
+          key: 'scan_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -695,41 +659,43 @@ export default {
         this.clearList()
         return
       }
-      this.table.total = resListDS.length
       let items = []
-      listDS.forEach(async (ds) => {
-        let item = {
-          osint_id: osint.osint_id,
-          resource_type: osint.resource_type,
-          resource_name: osint.resource_name,
-          osint_data_source_id: ds.osint_data_source_id,
-          name: ds.name,
-          description: ds.description,
-          max_score: ds.max_score,
-        }
-        const rel = await this.listRelOSINTDataSource(
-          this.getCurrentProjectID(),
-          this.dataModel.osint_id,
-          ds.osint_data_source_id
-        ).catch((err) => {
-          this.finishError(err.response.data)
-          isSuccess = false
+      await Promise.all(
+        listDS.map(async (ds) => {
+          let item = {
+            osint_id: osint.osint_id,
+            resource_type: osint.resource_type,
+            resource_name: osint.resource_name,
+            osint_data_source_id: ds.osint_data_source_id,
+            name: ds.name,
+            description: ds.description,
+            max_score: ds.max_score,
+          }
+          const rel = await this.listRelOSINTDataSource(
+            this.getCurrentProjectID(),
+            this.dataModel.osint_id,
+            ds.osint_data_source_id
+          ).catch((err) => {
+            this.finishError(err.response.data)
+            isSuccess = false
+          })
+          if (!this.matchResourceType(ds.name, osint.resource_type)) {
+            return
+          }
+          if (!isSuccess) {
+            return
+          }
+          if (rel.rel_osint_data_source && rel.rel_osint_data_source[0]) {
+            item.rel_osint_data_source_id =
+              rel.rel_osint_data_source[0].rel_osint_data_source_id
+            item.status = rel.rel_osint_data_source[0].status
+            item.status_detail = rel.rel_osint_data_source[0].status_detail
+            item.scan_at = rel.rel_osint_data_source[0].scan_at
+          }
+          items.push(item)
         })
-        if (!this.matchResourceType(ds.name, osint.resource_type)) {
-          return
-        }
-        if (!isSuccess) {
-          return
-        }
-        if (rel.rel_osint_data_source && rel.rel_osint_data_source[0]) {
-          item.rel_osint_data_source_id =
-            rel.rel_osint_data_source[0].rel_osint_data_source_id
-          item.status = rel.rel_osint_data_source[0].status
-          item.status_detail = rel.rel_osint_data_source[0].status_detail
-          item.scan_at = rel.rel_osint_data_source[0].scan_at
-        }
-        items.push(item)
-      })
+      )
+      this.table.total = items.length
       this.table.items = items
     },
     clearList() {
@@ -855,13 +821,16 @@ export default {
     },
 
     // Handler
-    handleList() {
+    async handleList() {
       this.loading = true
-      this.listDataSource()
+      await this.listDataSource()
       this.loading = false
     },
+    handleRowClick(event, datasources) {
+      this.handleAttachItem(datasources.item)
+    },
     async handleAttachItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       if (this.dataModel.rel_osint_data_source_id) {
         await this.listWord()
       }
@@ -873,7 +842,7 @@ export default {
       this.loading = false
     },
     handleDetachItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleDetachSubmit() {
@@ -908,8 +877,8 @@ export default {
     },
     handleScan(item) {
       this.loading = true
-      if (item.osint_data_source_id) {
-        this.assignDataModel(item)
+      if (item.value.osint_data_source_id) {
+        this.assignDataModel(item.value)
       }
       this.scanDataSource()
     },

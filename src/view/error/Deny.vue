@@ -1,7 +1,7 @@
 <template>
   <div class="exception">
     <v-container fluid fill-height>
-      <v-layout align-center justify-center>
+      <v-layout>
         <div class="text-md-center">
           <h1>403</h1>
           <h2 class="my-3 headline">

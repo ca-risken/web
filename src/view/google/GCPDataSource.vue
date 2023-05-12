@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue darken-1"
+              <v-icon large class="pr-2" color="blue-darken-1"
                 >mdi-google-cloud</v-icon
               >
               {{ $t(`submenu['GCP DataSource']`) }}
@@ -17,26 +17,26 @@
         <v-col cols="12" sm="6" md="6">
           <v-select
             v-model="gcpModel"
-            background-color="white"
+            bg-color="white"
             :items="gcpList"
-            item-text="name"
+            item-title="name"
             item-value="gcp_id"
             label="Select your GCP"
-            @change="handleList"
+            @update:modelValue="handleList"
             return-object
-            outlined
-            dense
+            variant="outlined"
+            density="compact"
           ></v-select>
         </v-col>
         <v-spacer />
         <v-btn
           class="mt-3 mr-4"
-          color="grey darken-2"
-          dense
+          color="grey-darken-2"
+          density="compact"
           small
           icon
           fab
-          outlined
+          variant="outlined"
           :loading="loading"
           @click="handleList"
         >
@@ -44,11 +44,9 @@
         </v-btn>
         <v-btn
           class="mt-3 mr-4"
-          dense
           medium
-          dark
           :loading="loading"
-          color="light-blue darken-2"
+          color="light-blue-darken-2"
           @click="handleSetupAll"
         >
           Setup all
@@ -64,7 +62,7 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                :v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
@@ -73,27 +71,28 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="google_data_source_id"
-                @click:row="handleViewItem"
+                @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]="{ item }">
                   <v-avatar tile class="ma-3" size="74%">
-                    <img
-                      :src="getGCPDataSourceIcon(item.name)"
-                      :alt="item.name"
+                    <v-img
+                      :src="getGCPDataSourceIcon(item.value.name)"
+                      :alt="item.value.name"
                     />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.max_score`]="{ item }">
-                  <v-chip outlined>{{ item.max_score }}</v-chip>
+                  <v-chip variant="outlined">{{ item.value.max_score }}</v-chip>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
                   <v-chip
-                    v-if="item.gcp_id"
-                    :color="getDataSourceStatusColor(item.status)"
-                    dark
+                    v-if="item.value.gcp_id"
+                    variant="flat"
+                    class="text-white"
+                    :color="getDataSourceStatusColor(item.value.status)"
                   >
                     <v-progress-circular
-                      v-if="isInProgressDataSourceStatus(item.status)"
+                      v-if="isInProgressDataSourceStatus(item.value.status)"
                       indeterminate
                       size="20"
                       width="2"
@@ -101,50 +100,45 @@
                       class="mr-2"
                     ></v-progress-circular>
                     <v-icon v-else small color="white" class="mr-2">{{
-                      getDataSourceStatusIcon(item.status)
+                      getDataSourceStatusIcon(item.value.status)
                     }}</v-icon>
-                    {{ getDataSourceStatusText(item.status) }}
+                    {{ getDataSourceStatusText(item.value.status) }}
                   </v-chip>
-                  <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <v-chip v-else color="grey" variant="flat"
+                    >Not configured</v-chip
+                  >
                   <v-icon
                     v-if="hasDataSourceWarning(item)"
-                    color="yellow darken-2"
+                    color="yellow-darken-4"
                     >mdi-alert</v-icon
                   >
                 </template>
                 <template v-slot:[`item.specific_version`]="{ item }">
-                  <template v-if="item.specific_version">
-                    {{ $t(`version["old"]`) }} ({{ item.specific_version }})
+                  <template v-if="item.value.specific_version">
+                    {{ $t(`version["old"]`) }} ({{
+                      item.value.specific_version
+                    }})
                   </template>
                   <template v-else> {{ $t(`version["latest"]`) }} </template>
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{
-                    item.scan_at | formatTime
+                  <v-chip v-if="item.value.scan_at">{{
+                    formatTime(item.value.scan_at)
                   }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -162,7 +156,7 @@
     <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
+          <v-icon large color="blue-darken-1">mdi-google-cloud</v-icon>
           <span class="mx-4 headline">
             {{ $t(`submenu['GCP DataSource']`) }}
           </span>
@@ -171,153 +165,134 @@
           <v-row dense>
             <v-col cols="2">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + gcpForm.gcp_id.label + `']`) }}
-                    <clip-board
-                      :name="$t(`item['` + gcpForm.gcp_id.label + `']`)"
-                      :text="String(gcpDataSourceModel.gcp_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ gcpDataSourceModel.gcp_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + gcpForm.gcp_id.label + `']`) }}
+                  <clip-board
+                    :name="$t(`item['` + gcpForm.gcp_id.label + `']`)"
+                    :text="String(gcpDataSourceModel.gcp_id)"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ gcpDataSourceModel.gcp_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{
+                <v-list-item-subtitle>
+                  {{
+                    $t(`item['` + gcpForm.google_data_source_id.label + `']`)
+                  }}
+                  <clip-board
+                    :name="
                       $t(`item['` + gcpForm.google_data_source_id.label + `']`)
-                    }}
-                    <clip-board
-                      :name="
-                        $t(
-                          `item['` + gcpForm.google_data_source_id.label + `']`
-                        )
-                      "
-                      :text="String(gcpDataSourceModel.google_data_source_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ gcpDataSourceModel.google_data_source_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                    "
+                    :text="String(gcpDataSourceModel.google_data_source_id)"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ gcpDataSourceModel.google_data_source_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + gcpForm.name.label + `']`) }}
-                    <clip-board
-                      :name="$t(`item['` + gcpForm.name.label + `']`)"
-                      :text="String(gcpDataSourceModel.name)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ gcpDataSourceModel.name }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + gcpForm.name.label + `']`) }}
+                  <clip-board
+                    :name="$t(`item['` + gcpForm.name.label + `']`)"
+                    :text="String(gcpDataSourceModel.name)"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ gcpDataSourceModel.name }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="!gcpForm.setupAll">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + gcpForm.max_score.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip outlined>
-                      {{ gcpDataSourceModel.max_score }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + gcpForm.max_score.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip variant="outlined">
+                    {{ gcpDataSourceModel.max_score }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
           <v-row dense v-if="!gcpForm.setupAll">
             <v-col cols="2" v-if="gcpDataSourceModel.status">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="headline">
-                    <v-list-item-subtitle>
-                      {{ $t(`item['` + gcpForm.status.label + `']`) }}
-                    </v-list-item-subtitle>
-                    <v-chip
-                      dark
-                      :color="
-                        getDataSourceStatusColor(gcpDataSourceModel.status)
-                      "
-                    >
-                      {{ getDataSourceStatusText(gcpDataSourceModel.status) }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-title class="headline">
+                  <v-list-item-subtitle>
+                    {{ $t(`item['` + gcpForm.status.label + `']`) }}
+                  </v-list-item-subtitle>
+                  <v-chip
+                    variant="flat"
+                    class="text-white"
+                    :color="getDataSourceStatusColor(gcpDataSourceModel.status)"
+                  >
+                    {{ getDataSourceStatusText(gcpDataSourceModel.status) }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="4">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + gcpForm.gcp_project_id.label + `']`) }}
-                    <clip-board
-                      :name="$t(`item['` + gcpForm.gcp_project_id.label + `']`)"
-                      :text="String(gcpDataSourceModel.gcp_project_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ gcpDataSourceModel.gcp_project_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + gcpForm.gcp_project_id.label + `']`) }}
+                  <clip-board
+                    :name="$t(`item['` + gcpForm.gcp_project_id.label + `']`)"
+                    :text="String(gcpDataSourceModel.gcp_project_id)"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ gcpDataSourceModel.gcp_project_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="gcpDataSourceModel.scan_at">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + gcpForm.scan_at.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip color="grey lighten-3">
-                      {{ gcpDataSourceModel.scan_at | formatTime }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + gcpForm.scan_at.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip color="grey-lighten-3">
+                    {{ formatTime(gcpDataSourceModel.scan_at) }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
           <v-row dense v-if="!gcpForm.setupAll">
             <v-col cols="8">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`version['version']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title
-                    class="headline"
-                    v-if="gcpDataSourceModel.specific_version"
+                <v-list-item-subtitle>
+                  {{ $t(`version['version']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title
+                  class="headline"
+                  v-if="gcpDataSourceModel.specific_version"
+                >
+                  {{ $t(`version['old']`) }} ({{
+                    gcpDataSourceModel.specific_version
+                  }})
+                  <v-btn
+                    text
+                    variant="outlined"
+                    color="blue-darken-1"
+                    :loading="loading"
+                    @click="handleAttachSubmit"
                   >
-                    {{ $t(`version['old']`) }} ({{
-                      gcpDataSourceModel.specific_version
-                    }})
-                    <v-btn
-                      text
-                      outlined
-                      color="blue darken-1"
-                      :loading="loading"
-                      @click="handleAttachSubmit"
-                    >
-                      <v-icon left>mdi-update</v-icon>
-                      {{ $t(`btn['Upgrade']`) }}
-                    </v-btn>
-                  </v-list-item-title>
-                  <v-list-item-title class="headline" v-else>
-                    {{ $t(`version['latest']`) }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                    <v-icon left>mdi-update</v-icon>
+                    {{ $t(`btn['Upgrade']`) }}
+                  </v-btn>
+                </v-list-item-title>
+                <v-list-item-title class="headline" v-else>
+                  {{ $t(`version['latest']`) }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -359,17 +334,21 @@
           >
             <template v-slot:[`item.avator`]="{ item }">
               <v-avatar tile class="ma-3" size="40px">
-                <img :src="getGCPDataSourceIcon(item.name)" :alt="item.name" />
+                <v-img
+                  :src="getGCPDataSourceIcon(item.value.name)"
+                  :alt="item.value.name"
+                />
               </v-avatar>
             </template>
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
-                v-if="item.gcp_id"
-                :color="getDataSourceStatusColor(item.status)"
-                dark
+                v-if="item.value.gcp_id"
+                :color="getDataSourceStatusColor(item.value.status)"
+                variant="flat"
+                class="text-white"
               >
                 <v-progress-circular
-                  v-if="isInProgressDataSourceStatus(item.status)"
+                  v-if="isInProgressDataSourceStatus(item.value.status)"
                   indeterminate
                   size="20"
                   width="2"
@@ -377,11 +356,11 @@
                   class="mr-2"
                 ></v-progress-circular>
                 <v-icon v-else small color="white" class="mr-2">{{
-                  getDataSourceStatusIcon(item.status)
+                  getDataSourceStatusIcon(item.value.status)
                 }}</v-icon>
-                {{ getDataSourceStatusText(item.status) }}
+                {{ getDataSourceStatusText(item.value.status) }}
               </v-chip>
-              <v-chip v-else color="grey" dark>Not configured</v-chip>
+              <v-chip v-else color="grey" variant="flat">Not configured</v-chip>
             </template>
           </v-data-table>
         </v-card-text>
@@ -389,8 +368,8 @@
         <v-card-actions>
           <v-btn
             text
-            outlined
-            color="blue darken-1"
+            variant="outlined"
+            color="blue-darken-1"
             v-if="gcpDataSourceModel.status && gcpForm.readOnly"
             :loading="loading"
             @click="handleScan"
@@ -399,9 +378,8 @@
             {{ $t(`btn['SCAN']`) }}
           </v-btn>
           <v-btn
-            text
-            outlined
-            color="cyan darken-2"
+            variant="outlined"
+            color="cyan-darken-2"
             v-if="gcpDataSourceModel.status && gcpForm.readOnly"
             :loading="loading"
             link
@@ -412,16 +390,16 @@
                 tag: gcpDataSourceModel.gcp_project_id,
               },
             }"
+            prepend-icon="mdi-magnify"
             risken-action-name="search-finding-by-datasource-from-google"
           >
-            <v-icon left>mdi-magnify</v-icon>
             {{ $t(`btn['SHOW SCAN RESULT']`) }}
           </v-btn>
           <v-spacer />
           <v-btn
             text
-            outlined
-            color="green darken-1"
+            variant="outlined"
+            color="green-darken-1"
             v-if="!gcpDataSourceModel.status && !gcpForm.setupAll"
             :loading="loading"
             @click="handleAttachSubmit"
@@ -430,8 +408,8 @@
           </v-btn>
           <v-btn
             text
-            outlined
-            color="green darken-1"
+            variant="outlined"
+            color="green-darken-1"
             v-if="gcpForm.setupAll"
             :loading="loading"
             @click="handleAttachAll"
@@ -440,8 +418,8 @@
           </v-btn>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="editDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
@@ -458,47 +436,37 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-google-cloud</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ gcpDataSourceModel.google_data_source_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Data Source ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-google-cloud">
+            <v-list-item-title>
+              {{ gcpDataSourceModel.google_data_source_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Data Source ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ gcpDataSourceModel.gcp_project_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['GCP ProjectID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ gcpDataSourceModel.gcp_project_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['GCP ProjectID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDetachSubmit"
           >
@@ -515,12 +483,14 @@ import Util from '@/util'
 import mixin from '@/mixin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'GCPDataSource',
   mixins: [mixin],
   components: {
     BottomSnackBar,
     ClipBoard,
+    VDataTable,
   },
   data() {
     return {
@@ -587,7 +557,11 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDetachItem,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+          {
+            text: 'Scan',
+            icon: 'mdi-magnify-scan',
+            click: this.handleScanByAction,
+          },
         ],
         total: 0,
         footer: {
@@ -617,84 +591,84 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '8%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'google_data_source_id',
+          key: 'google_data_source_id',
         },
         {
-          text: this.$i18n.t('item["Google Data Source"]'),
+          title: this.$i18n.t('item["Google Data Source"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["MAX Score"]'),
+          title: this.$i18n.t('item["MAX Score"]'),
           align: 'center',
           sortable: true,
-          value: 'max_score',
+          key: 'max_score',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           width: '14%',
           sortable: true,
-          value: 'status',
+          key: 'status',
         },
         {
-          text: this.$i18n.t('item["GCP Project"]'),
+          title: this.$i18n.t('item["GCP Project"]'),
           align: 'start',
           sortable: true,
-          value: 'gcp_project_id',
+          key: 'gcp_project_id',
         },
         {
-          text: this.$i18n.t('version["version"]'),
+          title: this.$i18n.t('version["version"]'),
           align: 'start',
           sortable: true,
-          value: 'specific_version',
+          key: 'specific_version',
         },
         {
-          text: this.$i18n.t('item["ScanAt"]'),
+          title: this.$i18n.t('item["ScanAt"]'),
           align: 'center',
           sortable: true,
-          value: 'scan_at',
+          key: 'scan_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     setupAllHeaders() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["Google Data Source"]'),
+          title: this.$i18n.t('item["Google Data Source"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           width: '14%',
           sortable: false,
-          value: 'status',
+          key: 'status',
         },
       ]
     },
@@ -879,8 +853,11 @@ export default {
       await this.refleshList()
       await this.finishInfo('Reflesh list')
     },
+    handleRowClick(event, datasources) {
+      this.handleViewItem(datasources.item)
+    },
     handleViewItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.gcpForm.readOnly = true
       this.gcpForm.setupAll = false
       this.editDialog = true
@@ -894,7 +871,7 @@ export default {
       this.editDialog = true
     },
     handleAttachItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.gcpForm.readOnly = false
       this.gcpForm.setupAll = false
       this.editDialog = true
@@ -908,7 +885,7 @@ export default {
       this.attachAllDataSource()
     },
     handleDetachItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleDetachSubmit() {
@@ -920,10 +897,13 @@ export default {
       this.loading = true
       this.detachDataSource()
     },
-    handleScan(item) {
+    handleScan() {
+      this.scanDataSource()
+    },
+    handleScanByAction(item) {
       this.loading = true
-      if (item.google_data_source_id) {
-        this.assignDataModel(item)
+      if (item.value.google_data_source_id) {
+        this.assignDataModel(item.value)
       }
       this.scanDataSource()
     },

@@ -1,20 +1,18 @@
 <template>
   <v-card max-width="600" class="mx-auto">
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="headline">
-          {{ $t(`submenu['Profile']`) }}
-        </v-list-item-title>
-      </v-list-item-content>
+      <v-list-item-title class="headline">
+        {{ $t(`submenu['Profile']`) }}
+      </v-list-item-title>
     </v-list-item>
     <v-img
-      class="white--text align-end"
+      class="bg-surface-variant d-flex align-center"
       height="150px"
+      cover
       src="/static/backimg/profile.jpg"
     >
-      <v-layout justify-center>
-        <v-avatar class="ma-0" size="35%">
-          <img src="/static/avatar/default.png" alt="avatar" align="center" />
+      <v-layout class="d-flex justify-center">
+        <v-avatar class="ma-0" image="/static/avatar/default.png" size="10%">
         </v-avatar>
       </v-layout>
       <v-card-text class="text-h6"> Edit your profile... </v-card-text>
@@ -24,15 +22,11 @@
         <v-text-field
           v-model="userForm.data.id"
           label="ID"
-          outlined
-          filled
           disabled
         ></v-text-field>
         <v-text-field
           v-model="userForm.data.sub"
           label="Sub"
-          outlined
-          filled
           disabled
         ></v-text-field>
         <v-text-field
@@ -40,23 +34,20 @@
           :counter="64"
           :rules="userForm.validator.name"
           label="Name"
-          outlined
+          variant="outlined"
           required
         ></v-text-field>
         <v-text-field
-          :value="userForm.data.updated_at | formatTime"
+          :model-value="formatTime(userForm.data.updated_at)"
           label="Updated"
           @input="(value) => (userForm.data.updated_at = value)"
-          outlined
-          filled
           disabled
         >
-          <pre>{{ userForm.data.updated_at | formatTime }}</pre>
         </v-text-field>
         <v-divider class="mt-3 mb-3"></v-divider>
         <v-card-actions>
           <v-spacer />
-          <v-btn text outlined color="green darken-1" @click="handleSubmit"
+          <v-btn variant="outlined" color="green-darken-1" @click="handleSubmit"
             >Edit</v-btn
           >
         </v-card-actions>

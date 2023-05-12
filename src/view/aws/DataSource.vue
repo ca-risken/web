@@ -15,38 +15,33 @@
         <v-col cols="12" sm="6" md="6">
           <v-select
             v-model="awsModel"
-            background-color="white"
+            bg-color="white"
             :items="awsList"
-            item-text="name"
+            item-title="name"
             item-value="aws_id"
             label="Select your AWS"
-            @change="handleList"
+            @update:modelValue="handleList"
             return-object
-            outlined
-            dense
+            variant="outlined"
+            density="compact"
           ></v-select>
         </v-col>
         <v-spacer />
         <v-btn
           class="mt-3 mr-4"
-          color="grey darken-2"
-          dense
-          small
-          icon
-          fab
-          outlined
+          color="grey-darken-2"
+          size="small"
+          icon="mdi-refresh"
+          variant="outlined"
           :loading="loading"
           @click="handleList"
-        >
-          <v-icon>mdi-refresh</v-icon>
-        </v-btn>
+        />
         <v-btn
           class="mt-3 mr-4"
-          dense
           medium
           dark
           :loading="loading"
-          color="light-blue darken-2"
+          color="light-blue-darken-2"
           @click="handleSetupAll"
         >
           Setup all
@@ -62,7 +57,7 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
@@ -71,78 +66,72 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="aws_data_source_id"
-                @click:row="handleViewItem"
+                @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]="{ item }">
                   <v-avatar tile class="ma-3" size="40px">
-                    <img
-                      :src="getAWSDataSourceIcon(item.data_source)"
-                      :alt="item.data_source"
+                    <v-img
+                      :src="getAWSDataSourceIcon(item.value.data_source)"
+                      :alt="item.value.data_source"
                     />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.max_score`]="{ item }">
-                  <v-chip outlined>{{ item.max_score }}</v-chip>
+                  <v-chip variant="outlined">{{ item.value.max_score }}</v-chip>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
                   <v-chip
-                    v-if="item.aws_id"
-                    :color="getDataSourceStatusColor(item.status)"
-                    dark
+                    variant="flat"
+                    class="text-white"
+                    v-if="item.value.aws_id"
+                    :color="getDataSourceStatusColor(item.value.status)"
                   >
                     <v-progress-circular
-                      v-if="isInProgressDataSourceStatus(item.status)"
+                      v-if="isInProgressDataSourceStatus(item.value.status)"
                       indeterminate
                       size="20"
                       width="2"
                       color="white"
                       class="mr-2"
                     ></v-progress-circular>
-                    <v-icon v-else small color="white" class="mr-2">{{
-                      getDataSourceStatusIcon(item.status)
+                    <v-icon v-else class="mr-2">{{
+                      getDataSourceStatusIcon(item.value.status)
                     }}</v-icon>
-                    {{ getDataSourceStatusText(item.status) }}
+                    {{ getDataSourceStatusText(item.value.status) }}
                   </v-chip>
-                  <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <v-chip v-else variant="flat" color="grey" dark
+                    >Not configured</v-chip
+                  >
                   <v-icon
-                    v-if="hasDataSourceWarning(item)"
-                    color="yellow darken-2"
+                    v-if="hasDataSourceWarning(item.value)"
+                    color="yellow-darken-4"
                     >mdi-alert</v-icon
                   >
                 </template>
                 <template v-slot:[`item.specific_version`]="{ item }">
-                  <template v-if="item.specific_version">
+                  <template v-if="item.value.specific_version">
                     {{ $t(`version["old"]`) }} ({{ item.specific_version }})
                   </template>
                   <template v-else> {{ $t(`version["latest"]`) }} </template>
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{
-                    item.scan_at | formatTime
+                  <v-chip v-if="item.value.scan_at">{{
+                    formatTime(item.value.scan_at)
                   }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in getActionList(item.data_source)"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -160,7 +149,7 @@
     <v-dialog v-model="editDialog" max-width="58%">
       <v-card>
         <v-card-title>
-          <v-icon large color="orange darken-1">mdi-aws</v-icon>
+          <v-icon large color="orange-darken-1">mdi-aws</v-icon>
           <span class="mx-4 headline">{{
             $t(`submenu['AWS DataSource']`)
           }}</span>
@@ -169,115 +158,106 @@
           <v-row dense>
             <v-col cols="2">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + awsForm.aws_id.label + `']`) }}
-                    <clip-board
-                      :name="$t(`item['` + awsForm.aws_id.label + `']`)"
-                      :text="String(awsModel.aws_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ awsModel.aws_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <template v-slot:prepend>
+                  <clip-board
+                    :name="$t(`item['` + awsForm.aws_id.label + `']`)"
+                    :text="String(awsModel.aws_id)"
+                  />
+                </template>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.aws_id.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ awsModel.aws_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + awsForm.aws_account_id.label + `']`) }}
-                    <clip-board
-                      :name="$t(`item['` + awsForm.aws_account_id.label + `']`)"
-                      :text="awsModel.aws_account_id"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ awsModel.aws_account_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <template v-slot:prepend>
+                  <clip-board
+                    :name="$t(`item['` + awsForm.aws_account_id.label + `']`)"
+                    :text="awsModel.aws_account_id"
+                  />
+                </template>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.aws_account_id.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ awsModel.aws_account_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="!awsForm.setupAll">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + awsForm.aws_data_source_id.label + `']`) }}
-                    <clip-board
-                      :name="
-                        $t(`item['` + awsForm.aws_data_source_id.label + `']`)
-                      "
-                      :text="String(awsModel.aws_data_source_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ awsModel.aws_data_source_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.aws_data_source_id.label + `']`) }}
+                  <clip-board
+                    :name="
+                      $t(`item['` + awsForm.aws_data_source_id.label + `']`)
+                    "
+                    :text="String(awsModel.aws_data_source_id)"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ awsModel.aws_data_source_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="4" v-if="!awsForm.setupAll">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + awsForm.data_source.label + `']`) }}
-                    <clip-board
-                      :name="$t(`item['` + awsForm.data_source.label + `']`)"
-                      :text="awsModel.data_source"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ awsModel.data_source }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.data_source.label + `']`) }}
+                  <clip-board
+                    :name="$t(`item['` + awsForm.data_source.label + `']`)"
+                    :text="awsModel.data_source"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ awsModel.data_source }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
           <v-row dense v-if="!awsForm.setupAll">
             <v-col cols="3" v-if="awsModel.status">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-title class="headline">
-                    <v-list-item-subtitle>
-                      {{ $t(`item['` + awsForm.status.label + `']`) }}
-                    </v-list-item-subtitle>
-                    <v-chip
-                      dark
-                      :color="getDataSourceStatusColor(awsModel.status)"
-                    >
-                      {{ getDataSourceStatusText(awsModel.status) }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-title class="headline">
+                  <v-list-item-subtitle>
+                    {{ $t(`item['` + awsForm.status.label + `']`) }}
+                  </v-list-item-subtitle>
+                  <v-chip
+                    variant="flat"
+                    class="text-white"
+                    :color="getDataSourceStatusColor(awsModel.status)"
+                  >
+                    {{ getDataSourceStatusText(awsModel.status) }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="4" v-if="awsModel.scan_at">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + awsForm.scan_at.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip color="grey lighten-3">
-                      {{ awsModel.scan_at | formatTime }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.scan_at.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip color="grey-lighten-3">
+                    {{ formatTime(awsModel.scan_at) }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['` + awsForm.max_score.label + `']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip outlined>
-                      {{ awsModel.max_score }}
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.max_score.label + `']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip variant="outlined">
+                    {{ awsModel.max_score }}
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -285,30 +265,27 @@
           <v-row dense v-if="!awsForm.setupAll">
             <v-col cols="8">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    {{ $t(`version['version']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title
-                    class="headline"
-                    v-if="awsModel.specific_version"
+                <v-list-item-subtitle>
+                  {{ $t(`version['version']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title
+                  class="headline"
+                  v-if="awsModel.specific_version"
+                >
+                  {{ $t(`version['old']`) }} ({{ awsModel.specific_version }})
+                  <v-btn
+                    variant="outlined"
+                    color="blue-darken-1"
+                    :loading="loading"
+                    @click="handleAttachSubmit"
+                    icon="mdi-update"
                   >
-                    {{ $t(`version['old']`) }} ({{ awsModel.specific_version }})
-                    <v-btn
-                      text
-                      outlined
-                      color="blue darken-1"
-                      :loading="loading"
-                      @click="handleAttachSubmit"
-                    >
-                      <v-icon left>mdi-update</v-icon>
-                      {{ $t(`btn['Upgrade']`) }}
-                    </v-btn>
-                  </v-list-item-title>
-                  <v-list-item-title class="headline" v-else>
-                    {{ $t(`version['latest']`) }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                    {{ $t(`btn['Upgrade']`) }}
+                  </v-btn>
+                </v-list-item-title>
+                <v-list-item-title class="headline" v-else>
+                  {{ $t(`version['latest']`) }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -351,9 +328,7 @@
                   :label="$t(`item['` + awsForm.assume_role_arn.label + `']`)"
                   :placeholder="awsForm.assume_role_arn.placeholder"
                   :disabled="awsForm.readOnly"
-                  :filled="awsForm.readOnly"
-                  outlined
-                  dense
+                  density="compact"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -373,9 +348,7 @@
                   :label="$t(`item['` + awsForm.external_id.label + `']`)"
                   :placeholder="awsForm.external_id.placeholder"
                   :disabled="awsForm.readOnly"
-                  :filled="awsForm.readOnly"
-                  outlined
-                  dense
+                  density="compact"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -383,9 +356,8 @@
               <v-col cols="1" />
               <v-col cols="2">
                 <v-btn
-                  text
-                  dense
-                  color="purple darken-2"
+                  variant="text"
+                  color="purple-darken-2"
                   :disabled="awsForm.readOnly"
                   @click="handleGenerateID"
                 >
@@ -398,9 +370,7 @@
               show-select
               :headers="setupAllHeaders"
               :items="setupAllTable.items"
-              :server-items-length="setupAllTable.total"
               :loading="loading"
-              :hide-default-footer="true"
               locale="ja-jp"
               loading-text="Loading..."
               no-data-text="No data."
@@ -410,20 +380,21 @@
             >
               <template v-slot:[`item.avator`]="{ item }">
                 <v-avatar tile class="ma-3" size="40px">
-                  <img
-                    :src="getAWSDataSourceIcon(item.data_source)"
-                    :alt="item.data_source"
+                  <v-img
+                    :src="getAWSDataSourceIcon(item.value.data_source)"
+                    :alt="item.value.data_source"
                   />
                 </v-avatar>
               </template>
               <template v-slot:[`item.status`]="{ item }">
                 <v-chip
-                  v-if="item.aws_id"
-                  :color="getDataSourceStatusColor(item.status)"
-                  dark
+                  v-if="item.value.aws_id"
+                  :color="getDataSourceStatusColor(item.value.status)"
+                  variant="flat"
+                  class="text-white"
                 >
                   <v-progress-circular
-                    v-if="isInProgressDataSourceStatus(item.status)"
+                    v-if="isInProgressDataSourceStatus(item.value.status)"
                     indeterminate
                     size="20"
                     width="2"
@@ -431,11 +402,13 @@
                     class="mr-2"
                   ></v-progress-circular>
                   <v-icon v-else small color="white" class="mr-2">{{
-                    getDataSourceStatusIcon(item.status)
+                    getDataSourceStatusIcon(item.value.status)
                   }}</v-icon>
-                  {{ getDataSourceStatusText(item.status) }}
+                  {{ getDataSourceStatusText(item.value.status) }}
                 </v-chip>
-                <v-chip v-else color="grey" dark>Not configured</v-chip>
+                <v-chip v-else variant="flat" color="grey"
+                  >Not configured</v-chip
+                >
               </template>
             </v-data-table>
             <v-checkbox
@@ -448,8 +421,8 @@
             <v-card-actions>
               <v-btn
                 text
-                outlined
-                color="blue darken-1"
+                variant="outlined"
+                color="blue-darken-1"
                 v-if="awsForm.readOnly"
                 :loading="loading"
                 @click="handleScan"
@@ -458,9 +431,8 @@
                 {{ $t(`btn['SCAN']`) }}
               </v-btn>
               <v-btn
-                text
-                outlined
-                color="cyan darken-2"
+                variant="outlined"
+                color="cyan-darken-2"
                 v-if="awsForm.readOnly"
                 :loading="loading"
                 link
@@ -471,24 +443,24 @@
                     tag: awsModel.aws_account_id,
                   },
                 }"
+                prepend-icon="mdi-magnify"
                 risken-action-name="search-finding-by-datasource-from-aws"
               >
-                <v-icon left>mdi-magnify</v-icon>
                 {{ $t(`btn['SHOW SCAN RESULT']`) }}
               </v-btn>
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 v-if="!awsForm.readOnly && !awsForm.setupAll"
                 :loading="loading"
                 @click="handleAttachSubmit"
@@ -497,8 +469,8 @@
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 v-if="awsForm.setupAll"
                 :loading="loading"
                 @click="handleAttachAll"
@@ -519,60 +491,37 @@
           }}</span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ awsModel.aws_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['AWS ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ awsModel.aws_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['AWS ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ awsModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-aws</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ awsModel.data_source }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Data Source']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-aws">
+            <v-list-item-title>
+              {{ awsModel.data_source }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Data Source']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDetachSubmit"
           >
@@ -590,12 +539,14 @@ import mixin from '@/mixin'
 import aws from '@/mixin/api/aws'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AWSDataSource',
   mixins: [mixin, aws],
   components: {
     BottomSnackBar,
     ClipBoard,
+    VDataTable,
   },
   data() {
     return {
@@ -681,7 +632,11 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDetachItem,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+          {
+            text: 'Scan',
+            icon: 'mdi-magnify-scan',
+            click: this.handleScanByAction,
+          },
         ],
         total: 0,
         footer: {
@@ -726,78 +681,78 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["Data Source"]'),
+          title: this.$i18n.t('item["Data Source"]'),
           align: 'start',
           sortable: false,
-          value: 'data_source',
+          key: 'data_source',
         },
         {
-          text: this.$i18n.t('item["MAX Score"]'),
+          title: this.$i18n.t('item["MAX Score"]'),
           align: 'center',
           sortable: false,
-          value: 'max_score',
+          key: 'max_score',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           width: '14%',
           sortable: false,
-          value: 'status',
+          key: 'status',
         },
         {
-          text: this.$i18n.t('item["Assume Role"]'),
+          title: this.$i18n.t('item["Assume Role"]'),
           align: 'start',
           sortable: false,
-          value: 'assume_role_arn',
+          key: 'assume_role_arn',
         },
         {
-          text: this.$i18n.t('version["version"]'),
+          title: this.$i18n.t('version["version"]'),
           align: 'start',
           sortable: true,
-          value: 'specific_version',
+          key: 'specific_version',
         },
         {
-          text: this.$i18n.t('item["ScanAt"]'),
+          title: this.$i18n.t('item["ScanAt"]'),
           align: 'center',
           sortable: false,
-          value: 'scan_at',
+          key: 'scan_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     setupAllHeaders() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["Data Source"]'),
+          title: this.$i18n.t('item["Data Source"]'),
           align: 'start',
           sortable: false,
-          value: 'data_source',
+          key: 'data_source',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           width: '14%',
           sortable: false,
-          value: 'status',
+          key: 'status',
         },
       ]
     },
@@ -936,7 +891,7 @@ export default {
         {
           text: 'Scan',
           icon: 'mdi-magnify-scan',
-          click: this.handleScan,
+          click: this.handleScanByAction,
         },
       ]
       return actions
@@ -953,6 +908,7 @@ export default {
         aws_id: this.awsModel.aws_id,
         aws_account_id: this.awsModel.aws_account_id,
         aws_data_source_id: '',
+        name: this.awsModel.name,
         data_source: '',
         max_score: '',
         assume_role_arn: '',
@@ -964,14 +920,17 @@ export default {
       this.setupAllTable.selected = [...this.table.items]
       this.editDialog = true
     },
+    handleRowClick(event, datasources) {
+      this.handleViewItem(datasources.item)
+    },
     handleViewItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.awsForm.readOnly = true
       this.awsForm.setupAll = false
       this.editDialog = true
     },
     handleAttachItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.awsForm.readOnly = false
       this.awsForm.setupAll = false
       this.editDialog = true
@@ -991,7 +950,7 @@ export default {
       this.attachAllDataSource()
     },
     handleDetachItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleDetachSubmit() {
@@ -1003,10 +962,13 @@ export default {
       this.loading = true
       this.detachDataSource()
     },
-    handleScan(item) {
+    handleScan() {
+      this.scanDataSource()
+    },
+    handleScanByAction(item) {
       this.loading = true
-      if (item.aws_data_source_id) {
-        this.assignDataModel(item)
+      if (item.value.aws_data_source_id) {
+        this.assignDataModel(item.value)
       }
       this.scanDataSource()
     },

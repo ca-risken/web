@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="green">http</v-icon>
+              <v-icon large color="green" icon="md:http"></v-icon>
               {{ $t(`submenu['OSINT']`) }}
             </v-toolbar-title>
           </v-toolbar>
@@ -15,10 +15,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -29,10 +29,9 @@
 
           <v-spacer />
           <v-btn
-            text
-            outlined
+            variant="outlined"
             class="mt-1 mr-4"
-            color="blue darken-1"
+            color="blue-darken-1"
             @click="handleNewProjectTag"
           >
             {{ $t(`btn['TAG']`) }}
@@ -45,14 +44,12 @@
 
           <v-btn
             class="mt-1 mr-4"
-            color="primary darken-3"
-            fab
-            dense
+            color="primary-darken-3"
+            density="compact"
             small
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -65,7 +62,7 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
@@ -75,35 +72,26 @@
                 item-key="osint_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3">
-                    <v-icon color="green" large>http</v-icon>
+                    <v-icon color="green" large icon="md:http"></v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -132,7 +120,7 @@
               v-model="dataModel.osint_id"
               :label="$t(`item['` + form.osint_id.label + `']`)"
               :placeholder="form.osint_id.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -142,7 +130,7 @@
               :label="$t(`item['` + form.resource_type.label + `']`) + ' *'"
               :placeholder="form.resource_type.placeholder"
               :items="form.resource_type.list"
-              outlined
+              variant="outlined"
               required
               clearable
             />
@@ -152,11 +140,12 @@
               :rules="form.resource_name.validator"
               :label="$t(`item['` + form.resource_name.label + `']`) + ' *'"
               :placeholder="form.resource_name.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-checkbox
               v-model="ActivateDataSource"
+              variant="outlined"
               :label="$t(`view.osint['Activate DataSource']`)"
             ></v-checkbox>
             <v-divider class="mt-3 mb-3"></v-divider>
@@ -164,16 +153,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -198,60 +187,45 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.osint_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.osint_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.resource_type }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ResourceType']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ dataModel.resource_type }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ResourceType']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>http</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.resource_name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ResourceName']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="md:http">
+            <v-list-item-title>
+              {{ dataModel.resource_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ResourceName']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -269,12 +243,14 @@ import project from '@/mixin/api/project'
 import osint from '@/mixin/api/osint'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'OSINTTarget',
   mixins: [mixin, project, osint],
   components: {
     BottomSnackBar,
     ProjectTag,
+    VDataTable,
   },
   data() {
     return {
@@ -344,41 +320,41 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'osint_id',
+          key: 'osint_id',
         },
         {
-          text: this.$i18n.t('item["ResourceType"]'),
+          title: this.$i18n.t('item["ResourceType"]'),
           align: 'start',
           sortable: false,
-          value: 'resource_type',
+          key: 'resource_type',
         },
         {
-          text: this.$i18n.t('item["ResourceName"]'),
+          title: this.$i18n.t('item["ResourceName"]'),
           align: 'start',
           sortable: false,
-          value: 'resource_name',
+          key: 'resource_name',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -438,8 +414,10 @@ export default {
         this.dataModel.resource_type
       )
     },
-    handleRowClick(item) {
-      this.$router.push('/osint/data-source?osint_id=' + item.osint_id)
+    handleRowClick(event, osint) {
+      this.$router.push(
+        '/osint/data-source?osint_id=' + osint.item.value.osint_id
+      )
     },
     handleNewItem() {
       this.dataModel = {
@@ -453,7 +431,7 @@ export default {
       this.editDialog = true
     },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.ActivateDataSource = false
       this.form.new = false
       this.editDialog = true
@@ -475,7 +453,7 @@ export default {
         this.dataModel.resource_type.toLowerCase() +
           ':' +
           this.dataModel.resource_name,
-        'green darken-1'
+        'green-darken-1'
       ).catch((err) => {
         this.finishError(err.response.data)
         isSuccess = false
@@ -486,7 +464,7 @@ export default {
       this.finishSuccess('Success: Updated OSINT.')
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     async handleDeleteSubmit() {

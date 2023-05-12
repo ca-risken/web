@@ -5,7 +5,7 @@
         <v-col cols="9">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2"
+              <v-icon large class="pr-2" color="blue-lighten-2"
                 >mdi-file-find-outline</v-icon
               >
               {{ $t(`submenu['Finding']`) }}
@@ -17,11 +17,11 @@
         <v-row justify="center" align-content="center">
           <v-col cols="2" class="px-1">
             <v-text-field
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
               hide-details
-              background-color="white"
+              bg-color="white"
               :placeholder="searchForm.findingID.placeholder"
               :loading="loading"
               v-model="searchModel.findingID"
@@ -29,11 +29,11 @@
           </v-col>
           <v-col cols="2" class="px-1">
             <v-text-field
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
               hide-details
-              background-color="white"
+              bg-color="white"
               :placeholder="searchForm.alertID.placeholder"
               :loading="loading"
               v-model="searchModel.alertID"
@@ -42,13 +42,11 @@
           <v-col cols="3" class="px-1">
             <v-combobox
               multiple
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              small-chips
-              deletable-chips
               hide-details
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['` + searchForm.dataSource.label + `']`)"
               :placeholder="searchForm.dataSource.placeholder"
               :items="dataSourceList"
@@ -57,9 +55,9 @@
               ref="refDataSource"
             />
           </v-col>
-          <v-col cols="3" align-self="end" class="text-right">
+          <v-col cols="3" class="text-right">
             <v-slider
-              outlined
+              variant="outlined"
               hide-details
               min="0.0"
               max="1.0"
@@ -72,57 +70,47 @@
           </v-col>
           <v-col cols="2" class="px-1 text-right">
             <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
+              <template v-slot:activator="{ attrs }">
                 <v-btn
-                  fab
-                  small
-                  depressed
-                  outlined
-                  color="grey darken-2"
-                  @click="searchMenuDetail = !searchMenuDetail"
                   v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon v-if="searchMenuDetail">mdi-chevron-up</v-icon>
-                  <v-icon v-else>mdi-chevron-down</v-icon>
-                </v-btn>
+                  size="small"
+                  variant="outlined"
+                  color="grey-darken-2"
+                  @click="searchMenuDetail = !searchMenuDetail"
+                  :icon="
+                    searchMenuDetail ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                  "
+                />
               </template>
               <span>search detail</span>
             </v-tooltip>
             <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
+              <template v-slot:activator="{ attrs }">
                 <v-btn
+                  v-bind="attrs"
                   class="ml-2"
-                  fab
-                  small
-                  depressed
-                  outlined
-                  color="indigo darken-2"
+                  size="small"
+                  variant="outlined"
+                  color="indigo-darken-2"
                   @click="handleSearch"
                   :loading="loading"
-                  v-bind="attrs"
-                  v-on="on"
                   risken-action-name="search-finding-by-condition-from-finding"
-                >
-                  <v-icon>search</v-icon>
-                </v-btn>
+                  icon="mdi-magnify"
+                />
               </template>
               <span>search</span>
             </v-tooltip>
             <v-menu :disabled="!table.selected || table.selected.length <= 0">
-              <template v-slot:activator="{ attrs, on }">
+              <template v-slot:activator="{ props }">
                 <v-btn
+                  v-bind="props"
                   class="ml-2"
-                  fab
-                  small
-                  depressed
-                  outlined
-                  color="green darken-2"
-                  v-bind="attrs"
-                  v-on="on"
+                  size="small"
+                  variant="outlined"
+                  color="green-darken-2"
                   :loading="loading"
+                  icon="mdi-format-list-bulleted-square"
                 >
-                  <v-icon>mdi-format-list-bulleted-square</v-icon>
                 </v-btn>
               </template>
               <v-list dense>
@@ -130,10 +118,8 @@
                   v-for="action in getSelectedActionList()"
                   :key="action.text"
                   @click="action.click"
+                  :prepend-icon="action.icon"
                 >
-                  <v-list-item-icon class="ml-1 mr-1">
-                    <v-icon small>{{ action.icon }}</v-icon>
-                  </v-list-item-icon>
                   <v-list-item-title class="ma-1">{{
                     $t(`action['` + action.text + `']`)
                   }}</v-list-item-title>
@@ -147,13 +133,13 @@
             <v-col cols="3" class="px-1">
               <v-combobox
                 multiple
-                outlined
-                dense
+                variant="outlined"
+                density="compact"
                 clearable
                 small-chips
                 deletable-chips
                 hide-details
-                background-color="white"
+                bg-color="white"
                 :label="$t(`item['` + searchForm.tag.label + `']`)"
                 :placeholder="searchForm.tag.placeholder"
                 :items="searchForm.tagList"
@@ -166,76 +152,74 @@
             <v-col cols="4" class="px-1">
               <v-combobox
                 multiple
-                outlined
-                dense
+                variant="outlined"
+                density="compact"
                 clearable
                 small-chips
                 deletable-chips
                 hide-details
-                background-color="white"
+                bg-color="white"
                 v-model="searchModel.resourceName"
                 :loading="loading"
                 :label="$t(`item['` + searchForm.resourceName.label + `']`)"
                 :placeholder="searchForm.resourceName.placeholder"
                 :items="resourceNameCombobox"
-                @keydown="listResourceNameForCombobox"
-                persistent-hint
                 ref="refResourceName"
+                no-filter
               />
             </v-col>
           </v-row>
         </transition>
       </v-form>
-      <v-row justify="space-around">
-        <v-col cols="12">
-          <v-chip-group show-arrows>
-            <template v-for="history in sortedFindingHistory">
-              <v-tooltip :key="history.search_at" bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-chip
-                    outlined
-                    close
-                    close-icon="mdi-close-circle-outline"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="searchByHistory(history)"
-                    @click:close="deleteSearchHistory(history)"
-                    risken-action-name="search-finding-by-history-from-finding"
-                  >
-                    {{ history.label }}
-                  </v-chip>
-                </template>
-                <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
-              </v-tooltip>
-            </template>
-          </v-chip-group>
-        </v-col>
-      </v-row>
-      <v-row class="mt-2">
-        <v-tabs
-          v-model="searchModel.tab"
-          background-color="background"
-          color="cyan darken-3 accent-4"
-          fixed-tabs
-          @change="handleChangeStatus"
+      <v-chip-group>
+        <template
+          v-for="history in sortedFindingHistory"
+          :key="history.search_at"
         >
-          <v-tab class="mx-0 px-0">{{ $t(`view.finding['ACTIVE']`) }}</v-tab>
-          <v-tab class="mx-0 px-0">{{ $t(`view.finding['PENDING']`) }}</v-tab>
-          <v-tab class="mx-0 px-0">{{ $t(`view.finding['ALL']`) }}</v-tab>
-        </v-tabs>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ attrs }">
+              <v-chip
+                v-bind="attrs"
+                variant="outlined"
+                closable
+                close-icon="mdi-close-circle-outline"
+                @click="searchByHistory(history)"
+                @click:close="deleteSearchHistory(history)"
+                risken-action-name="search-finding-by-history-from-finding"
+                :text="history.label"
+              />
+            </template>
+            <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
+          </v-tooltip>
+        </template>
+      </v-chip-group>
+      <v-row class="mt-2">
+        <v-col>
+          <v-tabs
+            v-model="searchModel.tab"
+            bg-color="white"
+            color="cyan-darken-3 accent-4"
+            fixed-tabs
+            @update:modelValue="handleChangeStatus"
+          >
+            <v-tab class="mx-0 px-0">{{ $t(`view.finding['ACTIVE']`) }}</v-tab>
+            <v-tab class="mx-0 px-0">{{ $t(`view.finding['PENDING']`) }}</v-tab>
+            <v-tab class="mx-0 px-0">{{ $t(`view.finding['ALL']`) }}</v-tab>
+          </v-tabs>
+        </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
             <v-card-text class="pa-0">
-              <v-data-table
+              <v-data-table-server
                 :headers="headers"
+                :items-length="table.total"
                 :items="table.items"
-                :options.sync="table.options"
-                :server-items-length="table.total"
+                :page="table.options.page"
+                v-model:items-per-page="table.options.itemsPerPage"
                 :loading="loading"
-                :footer-props="table.footer"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -279,85 +263,66 @@
                   }}</a></template
                 >
                 <template v-slot:[`item.resource_name`]="{ item }">
-                  {{ cutLongText(item.resource_name, 64) }}
+                  {{ cutLongText(item.value.resource_name, 64) }}
                 </template>
                 <template v-slot:[`item.data_source`]="{ item }">
                   <v-layout justify-center>
                     <v-avatar
-                      v-if="item.data_source == 'RISKEN'"
+                      v-if="item.value.data_source == 'RISKEN'"
                       tile
                       class="ma-0"
                       size="30px"
                     >
-                      <img src="/static/m.png" :alt="item.data_source" />
+                      <img src="/static/m.png" :alt="item.value.data_source" />
                     </v-avatar>
                     <v-icon
                       v-else
-                      :color="getDataSourceIconColor(item.data_source)"
+                      :color="getDataSourceIconColor(item.value.data_source)"
                     >
-                      {{ getDataSourceIcon(item.data_source) }}
+                      {{ getDataSourceIcon(item.value.data_source) }}
                     </v-icon>
                   </v-layout>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
                   <v-icon
-                    v-if="item.status"
-                    :color="getColorByFindingStatus(item.status)"
+                    v-if="item.value.status"
+                    :color="getColorByFindingStatus(item.value.status)"
                     >mdi-check-circle</v-icon
                   >
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
                 <template v-slot:[`item.score`]="{ item }">
-                  <v-chip dark :color="getColorByScore(item.score)">{{
-                    item.score | formatScore
-                  }}</v-chip>
+                  <v-chip
+                    variant="flat"
+                    :color="getColorByScore(item.value.score)"
+                    >{{ formatScore(item.value.score) }}</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.tags`]="{ item }">
-                  <v-chip>
-                    <v-tooltip top color="grey lighten-4">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn icon v-bind="attrs" v-on="on">
-                          <v-icon>mdi-label</v-icon>
-                        </v-btn>
-                      </template>
+                  <v-chip prepend-icon="mdi-label">
+                    <v-tooltip location="top" activator="parent" :scrim="false">
                       <v-chip
-                        v-for="t in item.tags"
+                        v-for="t in item.value.tags"
                         :key="t.finding_tag_id"
                         class="ma-1"
-                        color="grey darken-3"
-                        dark
+                        >{{ t.tag }}</v-chip
                       >
-                        {{ t.tag }}
-                      </v-chip>
                     </v-tooltip>
-                    {{ item.tags | itemCount }}
+                    {{ itemCount(item.value.tags) }}
                   </v-chip>
                 </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
-                </template>
-
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in getActionList(item)"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -365,7 +330,7 @@
                     </v-list>
                   </v-menu>
                 </template>
-              </v-data-table>
+              </v-data-table-server>
             </v-card-text>
           </v-card>
         </v-col>
@@ -379,7 +344,7 @@
           <v-spacer />
           <v-btn
             color="blue-grey"
-            outlined
+            variant="outlined"
             style="text-transform: none"
             @click="handleChatGPT"
           >
@@ -397,77 +362,69 @@
           <v-row dense class="mx-2">
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon color="black" dark left>mdi-identifier</v-icon>
-                    Finding ID
-                    <clip-board
-                      name="Finding ID"
-                      :text="String(findingModel.finding_id)"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.finding_id }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon color="black" left icon="mdi-identifier" />
+                  Finding ID
+                  <clip-board
+                    name="Finding ID"
+                    :text="String(findingModel.finding_id)"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ findingModel.finding_id }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon
-                      left
-                      :color="getDataSourceIconColor(findingModel.data_source)"
-                    >
-                      {{ getDataSourceIcon(findingModel.data_source) }}
-                    </v-icon>
-                    {{ $t(`item['Data Source']`) }}
-                    <clip-board
-                      :name="$t(`item['Data Source']`)"
-                      :text="findingModel.data_source"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.data_source }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon
+                    left
+                    :color="getDataSourceIconColor(findingModel.data_source)"
+                  >
+                    {{ getDataSourceIcon(findingModel.data_source) }}
+                  </v-icon>
+                  {{ $t(`item['Data Source']`) }}
+                  <clip-board
+                    :name="$t(`item['Data Source']`)"
+                    :text="findingModel.data_source"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ findingModel.data_source }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="6">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon left>mdi-file-find-outline</v-icon>
-                    {{ $t(`item['Resource Name']`) }}
-                    <clip-board
-                      :name="$t(`item['Resource Name']`)"
-                      :text="findingModel.resource_name"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.resource_name }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon left>mdi-file-find-outline</v-icon>
+                  {{ $t(`item['Resource Name']`) }}
+                  <clip-board
+                    :name="$t(`item['Resource Name']`)"
+                    :text="findingModel.resource_name"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ findingModel.resource_name }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
           <v-row dense class="mx-2">
             <v-col cols="12">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon left>mdi-image-text</v-icon>
-                    {{ $t(`item['Description']`) }}
-                    <clip-board
-                      :name="$t(`item['Description']`)"
-                      :text="findingModel.description"
-                    />
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.description }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon left>mdi-image-text</v-icon>
+                  {{ $t(`item['Description']`) }}
+                  <clip-board
+                    :name="$t(`item['Description']`)"
+                    :text="findingModel.description"
+                  />
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ findingModel.description }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
           </v-row>
@@ -475,32 +432,30 @@
           <v-row dense class="mx-2">
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon :color="getColorByScore(findingModel.score)"
-                      >mdi-scoreboard</v-icon
-                    >
-                    {{ $t(`item['Score']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    <v-chip dark :color="getColorByScore(findingModel.score)">{{
-                      findingModel.score | formatScore
-                    }}</v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon :color="getColorByScore(findingModel.score)"
+                    >mdi-scoreboard</v-icon
+                  >
+                  {{ $t(`item['Score']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  <v-chip
+                    variant="flat"
+                    :color="getColorByScore(findingModel.score)"
+                    >{{ formatScore(findingModel.score) }}</v-chip
+                  >
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
-                <v-list-item-content>
-                  <v-list-item-subtitle>
-                    <v-icon outlined>mdi-scoreboard</v-icon>
-                    {{ $t(`item['Original Score']`) }}
-                  </v-list-item-subtitle>
-                  <v-list-item-title class="headline">
-                    {{ findingModel.original_score }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon>mdi-scoreboard</v-icon>
+                  {{ $t(`item['Original Score']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="headline">
+                  {{ findingModel.original_score }}
+                </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="4" v-if="recommendModel.recommend_id">
@@ -511,9 +466,8 @@
               <v-list-item-title>
                 <v-btn
                   text
-                  outlined
-                  dense
-                  color="purple darken-2"
+                  variant="outlined"
+                  color="purple-darken-2"
                   class="ma-1"
                   :loading="loading"
                   @click="handleRecommendItem"
@@ -533,10 +487,10 @@
                 </v-list-item-subtitle>
                 <v-list-item-title>
                   <v-alert
-                    border="left"
-                    colored-border
-                    elevation="2"
+                    border="start"
+                    border-color="warning"
                     type="warning"
+                    variant="outlined"
                   >
                     <p>
                       {{ findingModel.pend_note }}
@@ -554,7 +508,7 @@
                   {{ $t(`item['Expired At']`) }}
                 </v-list-item-subtitle>
                 <v-list-item-title class="mt-4">
-                  <v-chip>{{ findingModel.pend_expired | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(findingModel.pend_expired) }}</v-chip>
                 </v-list-item-title>
               </v-col>
             </v-row>
@@ -567,9 +521,8 @@
                 {{ $t(`item['Tag']`) }}
                 <v-btn
                   text
-                  outlined
-                  dense
-                  color="black lighten-1"
+                  variant="outlined"
+                  color="black-lighten-1"
                   class="ma-4"
                   :loading="loading"
                   @click="handleNewTag"
@@ -581,9 +534,9 @@
                 <v-chip
                   v-for="tag in findingModel.tags"
                   :key="tag.finding_tag_id"
-                  @update:active="handleUntag(tag)"
+                  @click:close.stop.prevent="handleUntag(tag)"
                   class="mx-1"
-                  close
+                  closable
                   link
                   :to="{
                     path: '/finding/finding/',
@@ -607,10 +560,10 @@
                 JSON Data
                 <clip-board
                   name="JSON Data"
-                  :text="findingModel.data | pretty"
+                  :text="pretty(findingModel.data)"
                 />
               </v-list-item-subtitle>
-              <v-card dark color="grey darken-3" class="ma-4">
+              <v-card dark color="grey-darken-3" class="ma-4">
                 <v-card-text class="title font-weight-bold">
                   <json-viewer
                     :value="parseFindingData(findingModel.data)"
@@ -640,7 +593,7 @@
                 {{ $t(`item['Created']`) }}
               </v-list-item-subtitle>
               <v-list-item-title>
-                <v-chip>{{ findingModel.created_at | formatTime }}</v-chip>
+                <v-chip>{{ formatTime(findingModel.created_at) }}</v-chip>
               </v-list-item-title>
             </v-col>
             <v-col cols="4">
@@ -649,20 +602,25 @@
                 {{ $t(`item['Updated']`) }}
               </v-list-item-subtitle>
               <v-list-item-title>
-                <v-chip>{{ findingModel.updated_at | formatTime }}</v-chip>
+                <v-chip>{{ formatTime(findingModel.updated_at) }}</v-chip>
               </v-list-item-title>
             </v-col>
           </v-row>
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text outlined @click="pendDialog = true">
+          <v-btn
+            color="red-darken-1"
+            text
+            variant="outlined"
+            @click="pendDialog = true"
+          >
             {{ $t(`btn['PEND']`) }}
           </v-btn>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="viewDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
@@ -681,18 +639,23 @@
             v-model="findingModel.new_tag"
             label="tag"
             placeholder="key:value"
-            outlined
+            variant="outlined"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="tagDialog = false">
+          <v-btn
+            text
+            variant="outlined"
+            color="grey-darken-1"
+            @click="tagDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="blue darken-1"
+            color="blue-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleNewTagSubmit"
           >
@@ -710,60 +673,45 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ findingModel.finding_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Finding ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ findingModel.finding_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Finding ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-file-find-outline</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ findingModel.resource_name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Resource Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-file-find-outline">
+            <v-list-item-title>
+              {{ findingModel.resource_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Resource Name']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-image-text</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item>
-                {{ findingModel.description }}
-              </v-list-item>
-              <v-list-item-subtitle>{{
-                $t(`item['Description']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-image-text">
+            <v-list-item>
+              {{ findingModel.description }}
+            </v-list-item>
+            <v-list-item-subtitle>{{
+              $t(`item['Description']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -782,55 +730,38 @@
         </v-card-title>
         <v-card-text>
           <v-list two-line>
-            <v-list-item>
-              <v-list-item-avatar
-                ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-              >
-              <v-list-item-content>
-                <v-list-item-title v-if="pendAll">
-                  {{ table.selected.length }} findings selected...
-                </v-list-item-title>
-                <v-list-item-title v-else>
-                  {{ findingModel.finding_id }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ $t(`item['Finding ID']`) }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
+            <v-list-item prepend-icon="mdi-identifier">
+              <v-list-item-title v-if="pendAll">
+                {{ table.selected.length }} findings selected...
+              </v-list-item-title>
+              <v-list-item-title v-else>
+                {{ findingModel.finding_id }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $t(`item['Finding ID']`) }}
+              </v-list-item-subtitle>
             </v-list-item>
-            <v-list-item>
-              <v-list-item-avatar
-                ><v-icon>mdi-image-text</v-icon></v-list-item-avatar
-              >
-              <v-list-item-content>
-                <v-textarea
-                  outlined
-                  clearable
-                  clear-icon="mdi-close-circle"
-                  v-model="pendModel.note"
-                  label="pending note"
-                ></v-textarea>
-              </v-list-item-content>
+            <v-list-item prepend-icon="mdi-image-text">
+              <v-textarea
+                variant="outlined"
+                clearable
+                clear-icon="mdi-close-circle"
+                v-model="pendModel.note"
+                label="pending note"
+              ></v-textarea>
             </v-list-item>
-            <v-list-item>
-              <v-list-item-avatar
-                ><v-icon
-                  >mdi-clock-time-eight-outline</v-icon
-                ></v-list-item-avatar
-              >
-              <v-list-item-content>
-                <v-combobox
-                  outlined
-                  dense
-                  hide-details
-                  clearable
-                  background-color="white"
-                  v-model="pendModel.expired_at"
-                  :loading="loading"
-                  :label="$t(`item['Expired At']`)"
-                  :items="pendExpiredItems"
-                />
-              </v-list-item-content>
+            <v-list-item prepend-icon="mdi-clock-time-eight-outline">
+              <v-combobox
+                variant="outlined"
+                density="compact"
+                hide-details
+                clearable
+                bg-color="white"
+                v-model="pendModel.expired_at"
+                :loading="loading"
+                :label="$t(`item['Expired At']`)"
+                :items="pendExpiredItems"
+              />
             </v-list-item>
           </v-list>
         </v-card-text>
@@ -838,27 +769,27 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="pendDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             v-if="pendAll"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handlePendSelectedSubmit"
           >
             {{ $t(`btn['PEND ALL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             v-else
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handlePendItemSubmit"
           >
@@ -882,89 +813,60 @@
           </v-row>
           <v-row>
             <v-col cols="4">
-              <v-list-item>
-                <v-list-item-avatar
-                  ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-                >
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ recommendModel.recommend_id }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['Recommend ID']`) }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
+              <v-list-item prepend-icon="mdi-identifier">
+                <v-list-item-title>
+                  {{ recommendModel.recommend_id }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ $t(`item['Recommend ID']`) }}
+                </v-list-item-subtitle>
               </v-list-item>
             </v-col>
             <v-col cols="4">
-              <v-list-item>
-                <v-list-item-avatar
-                  ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-                >
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ recommendModel.finding_id }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ $t(`item['Finding ID']`) }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
+              <v-list-item prepend-icon="mdi-identifier">
+                <v-list-item-title>
+                  {{ recommendModel.finding_id }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ $t(`item['Finding ID']`) }}
+                </v-list-item-subtitle>
               </v-list-item>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="6">
-              <v-list-item>
-                <v-list-item-avatar
-                  ><v-icon>mdi-tag-multiple</v-icon></v-list-item-avatar
-                >
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ recommendModel.type }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>{{
-                    $t(`item['Type']`)
-                  }}</v-list-item-subtitle>
-                </v-list-item-content>
+              <v-list-item prepend-icon="mdi-tag-multiple">
+                <v-list-item-title>
+                  {{ recommendModel.type }}
+                </v-list-item-title>
+                <v-list-item-subtitle>{{
+                  $t(`item['Type']`)
+                }}</v-list-item-subtitle>
               </v-list-item>
             </v-col>
             <v-col cols="6">
-              <v-list-item>
-                <v-list-item-avatar>
-                  <v-icon
-                    :color="getDataSourceIconColor(recommendModel.data_source)"
-                  >
-                    {{ getDataSourceIcon(recommendModel.data_source) }}
-                  </v-icon>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ recommendModel.data_source }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>{{
-                    $t(`item['Data Source']`)
-                  }}</v-list-item-subtitle>
-                </v-list-item-content>
+              <v-list-item
+                :prepend-icon="getDataSourceIcon(recommendModel.data_source)"
+              >
+                <v-list-item-title>
+                  {{ recommendModel.data_source }}
+                </v-list-item-title>
+                <v-list-item-subtitle>{{
+                  $t(`item['Data Source']`)
+                }}</v-list-item-subtitle>
               </v-list-item>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12">
-              <v-list-item>
-                <v-list-item-avatar
-                  ><v-icon color="yellow darken-3"
-                    >mdi-comment-alert-outline</v-icon
-                  ></v-list-item-avatar
-                >
-                <v-list-item-content>
-                  <v-list-item class="pa-0 ma-0">
-                    <auto-link :text="recommendModel.risk" />
-                  </v-list-item>
-                  <v-list-item-subtitle>{{
-                    $t(`item['Risk']`)
-                  }}</v-list-item-subtitle>
-                </v-list-item-content>
+              <v-list-item prepend-icon="mdi-comment-alert-outline">
+                <v-list-item class="pa-0 ma-0">
+                  <auto-link :text="recommendModel.risk" />
+                </v-list-item>
+                <v-list-item-subtitle>{{
+                  $t(`item['Risk']`)
+                }}</v-list-item-subtitle>
               </v-list-item>
             </v-col>
           </v-row>
@@ -974,10 +876,11 @@
               <v-alert
                 type="info"
                 icon="mdi-run"
-                color="purple lighten-2"
+                color="purple-lighten-2"
                 prominent
-                outlined
-                border="left"
+                variant="outlined"
+                border="start"
+                border-color="purple-lighten-2"
                 class="mb-4 mt-4 pa-6 font-weight-medium"
               >
                 <auto-link :text="recommendModel.recommendation" />
@@ -990,8 +893,8 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="recommendDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
@@ -1005,22 +908,16 @@
         <v-container>
           <v-row>
             <v-col cols="12">
-              <v-list-item>
-                <v-list-item-avatar>
-                  <v-icon color="blue-gray darken-4">mdi-chat</v-icon>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item class="px-0 pt-10 ma-0">
-                    {{ $t(`view.finding['ChatGPT Question-1']`) }}<br />
-                    {{ $t(`view.finding['ChatGPT Question-2']`) }}<br />
-                    <br />
-                    {{ $t(`view.finding['ChatGPT Examples']`) }}
-                  </v-list-item>
-                </v-list-item-content>
+              <v-list-item prepend-icon="mdi-chat">
+                <v-list-item class="px-0 pt-10 ma-0">
+                  {{ $t(`view.finding['ChatGPT Question-1']`) }}<br />
+                  {{ $t(`view.finding['ChatGPT Question-2']`) }}<br />
+                  <br />
+                  {{ $t(`view.finding['ChatGPT Examples']`) }}
+                </v-list-item>
               </v-list-item>
             </v-col>
           </v-row>
-
           <v-row>
             <v-col cols="12">
               <v-alert
@@ -1028,9 +925,8 @@
                 type="success"
                 icon="$success"
                 variant="outlined"
-                outlined
-                border="right"
-                border-color="green lighten-2"
+                border="end"
+                border-color="green-lighten-2"
                 class="my-4 pl-6 pr-8 font-weight-medium"
               >
                 <v-progress-circular
@@ -1038,7 +934,7 @@
                   indeterminate
                   :size="40"
                   width="4"
-                  color="green darken-2"
+                  color="green-darken-2"
                   class="ma-6 px-12"
                 ></v-progress-circular>
                 <v-card-text v-else class="text-sm-h6 ma-0 pa-0">
@@ -1051,7 +947,12 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text outlined color="grey darken-1" @click="aiDialog = false">
+          <v-btn
+            text
+            variant="outlined"
+            color="grey-darken-1"
+            @click="aiDialog = false"
+          >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
@@ -1071,6 +972,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
 import AutoLink from '@/component/text/AutoLink.vue'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'FindingList',
   mixins: [mixin, finding],
@@ -1079,6 +981,7 @@ export default {
     ClipBoard,
     JsonViewer,
     AutoLink,
+    VDataTableServer,
   },
   data() {
     return {
@@ -1109,7 +1012,6 @@ export default {
         },
         tag: { label: 'Tag', placeholder: 'Filter tag' },
         score: { label: 'Score', placeholder: 'Filter score' },
-        resourceNameList: [],
         tagList: [],
       },
       findingModel: {
@@ -1157,7 +1059,7 @@ export default {
         selected: [],
         options: {
           page: 1,
-          itemsPerPage: 20,
+          itemsPerPage: 5,
         },
         sort: {
           key: 'finding_id',
@@ -1178,72 +1080,59 @@ export default {
       aiAnswer: '',
     }
   },
-  filters: {
-    formatScore: (score) => {
-      if (!Number.isInteger(score)) {
-        return score
-      }
-      return score.toFixed(2)
-    },
-    itemCount: (items) => {
-      if (items && items.length) {
-        return items.length
-      }
-      return 0
-    },
-  },
+  filters: {},
   computed: {
     headers() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'center',
           width: '5%',
-          value: 'finding_id',
+          key: 'finding_id',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'center',
           width: '10%',
-          value: 'status',
+          key: 'status',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Score"]'),
+          title: this.$i18n.t('item["Score"]'),
           align: 'center',
           width: '5%',
-          value: 'score',
+          key: 'score',
         },
         {
-          text: this.$i18n.t('item["Data Source"]'),
+          title: this.$i18n.t('item["Data Source"]'),
           align: 'center',
           width: '10%',
-          value: 'data_source',
+          key: 'data_source',
         },
         {
-          text: this.$i18n.t('item["Resource"]'),
+          title: this.$i18n.t('item["Resource"]'),
           align: 'start',
           width: '30%',
-          value: 'resource_name',
+          key: 'resource_name',
         },
         {
-          text: this.$i18n.t('item["Description"]'),
+          title: this.$i18n.t('item["Description"]'),
           align: 'start',
           width: '30%',
-          value: 'description',
+          key: 'description',
         },
         {
-          text: this.$i18n.t('item["Tags"]'),
+          title: this.$i18n.t('item["Tags"]'),
           align: 'start',
           width: '5%',
-          value: 'tags',
+          key: 'tags',
           sortable: false,
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           width: '5%',
-          value: 'action',
+          key: 'action',
           sortable: false,
         },
       ]
@@ -1253,8 +1142,24 @@ export default {
         return b.search_at - a.search_at // desc
       })
     },
+    formatScore() {
+      return (score) => {
+        if (!Number.isInteger(score)) {
+          return score
+        }
+        return score.toFixed(2)
+      }
+    },
+    itemCount() {
+      return (items) => {
+        if (items && items.length) {
+          return items.length
+        }
+        return 0
+      }
+    },
   },
-  mounted() {
+  async mounted() {
     this.findingHistory = this.getSearchHistory()
     this.getTag()
     this.listResourceNameForCombobox()
@@ -1276,7 +1181,6 @@ export default {
         this.loading = false
         return
       }
-
       this.table.total = list.total
       let findings = []
       for (const id of list.finding_id) {
@@ -1311,7 +1215,6 @@ export default {
       this.findings = []
       this.table.total = 0
       this.table.items = []
-      this.searchForm.resourceNameList = []
     },
     isPending(pend) {
       if (!pend.finding_id) {
@@ -1332,8 +1235,8 @@ export default {
       let list = [
         { text: 'View Finding', icon: 'mdi-eye', click: this.handleViewItem },
       ]
-      if (!item.status) return list
-      if (item.status === 'ACTIVE') {
+      if (!item.value.status) return list
+      if (item.value.status === 'ACTIVE') {
         list.push({
           text: 'Pend Finding',
           icon: 'mdi-check-circle-outline',
@@ -1393,8 +1296,8 @@ export default {
     },
 
     // handler
-    async handleViewItem(row) {
-      this.findingModel = Object.assign(this.findingModel, row)
+    async handleViewItem(event, findings) {
+      this.findingModel = Object.assign(this.findingModel, findings.item.value)
       this.recommendModel = await this.getRecommend(
         this.findingModel.finding_id
       )
@@ -1561,7 +1464,7 @@ export default {
     },
     // Delete
     handleDeleteItem(row) {
-      this.findingModel = Object.assign(this.findingModel, row)
+      this.findingModel = Object.assign(this.findingModel, row.value)
       this.deleteDialog = true
     },
     async handleDeleteSubmit() {
@@ -1581,7 +1484,10 @@ export default {
     },
     async handleActivateItem(row) {
       this.loading = true
-      await this.deletePendFinding(this.getCurrentProjectID(), row.finding_id)
+      await this.deletePendFinding(
+        this.getCurrentProjectID(),
+        row.value.finding_id
+      )
       this.finishSuccess('Success: Activated.')
     },
     async handleActivateSelected() {
@@ -1599,7 +1505,7 @@ export default {
     },
     // Pend
     handlePendItem(row) {
-      this.findingModel = Object.assign(this.findingModel, row)
+      this.findingModel = Object.assign(this.findingModel, row.value)
       this.pendAll = false
       this.pendModel.note = ''
       this.pendDialog = true

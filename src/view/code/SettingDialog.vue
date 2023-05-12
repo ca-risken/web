@@ -2,39 +2,64 @@
   <v-container>
     <v-dialog v-model="showDialog" max-width="70%">
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5 grey-lighten-2">
           <v-icon large color="black">mdi-github</v-icon>
           <span class="mx-4 headline">
             {{ $t(`submenu['GitHub']`) }}
           </span>
         </v-card-title>
-        <v-stepper v-model="e6" non-linear vertical>
-          <v-stepper-step :complete="e6 > 1" step="1" editable>
-            {{ $t(`item['GitHub Setting']`) }}
-          </v-stepper-step>
-          <v-stepper-content step="1">
-            <v-card tile class="mb-4" outlined>
+        <v-tabs
+          v-model="e6"
+          bg-color="white"
+          color="cyan-darken-3-accent-4"
+          fixed-tabs
+        >
+          <v-tab class="mx-0 px-0" :value="1">{{
+            $t(`item['GitHub Setting']`)
+          }}</v-tab>
+          <v-tab
+            class="mx-0 px-0"
+            :value="2"
+            :disabled="!isConfiguredGitHubSetting"
+            >{{ gitleaksDataSourceModel.name }}</v-tab
+          >
+          <v-tab
+            class="mx-0 px-0"
+            :value="3"
+            :disabled="!isConfiguredGitHubSetting"
+            >{{ dependencyDataSourceModel.name }}</v-tab
+          >
+        </v-tabs>
+        <v-window v-model="e6">
+          <v-window-item :value="1">
+            <v-card variant="flat">
               <v-card-text class="pb-0">
                 <v-form v-model="gitHubForm.valid" ref="formGitHub">
                   <v-row>
-                    <v-col cols="2" v-if="gitHubSetting.github_setting_id">
+                    <v-col>
+                      <v-list-item two-line>
+                        <v-list-item-title class="text-h5">
+                          {{ $t(`item['GitHub Setting']`) }}
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="2" v-if="isConfiguredGitHubSetting">
                       <v-text-field
-                        dense
-                        outlined
+                        density="compact"
                         v-model="gitHubSetting.github_setting_id"
                         :label="
                           $t(
                             `item['` + gitHubForm.github_setting_id.label + `']`
                           )
                         "
-                        readonly
-                        filled
+                        disabled
                       ></v-text-field>
                     </v-col>
                     <v-col cols="3">
                       <v-text-field
-                        dense
-                        outlined
+                        density="compact"
                         v-model="gitHubSetting.name"
                         :counter="64"
                         :rules="gitHubForm.name.validator"
@@ -42,33 +67,27 @@
                           $t(`item['` + gitHubForm.name.label + `']`) + ' *'
                         "
                         :placeholder="gitHubForm.name.placeholder"
-                        :disabled="
-                          isReadOnly || gitHubSetting.github_setting_id
-                        "
-                        :filled="isReadOnly || gitHubSetting.github_setting_id"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="5">
                       <v-text-field
-                        dense
-                        outlined
+                        density="compact"
                         v-model="gitHubSetting.base_url"
                         :counter="128"
                         :rules="gitHubForm.base_url.validator"
                         :label="$t(`item['` + gitHubForm.base_url.label + `']`)"
                         :placeholder="gitHubForm.base_url.placeholder"
                         :disabled="isReadOnly"
-                        :filled="isReadOnly"
                       ></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="2">
                       <v-combobox
-                        dense
+                        density="compact"
                         required
                         clearable
-                        outlined
                         v-model="gitHubSetting.type_text"
                         :rules="gitHubForm.type.validator"
                         :label="
@@ -77,14 +96,12 @@
                         :placeholder="gitHubForm.type.placeholder"
                         :items="gitHubForm.type.list"
                         :disabled="isReadOnly"
-                        :filled="isReadOnly"
                       />
                     </v-col>
                     <v-col cols="6">
                       <v-text-field
-                        dense
+                        density="compact"
                         required
-                        outlined
                         v-model="gitHubSetting.target_resource"
                         :counter="128"
                         :rules="gitHubForm.target_resource.validator"
@@ -95,15 +112,13 @@
                         "
                         :placeholder="gitHubForm.target_resource.placeholder"
                         :disabled="isReadOnly"
-                        :filled="isReadOnly"
                       ></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="3">
                       <v-text-field
-                        dense
-                        outlined
+                        density="compact"
                         v-model="gitHubSetting.github_user"
                         :counter="64"
                         :rules="gitHubForm.github_user.validator"
@@ -112,13 +127,11 @@
                         "
                         :placeholder="gitHubForm.github_user.placeholder"
                         :disabled="isReadOnly"
-                        :filled="isReadOnly"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="5">
                       <v-text-field
-                        dense
-                        outlined
+                        density="compact"
                         v-model="gitHubSetting.personal_access_token"
                         :counter="255"
                         :rules="gitHubForm.personal_access_token.validator"
@@ -133,127 +146,130 @@
                           gitHubForm.personal_access_token.placeholder
                         "
                         :disabled="isReadOnly"
-                        :filled="isReadOnly"
                       ></v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
-            </v-card>
-            <v-row>
-              <v-col class="text-right">
-                <v-btn
-                  outlined
-                  color="blue darken-1"
-                  @click="handleGitHubEditSubmit"
-                  v-if="!isReadOnly"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['EDIT']`) }}
-                </v-btn>
-                <v-btn
-                  outlined
-                  color="grey darken-1"
-                  class="ml-2"
-                  @click="$emit('closeDialog')"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-stepper-content>
-
-          <v-stepper-step :complete="e6 > 2" step="2" editable>
-            {{ gitleaksDataSourceModel.name }}
-            <small>{{ gitleaksDataSourceModel.description }} </small>
-          </v-stepper-step>
-
-          <v-stepper-content step="2">
-            <v-card outlined class="mb-4">
-              <v-card-text class="py-0">
+              <v-card-actions>
                 <v-row>
-                  <v-list-item two-line>
-                    <v-col cols="3">
-                      <v-list-item-content>
+                  <v-col class="text-right">
+                    <v-btn
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleGitHubEditSubmit"
+                      v-if="!isReadOnly"
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['EDIT']`) }}
+                    </v-btn>
+                    <v-btn
+                      variant="outlined"
+                      color="grey-darken-1"
+                      class="ml-2"
+                      @click="$emit('closeDialog')"
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['CANCEL']`) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+            </v-card>
+          </v-window-item>
+          <v-window-item :value="2">
+            <v-card variant="flat" class="mb-4">
+              <v-card-text>
+                <v-row>
+                  <v-col>
+                    <v-list-item two-line>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Data Source']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="text-h5">
+                        {{ gitleaksDataSourceModel.name }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="3">
+                    <v-list-item two-line>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Data Source ID']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="headline">
+                        {{ gitleaksDataSourceModel.code_data_source_id }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="3">
+                    <v-list-item>
+                      <v-list-item-title class="headline">
                         <v-list-item-subtitle>
-                          {{ $t(`item['Data Source ID']`) }}
+                          {{ $t(`item['MAX Score']`) }}
                         </v-list-item-subtitle>
-                        <v-list-item-title class="headline">
-                          {{ gitleaksDataSourceModel.code_data_source_id }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-col>
-                    <v-col cols="3">
-                      <v-list-item-content>
-                        <v-list-item-title class="headline">
-                          <v-list-item-subtitle>
-                            {{ $t(`item['MAX Score']`) }}
-                          </v-list-item-subtitle>
-                          <v-chip outlined>
-                            {{ gitleaksDataSourceModel.max_score }}
-                          </v-chip>
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-col>
-                    <v-col cols="3">
-                      <v-list-item-content>
-                        <v-list-item-title class="headline">
-                          <v-list-item-subtitle>
-                            {{ $t(`item['Status']`) }}
-                          </v-list-item-subtitle>
-                          <v-chip
-                            dark
-                            :color="
-                              getDataSourceStatusColor(gitleaksSetting.status)
-                            "
-                            v-if="getStatus(gitleaksSetting)"
-                          >
-                            {{
-                              getDataSourceStatusText(gitleaksSetting.status)
-                            }}
-                          </v-chip>
-                          <v-chip
-                            dark
-                            :color="
-                              getDataSourceStatusColor(gitleaksSetting.status)
-                            "
-                            v-else
-                          >
-                            Disabled
-                          </v-chip>
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-col>
-                    <v-col cols="3" v-if="getStatus(gitleaksSetting)">
-                      <v-list-item-content>
-                        <v-list-item-title class="headline">
-                          <v-list-item-subtitle>
-                            {{ $t(`item['ScanAt']`) }}
-                          </v-list-item-subtitle>
-                          <v-chip
-                            color="grey lighten-3"
-                            v-if="gitleaksSetting.scan_at"
-                          >
-                            {{ gitleaksSetting.scan_at | formatTime }}
-                          </v-chip>
-                          <v-chip v-else>Not yet scan...</v-chip>
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-col>
-                  </v-list-item>
+                        <v-chip outlined>
+                          {{ gitleaksDataSourceModel.max_score }}
+                        </v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="3">
+                    <v-list-item>
+                      <v-list-item-title class="headline">
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Status']`) }}
+                        </v-list-item-subtitle>
+                        <v-chip
+                          variant="flat"
+                          class="text-white"
+                          :color="
+                            getDataSourceStatusColor(gitleaksSetting.status)
+                          "
+                          v-if="getStatus(gitleaksSetting)"
+                        >
+                          {{ getDataSourceStatusText(gitleaksSetting.status) }}
+                        </v-chip>
+                        <v-chip
+                          variant="flat"
+                          class="text-white"
+                          :color="
+                            getDataSourceStatusColor(gitleaksSetting.status)
+                          "
+                          v-else
+                        >
+                          Disabled
+                        </v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="3" v-if="getStatus(gitleaksSetting)">
+                    <v-list-item>
+                      <v-list-item-title class="headline">
+                        <v-list-item-subtitle>
+                          {{ $t(`item['ScanAt']`) }}
+                        </v-list-item-subtitle>
+                        <v-chip
+                          color="grey-lighten-3"
+                          v-if="gitleaksSetting.scan_at"
+                        >
+                          {{ formatTime(gitleaksSetting.scan_at) }}
+                        </v-chip>
+                        <v-chip v-else>Not yet scan...</v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
                 </v-row>
                 <v-row dense v-if="getStatusDetail(gitleaksSetting)">
                   <v-col>
                     <v-list-item two-line>
-                      <v-list-item-content>
-                        <v-list-item-subtitle>
-                          {{ $t(`item['Status Detail']`) }}
-                        </v-list-item-subtitle>
-                        <v-list-item-title class="wrap-text">
-                          {{ getStatusDetail(gitleaksSetting) }}
-                        </v-list-item-title>
-                      </v-list-item-content>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Status Detail']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="wrap-text">
+                        {{ getStatusDetail(gitleaksSetting) }}
+                      </v-list-item-title>
                     </v-list-item>
                   </v-col>
                 </v-row>
@@ -265,18 +281,16 @@
                       :label="$t(`action['Enable Gitleaks']`)"
                       color="info"
                       :disabled="isReadOnly"
-                      :filled="isReadOnly"
                     ></v-switch>
                   </v-col>
                 </v-row>
-                <v-card outlined class="mb-4" v-if="isEnabledGitleaks">
+                <v-card variant="flat" class="mb-4" v-if="isEnabledGitleaks">
                   <v-card-text class="pb-0">
                     <v-form v-model="gitleaksForm.valid" ref="formGitleaks">
                       <v-row>
                         <v-col cols="4" class="mb-0 pb-0">
                           <v-text-field
-                            dense
-                            outlined
+                            density="compact"
                             v-model="gitleaksSetting.repository_pattern"
                             :counter="128"
                             :rules="gitleaksForm.repository_pattern.validator"
@@ -291,7 +305,6 @@
                               gitleaksForm.repository_pattern.placeholder
                             "
                             :disabled="isReadOnly"
-                            :filled="isReadOnly"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -306,7 +319,6 @@
                             "
                             color="info"
                             :disabled="isReadOnly"
-                            :filled="isReadOnly"
                           ></v-switch>
                         </v-col>
                         <v-col cols="3" class="py-0">
@@ -321,7 +333,6 @@
                             "
                             color="info"
                             :disabled="isReadOnly"
-                            :filled="isReadOnly"
                           ></v-switch>
                         </v-col>
                         <v-col cols="3" class="py-0">
@@ -336,7 +347,6 @@
                             "
                             color="info"
                             :disabled="isReadOnly"
-                            :filled="isReadOnly"
                           ></v-switch>
                         </v-col>
                       </v-row>
@@ -344,173 +354,178 @@
                   </v-card-text>
                 </v-card>
               </v-card-text>
-            </v-card>
-            <v-row>
-              <v-col class="text-right">
-                <v-btn
-                  class="mr-2"
-                  outlined
-                  color="blue darken-1"
-                  @click="handleScanGitleaks(false)"
-                  v-if="isReadOnly"
-                  :disabled="!isEnabledGitleaks"
-                  :loading="loading"
-                >
-                  <v-icon left>mdi-magnify-scan</v-icon>
-                  {{ $t(`btn['SCAN']`) }}
-                </v-btn>
-                <v-btn
-                  class="mr-2"
-                  outlined
-                  color="blue darken-1"
-                  @click="handleScanGitleaks(true)"
-                  v-if="isReadOnly"
-                  :disabled="!isEnabledGitleaks"
-                  :loading="loading"
-                >
-                  <v-icon left>mdi-magnify-scan</v-icon>
-                  {{ $t(`btn['FULL SCAN']`) }}
-                </v-btn>
-                <v-btn
-                  class="mr-2"
-                  outlined
-                  color="cyan darken-2"
-                  v-if="isReadOnly"
-                  :loading="loading"
-                  link
-                  :to="{
-                    path: '/finding/finding/',
-                    query: {
-                      data_source: gitleaksDataSourceModel.name,
-                    },
-                  }"
-                  risken-action-name="search-finding-by-datasource-from-gitleaks"
-                >
-                  <v-icon left>mdi-magnify</v-icon>
-                  {{ $t(`btn['SHOW SCAN RESULT']`) }}
-                </v-btn>
+              <v-card-actions>
+                <v-row>
+                  <v-col class="text-right">
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleScanGitleaks(false)"
+                      v-if="isReadOnly"
+                      :disabled="!isEnabledGitleaks"
+                      :loading="loading"
+                    >
+                      <v-icon left>mdi-magnify-scan</v-icon>
+                      {{ $t(`btn['SCAN']`) }}
+                    </v-btn>
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleScanGitleaks(true)"
+                      v-if="isReadOnly"
+                      :disabled="!isEnabledGitleaks"
+                      :loading="loading"
+                    >
+                      <v-icon left>mdi-magnify-scan</v-icon>
+                      {{ $t(`btn['FULL SCAN']`) }}
+                    </v-btn>
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="cyan-darken-2"
+                      v-if="isReadOnly"
+                      :loading="loading"
+                      link
+                      :to="{
+                        path: '/finding/finding/',
+                        query: {
+                          data_source: gitleaksDataSourceModel.name,
+                        },
+                      }"
+                      risken-action-name="search-finding-by-datasource-from-gitleaks"
+                    >
+                      <v-icon left>mdi-magnify</v-icon>
+                      {{ $t(`btn['SHOW SCAN RESULT']`) }}
+                    </v-btn>
 
-                <v-btn
-                  outlined
-                  color="blue darken-1"
-                  @click="handleGitleaksEditSubmit"
-                  :disabled="!gitHubSetting.github_setting_id"
-                  :loading="loading"
-                  v-else
-                  >{{ $t(`btn['EDIT']`) }}
-                </v-btn>
-                <v-btn
-                  class="ml-2"
-                  outlined
-                  color="grey darken-1"
-                  @click="$emit('closeDialog')"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-stepper-content>
-          <v-stepper-step :complete="e6 > 3" step="3" editable>
-            {{ dependencyDataSourceModel.name }}
-            <small>{{ dependencyDataSourceModel.description }} </small>
-          </v-stepper-step>
-          <!-- dependency -->
-          <v-stepper-content step="3">
+                    <v-btn
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleGitleaksEditSubmit"
+                      :disabled="!isConfiguredGitHubSetting"
+                      :loading="loading"
+                      v-else
+                      >{{ $t(`btn['EDIT']`) }}
+                    </v-btn>
+                    <v-btn
+                      class="ml-2"
+                      variant="outlined"
+                      color="grey-darken-1"
+                      @click="$emit('closeDialog')"
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['CANCEL']`) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+            </v-card>
+          </v-window-item>
+          <v-window-item :value="3">
             <v-card outlined class="mb-4">
-              <v-card-text class="py-0">
+              <v-card-text>
+                <v-row>
+                  <v-col>
+                    <v-list-item two-line>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Data Source']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="text-h5">
+                        {{ dependencyDataSourceModel.name }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
                 <v-row>
                   <v-col>
                     <v-row dense>
-                      <v-list-item two-line>
-                        <v-col cols="3">
-                          <v-list-item-content>
+                      <v-col cols="3">
+                        <v-list-item two-line>
+                          <v-list-item-subtitle>
+                            {{ $t(`item['Data Source ID']`) }}
+                          </v-list-item-subtitle>
+                          <v-list-item-title class="headline">
+                            {{ dependencyDataSourceModel.code_data_source_id }}
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-col>
+                      <v-col cols="3">
+                        <v-list-item two-line>
+                          <v-list-item-title class="headline">
                             <v-list-item-subtitle>
-                              {{ $t(`item['Data Source ID']`) }}
+                              {{ $t(`item['MAX Score']`) }}
                             </v-list-item-subtitle>
-                            <v-list-item-title class="headline">
+                            <v-chip outlined>
+                              {{ dependencyDataSourceModel.max_score }}
+                            </v-chip>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-col>
+                      <v-col cols="3">
+                        <v-list-item two-line>
+                          <v-list-item-title class="headline">
+                            <v-list-item-subtitle>
+                              {{ $t(`item['Status']`) }}
+                            </v-list-item-subtitle>
+                            <v-chip
+                              variant="flat"
+                              class="text-white"
+                              :color="
+                                getDataSourceStatusColor(
+                                  dependencySetting.status
+                                )
+                              "
+                              v-if="getStatus(dependencySetting)"
+                            >
                               {{
-                                dependencyDataSourceModel.code_data_source_id
+                                getDataSourceStatusText(
+                                  dependencySetting.status
+                                )
                               }}
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-col>
-                        <v-col cols="3">
-                          <v-list-item-content>
-                            <v-list-item-title class="headline">
-                              <v-list-item-subtitle>
-                                {{ $t(`item['MAX Score']`) }}
-                              </v-list-item-subtitle>
-                              <v-chip outlined>
-                                {{ dependencyDataSourceModel.max_score }}
-                              </v-chip>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-col>
-                        <v-col cols="3">
-                          <v-list-item-content>
-                            <v-list-item-title class="headline">
-                              <v-list-item-subtitle>
-                                {{ $t(`item['Status']`) }}
-                              </v-list-item-subtitle>
-                              <v-chip
-                                dark
-                                :color="
-                                  getDataSourceStatusColor(
-                                    dependencySetting.status
-                                  )
-                                "
-                                v-if="getStatus(dependencySetting)"
-                              >
-                                {{
-                                  getDataSourceStatusText(
-                                    dependencySetting.status
-                                  )
-                                }}
-                              </v-chip>
-                              <v-chip
-                                dark
-                                :color="
-                                  getDataSourceStatusColor(
-                                    dependencySetting.status
-                                  )
-                                "
-                                v-else
-                              >
-                                Disabled
-                              </v-chip>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-col>
-                        <v-col cols="3" v-if="getStatus(dependencySetting)">
-                          <v-list-item-content>
-                            <v-list-item-title class="headline">
-                              <v-list-item-subtitle>
-                                {{ $t(`item['ScanAt']`) }}
-                              </v-list-item-subtitle>
-                              <v-chip
-                                color="grey lighten-3"
-                                v-if="dependencySetting.scan_at"
-                              >
-                                {{ dependencySetting.scan_at | formatTime }}
-                              </v-chip>
-                              <v-chip v-else>Not yet scan...</v-chip>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-col>
-                      </v-list-item>
+                            </v-chip>
+                            <v-chip
+                              variant="flat"
+                              class="text-white"
+                              :color="
+                                getDataSourceStatusColor(
+                                  dependencySetting.status
+                                )
+                              "
+                              v-else
+                            >
+                              Disabled
+                            </v-chip>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-col>
+                      <v-col cols="3" v-if="getStatus(dependencySetting)">
+                        <v-list-item two-line>
+                          <v-list-item-title class="headline">
+                            <v-list-item-subtitle>
+                              {{ $t(`item['ScanAt']`) }}
+                            </v-list-item-subtitle>
+                            <v-chip
+                              color="grey-lighten-3"
+                              v-if="dependencySetting.scan_at"
+                            >
+                              {{ formatTime(dependencySetting.scan_at) }}
+                            </v-chip>
+                            <v-chip v-else>Not yet scan...</v-chip>
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-col>
                     </v-row>
                     <v-row dense v-if="getStatusDetail(dependencySetting)">
                       <v-col>
                         <v-list-item two-line>
-                          <v-list-item-content>
-                            <v-list-item-subtitle>
-                              {{ $t(`item['Status Detail']`) }}
-                            </v-list-item-subtitle>
-                            <v-list-item-title class="wrap-text">
-                              {{ getStatusDetail(dependencySetting) }}
-                            </v-list-item-title>
-                          </v-list-item-content>
+                          <v-list-item-subtitle>
+                            {{ $t(`item['Status Detail']`) }}
+                          </v-list-item-subtitle>
+                          <v-list-item-title class="wrap-text">
+                            {{ getStatusDetail(dependencySetting) }}
+                          </v-list-item-title>
                         </v-list-item>
                       </v-col>
                     </v-row>
@@ -524,67 +539,69 @@
                       :label="$t(`action['Enable Dependency']`)"
                       color="info"
                       :disabled="isReadOnly"
-                      :filled="isReadOnly"
                     ></v-switch>
                   </v-col>
                 </v-row>
               </v-card-text>
+              <v-card-actions>
+                <v-row class="text-right mx-2">
+                  <v-col>
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleScanDependency"
+                      v-if="isReadOnly"
+                      :disabled="!isEnabledDependency"
+                      :loading="loading"
+                    >
+                      <v-icon left>mdi-magnify-scan</v-icon>
+                      {{ $t(`btn['SCAN']`) }}
+                    </v-btn>
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="cyan-darken-2"
+                      v-if="isReadOnly"
+                      :loading="loading"
+                      link
+                      :to="{
+                        path: '/finding/finding/',
+                        query: {
+                          data_source: dependencyDataSourceModel.name,
+                          tag: '',
+                        },
+                      }"
+                      risken-action-name="search-finding-by-datasource-from-dependency"
+                    >
+                      <v-icon left>mdi-magnify</v-icon>
+                      {{ $t(`btn['SHOW SCAN RESULT']`) }}
+                    </v-btn>
+                    <v-btn
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleDependencyEditSubmit"
+                      :disabled="!isConfiguredGitHubSetting"
+                      :loading="loading"
+                      v-else
+                      >{{ $t(`btn['EDIT']`) }}
+                    </v-btn>
+                    <v-btn
+                      variant="outlined"
+                      color="grey-darken-1"
+                      class="ml-2"
+                      @click="$emit('closeDialog')"
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['CANCEL']`) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
             </v-card>
-            <v-row class="text-right mx-2">
-              <v-col>
-                <v-btn
-                  class="mr-2"
-                  outlined
-                  color="blue darken-1"
-                  @click="handleScanDependency"
-                  v-if="isReadOnly"
-                  :disabled="!isEnabledDependency"
-                  :loading="loading"
-                >
-                  <v-icon left>mdi-magnify-scan</v-icon>
-                  {{ $t(`btn['SCAN']`) }}
-                </v-btn>
-                <v-btn
-                  class="mr-2"
-                  outlined
-                  color="cyan darken-2"
-                  v-if="isReadOnly"
-                  :loading="loading"
-                  link
-                  :to="{
-                    path: '/finding/finding/',
-                    query: {
-                      data_source: dependencyDataSourceModel.name,
-                      tag: '',
-                    },
-                  }"
-                  risken-action-name="search-finding-by-datasource-from-dependency"
-                >
-                  <v-icon left>mdi-magnify</v-icon>
-                  {{ $t(`btn['SHOW SCAN RESULT']`) }}
-                </v-btn>
-                <v-btn
-                  outlined
-                  color="blue darken-1"
-                  @click="handleDependencyEditSubmit"
-                  :disabled="!gitHubSetting.github_setting_id"
-                  :loading="loading"
-                  v-else
-                  >{{ $t(`btn['EDIT']`) }}
-                </v-btn>
-                <v-btn
-                  outlined
-                  color="grey darken-1"
-                  class="ml-2"
-                  @click="$emit('closeDialog')"
-                  :loading="loading"
-                >
-                  {{ $t(`btn['CANCEL']`) }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-stepper-content>
-        </v-stepper>
+          </v-window-item>
+        </v-window>
+        <!-- dependency -->
       </v-card>
     </v-dialog>
   </v-container>
@@ -602,7 +619,7 @@ import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import code from '@/mixin/api/code'
 export default {
-  name: 'NewSettingDialog',
+  name: 'SettingDialog',
   mixins: [mixin, project, code],
   props: {
     isReadOnly: {
@@ -634,6 +651,16 @@ export default {
       set() {
         this.$emit('closeDialog')
       },
+    },
+    isConfiguredGitHubSetting() {
+      if (
+        this.gitHubSetting != null &&
+        this.gitHubSetting.github_setting_id != null &&
+        this.gitHubSetting.github_setting_id != 0
+      ) {
+        return true
+      }
+      return false
     },
   },
   watch: {
@@ -1000,6 +1027,9 @@ export default {
         default:
           return 0 // Unknown
       }
+    },
+    handleChangeStatus() {
+      this.e6 = 2
     },
   },
 }

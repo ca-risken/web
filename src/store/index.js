@@ -13,7 +13,7 @@ const store = createStore({
       project: {},
       interval: {},
       locale: {},
-      findingHistory: [],  
+      findingHistory: [],
     }
   },
   mutations: {

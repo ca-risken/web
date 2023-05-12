@@ -15,10 +15,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -29,10 +29,9 @@
 
           <v-spacer />
           <v-btn
-            text
-            outlined
+            variant="outlined"
             class="mt-1 mr-4"
-            color="blue darken-1"
+            color="blue-darken-1"
             @click="handleNewProjectTag"
           >
             {{ $t(`btn['TAG']`) }}
@@ -44,14 +43,12 @@
           />
           <v-btn
             class="mt-1 mr-4"
-            color="primary darken-3"
-            fab
-            dense
+            color="primary-darken-3"
+            density="compact"
             small
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -64,7 +61,7 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
@@ -74,35 +71,26 @@
                 item-key="aws_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3">
-                    <v-icon color="orange darken-1" large>mdi-aws</v-icon>
+                    <v-icon color="orange-darken-1" large>mdi-aws</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -120,7 +108,7 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large color="orange darken-1">mdi-aws</v-icon>
+          <v-icon large color="orange-darken-1">mdi-aws</v-icon>
           <span class="mx-4 headline">
             {{ $t(`submenu['AWS']`) }}
           </span>
@@ -131,8 +119,6 @@
               v-model="awsModel.aws_id"
               :label="$t(`item['` + awsForm.aws_id.label + `']`)"
               :placeholder="awsForm.aws_id.placeholder"
-              outlined
-              filled
               disabled
             ></v-text-field>
             <v-text-field
@@ -141,7 +127,6 @@
               :rules="awsForm.name.validator"
               :label="$t(`item['` + awsForm.name.label + `']`) + ' *'"
               :placeholder="awsForm.name.placeholder"
-              outlined
               required
             ></v-text-field>
             <template v-if="awsForm.newAWS">
@@ -153,7 +138,6 @@
                   $t(`item['` + awsForm.aws_account_id.label + `']`) + ' *'
                 "
                 :placeholder="awsForm.aws_account_id.placeholder"
-                outlined
                 required
               ></v-text-field>
             </template>
@@ -166,8 +150,6 @@
                   $t(`item['` + awsForm.aws_account_id.label + `']`) + ' *'
                 "
                 :placeholder="awsForm.aws_account_id.placeholder"
-                outlined
-                filled
                 disabled
               ></v-text-field>
             </template>
@@ -176,17 +158,15 @@
             <v-card-actions>
               <v-spacer />
               <v-btn
-                text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
-                text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -209,60 +189,43 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ awsModel.aws_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['AWS ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ awsModel.aws_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['AWS ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ awsModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ awsModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-aws</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ awsModel.aws_account_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['AWS Account ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-aws">
+            <v-list-item-title>
+              {{ awsModel.aws_account_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['AWS Account ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
-            text
-            outlined
+            color="red-darken-1"
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -280,12 +243,14 @@ import aws from '@/mixin/api/aws'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AWSAccount',
   mixins: [mixin, aws, project],
   components: {
     BottomSnackBar,
     ProjectTag,
+    VDataTable,
   },
   data() {
     return {
@@ -346,41 +311,41 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'aws_id',
+          key: 'aws_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["AccountID"]'),
+          title: this.$i18n.t('item["AccountID"]'),
           align: 'start',
           sortable: false,
-          value: 'aws_account_id',
+          key: 'aws_account_id',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -437,8 +402,8 @@ export default {
       })
       return isNew
     },
-    handleRowClick(item) {
-      this.$router.push('/aws/data-source?aws_id=' + item.aws_id)
+    handleRowClick(event, aws) {
+      this.$router.push('/aws/data-source?aws_id=' + aws.item.value.aws_id)
     },
     handleNewItem() {
       this.awsModel = {
@@ -463,7 +428,7 @@ export default {
       await this.putItem()
       await this.tagProjectAPI(
         'aws:' + this.awsModel.aws_account_id,
-        'orange darken-1'
+        'orange-darken-1'
       )
     },
     handleDeleteItem(item) {
@@ -477,7 +442,7 @@ export default {
     },
     assignDataModel(item) {
       this.awsModel = {}
-      this.awsModel = Object.assign(this.awsModel, item)
+      this.awsModel = Object.assign(this.awsModel, item.value)
     },
 
     async finish(msg) {

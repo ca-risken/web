@@ -15,10 +15,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="8" sm="4" md="4">
             <v-combobox
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['User']`)"
               :placeholder="searchForm.userName.placeholder"
               :items="userNameList"
@@ -28,24 +28,18 @@
           <v-spacer />
           <v-btn
             class="mt-3 mr-4"
-            fab
-            dense
-            small
+            density="compact"
             :loading="loading"
             @click="handleSearch"
-          >
-            <v-icon>search</v-icon>
-          </v-btn>
+            icon="mdi-magnify"
+          />
           <v-btn
             class="mt-3 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            color="primary-darken-3"
+            density="compact"
             @click="handleNew"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row dense>
@@ -56,7 +50,7 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
@@ -65,51 +59,44 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="user_id"
-                @click:row="handleEdit"
+                @click:row="handleRowClick"
                 @update:page="loadList"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-2">
-                    <img src="/static/avatar/default.png" alt="avatar" />
+                    <v-img src="/static/avatar/default.png" alt="avatar" />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip :color="getColorByCount(item.role_cnt)" dark>{{
-                    item.role_cnt
-                  }}</v-chip>
+                  <v-chip
+                    variant="flat"
+                    :color="getColorByCount(item.value.role_cnt)"
+                    >{{ item.value.role_cnt }}</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.reserved`]="{ item }">
-                  <v-icon v-if="!item.reserved" color="success"
+                  <v-icon v-if="!item.value.reserved" color="success"
                     >mdi-check-circle</v-icon
                   >
-                  <v-chip v-else color="grey lighten-1" dark>{{
+                  <v-chip v-else color="grey" variant="flat">{{
                     $t("item['Reserved']")
                   }}</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -128,25 +115,30 @@
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
-          <v-icon large>mdi-account-multiple</v-icon>
-          <span class="mx-4 headline">
-            {{ $t(`submenu['User']`) }}
-          </span>
-          <v-spacer />
-          <template v-if="userForm.clickNew">
-            <v-btn
-              outlined
-              color="primary darken-3"
-              dark
-              @click="userDialog = true"
-            >
-              Invite New User
-            </v-btn>
-            <user
-              :userDialog="userDialog"
-              @handleUserDialogResponse="handleUserDialogResponse"
-            />
-          </template>
+          <v-row>
+            <v-col>
+              <v-icon large>mdi-account-multiple</v-icon>
+              <span class="mx-4 headline">
+                {{ $t(`submenu['User']`) }}
+              </span>
+            </v-col>
+            <v-spacer />
+            <v-col>
+              <template v-if="userForm.clickNew">
+                <v-btn
+                  variant="outlined"
+                  color="primary-darken-3"
+                  @click="userDialog = true"
+                >
+                  Invite New User
+                </v-btn>
+                <user-list
+                  :userDialog="userDialog"
+                  @handleUserDialogResponse="handleUserDialogResponse"
+                />
+              </template>
+            </v-col>
+          </v-row>
         </v-card-title>
         <v-card-text>
           <v-row no-gutters>
@@ -157,7 +149,7 @@
                 :placeholder="userForm.user_id.placeholder"
                 filled
                 disabled
-                dense
+                density="compact"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -171,7 +163,7 @@
                 :placeholder="userForm.name.placeholder"
                 filled
                 disabled
-                dense
+                density="compact"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -187,7 +179,7 @@
                 :placeholder="userForm.user_idp_key.placeholder"
                 filled
                 disabled
-                dense
+                density="compact"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -222,7 +214,7 @@
               :headers="roleHeaders"
               :footer-props="roleTable.footer"
               :items="roleTable.items"
-              :options.sync="roleTable.options"
+              v-model:options="roleTable.options"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
@@ -236,7 +228,7 @@
                   label
                   outliend
                   elevation="0"
-                  color="red lighten-5"
+                  color="red-lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -249,7 +241,7 @@
                   label
                   outliend
                   elevation="0"
-                  color="red lighten-5"
+                  color="red-lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -262,8 +254,8 @@
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-alert
               v-if="roleTable.selected.length == 0"
-              dense
-              outlined
+              density="compact"
+              variant="outlined"
               type="error"
             >
               {{
@@ -279,16 +271,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -308,13 +300,15 @@
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import User from '@/component/widget/list/User.vue'
+import UserList from '@/component/widget/list/UserList.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
-  name: 'UserList',
+  name: 'UserManagement',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
-    User,
+    UserList,
+    VDataTable,
   },
   data() {
     return {
@@ -382,64 +376,64 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["User Key"]'),
+          title: this.$i18n.t('item["User Key"]'),
           align: 'start',
           sortable: false,
-          value: 'user_idp_key',
+          key: 'user_idp_key',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
 
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'center',
           sortable: false,
-          value: 'reserved',
+          key: 'reserved',
         },
         {
-          text: this.$i18n.t('item["Roles"]'),
+          title: this.$i18n.t('item["Roles"]'),
           align: 'center',
           sortable: false,
-          value: 'role_cnt',
+          key: 'role_cnt',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     roleHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'role_id',
+          key: 'role_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
       ]
     },
@@ -683,9 +677,12 @@ export default {
       this.loadRoleList()
       this.editDialog = true
     },
+    handleRowClick(event, users) {
+      this.handleEdit(users.item)
+    },
     handleEdit(item) {
       this.userForm.clickNew = false
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.loadRoleList()
       this.editDialog = true
     },

@@ -18,9 +18,9 @@
           <v-spacer />
           <v-btn
             text
-            outlined
+            variant="outlined"
             class="mt-1 mr-4"
-            color="blue darken-1"
+            color="blue-darken-1"
             @click="handleNewProjectTag"
           >
             {{ $t(`btn['TAG']`) }}
@@ -32,12 +32,11 @@
           />
           <v-btn
             class="mt-1 mr-4"
-            color="grey darken-2"
-            dense
+            color="grey-darken-2"
+            density="compact"
             small
             icon
-            fab
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="refleshList"
           >
@@ -45,14 +44,12 @@
           </v-btn>
           <v-btn
             class="mt-1 mr-4"
-            color="primary darken-3"
-            fab
-            dense
+            color="primary-darken-3"
+            density="compact"
             small
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -65,7 +62,7 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
@@ -75,31 +72,35 @@
                 item-key="application_scan_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3">
-                    <v-icon color="blue darken-1" large
+                    <v-icon color="blue-darken-1" large
                       >mdi-bug-check-outline</v-icon
                     >
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.scan_type`]="{ item }">
                   <v-chip
-                    v-if="item.application_scan_id"
-                    :color="getScanTypeColor(item.scan_type)"
+                    variant="flat"
+                    v-if="item.value.application_scan_id"
+                    :color="getScanTypeColor(item.value.scan_type)"
                     dark
                   >
-                    {{ getScanTypeText(item.scan_type) }}
+                    {{ getScanTypeText(item.value.scan_type) }}
                   </v-chip>
-                  <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <v-chip v-else variant="flat" color="grey"
+                    >Not configured</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
                   <v-chip
-                    v-if="item.application_scan_id"
-                    :color="getDataSourceStatusColor(item.status)"
-                    dark
+                    variant="flat"
+                    class="text-white"
+                    v-if="item.value.application_scan_id"
+                    :color="getDataSourceStatusColor(item.value.status)"
                   >
                     <v-progress-circular
-                      v-if="isInProgressDataSourceStatus(item.status)"
+                      v-if="isInProgressDataSourceStatus(item.value.status)"
                       indeterminate
                       size="20"
                       width="2"
@@ -107,42 +108,35 @@
                       class="mr-2"
                     ></v-progress-circular>
                     <v-icon v-else small color="white" class="mr-2">{{
-                      getDataSourceStatusIcon(item.status)
+                      getDataSourceStatusIcon(item.value.status)
                     }}</v-icon>
-                    {{ getDataSourceStatusText(item.status) }}
+                    {{ getDataSourceStatusText(item.value.status) }}
                   </v-chip>
-                  <v-chip v-else color="grey" dark>Not configured</v-chip>
+                  <v-chip v-else variant="flat" color="grey"
+                    >Not configured</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
-                  <v-chip v-if="item.scan_at">{{
-                    item.scan_at | formatTime
+                  <v-chip v-if="item.value.scan_at">{{
+                    formatTime(item.value.scan_at)
                   }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -160,7 +154,7 @@
     <v-dialog v-model="editDialog" max-width="60%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue darken-1">mdi-bug-check-outline</v-icon>
+          <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
           <span class="mx-4 headline">
             {{ $t(`submenu['Application Scan']`) }}
           </span>
@@ -211,7 +205,7 @@
                 )
               "
               :placeholder="applicationScanForm.application_scan_id.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -223,7 +217,7 @@
                 $t(`item['` + applicationScanForm.name.label + `']`) + ' *'
               "
               :placeholder="applicationScanForm.name.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-text-field
@@ -236,7 +230,7 @@
                 ) + ' *'
               "
               :placeholder="applicationScanBasicSettingForm.target.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-checkbox
@@ -262,7 +256,7 @@
                 :placeholder="
                   applicationScanBasicSettingForm.max_depth.placeholder
                 "
-                outlined
+                variant="outlined"
                 required
               ></v-text-field>
               <v-text-field
@@ -279,7 +273,7 @@
                 :placeholder="
                   applicationScanBasicSettingForm.max_children.placeholder
                 "
-                outlined
+                variant="outlined"
                 required
               ></v-text-field>
             </template>
@@ -287,8 +281,8 @@
             <v-card-actions>
               <v-btn
                 text
-                outlined
-                color="blue darken-1"
+                variant="outlined"
+                color="blue-darken-1"
                 v-if="!this.applicationScanForm.newApplicationScan"
                 :loading="loading"
                 @click="handleScan"
@@ -297,9 +291,8 @@
                 {{ $t(`btn['SCAN']`) }}
               </v-btn>
               <v-btn
-                text
-                outlined
-                color="cyan darken-2"
+                variant="outlined"
+                color="cyan-darken-2"
                 v-if="!this.applicationScanForm.newApplicationScan"
                 :loading="loading"
                 link
@@ -312,24 +305,24 @@
                       applicationScanModel.application_scan_id,
                   },
                 }"
+                prepend-icon="mdi-magnify"
                 risken-action-name="search-finding-by-datasource-from-appscan"
               >
-                <v-icon left>mdi-magnify</v-icon>
                 {{ $t(`btn['SHOW SCAN RESULT']`) }}
               </v-btn>
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -355,47 +348,37 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ applicationScanModel.application_scan_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Application Scan ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ applicationScanModel.application_scan_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Application Scan ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ applicationScanModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ applicationScanModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -414,12 +397,14 @@ import diagnosis from '@/mixin/api/diagnosis'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'DiagnosisApplicationScan',
   mixins: [mixin, diagnosis, project],
   components: {
     BottomSnackBar,
     ProjectTag,
+    VDataTable,
   },
   data() {
     return {
@@ -516,7 +501,11 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+          {
+            text: 'Scan',
+            icon: 'mdi-magnify-scan',
+            click: this.handleScanByAction,
+          },
         ],
         footer: {
           itemsPerPageOptions: [10],
@@ -533,53 +522,53 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'application_scan_id',
+          key: 'application_scan_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["ScanType"]'),
+          title: this.$i18n.t('item["ScanType"]'),
           align: 'start',
           sortable: false,
-          value: 'scan_type',
+          key: 'scan_type',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           sortable: false,
-          value: 'status',
+          key: 'status',
         },
         {
-          text: this.$i18n.t('item["ScanAt"]'),
+          title: this.$i18n.t('item["ScanAt"]'),
           align: 'center',
           sortable: false,
-          value: 'scan_at',
+          key: 'scan_at',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -661,8 +650,8 @@ export default {
       }
       return ''
     },
-    async handleRowClick(item) {
-      this.handleEditItem(item)
+    async handleRowClick(event, applicationScan) {
+      this.handleEditItem(applicationScan.item)
     },
     handleNewItem() {
       this.applicationScanModel = {
@@ -684,7 +673,7 @@ export default {
       this.editDialog = true
     },
     async handleEditItem(item) {
-      await this.assignDataModel(item)
+      await this.assignDataModel(item.value)
       this.applicationScanForm.newApplicationScan = false
       this.editDialog = true
     },
@@ -697,18 +686,21 @@ export default {
       if (this.getApplicationScanTag() !== '') {
         await this.tagProjectAPI(
           this.getApplicationScanTag(),
-          'indigo darken-1'
+          'indigo-darken-1'
         )
       }
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     async handleDeleteSubmit() {
       this.loading = true
       await this.untagProjectAPI(this.getApplicationScanTag())
       await this.deleteItem(this.applicationScanModel.application_scan_id)
+    },
+    handleScanByAction(item) {
+      this.handleScan(item.value)
     },
     handleScan(item) {
       this.loading = true

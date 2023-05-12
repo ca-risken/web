@@ -16,14 +16,11 @@
           <v-col offset="11">
             <v-btn
               class="mt-3 mr-4"
-              color="primary darken-3"
-              fab
-              dense
-              small
+              color="primary-darken-3"
+              density="compact"
               @click="handleNewItem"
-            >
-              <v-icon>mdi-new-box</v-icon>
-            </v-btn>
+              icon="mdi-new-box"
+            />
           </v-col>
         </v-row>
       </v-form>
@@ -35,7 +32,7 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
@@ -43,7 +40,7 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="reserved_id"
-                @click:row="handleEditItem"
+                @click:row="handleRowClick"
                 @update:page="refleshList"
               >
                 <template v-slot:[`item.avator`]>
@@ -52,29 +49,20 @@
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -126,7 +114,7 @@
               :label="$t(`item['` + form.user_idp_key.label + `']`) + ' *'"
               :placeholder="form.user_idp_key.placeholder"
               required
-              outlined
+              variant="outlined"
             ></v-text-field>
 
             <!-- Role List -->
@@ -159,7 +147,7 @@
               :headers="roleHeaders"
               :footer-props="roleTable.footer"
               :items="roleTable.items"
-              :options.sync="roleTable.options"
+              v-model:options="roleTable.options"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
@@ -176,16 +164,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="putItem"
               >
@@ -209,48 +197,38 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.reserved_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.reserved_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-alpha-r-circle</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.role_name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Roles']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-alpha-r-circle">
+            <v-list-item-title>
+              {{ dataModel.role_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Roles']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             @click="deleteItem(dataModel.reserved_id)"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -266,11 +244,13 @@
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'UserReservation',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -346,57 +326,57 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'reserved_id',
+          key: 'reserved_id',
         },
         {
-          text: this.$i18n.t('item["User Key"]'),
+          title: this.$i18n.t('item["User Key"]'),
           align: 'start',
           sortable: true,
-          value: 'user_idp_key',
+          key: 'user_idp_key',
         },
         {
-          text: this.$i18n.t('item["Roles"]'),
+          title: this.$i18n.t('item["Roles"]'),
           align: 'center',
           sortable: true,
-          value: 'role_name',
+          key: 'role_name',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: true,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     roleHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'role_id',
+          key: 'role_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
       ]
     },
@@ -531,14 +511,17 @@ export default {
       this.form.isNew = true
       this.editDialog = true
     },
+    handleRowClick(event, reserves) {
+      this.handleEditItem(reserves.item)
+    },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.loadRoleList()
       this.form.newToken = false
       this.editDialog = true
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     assignDataModel(item) {

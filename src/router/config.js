@@ -2,7 +2,7 @@ import { LayoutAuth, LayoutDefault, RouteWrapper } from '@/component/layout'
 
 export const commonRoute = [
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     component: () => import('@/view/error/NotFound.vue'),
   },
   {
@@ -250,7 +250,7 @@ export const appRoute = [
         redirect: '/osint/osint',
         meta: {
           title: 'OSINT',
-          icon: 'http',
+          icon: 'md:http',
           group: 'osint',
         },
         children: [

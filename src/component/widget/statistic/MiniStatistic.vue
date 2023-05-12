@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <v-card>
     <v-card-text class="pa-0">
       <div class="d-flex">
         <div class="flex pa-3">
@@ -7,8 +7,8 @@
             <v-icon size="54px" :color="color">{{ icon }}</v-icon>
           </div>
         </div>
-        <div class="flex pa-3" :class="color">
-          <div class="white--text headline">{{ title }}</div>
+        <div class="flex-fill pa-3" :class="'bg-' + color">
+          <div class="white--text text-h5">{{ title }}</div>
           <span class="white--text">{{ subTitle }}</span>
         </div>
       </div>

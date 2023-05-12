@@ -1,14 +1,17 @@
+<template>
+  <doughnut :data="chartData" :options="options" />
+</template>
+
 <script>
-import { Doughnut, mixins } from 'vue-chartjs'
-import 'chartjs-plugin-colorschemes'
-const { reactiveProp } = mixins
+import { Doughnut } from 'vue-chartjs'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 export default {
   name: 'DoughnutChart',
-  extends: Doughnut,
-  mixins: [reactiveProp],
+  components: { Doughnut },
   props: {
-    chartdata: {
+    chartData: {
       type: Object,
       default: () => {
         return {
@@ -34,9 +37,6 @@ export default {
         }
       },
     },
-  },
-  mounted() {
-    this.renderChart(this.chartData, this.options)
   },
 }
 </script>

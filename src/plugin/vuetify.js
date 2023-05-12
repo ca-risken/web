@@ -1,7 +1,7 @@
-import {createVuetify} from 'vuetify'
+import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 import { md } from 'vuetify/iconsets/md'
 
 const riskenLightTheme = {
@@ -21,31 +21,29 @@ const riskenLightTheme = {
     surface: '#FFFFFF',
     'on-surface-variant': '#FFFFFF',
     background: '#F5F5F5',
-  }
+  },
 }
 
 const riskenTheme = {
   defaultTheme: 'riskenLightTheme',
   variations: {
-    colors: ['primary','success'],
-   lighten: 1,
+    colors: ['primary', 'success'],
+    lighten: 1,
     darken: 3,
   },
 
   themes: {
-    riskenLightTheme
-  }
+    riskenLightTheme,
+  },
 }
 
 export default createVuetify({
-
-    components,
-    directives,
-    theme: riskenTheme,
-    icons: {
-      sets: {
-        md,
-      }
+  components,
+  directives,
+  theme: riskenTheme,
+  icons: {
+    sets: {
+      md,
     },
-  }
-)
+  },
+})

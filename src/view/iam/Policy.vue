@@ -15,10 +15,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-combobox
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               :label="$t(`item['` + searchForm.policyName.label + `']`)"
               :placeholder="searchForm.policyName.placeholder"
               :items="policyNameList"
@@ -29,24 +29,18 @@
           <v-spacer />
           <v-btn
             class="mt-3 mr-4"
-            fab
-            dense
-            small
+            density="compact"
             :loading="loading"
             @click="handleSearch"
-          >
-            <v-icon>search</v-icon>
-          </v-btn>
+            icon="mdi-magnify"
+          />
           <v-btn
             class="mt-3 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            color="primary-darken-3"
+            density="compact"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row dense>
@@ -57,7 +51,7 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
+                v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
                 :footer-props="table.footer"
@@ -66,10 +60,10 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="policy_id"
-                @click:row="handleEditItem"
+                @click:row="handleRowClick"
                 @update:page="loadList"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3">
                     <v-icon large>mdi-certificate-outline</v-icon>
                   </v-avatar>
@@ -77,53 +71,42 @@
                 <template v-slot:[`item.action_ptn`]="{ item }">
                   <v-card
                     label
-                    outliend
                     elevation="1"
-                    color="teal lighten-5"
+                    color="teal-lighten-5"
                     class="mx-auto"
                   >
                     <v-card-text class="font-weight-bold">
-                      {{ item.action_ptn }}
+                      {{ item.value.action_ptn }}
                     </v-card-text>
                   </v-card>
                 </template>
                 <template v-slot:[`item.resource_ptn`]="{ item }">
                   <v-card
                     label
-                    outliend
                     elevation="1"
-                    color="light-green lighten-5"
+                    color="light-green-lighten-5"
                     class="mx-auto"
                   >
                     <v-card-text class="font-weight-bold">
-                      {{ item.resource_ptn }}
+                      {{ item.value.resource_ptn }}
                     </v-card-text>
                   </v-card>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -152,7 +135,6 @@
               v-model="policyModel.policy_id"
               :label="$t(`item['` + policyForm.policy_id.label + `']`)"
               :placeholder="policyForm.policy_id.placeholder"
-              filled
               disabled
             ></v-text-field>
             <template v-if="policyForm.newPolicy">
@@ -172,7 +154,6 @@
                 :rules="policyForm.name.validator"
                 :label="$t(`item['` + policyForm.name.label + `']`)"
                 :placeholder="policyForm.name.placeholder"
-                filled
                 disabled
               ></v-text-field>
             </template>
@@ -191,25 +172,20 @@
                 $t(`item['` + policyForm.resource_ptn.label + `']`) + ' *'
               "
               :placeholder="policyForm.resource_ptn.placeholder"
-              value=".*"
-              filled
-              readonly
             ></v-text-field>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-spacer />
               <v-btn
-                text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
-                text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="putItem"
               >
@@ -230,47 +206,37 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ policyModel.policy_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ policyModel.policy_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-certificate-outline</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ policyModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-certificate-outline">
+            <v-list-item-title>
+              {{ policyModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Name']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             @click="deleteItem(policyModel.policy_id)"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -286,11 +252,13 @@
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'PolicyList',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -375,47 +343,47 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'policy_id',
+          key: 'policy_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Action Pattern"]'),
+          title: this.$i18n.t('item["Action Pattern"]'),
           align: 'start',
           sortable: false,
-          value: 'action_ptn',
+          key: 'action_ptn',
         },
         {
-          text: this.$i18n.t('item["Resource Pattern"]'),
+          title: this.$i18n.t('item["Resource Pattern"]'),
           align: 'start',
           sortable: false,
-          value: 'resource_ptn',
+          key: 'resource_ptn',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -441,14 +409,16 @@ export default {
         (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.policies.slice(from, to)
-      ids.forEach(async (id) => {
-        const policy = await this.getPolicyAPI(id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
+      await Promise.all(
+        ids.map(async (id) => {
+          const policy = await this.getPolicyAPI(id).catch((err) => {
+            this.clearList()
+            return Promise.reject(err)
+          })
+          items.push(policy)
+          policyNames.push(policy.name)
         })
-        items.push(policy)
-        policyNames.push(policy.name)
-      })
+      )
       this.table.items = items
       this.policyNameList = policyNames
       this.loading = false
@@ -506,13 +476,16 @@ export default {
       this.policyForm.newPolicy = true
       this.editDialog = true
     },
+    handleRowClick(event, policies) {
+      this.handleEditItem(policies.item)
+    },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.policyForm.newPolicy = false
       this.editDialog = true
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleSearch() {
