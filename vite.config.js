@@ -7,20 +7,12 @@ import { fileURLToPath, URL } from 'url'
 export default defineConfig({
     plugins: [
       vue({
-        template: {
-          compilerOptions: {
-            compatConfig: {
-              MODE: 2
-            }
-          },
-          transformAssetUrls
-        }
+        template: { transformAssetUrls }
       }),
         vuetify(),
         eslint()
     ],
     resolve: {
-        vue: '@vue/compat',
         alias: {
           "@": fileURLToPath(new URL("./src", import.meta.url))
         }
