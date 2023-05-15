@@ -13,7 +13,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-row dense justify="center" align-content="center">
+      <v-row dense align-content="center">
         <v-col cols="6">
           <v-text-field
             variant="outlined"
@@ -38,11 +38,11 @@
         </v-col>
         <v-spacer />
         <v-btn
+          size="large"
           density="compact"
           variant="outlined"
-          small
           color="primary-darken-3"
-          class="mt-3 mr-4"
+          class="mr-4"
           :loading="loading"
           @click="handleCondition"
           icon="mdi-cog"
@@ -58,9 +58,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -133,7 +137,7 @@
       <!-- Finding -->
       <v-card>
         <v-card-title>
-          <span class="mx-4 headline">{{
+          <span class="mx-4 text-h5">{{
             $t(`view.alert['Alert Findings']`)
           }}</span>
           <v-chip
@@ -145,7 +149,7 @@
             <v-icon left>mdi-label</v-icon>
             {{ alertModel.alert_id }}
           </v-chip>
-          <strong class="mx-4 headline">{{ alertModel.description }}</strong>
+          <strong class="mx-4 text-h5">{{ alertModel.description }}</strong>
         </v-card-title>
         <v-card-text class="py-0">
           <v-chip-group active-class="primary--text" column>
@@ -168,7 +172,7 @@
       <!-- History -->
       <v-card>
         <v-card-title>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`view.alert['AlertHistory']`) }}
           </span>
         </v-card-title>
@@ -242,7 +246,7 @@
 
     <v-dialog v-model="pendDialog" max-width="600px">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you want to update PENDING this?']`) }}
           </span>
@@ -328,11 +332,9 @@ export default {
         activeOnly: true,
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageOptions: [ {value: 20, title: '20'},{value: 50, title: '50'},{value: 100, title: '100'}],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

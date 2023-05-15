@@ -5,7 +5,7 @@
     @click:outside="handleCancel"
   >
     <v-card>
-      <v-card-title class="headline">
+      <v-card-title class="text-h5">
         <v-icon left>mdi-label</v-icon>
         <span class="mx-2">{{ $t(`view.project['Project Tag']`) }}</span>
       </v-card-title>

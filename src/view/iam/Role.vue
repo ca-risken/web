@@ -29,6 +29,7 @@
           <v-spacer />
           <v-btn
             class="mt-3 mr-4"
+            size="large"
             density="compact"
             @click="handleSearch"
             icon="mdi-magnify"
@@ -36,6 +37,7 @@
           <v-btn
             class="mt-3 mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
@@ -50,10 +52,14 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -63,8 +69,8 @@
                 @update:page="loadList"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon large>mdi-alpha-r-circle</v-icon>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.policy_cnt`]="{ item }">
@@ -107,8 +113,8 @@
     <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large>mdi-alpha-r-circle</v-icon>
-          <span class="mx-4 headline">
+          <v-icon size="large">mdi-alpha-r-circle</v-icon>
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Role']`) }}
           </span>
         </v-card-title>
@@ -145,16 +151,12 @@
             <!-- Policy List -->
             <template v-if="!roleForm.newRole">
               <v-toolbar flat color="white">
-                <v-toolbar-title class="grey--text text--darken-4">
-                  <v-icon large>mdi-certificate-outline</v-icon>
+                  <v-icon size="large">mdi-certificate-outline</v-icon>
                   <span class="mx-4">
                     {{ $t(`submenu['Policy']`) }}
                   </span>
-                </v-toolbar-title>
                 <v-text-field
-                  text
-                  solo
-                  flat
+                  variant="plain"
                   prepend-icon="mdi-magnify"
                   placeholder="Type something"
                   v-model="policyTable.search"
@@ -171,10 +173,14 @@
                 v-model="policyTable.selected"
                 :search="policyTable.search"
                 :headers="policyHeaders"
-                :footer-props="policyTable.footer"
                 :items="policyTable.items"
-                v-model:options="policyTable.options"
                 :loading="loading"
+                :sort-by="policyTable.options.sortBy"
+                :page="policyTable.options.page"
+                :items-per-page="policyTable.options.itemsPerPage"
+                :items-per-page-options="policyTable.footer.itemsPerPageOptions"
+                :items-per-page-text="policyTable.footer.itemsPerPageText"
+                :showCurrentPage="policyTable.footer.showCurrentPage"                
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -239,7 +245,7 @@
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -342,10 +348,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -358,10 +363,9 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['policy_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 5, title: '5'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

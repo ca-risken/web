@@ -31,7 +31,7 @@
           <v-btn
             text
             variant="outlined"
-            class="mt-1 mr-4"
+            class="mr-4"
             color="blue-darken-1"
             @click="handleNewProjectTag"
           >
@@ -44,21 +44,20 @@
           />
 
           <v-btn
-            class="mt-1 mr-4"
+            class="mr-4"
             color="grey-darken-2"
+            size="large"
             density="compact"
-            icon
             variant="outlined"
             :loading="loading"
             @click="handleList"
-          >
-            <v-icon>mdi-refresh</v-icon>
-          </v-btn>
+            icon="mdi-refresh"
+          />
           <v-btn
-            class="mt-1 mr-4"
+            class="mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
-            small
             @click="handleNewGitHubSetting"
             icon="mdi-new-box"
           />
@@ -74,9 +73,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -85,8 +88,8 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon color="black" large>mdi-github</v-icon>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon color="black" size="x-large" icon="mdi-github" />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.type_text`]="{ item }">
@@ -110,7 +113,7 @@
                   </scan-status>
                   <v-chip dark color="grey" v-else> Disabled </v-chip>
                 </template>
-                <template v-slot:[`item.value.updated_at`]="{ item }">
+                <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
@@ -141,7 +144,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -165,7 +168,6 @@
           </v-list-item>
         </v-list>
         <v-card-actions>
-          <v-spacer></v-spacer>
           <v-btn
             text
             variant="outlined"
@@ -289,9 +291,9 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

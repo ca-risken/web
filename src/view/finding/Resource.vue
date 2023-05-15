@@ -78,7 +78,8 @@
           <v-spacer />
           <v-btn
             class="mt-0 mr-4"
-            size="small"
+            size="large"
+            density="compact"
             :loading="loading"
             @click="handleSearch"
             icon="mdi-magnify"
@@ -95,49 +96,27 @@
                 v-model:page="table.options.page"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="resource_id"
                 @update:page="loadList"
+                @update:sort-by="handleSort($event)"
                 v-model="table.selected"
               >
-                <!-- Sortable Header -->
-                <template v-slot:[`header.resource_id`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.namespace`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.resource_type`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.resource_name`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.updated_at`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
                 <template v-slot:[`item.resource_name`]="{ item }">
                   {{ cutLongText(item.value.resource_name, 80) }}
                 </template>
                 <template v-slot:[`item.namespace`]="{ item }">
-                  <v-layout justify-center>
                     <v-avatar
                       v-if="item.value.data_source == 'RISKEN'"
                       tile
@@ -152,7 +131,6 @@
                     >
                       {{ getDataSourceIcon(item.value.namespace) }}
                     </v-icon>
-                  </v-layout>
                 </template>
                 <template v-slot:[`item.check_point`]="{ item }">
                   <v-card
@@ -208,7 +186,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -332,10 +310,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 20, title: '20'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -473,7 +450,8 @@ export default {
       })
       this.refleshList()
     },
-    handleSort(newSortKey) {
+    handleSort(newSort) {
+      const newSortKey = newSort[0].key
       const oldKey = this.table.sort.key
       const oldDirection = this.table.sort.direction
       if (oldKey === newSortKey) {

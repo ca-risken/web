@@ -4,7 +4,7 @@
       <v-layout>
         <div class="text-md-center">
           <h1>403</h1>
-          <h2 class="my-3 headline">
+          <h2 class="my-3 text-h5">
             {{
               $t(
                 `error['Sorry, access denied or time out your session... Please retry after signin.']`

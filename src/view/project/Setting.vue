@@ -105,7 +105,7 @@
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>

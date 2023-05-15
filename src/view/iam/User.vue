@@ -28,6 +28,7 @@
           <v-spacer />
           <v-btn
             class="mt-3 mr-4"
+            size="large"
             density="compact"
             :loading="loading"
             @click="handleSearch"
@@ -36,6 +37,7 @@
           <v-btn
             class="mt-3 mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
             @click="handleNew"
             icon="mdi-new-box"
@@ -50,10 +52,13 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
-                :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -115,10 +120,10 @@
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
-          <v-row>
+          <v-row class="pa-3">
             <v-col>
               <v-icon large>mdi-account-multiple</v-icon>
-              <span class="mx-4 headline">
+              <span class="mx-4 text-h5">
                 {{ $t(`submenu['User']`) }}
               </span>
             </v-col>
@@ -186,16 +191,12 @@
           <!-- Role List -->
           <div v-show="userModel.user_idp_key">
             <v-toolbar flat color="white" v-show="userModel.user_idp_key">
-              <v-toolbar-title class="grey--text text--darken-4">
-                <v-icon large>mdi-alpha-r-circle</v-icon>
-                <span class="mx-4">
+                <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
+                <span class="mx-4 text-h6">
                   {{ $t(`submenu['Role']`) }}
                 </span>
-              </v-toolbar-title>
               <v-text-field
-                text
-                solo
-                flat
+                variant="plain"
                 prepend-icon="mdi-magnify"
                 placeholder="Type something"
                 v-model="roleTable.search"
@@ -212,9 +213,13 @@
               v-model="roleTable.selected"
               :search="roleTable.search"
               :headers="roleHeaders"
-              :footer-props="roleTable.footer"
               :items="roleTable.items"
-              v-model:options="roleTable.options"
+              :sort-by="roleTable.options.sortBy"
+              :page="roleTable.options.page"
+              :items-per-page="roleTable.options.itemsPerPage"
+              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
+              :items-per-page-text="roleTable.footer.itemsPerPageText"
+              :showCurrentPage="roleTable.footer.showCurrentPage"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
@@ -345,10 +350,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -363,10 +367,9 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 5, title: '5'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

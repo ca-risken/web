@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class="text-h5 grey-lighten-2">
           <v-icon large color="black">mdi-github</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['GitHub']`) }}
           </span>
         </v-card-title>
@@ -21,19 +21,19 @@
             class="mx-0 px-0"
             :value="2"
             :disabled="!isConfiguredGitHubSetting"
-            >{{ gitleaksDataSourceModel.name }}</v-tab
+            >{{ $t(`item['Gitleaks Setting']`) }}</v-tab
           >
           <v-tab
             class="mx-0 px-0"
             :value="3"
             :disabled="!isConfiguredGitHubSetting"
-            >{{ dependencyDataSourceModel.name }}</v-tab
+            >{{ $t(`item['Dependency Setting']`) }}</v-tab
           >
         </v-tabs>
         <v-window v-model="e6">
           <v-window-item :value="1">
-            <v-card variant="flat">
-              <v-card-text class="pb-0">
+            <v-card variant="flat" class="pb-4">
+              <v-card-text>
                 <v-form v-model="gitHubForm.valid" ref="formGitHub">
                   <v-row>
                     <v-col>
@@ -178,7 +178,7 @@
             </v-card>
           </v-window-item>
           <v-window-item :value="2">
-            <v-card variant="flat" class="mb-4">
+            <v-card variant="flat" class="pb-4">
               <v-card-text>
                 <v-row>
                   <v-col>
@@ -198,14 +198,14 @@
                       <v-list-item-subtitle>
                         {{ $t(`item['Data Source ID']`) }}
                       </v-list-item-subtitle>
-                      <v-list-item-title class="headline">
+                      <v-list-item-title class="text-h5">
                         {{ gitleaksDataSourceModel.code_data_source_id }}
                       </v-list-item-title>
                     </v-list-item>
                   </v-col>
                   <v-col cols="3">
                     <v-list-item>
-                      <v-list-item-title class="headline">
+                      <v-list-item-title class="text-h5">
                         <v-list-item-subtitle>
                           {{ $t(`item['MAX Score']`) }}
                         </v-list-item-subtitle>
@@ -217,7 +217,7 @@
                   </v-col>
                   <v-col cols="3">
                     <v-list-item>
-                      <v-list-item-title class="headline">
+                      <v-list-item-title class="text-h5">
                         <v-list-item-subtitle>
                           {{ $t(`item['Status']`) }}
                         </v-list-item-subtitle>
@@ -246,7 +246,7 @@
                   </v-col>
                   <v-col cols="3" v-if="getStatus(gitleaksSetting)">
                     <v-list-item>
-                      <v-list-item-title class="headline">
+                      <v-list-item-title class="text-h5">
                         <v-list-item-subtitle>
                           {{ $t(`item['ScanAt']`) }}
                         </v-list-item-subtitle>
@@ -424,7 +424,7 @@
             </v-card>
           </v-window-item>
           <v-window-item :value="3">
-            <v-card outlined class="mb-4">
+            <v-card class="pb-4">
               <v-card-text>
                 <v-row>
                   <v-col>
@@ -446,14 +446,14 @@
                           <v-list-item-subtitle>
                             {{ $t(`item['Data Source ID']`) }}
                           </v-list-item-subtitle>
-                          <v-list-item-title class="headline">
+                          <v-list-item-title class="text-h5">
                             {{ dependencyDataSourceModel.code_data_source_id }}
                           </v-list-item-title>
                         </v-list-item>
                       </v-col>
                       <v-col cols="3">
                         <v-list-item two-line>
-                          <v-list-item-title class="headline">
+                          <v-list-item-title class="text-h5">
                             <v-list-item-subtitle>
                               {{ $t(`item['MAX Score']`) }}
                             </v-list-item-subtitle>
@@ -465,7 +465,7 @@
                       </v-col>
                       <v-col cols="3">
                         <v-list-item two-line>
-                          <v-list-item-title class="headline">
+                          <v-list-item-title class="text-h5">
                             <v-list-item-subtitle>
                               {{ $t(`item['Status']`) }}
                             </v-list-item-subtitle>
@@ -502,7 +502,7 @@
                       </v-col>
                       <v-col cols="3" v-if="getStatus(dependencySetting)">
                         <v-list-item two-line>
-                          <v-list-item-title class="headline">
+                          <v-list-item-title class="text-h5">
                             <v-list-item-subtitle>
                               {{ $t(`item['ScanAt']`) }}
                             </v-list-item-subtitle>
@@ -1034,3 +1034,9 @@ export default {
   },
 }
 </script>
+
+<style>
+.v-tab {
+text-transform: none !important;
+}
+</style>

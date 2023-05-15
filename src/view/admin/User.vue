@@ -64,6 +64,11 @@
                 :items="table.items"
                 v-model:options="table.options"
                 :server-items-length="table.total"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :showCurrentPage="table.footer.showCurrentPage"
                 :loading="loading"
                 :footer-props="table.footer"
                 locale="ja-jp"
@@ -76,7 +81,7 @@
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-2">
-                    <img src="/static/avatar/default.png" alt="avatar" />
+                    <v-img src="/static/avatar/default.png" alt="avatar" />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.role_cnt`]="{ item }">
@@ -120,7 +125,7 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-account-multiple</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['User']`) }}
           </span>
           <v-spacer />
@@ -189,6 +194,12 @@
               :items="roleTable.items"
               v-model:options="roleTable.options"
               :loading="loading"
+              :sort-by="roleTable.options.sortBy"
+              :page="roleTable.options.page"
+              :items-per-page="roleTable.options.itemsPerPage"
+              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
+              :showCurrentPage="roleTable.footer.showCurrentPage"
+
               locale="ja-jp"
               loading-text="Loading..."
               no-data-text="No data."
@@ -310,10 +321,8 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -327,10 +336,8 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          itemsPerPageOptions: [ {value: 5, title: '5'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -381,16 +388,16 @@ export default {
     roleHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'role_id',
+          key: 'role_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
       ]
     },

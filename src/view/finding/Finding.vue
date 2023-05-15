@@ -73,7 +73,8 @@
               <template v-slot:activator="{ attrs }">
                 <v-btn
                   v-bind="attrs"
-                  size="small"
+                  size="large"
+                  density="compact"
                   variant="outlined"
                   color="grey-darken-2"
                   @click="searchMenuDetail = !searchMenuDetail"
@@ -89,7 +90,8 @@
                 <v-btn
                   v-bind="attrs"
                   class="ml-2"
-                  size="small"
+                  size="large"
+                  density="compact"
                   variant="outlined"
                   color="indigo-darken-2"
                   @click="handleSearch"
@@ -105,7 +107,8 @@
                 <v-btn
                   v-bind="props"
                   class="ml-2"
-                  size="small"
+                  size="large"
+                  density="compact"
                   variant="outlined"
                   color="green-darken-2"
                   :loading="loading"
@@ -171,34 +174,67 @@
           </v-row>
         </transition>
       </v-form>
-      <v-chip-group>
-        <template
-          v-for="history in sortedFindingHistory"
-          :key="history.search_at"
+      <v-row>
+        <v-col class="pb-10">
+          <v-slide-group show-arrows>
+        <v-slide-group-item
+        v-for="history in sortedFindingHistory"
+        :key="history.search_at"
         >
-          <v-tooltip bottom>
-            <template v-slot:activator="{ attrs }">
-              <v-chip
-                v-bind="attrs"
-                variant="outlined"
-                closable
-                close-icon="mdi-close-circle-outline"
-                @click="searchByHistory(history)"
-                @click:close="deleteSearchHistory(history)"
-                risken-action-name="search-finding-by-history-from-finding"
-                :text="history.label"
-              />
-            </template>
-            <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
-          </v-tooltip>
-        </template>
-      </v-chip-group>
+        <v-chip 
+          :text="history.label" 
+          variant="outlined"
+          closable
+          style="white-space: pre-wrap"
+          @click="searchByHistory(history)"
+          @click:close="deleteSearchHistory(history)"
+          risken-action-name="search-finding-by-history-from-finding"
+          >
+          {{ history.label }}
+          <v-tooltip
+            activator="parent"
+            location="bottom"
+          ><span style="white-space: pre-wrap">{{ history.tooltip }}</span></v-tooltip>
+        </v-chip>
+      </v-slide-group-item>
+      </v-slide-group>        </v-col>
+      </v-row>
+
+          <!-- <v-chip
+          variant="outlined"
+          color="gray-lighten-1"
+          closable
+          close-icon="mdi-close-circle-outline"
+          @click="searchByHistory(history)"
+          @click:close="deleteSearchHistory(history)"
+          risken-action-name="search-finding-by-history-from-finding"
+          :text="history.label">
+          <v-tooltip location="bottom" activator="parent">
+          <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
+          </v-tooltip>         -->
+        <!-- </v-chip> -->
+        <!-- <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-chip
+            v-bind="props"
+            variant="outlined"
+            color="gray-lighten-1"
+            closable
+            close-icon="mdi-close-circle-outline"
+            @click="searchByHistory(history)"
+            @click:close="deleteSearchHistory(history)"
+            risken-action-name="search-finding-by-history-from-finding"
+            :text="history.label">
+          </v-chip>
+          <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
+          </template>
+        </v-tooltip> -->
+
       <v-row class="mt-2">
         <v-col>
           <v-tabs
             v-model="searchModel.tab"
-            bg-color="white"
-            color="cyan-darken-3 accent-4"
+            color="cyan-darken-3"
             fixed-tabs
             @update:modelValue="handleChangeStatus"
           >
@@ -217,7 +253,11 @@
                 :headers="headers"
                 :items-length="table.total"
                 :items="table.items"
+                :sort-by="table.options.sortBy"
                 :page="table.options.page"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :show-current-page="table.footer.showCurrentPage"
+                :items-per-page-text="table.footer.itemsPerPageText"
                 v-model:items-per-page="table.options.itemsPerPage"
                 :loading="loading"
                 locale="ja-jp"
@@ -227,41 +267,10 @@
                 item-key="finding_id"
                 @click:row="handleViewItem"
                 @update:page="loadList"
-                @update:options="loadList"
+                @update:sort-by="handleSort($event)"
                 v-model="table.selected"
                 show-select
               >
-                <!-- Sortable Header -->
-                <template v-slot:[`header.finding_id`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.score`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.data_source`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.resource_name`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.description`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
-                <template v-slot:[`header.updated_at`]="{ header }"
-                  ><a @click="handleSort(header.value)">{{
-                    header.text
-                  }}</a></template
-                >
                 <template v-slot:[`item.resource_name`]="{ item }">
                   {{ cutLongText(item.value.resource_name, 64) }}
                 </template>
@@ -363,14 +372,15 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-subtitle>
-                  <v-icon color="black" left icon="mdi-identifier" />
+                  <v-icon size="large" color="black" left icon="mdi-identifier" />
                   Finding ID
                   <clip-board
+                    size="large"
                     name="Finding ID"
                     :text="String(findingModel.finding_id)"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ findingModel.finding_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -386,11 +396,12 @@
                   </v-icon>
                   {{ $t(`item['Data Source']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['Data Source']`)"
                     :text="findingModel.data_source"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ findingModel.data_source }}
                 </v-list-item-title>
               </v-list-item>
@@ -401,11 +412,12 @@
                   <v-icon left>mdi-file-find-outline</v-icon>
                   {{ $t(`item['Resource Name']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['Resource Name']`)"
                     :text="findingModel.resource_name"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ findingModel.resource_name }}
                 </v-list-item-title>
               </v-list-item>
@@ -418,11 +430,12 @@
                   <v-icon left>mdi-image-text</v-icon>
                   {{ $t(`item['Description']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['Description']`)"
                     :text="findingModel.description"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ findingModel.description }}
                 </v-list-item-title>
               </v-list-item>
@@ -438,7 +451,7 @@
                   >
                   {{ $t(`item['Score']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-chip
                     variant="flat"
                     :color="getColorByScore(findingModel.score)"
@@ -453,7 +466,7 @@
                   <v-icon>mdi-scoreboard</v-icon>
                   {{ $t(`item['Original Score']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ findingModel.original_score }}
                 </v-list-item-title>
               </v-list-item>
@@ -559,12 +572,13 @@
                 <v-icon left>mdi-code-json</v-icon>
                 JSON Data
                 <clip-board
+                  size="large"
                   name="JSON Data"
                   :text="pretty(findingModel.data)"
                 />
               </v-list-item-subtitle>
               <v-card dark color="grey-darken-3" class="ma-4">
-                <v-card-text class="title font-weight-bold">
+                <v-card-text class="title font-weight-bold" density="comfortable">
                   <json-viewer
                     :value="parseFindingData(findingModel.data)"
                     :expand-depth="5"
@@ -631,7 +645,7 @@
 
     <v-dialog v-model="tagDialog" max-width="400px">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title>
           <span class="mx-4">New tag</span>
         </v-card-title>
         <v-card-text>
@@ -667,13 +681,16 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item prepend-icon="mdi-identifier">
+          <v-list-item>
+            <template v-slot:prepend>
+              <v-icon size="large" icon="mdi-identifier" />
+            </template>
             <v-list-item-title>
               {{ findingModel.finding_id }}
             </v-list-item-title>
@@ -690,10 +707,10 @@
             </v-list-item-subtitle>
           </v-list-item>
           <v-list-item prepend-icon="mdi-image-text">
-            <v-list-item>
-              {{ findingModel.description }}
-            </v-list-item>
-            <v-list-item-subtitle>{{
+              <v-list-item-title style="white-space: pre-wrap">
+                {{ findingModel.description }}
+              </v-list-item-title>
+            <v-list-item-subtitle >{{
               $t(`item['Description']`)
             }}</v-list-item-subtitle>
           </v-list-item>
@@ -723,7 +740,7 @@
 
     <v-dialog v-model="pendDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you want to update PENDING this?']`) }}
           </span>
@@ -754,6 +771,7 @@
               <v-combobox
                 variant="outlined"
                 density="compact"
+                hide-no-data
                 hide-details
                 clearable
                 bg-color="white"
@@ -804,7 +822,7 @@
         <v-container>
           <v-row>
             <v-col cols="9">
-              <v-card-title class="headline">
+              <v-card-title class="text-h5">
                 <span class="mx-4">
                   {{ $t(`item['Recommendation']`) }}
                 </span>
@@ -1059,7 +1077,8 @@ export default {
         selected: [],
         options: {
           page: 1,
-          itemsPerPage: 5,
+          itemsPerPage: 20,
+          sortBy: ['id','score','data_source','resource','description' ],
         },
         sort: {
           key: 'finding_id',
@@ -1067,11 +1086,13 @@ export default {
         },
         total: 0,
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageOptions: [
+            {value: 20, title: '20'},
+            {value: 50, title: '50'},
+            {value: 100, title: '100'}
+          ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -1415,7 +1436,8 @@ export default {
       }
       return searchCond
     },
-    handleSort(newSortKey) {
+    handleSort(newSort) {
+      const newSortKey = newSort[0].key
       const oldKey = this.table.sort.key
       const oldDirection = this.table.sort.direction
       if (oldKey === newSortKey) {
@@ -1875,6 +1897,7 @@ export default {
   }
   .jv-code {
     padding: 1px;
+    line-height: 2rem;
     .jv-toggle {
       &:before {
         padding: 0px 2px;

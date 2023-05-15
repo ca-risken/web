@@ -33,15 +33,12 @@
           class="mt-3 mr-4"
           color="grey-darken-2"
           density="compact"
-          small
-          icon
-          fab
+          size="large"
           variant="outlined"
           :loading="loading"
           @click="handleList"
-        >
-          <v-icon>mdi-refresh</v-icon>
-        </v-btn>
+          icon="mdi-refresh"
+        />
         <v-btn
           class="mt-3 mr-4"
           medium
@@ -62,10 +59,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :v-model:options="table.options"
-                :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"                
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -74,7 +74,7 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]="{ item }">
-                  <v-avatar tile class="ma-3" size="74%">
+                  <v-avatar tile class="ma-3" size="30px">
                     <v-img
                       :src="getGCPDataSourceIcon(item.value.name)"
                       :alt="item.value.name"
@@ -99,7 +99,7 @@
                       color="white"
                       class="mr-2"
                     ></v-progress-circular>
-                    <v-icon v-else small color="white" class="mr-2">{{
+                    <v-icon v-else-if="item.value.status" small color="white" class="mr-2">{{
                       getDataSourceStatusIcon(item.value.status)
                     }}</v-icon>
                     {{ getDataSourceStatusText(item.value.status) }}
@@ -157,7 +157,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="blue-darken-1">mdi-google-cloud</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['GCP DataSource']`) }}
           </span>
         </v-card-title>
@@ -168,11 +168,12 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + gcpForm.gcp_id.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['` + gcpForm.gcp_id.label + `']`)"
                     :text="String(gcpDataSourceModel.gcp_id)"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ gcpDataSourceModel.gcp_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -184,13 +185,14 @@
                     $t(`item['` + gcpForm.google_data_source_id.label + `']`)
                   }}
                   <clip-board
+                    size="large"
                     :name="
                       $t(`item['` + gcpForm.google_data_source_id.label + `']`)
                     "
                     :text="String(gcpDataSourceModel.google_data_source_id)"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ gcpDataSourceModel.google_data_source_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -200,11 +202,12 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + gcpForm.name.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['` + gcpForm.name.label + `']`)"
                     :text="String(gcpDataSourceModel.name)"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ gcpDataSourceModel.name }}
                 </v-list-item-title>
               </v-list-item>
@@ -214,7 +217,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + gcpForm.max_score.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-chip variant="outlined">
                     {{ gcpDataSourceModel.max_score }}
                   </v-chip>
@@ -225,7 +228,7 @@
           <v-row dense v-if="!gcpForm.setupAll">
             <v-col cols="2" v-if="gcpDataSourceModel.status">
               <v-list-item two-line>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-list-item-subtitle>
                     {{ $t(`item['` + gcpForm.status.label + `']`) }}
                   </v-list-item-subtitle>
@@ -244,11 +247,12 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + gcpForm.gcp_project_id.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['` + gcpForm.gcp_project_id.label + `']`)"
                     :text="String(gcpDataSourceModel.gcp_project_id)"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ gcpDataSourceModel.gcp_project_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -258,8 +262,8 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + gcpForm.scan_at.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
-                  <v-chip color="grey-lighten-3">
+                <v-list-item-title class="text-h5">
+                  <v-chip>
                     {{ formatTime(gcpDataSourceModel.scan_at) }}
                   </v-chip>
                 </v-list-item-title>
@@ -273,7 +277,7 @@
                   {{ $t(`version['version']`) }}
                 </v-list-item-subtitle>
                 <v-list-item-title
-                  class="headline"
+                  class="text-h5"
                   v-if="gcpDataSourceModel.specific_version"
                 >
                   {{ $t(`version['old']`) }} ({{
@@ -290,7 +294,7 @@
                     {{ $t(`btn['Upgrade']`) }}
                   </v-btn>
                 </v-list-item-title>
-                <v-list-item-title class="headline" v-else>
+                <v-list-item-title class="text-h5" v-else>
                   {{ $t(`version['latest']`) }}
                 </v-list-item-title>
               </v-list-item>
@@ -355,7 +359,7 @@
                   color="white"
                   class="mr-2"
                 ></v-progress-circular>
-                <v-icon v-else small color="white" class="mr-2">{{
+                <v-icon v-else-if="item.value.status" color="white" class="mr-2">{{
                   getDataSourceStatusIcon(item.value.status)
                 }}</v-icon>
                 {{ getDataSourceStatusText(item.value.status) }}
@@ -430,7 +434,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to detach this?']`) }}
           </span>
@@ -565,10 +569,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

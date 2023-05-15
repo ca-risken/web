@@ -1,5 +1,8 @@
 <template>
-  <v-app-bar v-bind="$attrs" color="primary" extension-height="64">
+  <v-card>
+    
+  </v-card>
+  <v-app-bar v-bind="$attrs" color="primary" extension-height="48" extended>
     <template v-slot:prepend>
       <v-app-bar-nav-icon @click="handleDrawerToggle" />
     </template>
@@ -28,7 +31,7 @@
     </v-app-bar-title>
     <v-spacer />
     <v-btn icon @click="handleFullScreen()">
-      <v-icon icon="mdi-fullscreen" />
+      <v-icon icon="mdi-fullscreen" size="x-large" />
     </v-btn>
     <v-menu
       location="bottom"
@@ -37,7 +40,7 @@
     >
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" variant="text">
-          <v-icon size="medium" icon="mdi-web" />
+          <v-icon size="x-large" icon="mdi-web" />
           <span class="ml-2"> {{ getLocaleText($i18n.locale) }} </span>
         </v-btn>
       </template>
@@ -61,7 +64,7 @@
     >
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" variant="text">
-          <v-icon icon="mdi-open-in-new"></v-icon>
+          <v-icon icon="mdi-open-in-new" size="x-large"></v-icon>
           <span class="ml-2"> {{ $t(`item['Link']`) }} </span>
         </v-btn>
       </template>
@@ -80,8 +83,8 @@
     </v-menu>
     <v-menu location="bottom" transition="scale-transition">
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon size="large">
-          <v-icon icon="mdi-cog" />
+        <v-btn v-bind="props">
+          <v-icon icon="mdi-cog" size="x-large" />
         </v-btn>
       </template>
       <v-list class="pa-0">
@@ -99,7 +102,8 @@
       </v-list>
     </v-menu>
     <template v-slot:extension>
-      <v-toolbar dense color="white" light>
+      <v-card width="95%" class="mx-auto" flat >
+        <v-toolbar dense color="white" light class="ps-5">
         <v-icon>mdi-home</v-icon>
         <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
         <v-spacer></v-spacer>
@@ -109,6 +113,7 @@
           </v-icon>
         </v-btn>
       </v-toolbar>
+      </v-card>
     </template>
   </v-app-bar>
 
@@ -146,10 +151,10 @@
           :items="projectTable.item"
           item-key="project_id"
           :items-per-page="projectTable.options.itemsPerPage"
-          v-model:page="projectTable.options.page"
-          v-model:options="projectTable.options"
+          :page="projectTable.options.page"
           :loading="loading"
-          :footer-props="projectTable.footer"
+          :items-per-page-options="projectTable.footer.itemsPerPageOptions"
+          :show-current-page="projectTable.footer.showCurrentPage"
           locale="ja-jp"
           loading-text="Loading..."
           no-data-text="No data."
@@ -221,9 +226,10 @@ export default {
         search: '',
         options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageOptions: [
+            {value: 10, title: '10'},
+          ],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         item: [],
       },

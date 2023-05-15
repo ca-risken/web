@@ -30,8 +30,8 @@
         <v-btn
           class="mt-3 mr-4"
           color="grey-darken-2"
+          size="large"
           density="compact"
-          small
           variant="outlined"
           :loading="loading"
           @click="handleList"
@@ -48,10 +48,13 @@
                 v-model="table.selected"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
-                :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -126,7 +129,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="green">http</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['OSINT DataSource']`) }}
           </span>
         </v-card-title>
@@ -138,7 +141,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.osint_id.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ dataModel.osint_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -148,7 +151,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.resource_type.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ dataModel.resource_type }}
                 </v-list-item-title>
               </v-list-item>
@@ -158,7 +161,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.resource_name.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ dataModel.resource_name }}
                 </v-list-item-title>
               </v-list-item>
@@ -171,7 +174,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.max_score.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-chip outlined>
                     {{ dataModel.max_score }}
                   </v-chip>
@@ -183,7 +186,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.name.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ dataModel.name }}
                 </v-list-item-title>
               </v-list-item>
@@ -193,7 +196,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.description.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ dataModel.description }}
                 </v-list-item-title>
               </v-list-item>
@@ -208,14 +211,14 @@
                     $t(`item['` + form.rel_osint_data_source_id.label + `']`)
                   }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ dataModel.rel_osint_data_source_id }}
                 </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3" v-if="dataModel.status">
               <v-list-item two-line>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-list-item-subtitle>
                     {{ $t(`item['` + form.status.label + `']`) }}
                   </v-list-item-subtitle>
@@ -234,8 +237,8 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + form.scan_at.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
-                  <v-chip color="grey-lighten-3">
+                <v-list-item-title class="text-h5">
+                  <v-chip>
                     {{ formatTime(dataModel.scan_at) }}
                   </v-chip>
                 </v-list-item-title>
@@ -354,7 +357,7 @@
 
     <v-dialog v-model="detectWordDialog" max-width="400px">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">{{ $t(`item['Detect Word']`) }}</span>
         </v-card-title>
         <v-card-text>
@@ -390,7 +393,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to detach this?']`) }}
           </span>
@@ -526,11 +529,9 @@ export default {
           { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [10, 50, 100],
+          itemsPerPageOptions: [ {value: 10, title: '10'},{value: 50, title: '50'},{value: 100, title: '100'}],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

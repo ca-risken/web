@@ -49,7 +49,10 @@
           v-model:options="table.options"
           :server-items-length="table.total"
           :loading="loading"
-          :footer-props="table.footer"
+          :items-per-page-options="table.footer.itemsPerPageOptions"
+          :items-per-page="table.options.itemsPerPage"
+          :sort-by="table.options.sortBy"
+          :showCurrentPage="table.footer.showCurrentPage"
           locale="ja-jp"
           loading-text="Loading..."
           no-data-text="No data."
@@ -130,10 +133,8 @@ export default {
         options: { page: 1, itemsPerPage: 20, sortBy: ['user_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [ {value: 20, title: '20'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

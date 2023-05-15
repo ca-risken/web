@@ -19,7 +19,7 @@
           <v-btn
             text
             variant="outlined"
-            class="mt-1 mr-4"
+            class="mr-4"
             color="blue-darken-1"
             @click="handleNewProjectTag"
           >
@@ -31,22 +31,20 @@
             @projectTagUpdated="handleProjectTagUpdated"
           />
           <v-btn
-            class="mt-1 mr-4"
+            class="mr-4"
             color="grey-darken-2"
+            size="large"
             density="compact"
-            small
-            icon
+            icon="mdi-refresh"
             variant="outlined"
             :loading="loading"
             @click="refleshList"
-          >
-            <v-icon>mdi-refresh</v-icon>
-          </v-btn>
+          />
           <v-btn
-            class="mt-1 mr-4"
+            class="mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
-            small
             @click="handleNewItem"
             icon="mdi-new-box"
           />
@@ -62,9 +60,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"                
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -155,7 +157,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Application Scan']`) }}
           </span>
         </v-card-title>
@@ -183,7 +185,7 @@
                                 `']`
                             )
                           "
-                          :text="String(applicationScanForm.status_detail)"
+                          :text="String(applicationScanModel.status_detail)"
                         />
                       </span>
                     </v-card-title>
@@ -342,7 +344,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -397,6 +399,7 @@ import diagnosis from '@/mixin/api/diagnosis'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'DiagnosisApplicationScan',
@@ -405,6 +408,7 @@ export default {
     BottomSnackBar,
     ProjectTag,
     VDataTable,
+    ClipBoard,
   },
   data() {
     return {
@@ -508,7 +512,8 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
           showFirstLastPage: true,
         },

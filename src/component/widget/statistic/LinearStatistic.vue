@@ -9,7 +9,7 @@
       </div>
     </v-card-title>
     <v-card-text class="pt-2">
-      <h3 class="headline">{{ subTitle }}</h3>
+      <h3 class="text-h5">{{ subTitle }}</h3>
       <v-progress-linear
         :value="value"
         height="5"

@@ -1,7 +1,7 @@
 <template>
   <v-card max-width="600" class="mx-auto">
     <v-list-item>
-      <v-list-item-title class="headline">
+      <v-list-item-title class="text-h5">
         {{ $t(`submenu['Profile']`) }}
       </v-list-item-title>
     </v-list-item>

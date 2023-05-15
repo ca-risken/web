@@ -6,20 +6,14 @@
     :width="drawerWidth"
   >
     <v-toolbar color="primary-darken-2">
-      <v-row align="center">
-        <v-col cols="4">
-          <v-img :src="computeLogo" height="48" alt="RISKEN" @click="toTop" />
-        </v-col>
-        <v-col>
-          <v-toolbar-title class="ml-0 pl-3">
+      <v-img :src="computeLogo" alt="RISKEN" width="48" @click="toTop" style="max-width: 30%" />
+      <v-toolbar-title class="ml-0 pl-0" style="white-space: nowrap">
             <span
               class="hidden-sm-and-down font-weight-bold text-h5"
               @click="toTop"
               >RISKEN</span
             >
-          </v-toolbar-title>
-        </v-col>
-      </v-row>
+      </v-toolbar-title>
     </v-toolbar>
     <v-list class="pa-0">
       <template v-for="(item, key) in computeMenu">

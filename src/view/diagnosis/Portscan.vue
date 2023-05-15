@@ -33,7 +33,7 @@
           <v-btn
             text
             variant="outlined"
-            class="mt-1 mr-4"
+            class="mr-4"
             color="blue-darken-1"
             @click="handleNewProjectTag"
           >
@@ -45,10 +45,10 @@
             @projectTagUpdated="handleProjectTagUpdated"
           />
           <v-btn
-            class="mt-1 mr-4"
+            class="mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
-            small
             @click="handleNewItem"
             icon="mdi-new-box"
           />
@@ -64,9 +64,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -120,7 +124,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Portscan Target']`) }}
           </span>
         </v-card-title>
@@ -142,9 +146,13 @@
             :search="tableTargets.search"
             :headers="headersTarget"
             :items="tableTargets.items"
-            v-model:options="tableTargets.options"
             :loading="loading"
-            :footer-props="tableTargets.footer"
+            :sort-by="table.options.sortBy"
+            :page="table.options.page"
+            :items-per-page="table.options.itemsPerPage"
+            :items-per-page-options="table.footer.itemsPerPageOptions"
+            :items-per-page-text="table.footer.itemsPerPageText"
+            :showCurrentPage="table.footer.showCurrentPage"
             locale="ja-jp"
             loading-text="Loading..."
             no-data-text="No data."
@@ -231,7 +239,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Portscan']`) }}
           </span>
         </v-card-title>
@@ -304,7 +312,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -354,7 +362,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Portscan Target']`) }}
           </span>
         </v-card-title>
@@ -439,7 +447,7 @@
 
     <v-dialog v-model="deleteTargetDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -572,9 +580,9 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -595,9 +603,9 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [5, 10, 20],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 5, title: '5'},{value: 10, title: '10'},{value: 20, title: '20'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -619,7 +627,7 @@ export default {
           key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
           key: 'portscan_setting_id',

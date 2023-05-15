@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <span>
     <v-icon :size="size" :color="color" @click="copy">mdi-content-copy </v-icon>
     <bottom-snack-bar ref="snackbar" />
-  </div>
+  </span>
 </template>
 
 <script>

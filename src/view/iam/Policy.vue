@@ -29,6 +29,7 @@
           <v-spacer />
           <v-btn
             class="mt-3 mr-4"
+            size="large"
             density="compact"
             :loading="loading"
             @click="handleSearch"
@@ -37,6 +38,7 @@
           <v-btn
             class="mt-3 mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
@@ -51,10 +53,14 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -64,8 +70,8 @@
                 @update:page="loadList"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon large>mdi-certificate-outline</v-icon>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon size="x-large">mdi-certificate-outline</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.action_ptn`]="{ item }">
@@ -125,7 +131,7 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-certificate-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Policy']`) }}
           </span>
         </v-card-title>
@@ -200,7 +206,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -327,10 +333,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

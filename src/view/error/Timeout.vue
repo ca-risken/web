@@ -5,7 +5,7 @@
         <v-main>
           <div class="text-md-center">
             <h1>Timeout</h1>
-            <h2 class="my-3 headline">
+            <h2 class="my-3 text-h5">
               {{ $t(`error['Sorry, Please access again after a while.']`) }}
             </h2>
             <div>

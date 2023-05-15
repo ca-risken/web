@@ -31,10 +31,10 @@
 
           <v-spacer />
           <v-btn
-            class="mt-1 mr-4"
+            class="mr-4"
             color="primary-darken-3"
-            density="compact"
-            small
+            size="large"
+                  density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
           />
@@ -50,9 +50,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :showCurrentPage="table.footer.showCurrentPage"
+                :items-per-page-text="table.footer.itemsPerPageText"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -100,7 +104,7 @@
       <v-card>
         <v-card-title>
           <v-icon large class="pr-2" color="red-lighten-2">mdi-alert</v-icon>
-          <span class="mx-4 headline">{{ $t(`submenu['Notification']`) }}</span>
+          <span class="mx-4 text-h5">{{ $t(`submenu['Notification']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
@@ -109,8 +113,6 @@
               :label="$t(`item['` + form.notification_id.label + `']`) + ' *'"
               :placeholder="form.notification_id.placeholder"
               variant="outlined"
-              filled
-              disabled
             ></v-text-field>
             <v-text-field
               v-model="dataModel.name"
@@ -235,7 +237,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -280,7 +282,7 @@
     </v-dialog>
     <v-dialog v-model="testDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you want to send a test notification?']`) }}
           </span>
@@ -412,11 +414,9 @@ export default {
           },
         ],
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageOptions: [ {value: 20, title: '20'},{value: 50, title: '50'},{value: 100, title: '100'}],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

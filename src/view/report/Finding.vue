@@ -49,6 +49,7 @@
               v-model="searchModel.fromDate"
               model-type="yyyy-MM-dd"
               :format="datePickerFormat"
+              auto-apply
             ></datepicker>
           </v-col>
           <v-col cols="3">
@@ -57,6 +58,7 @@
               v-model="searchModel.toDate"
               model-type="yyyy-MM-dd"
               :format="datePickerFormat"
+              auto-apply
             ></datepicker>
           </v-col>
           <v-col cols="3">
@@ -99,7 +101,7 @@
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
+            <v-toolbar-title class="grey--text text--darken-4 text-h5">
               <v-icon x-large class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >
@@ -167,7 +169,7 @@
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
+            <v-toolbar-title class="grey--text text--darken-4 text-h5">
               <v-icon x-large class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >
@@ -207,7 +209,7 @@
       <v-row justify="center" align-content="center">
         <v-col cols="8">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
+            <v-toolbar-title class="grey--text text--darken-4 text-h5">
               <v-icon x-large class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >

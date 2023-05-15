@@ -28,6 +28,7 @@
           <v-spacer />
           <v-btn
             class="mt-3 mr-4"
+            size="large"
             density="compact"
             @click="handleSearch"
             icon="mdi-magnify"
@@ -35,6 +36,7 @@
           <v-btn
             class="mt-3 mr-4"
             color="primary-darken-3"
+            size="large"
             density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
@@ -50,9 +52,13 @@
                 :headers="headers"
                 :items="table.items"
                 :search="searchModel.keyword"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -62,8 +68,8 @@
                 @update:page="refleshList"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon large>mdi-alpha-r-circle</v-icon>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.role_cnt`]="{ item }">
@@ -114,7 +120,7 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-shield-key-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['AccessToken']`) }}
           </span>
         </v-card-title>
@@ -180,11 +186,13 @@
                 ></v-text-field>
               </template>
               <datepicker
+                inline
                 :enable-time-picker="false"
                 v-model="dataModel.expired_at"
                 model-type="yyyy-MM-dd"
                 :format="datePickerFormat"
-                @input="form.expired_at.datePicker = false"
+                @update:model-value="form.expired_at.datePicker = false" 
+                :auto-apply="true"
               ></datepicker>
             </v-menu>
 
@@ -214,9 +222,13 @@
               v-model="roleTable.selected"
               :search="roleTable.search"
               :headers="roleHeaders"
-              :footer-props="roleTable.footer"
               :items="roleTable.items"
-              v-model:options="roleTable.options"
+              :sort-by="roleTable.options.sortBy"
+              :page="roleTable.options.page"
+              :items-per-page="roleTable.options.itemsPerPage"
+              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
+              :items-per-page-text="roleTable.footer.itemsPerPageText"
+              :showCurrentPage="roleTable.footer.showCurrentPage"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
@@ -318,7 +330,7 @@
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -510,10 +522,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -526,10 +537,9 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          itemsPerPageText: 'Rows/Page',          
+          itemsPerPageOptions: [ {value: 5, title: '5'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

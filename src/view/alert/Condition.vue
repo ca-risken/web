@@ -40,10 +40,10 @@
           <v-spacer />
 
           <v-btn
-            class="mt-3 mr-4"
+            class="mr-4"
             color="primary-darken-3"
-            density="compact"
-            small
+            size="large"
+                  density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
           />
@@ -59,9 +59,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :showCurrentPage="table.footer.showCurrentPage"
+                :items-per-page-text="table.footer.itemsPerPageText"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -126,11 +130,11 @@
         <!-- Alert Condition -->
         <v-card-title>
           <v-icon large class="pr-2" color="grey-darken-2">mdi-cog</v-icon>
-          <span class="mx-4 headline"
+          <span class="mx-4 text-h5"
             >{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Condition']`) }}</span
           >
-          <v-chip dark label color="primary-darken-3">
-            <v-icon left>mdi-identifier</v-icon>
+          <v-chip variant="flat" label color="primary-darken-3">
+            <v-icon left size="x-large">mdi-identifier</v-icon>
             {{ dataModel.alert_condition_id }}
           </v-chip>
         </v-card-title>
@@ -189,7 +193,7 @@
         <!-- Alert Rule -->
         <v-card-title class="d-flex">
           <v-icon large color="brown-darken-2">mdi-book-open-variant</v-icon>
-          <span class="mx-4 headline"
+          <span class="mx-4 text-h5"
             >{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Rule']`) }}</span
           >
           <v-chip outliend class="mx-4" v-if="dataModel.and_or == 'and'">
@@ -212,7 +216,7 @@
           <!-- Rule List -->
           <v-toolbar flat color="white">
             <v-text-field
-              variant="flat"
+              variant="plain"
               prepend-icon="mdi-magnify"
               placeholder="Type something"
               v-model="ruleTable.search"
@@ -229,9 +233,12 @@
             v-model="ruleTable.selected"
             :search="ruleTable.search"
             :headers="ruleHeaders"
-            :footer-props="ruleTable.footer"
             :items="ruleTable.items"
-            :v-model:options="ruleTable.options"
+            :sort-by="ruleTable.options.sortBy"
+                :page="ruleTable.options.page"
+                :items-per-page="ruleTable.options.itemsPerPage"
+                :items-per-page-options="ruleTable.footer.itemsPerPageOptions"
+                :showCurrentPage="ruleTable.footer.showCurrentPage"            
             :loading="loading"
             locale="ja-jp"
             loading-text="Loading..."
@@ -259,12 +266,12 @@
               <template v-else>-</template>
             </template>
             <template v-slot:[`item.score`]="{ item }">
-              <v-chip :color="getColorByScore(item.value.score)" dark>{{
-                item.value.score
+              <v-chip :color="getColorByScore(item.value.score)" variant="flat">{{
+                item.value.score || 0
               }}</v-chip>
             </template>
             <template v-slot:[`item.finding_cnt`]="{ item }">
-              <v-chip :color="getColorByCount(item.value.finding_cnt)" dark>{{
+              <v-chip :color="getColorByCount(item.value.finding_cnt)" variant="flat">{{
                 item.value.finding_cnt
               }}</v-chip>
             </template>
@@ -275,7 +282,7 @@
         <!-- Alert Notification -->
         <v-card-title class="d-flex">
           <v-icon large color="brown-darken-2">mdi-email</v-icon>
-          <span class="mx-4 headline"
+          <span class="mx-4 text-h5"
             >{{ $t(`submenu['Alert']`) }}
             {{ $t(`submenu['Notification']`) }}</span
           >
@@ -321,8 +328,7 @@
           </v-container>
           <v-toolbar flat color="white">
             <v-text-field
-              variant="flat"
-              flat
+              variant="plain"
               prepend-icon="mdi-magnify"
               placeholder="Type something"
               v-model="notiTable.search"
@@ -339,10 +345,13 @@
             v-model="notiTable.selected"
             :search="notiTable.search"
             :headers="notiHeaders"
-            :footer-props="notiTable.footer"
             :items="notiTable.items"
-            :v-model:options="notiTable.options"
             :loading="loading"
+            :sort-by="notiTable.options.sortBy"
+                :page="notiTable.options.page"
+                :items-per-page="notiTable.options.itemsPerPage"
+                :items-per-page-options="notiTable.footer.itemsPerPageOptions"
+                :showCurrentPage="notiTable.footer.showCurrentPage"            
             locale="ja-jp"
             loading-text="Loading..."
             no-data-text="No data."
@@ -404,7 +413,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -564,11 +573,9 @@ export default {
           },
         ],
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageOptions: [ {value: 20, title: '20'},{value: 50, title: '50'},{value: 100, title: '100'}],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -578,10 +585,8 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [10, 20, 50],
+          itemsPerPageOptions: [ {value: 10, title: '10'},{value: 20, title: '20'},{value: 50, title: '50'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -591,10 +596,8 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [10, 20, 50],
+          itemsPerPageOptions: [ {value: 10, title: '10'},{value: 20, title: '20'},{value: 50, title: '50'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

@@ -11,7 +11,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-row dense>
+      <v-row dense align-content="center">
         <v-col cols="12" sm="6" md="6">
           <v-select
             v-model="awsModel"
@@ -30,7 +30,8 @@
         <v-btn
           class="mt-3 mr-4"
           color="grey-darken-2"
-          size="small"
+          size="large"
+          density="compact"
           icon="mdi-refresh"
           variant="outlined"
           :loading="loading"
@@ -38,8 +39,6 @@
         />
         <v-btn
           class="mt-3 mr-4"
-          medium
-          dark
           :loading="loading"
           color="light-blue-darken-2"
           @click="handleSetupAll"
@@ -57,10 +56,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
-                :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -150,7 +152,7 @@
       <v-card>
         <v-card-title>
           <v-icon large color="orange-darken-1">mdi-aws</v-icon>
-          <span class="mx-4 headline">{{
+          <span class="mx-4 text-h5">{{
             $t(`submenu['AWS DataSource']`)
           }}</span>
         </v-card-title>
@@ -158,32 +160,30 @@
           <v-row dense>
             <v-col cols="2">
               <v-list-item two-line>
-                <template v-slot:prepend>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.aws_id.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['` + awsForm.aws_id.label + `']`)"
                     :text="String(awsModel.aws_id)"
                   />
-                </template>
-                <v-list-item-subtitle>
-                  {{ $t(`item['` + awsForm.aws_id.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ awsModel.aws_id }}
                 </v-list-item-title>
               </v-list-item>
             </v-col>
             <v-col cols="3">
               <v-list-item two-line>
-                <template v-slot:prepend>
+                <v-list-item-subtitle>
+                  {{ $t(`item['` + awsForm.aws_account_id.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['` + awsForm.aws_account_id.label + `']`)"
                     :text="awsModel.aws_account_id"
                   />
-                </template>
-                <v-list-item-subtitle>
-                  {{ $t(`item['` + awsForm.aws_account_id.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ awsModel.aws_account_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -193,13 +193,14 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + awsForm.aws_data_source_id.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="
                       $t(`item['` + awsForm.aws_data_source_id.label + `']`)
                     "
                     :text="String(awsModel.aws_data_source_id)"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ awsModel.aws_data_source_id }}
                 </v-list-item-title>
               </v-list-item>
@@ -209,11 +210,12 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + awsForm.data_source.label + `']`) }}
                   <clip-board
+                    size="large"
                     :name="$t(`item['` + awsForm.data_source.label + `']`)"
                     :text="awsModel.data_source"
                   />
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   {{ awsModel.data_source }}
                 </v-list-item-title>
               </v-list-item>
@@ -222,7 +224,7 @@
           <v-row dense v-if="!awsForm.setupAll">
             <v-col cols="3" v-if="awsModel.status">
               <v-list-item two-line>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-list-item-subtitle>
                     {{ $t(`item['` + awsForm.status.label + `']`) }}
                   </v-list-item-subtitle>
@@ -241,8 +243,8 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + awsForm.scan_at.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
-                  <v-chip color="grey-lighten-3">
+                <v-list-item-title class="text-h5">
+                  <v-chip>
                     {{ formatTime(awsModel.scan_at) }}
                   </v-chip>
                 </v-list-item-title>
@@ -253,7 +255,7 @@
                 <v-list-item-subtitle>
                   {{ $t(`item['` + awsForm.max_score.label + `']`) }}
                 </v-list-item-subtitle>
-                <v-list-item-title class="headline">
+                <v-list-item-title class="text-h5">
                   <v-chip variant="outlined">
                     {{ awsModel.max_score }}
                   </v-chip>
@@ -269,7 +271,7 @@
                   {{ $t(`version['version']`) }}
                 </v-list-item-subtitle>
                 <v-list-item-title
-                  class="headline"
+                  class="text-h5"
                   v-if="awsModel.specific_version"
                 >
                   {{ $t(`version['old']`) }} ({{ awsModel.specific_version }})
@@ -283,7 +285,7 @@
                     {{ $t(`btn['Upgrade']`) }}
                   </v-btn>
                 </v-list-item-title>
-                <v-list-item-title class="headline" v-else>
+                <v-list-item-title class="text-h5" v-else>
                   {{ $t(`version['latest']`) }}
                 </v-list-item-title>
               </v-list-item>
@@ -315,7 +317,8 @@
             <v-row class="mt-1">
               <v-col cols="1">
                 <clip-board
-                  class="pt-4 pl-6"
+                  class="pl-6"
+                  size="large"
                   :name="$t(`item['` + awsForm.assume_role_arn.label + `']`)"
                   :text="String(awsModel.assume_role_arn)"
                 />
@@ -328,14 +331,14 @@
                   :label="$t(`item['` + awsForm.assume_role_arn.label + `']`)"
                   :placeholder="awsForm.assume_role_arn.placeholder"
                   :disabled="awsForm.readOnly"
-                  density="compact"
                 ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="1">
                 <clip-board
-                  class="pt-4 pl-6"
+                  size="large"
+                  class="pl-6"
                   :name="$t(`item['` + awsForm.external_id.label + `']`)"
                   :text="String(awsModel.external_id)"
                 />
@@ -485,7 +488,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">{{
             $t(`message['Do you really want to detach this?']`)
           }}</span>
@@ -640,10 +643,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },

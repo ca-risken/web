@@ -40,9 +40,8 @@
         <v-btn
           class="mt-3 mr-4"
           color="primary-darken-3"
-          fab
-          dense
-          small
+          size="large"
+          density="compact"
           @click="handleNewItem"
           icon="mdi-new-box"
         />
@@ -57,9 +56,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                v-model:options="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -120,7 +123,7 @@
           <v-icon large class="pr-2" color="blue-lighten-2"
             >mdi-file-find-outline</v-icon
           >
-          <span class="mx-4 headline">{{ $t(`submenu['Setting']`) }}</span>
+          <span class="mx-4 text-h5">{{ $t(`submenu['Setting']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
@@ -206,7 +209,7 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">{{
             $t(`message['Do you really want to delete this?']`)
           }}</span>
@@ -315,7 +318,8 @@ export default {
         activeOnly: true,
         options: { page: 1, itemsPerPage: 10, sortBy: ['finding_setting_id'] },
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [ {value: 10, title: '10'}],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
