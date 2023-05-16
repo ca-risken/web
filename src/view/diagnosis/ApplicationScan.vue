@@ -66,7 +66,7 @@
                 :items-per-page="table.options.itemsPerPage"
                 :items-per-page-options="table.footer.itemsPerPageOptions"
                 :items-per-page-text="table.footer.itemsPerPageText"
-                :showCurrentPage="table.footer.showCurrentPage"                
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -75,8 +75,8 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon color="blue-darken-1" large
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon color="blue-darken-1" size="36px"
                       >mdi-bug-check-outline</v-icon
                     >
                   </v-avatar>
@@ -513,7 +513,7 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
           showFirstLastPage: true,
         },

@@ -65,7 +65,7 @@
                 :items-per-page="table.options.itemsPerPage"
                 :items-per-page-options="table.footer.itemsPerPageOptions"
                 :items-per-page-text="table.footer.itemsPerPageText"
-                :showCurrentPage="table.footer.showCurrentPage"                
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -74,7 +74,7 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]="{ item }">
-                  <v-avatar tile class="ma-3" size="30px">
+                  <v-avatar tile class="ma-3" size="36px">
                     <v-img
                       :src="getGCPDataSourceIcon(item.value.name)"
                       :alt="item.value.name"
@@ -99,9 +99,13 @@
                       color="white"
                       class="mr-2"
                     ></v-progress-circular>
-                    <v-icon v-else-if="item.value.status" small color="white" class="mr-2">{{
-                      getDataSourceStatusIcon(item.value.status)
-                    }}</v-icon>
+                    <v-icon
+                      v-else-if="item.value.status"
+                      small
+                      color="white"
+                      class="mr-2"
+                      >{{ getDataSourceStatusIcon(item.value.status) }}</v-icon
+                    >
                     {{ getDataSourceStatusText(item.value.status) }}
                   </v-chip>
                   <v-chip v-else color="grey" variant="flat"
@@ -359,9 +363,12 @@
                   color="white"
                   class="mr-2"
                 ></v-progress-circular>
-                <v-icon v-else-if="item.value.status" color="white" class="mr-2">{{
-                  getDataSourceStatusIcon(item.value.status)
-                }}</v-icon>
+                <v-icon
+                  v-else-if="item.value.status"
+                  color="white"
+                  class="mr-2"
+                  >{{ getDataSourceStatusIcon(item.value.status) }}</v-icon
+                >
                 {{ getDataSourceStatusText(item.value.status) }}
               </v-chip>
               <v-chip v-else color="grey" variant="flat">Not configured</v-chip>
@@ -570,7 +577,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],

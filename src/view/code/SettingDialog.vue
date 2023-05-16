@@ -1037,6 +1037,6 @@ export default {
 
 <style>
 .v-tab {
-text-transform: none !important;
+  text-transform: none !important;
 }
 </style>

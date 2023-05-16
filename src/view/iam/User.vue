@@ -191,10 +191,10 @@
           <!-- Role List -->
           <div v-show="userModel.user_idp_key">
             <v-toolbar flat color="white" v-show="userModel.user_idp_key">
-                <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
-                <span class="mx-4 text-h6">
-                  {{ $t(`submenu['Role']`) }}
-                </span>
+              <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
+              <span class="mx-4 text-h6">
+                {{ $t(`submenu['Role']`) }}
+              </span>
               <v-text-field
                 variant="plain"
                 prepend-icon="mdi-magnify"
@@ -351,7 +351,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],
@@ -368,7 +368,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 5, title: '5'}],
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
         },
         items: [],

@@ -177,30 +177,32 @@
       <v-row>
         <v-col class="pb-10">
           <v-slide-group show-arrows>
-        <v-slide-group-item
-        v-for="history in sortedFindingHistory"
-        :key="history.search_at"
-        >
-        <v-chip 
-          :text="history.label" 
-          variant="outlined"
-          closable
-          style="white-space: pre-wrap"
-          @click="searchByHistory(history)"
-          @click:close="deleteSearchHistory(history)"
-          risken-action-name="search-finding-by-history-from-finding"
-          >
-          {{ history.label }}
-          <v-tooltip
-            activator="parent"
-            location="bottom"
-          ><span style="white-space: pre-wrap">{{ history.tooltip }}</span></v-tooltip>
-        </v-chip>
-      </v-slide-group-item>
-      </v-slide-group>        </v-col>
+            <v-slide-group-item
+              v-for="history in sortedFindingHistory"
+              :key="history.search_at"
+            >
+              <v-chip
+                :text="history.label"
+                variant="outlined"
+                closable
+                style="white-space: pre-wrap"
+                @click="searchByHistory(history)"
+                @click:close="deleteSearchHistory(history)"
+                risken-action-name="search-finding-by-history-from-finding"
+              >
+                {{ history.label }}
+                <v-tooltip activator="parent" location="bottom"
+                  ><span style="white-space: pre-wrap">{{
+                    history.tooltip
+                  }}</span></v-tooltip
+                >
+              </v-chip>
+            </v-slide-group-item>
+          </v-slide-group>
+        </v-col>
       </v-row>
 
-          <!-- <v-chip
+      <!-- <v-chip
           variant="outlined"
           color="gray-lighten-1"
           closable
@@ -212,8 +214,8 @@
           <v-tooltip location="bottom" activator="parent">
           <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
           </v-tooltip>         -->
-        <!-- </v-chip> -->
-        <!-- <v-tooltip location="bottom">
+      <!-- </v-chip> -->
+      <!-- <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
             <v-chip
             v-bind="props"
@@ -372,7 +374,12 @@
             <v-col cols="3">
               <v-list-item two-line>
                 <v-list-item-subtitle>
-                  <v-icon size="large" color="black" left icon="mdi-identifier" />
+                  <v-icon
+                    size="large"
+                    color="black"
+                    left
+                    icon="mdi-identifier"
+                  />
                   Finding ID
                   <clip-board
                     size="large"
@@ -578,7 +585,10 @@
                 />
               </v-list-item-subtitle>
               <v-card dark color="grey-darken-3" class="ma-4">
-                <v-card-text class="title font-weight-bold" density="comfortable">
+                <v-card-text
+                  class="title font-weight-bold"
+                  density="comfortable"
+                >
                   <json-viewer
                     :value="parseFindingData(findingModel.data)"
                     :expand-depth="5"
@@ -707,10 +717,10 @@
             </v-list-item-subtitle>
           </v-list-item>
           <v-list-item prepend-icon="mdi-image-text">
-              <v-list-item-title style="white-space: pre-wrap">
-                {{ findingModel.description }}
-              </v-list-item-title>
-            <v-list-item-subtitle >{{
+            <v-list-item-title style="white-space: pre-wrap">
+              {{ findingModel.description }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
               $t(`item['Description']`)
             }}</v-list-item-subtitle>
           </v-list-item>
@@ -1078,7 +1088,7 @@ export default {
         options: {
           page: 1,
           itemsPerPage: 20,
-          sortBy: ['id','score','data_source','resource','description' ],
+          sortBy: ['id', 'score', 'data_source', 'resource', 'description'],
         },
         sort: {
           key: 'finding_id',
@@ -1087,9 +1097,9 @@ export default {
         total: 0,
         footer: {
           itemsPerPageOptions: [
-            {value: 20, title: '20'},
-            {value: 50, title: '50'},
-            {value: 100, title: '100'}
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+            { value: 100, title: '100' },
           ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,

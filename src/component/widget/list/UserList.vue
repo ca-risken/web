@@ -133,7 +133,7 @@ export default {
         options: { page: 1, itemsPerPage: 20, sortBy: ['user_id'] },
         total: 0,
         footer: {
-          itemsPerPageOptions: [ {value: 20, title: '20'}],
+          itemsPerPageOptions: [{ value: 20, title: '20' }],
           showCurrentPage: true,
         },
         items: [],

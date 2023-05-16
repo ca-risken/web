@@ -45,7 +45,7 @@
             class="mr-4"
             color="primary-darken-3"
             size="large"
-                  density="compact"
+            density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
           />
@@ -76,8 +76,8 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3"  size="48px">
-                    <v-icon color="orange-darken-1" size="x-large">mdi-aws</v-icon>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon color="orange-darken-1" size="36px">mdi-aws</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
@@ -302,7 +302,7 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],

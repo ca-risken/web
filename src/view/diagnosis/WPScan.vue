@@ -89,8 +89,10 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon color="blue-darken-1" large>mdi-wordpress</v-icon>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon color="blue-darken-1" size="36px"
+                      >mdi-wordpress</v-icon
+                    >
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.status`]="{ item }">
@@ -521,7 +523,7 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
           showFirstLastPage: true,
         },

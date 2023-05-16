@@ -34,7 +34,7 @@
             class="mr-4"
             color="primary-darken-3"
             size="large"
-                  density="compact"
+            density="compact"
             @click="handleNewItem"
             icon="mdi-new-box"
           />
@@ -377,7 +377,11 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [ {value: 20, title: '20'},{value: 50, title: '50'},{value: 100, title: '100'}],
+          itemsPerPageOptions: [
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+            { value: 100, title: '100' },
+          ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
         },

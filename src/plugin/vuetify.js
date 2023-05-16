@@ -8,10 +8,6 @@ const riskenLightTheme = {
   dark: false,
   colors: {
     primary: '#546E7A',
-    // primary: '#37474F',
-    // primary: '#880E4F',
-    // primary: '#1A237E',
-    // primary: '#006064',
     secondary: '#A12900',
     accent: '#82B1FF',
     error: '#FF5252',

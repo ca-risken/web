@@ -79,8 +79,8 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3">
-                    <v-icon color="blue-darken-1" large
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon color="blue-darken-1" size="36px"
                       >mdi-bug-check-outline</v-icon
                     >
                   </v-avatar>
@@ -581,7 +581,7 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],
@@ -604,7 +604,11 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 5, title: '5'},{value: 10, title: '10'},{value: 20, title: '20'}],
+          itemsPerPageOptions: [
+            { value: 5, title: '5' },
+            { value: 10, title: '10' },
+            { value: 20, title: '20' },
+          ],
           showCurrentPage: true,
         },
         items: [],

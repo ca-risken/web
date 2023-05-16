@@ -1,21 +1,23 @@
 <template>
   <v-layout-item
     v-scroll="onScroll"
-    class="text-end"
+    class="text-end pointer-events-none"
     model-value
     position="bottom"
-    size="60"
+    size="88"
   >
-    <v-fab-transition>
-      <v-btn
-        class="mt-auto"
-        size="large"
-        color="pink-lighten-2"
-        v-show="fab"
-        @click="toTop"
-        icon="mdi-chevron-up"
-      />
-    </v-fab-transition>
+    <div class="ma-4">
+      <v-fab-transition>
+        <v-btn
+          class="mt-auto pointer-events-initial"
+          size="large"
+          color="pink-lighten-2"
+          v-show="fab"
+          @click="toTop"
+          icon="mdi-chevron-up"
+        />
+      </v-fab-transition>
+    </div>
   </v-layout-item>
 </template>
 
@@ -27,12 +29,8 @@ export default {
       fab: false,
     }
   },
-  mounted() {
-    window.addEventListener('scroll', this.onScroll)
-  },
   methods: {
     onScroll() {
-      if (typeof window === 'undefined') return
       this.fab = window.scrollY > 40
     },
     toTop() {

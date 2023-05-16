@@ -529,7 +529,11 @@ export default {
           { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
         ],
         footer: {
-          itemsPerPageOptions: [ {value: 10, title: '10'},{value: 50, title: '50'},{value: 100, title: '100'}],
+          itemsPerPageOptions: [
+            { value: 10, title: '10' },
+            { value: 50, title: '50' },
+            { value: 100, title: '100' },
+          ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
         },

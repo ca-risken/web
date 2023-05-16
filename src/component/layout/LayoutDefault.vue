@@ -2,11 +2,10 @@
   <v-app id="inspire" class="app">
     <app-drawer class="app--drawer" :show-drawer="showDrawer" />
     <app-toolbar class="app--toolbar" @side-icon-click="handleDrawerVisiable" />
-    <v-main :style="styles">
+    <v-main>
       <!-- Page Header -->
       <v-card height="100%" color="background" class="page-wrapper">
         <router-view />
-        <!-- <app-fab /> -->
       </v-card>
     </v-main>
     <!-- App Footer -->
@@ -19,7 +18,6 @@
         >
       </div>
     </v-footer>
-
     <!-- Go to top -->
   </v-app>
 </template>
@@ -37,13 +35,6 @@ export default {
     return {
       showDrawer: true,
     }
-  },
-  computed: {
-    styles() {
-      return {
-        '--v-layout-bottom': '0px',
-      }
-    },
   },
   methods: {
     handleDrawerVisiable() {

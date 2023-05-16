@@ -332,7 +332,11 @@ export default {
         activeOnly: true,
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_id'] },
         footer: {
-          itemsPerPageOptions: [ {value: 20, title: '20'},{value: 50, title: '50'},{value: 100, title: '100'}],
+          itemsPerPageOptions: [
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+            { value: 100, title: '100' },
+          ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
         },

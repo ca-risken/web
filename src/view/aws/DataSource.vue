@@ -71,7 +71,7 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.avator`]="{ item }">
-                  <v-avatar tile class="ma-3" size="40px">
+                  <v-avatar class="ma-3" size="36px">
                     <v-img
                       :src="getAWSDataSourceIcon(item.value.data_source)"
                       :alt="item.value.data_source"
@@ -381,9 +381,11 @@
               item-key="aws_data_source_id"
               v-if="awsForm.setupAll"
             >
-              <template v-slot:[`item.avator`]="{ item }">
-                <v-avatar tile class="ma-3" size="40px">
+              <template v-slot:[`item.avatar`]="{ item }">
+                <v-avatar class="ma-3" size="48px">
                   <v-img
+                    height="36px"
+                    width="36px"
                     :src="getAWSDataSourceIcon(item.value.data_source)"
                     :alt="item.value.data_source"
                   />
@@ -644,7 +646,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],

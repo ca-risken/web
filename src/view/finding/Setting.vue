@@ -319,7 +319,7 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['finding_setting_id'] },
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
           showFirstLastPage: true,
         },

@@ -80,7 +80,11 @@
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3" size="48px">
-                    <v-icon color="blue-darken-1" size="x-large" icon="mdi-google-cloud"></v-icon>
+                    <v-icon
+                      color="blue-darken-1"
+                      size="x-large"
+                      icon="mdi-google-cloud"
+                    ></v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
@@ -396,7 +400,7 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
           showFirstLastPage: true,
         },

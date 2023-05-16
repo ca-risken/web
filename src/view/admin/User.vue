@@ -199,7 +199,6 @@
               :items-per-page="roleTable.options.itemsPerPage"
               :items-per-page-options="roleTable.footer.itemsPerPageOptions"
               :showCurrentPage="roleTable.footer.showCurrentPage"
-
               locale="ja-jp"
               loading-text="Loading..."
               no-data-text="No data."
@@ -321,7 +320,7 @@ export default {
         ],
         total: 0,
         footer: {
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],
@@ -336,7 +335,7 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
-          itemsPerPageOptions: [ {value: 5, title: '5'}],
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
         },
         items: [],

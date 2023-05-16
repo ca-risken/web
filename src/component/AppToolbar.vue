@@ -1,7 +1,5 @@
 <template>
-  <v-card>
-    
-  </v-card>
+  <v-card> </v-card>
   <v-app-bar v-bind="$attrs" color="primary" extension-height="48" extended>
     <template v-slot:prepend>
       <v-app-bar-nav-icon @click="handleDrawerToggle" />
@@ -102,17 +100,17 @@
       </v-list>
     </v-menu>
     <template v-slot:extension>
-      <v-card width="95%" class="mx-auto" flat >
+      <v-card width="95%" class="mx-auto" flat>
         <v-toolbar dense color="white" light class="ps-5">
-        <v-icon>mdi-home</v-icon>
-        <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
-        <v-spacer></v-spacer>
-        <v-btn icon size="small" color="black">
-          <v-icon @click="handleGoBack">
-            {{ 'mdi-arrow-left' }}
-          </v-icon>
-        </v-btn>
-      </v-toolbar>
+          <v-icon>mdi-home</v-icon>
+          <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
+          <v-spacer></v-spacer>
+          <v-btn icon size="small" color="black">
+            <v-icon @click="handleGoBack">
+              {{ 'mdi-arrow-left' }}
+            </v-icon>
+          </v-btn>
+        </v-toolbar>
       </v-card>
     </template>
   </v-app-bar>
@@ -226,9 +224,7 @@ export default {
         search: '',
         options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         footer: {
-          itemsPerPageOptions: [
-            {value: 10, title: '10'},
-          ],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         item: [],

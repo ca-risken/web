@@ -6,13 +6,17 @@
     :width="drawerWidth"
   >
     <v-toolbar color="primary-darken-2">
-      <v-img :src="computeLogo" alt="RISKEN" width="48" @click="toTop" style="max-width: 30%" />
+      <v-img
+        :src="computeLogo"
+        alt="RISKEN"
+        width="48"
+        @click="toTop"
+        style="max-width: 30%"
+      />
       <v-toolbar-title class="ml-0 pl-0" style="white-space: nowrap">
-            <span
-              class="hidden-sm-and-down font-weight-bold text-h5"
-              @click="toTop"
-              >RISKEN</span
-            >
+        <span class="hidden-sm-and-down font-weight-bold text-h5" @click="toTop"
+          >RISKEN</span
+        >
       </v-toolbar-title>
     </v-toolbar>
     <v-list class="pa-0">

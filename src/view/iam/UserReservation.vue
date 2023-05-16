@@ -18,7 +18,7 @@
               class="mt-3 mr-4"
               color="primary-darken-3"
               size="large"
-            density="compact"
+              density="compact"
               @click="handleNewItem"
               icon="mdi-new-box"
             />
@@ -49,7 +49,7 @@
                 @update:page="refleshList"
               >
                 <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3"  size="48px">
+                  <v-avatar class="ma-3" size="48px">
                     <v-icon size="x-large">mdi-account-clock</v-icon>
                   </v-avatar>
                 </template>
@@ -152,11 +152,11 @@
               :headers="roleHeaders"
               :items="roleTable.items"
               :sort-by="roleTable.options.sortBy"
-                :page="roleTable.options.page"
-                :items-per-page="roleTable.options.itemsPerPage"
-                :items-per-page-options="roleTable.footer.itemsPerPageOptions"
-                :items-per-page-text="roleTable.footer.itemsPerPageText"
-                :showCurrentPage="roleTable.footer.showCurrentPage"
+              :page="roleTable.options.page"
+              :items-per-page="roleTable.options.itemsPerPage"
+              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
+              :items-per-page-text="roleTable.footer.itemsPerPageText"
+              :showCurrentPage="roleTable.footer.showCurrentPage"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
@@ -307,7 +307,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],
@@ -322,7 +322,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 5, title: '5'}],
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
         },
         items: [],

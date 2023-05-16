@@ -89,7 +89,7 @@
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3" size="48px">
-                    <v-icon color="black" size="x-large" icon="mdi-github" />
+                    <v-icon color="black" size="36px" icon="mdi-github" />
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.type_text`]="{ item }">
@@ -292,7 +292,7 @@ export default {
         ],
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],

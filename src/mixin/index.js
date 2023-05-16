@@ -196,7 +196,6 @@ let mixin = {
       }
     },
     getColorByScore: (score) => {
-      console.log(score)
       if (score === undefined || score < 0.6) {
         return 'teal-lighten-2'
       } else if (score < 0.8) {

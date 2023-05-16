@@ -151,10 +151,10 @@
             <!-- Policy List -->
             <template v-if="!roleForm.newRole">
               <v-toolbar flat color="white">
-                  <v-icon size="large">mdi-certificate-outline</v-icon>
-                  <span class="mx-4">
-                    {{ $t(`submenu['Policy']`) }}
-                  </span>
+                <v-icon size="large">mdi-certificate-outline</v-icon>
+                <span class="mx-4">
+                  {{ $t(`submenu['Policy']`) }}
+                </span>
                 <v-text-field
                   variant="plain"
                   prepend-icon="mdi-magnify"
@@ -180,7 +180,7 @@
                 :items-per-page="policyTable.options.itemsPerPage"
                 :items-per-page-options="policyTable.footer.itemsPerPageOptions"
                 :items-per-page-text="policyTable.footer.itemsPerPageText"
-                :showCurrentPage="policyTable.footer.showCurrentPage"                
+                :showCurrentPage="policyTable.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -349,7 +349,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],
@@ -364,7 +364,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 5, title: '5'}],
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
         },
         items: [],

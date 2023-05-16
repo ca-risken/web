@@ -117,20 +117,20 @@
                   {{ cutLongText(item.value.resource_name, 80) }}
                 </template>
                 <template v-slot:[`item.namespace`]="{ item }">
-                    <v-avatar
-                      v-if="item.value.data_source == 'RISKEN'"
-                      tile
-                      class="ma-0"
-                      size="30px"
-                    >
-                      <img src="/static/m.png" :alt="item.data_source" />
-                    </v-avatar>
-                    <v-icon
-                      v-else
-                      :color="getDataSourceIconColor(item.value.namespace)"
-                    >
-                      {{ getDataSourceIcon(item.value.namespace) }}
-                    </v-icon>
+                  <v-avatar
+                    v-if="item.value.data_source == 'RISKEN'"
+                    tile
+                    class="ma-0"
+                    size="30px"
+                  >
+                    <img src="/static/m.png" :alt="item.data_source" />
+                  </v-avatar>
+                  <v-icon
+                    v-else
+                    :color="getDataSourceIconColor(item.value.namespace)"
+                  >
+                    {{ getDataSourceIcon(item.value.namespace) }}
+                  </v-icon>
                 </template>
                 <template v-slot:[`item.check_point`]="{ item }">
                   <v-card
@@ -311,7 +311,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 20, title: '20'}],
+          itemsPerPageOptions: [{ value: 20, title: '20' }],
           showCurrentPage: true,
         },
         items: [],

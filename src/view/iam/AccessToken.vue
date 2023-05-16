@@ -191,7 +191,7 @@
                 v-model="dataModel.expired_at"
                 model-type="yyyy-MM-dd"
                 :format="datePickerFormat"
-                @update:model-value="form.expired_at.datePicker = false" 
+                @update:model-value="form.expired_at.datePicker = false"
                 :auto-apply="true"
               ></datepicker>
             </v-menu>
@@ -523,7 +523,7 @@ export default {
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [ {value: 10, title: '10'}],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
         items: [],
@@ -537,8 +537,8 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
-          itemsPerPageText: 'Rows/Page',          
-          itemsPerPageOptions: [ {value: 5, title: '5'}],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
         },
         items: [],
