@@ -1,10 +1,8 @@
 <template>
-  <div class="inline-block">
-    <v-icon class="mx-2" :size="size" :color="color" @click="copy"
-      >mdi-content-copy
-    </v-icon>
+  <span>
+    <v-icon :size="size" :color="color" @click="copy">mdi-content-copy </v-icon>
     <bottom-snack-bar ref="snackbar" />
-  </div>
+  </span>
 </template>
 
 <script>

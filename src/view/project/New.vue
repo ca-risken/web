@@ -23,15 +23,15 @@
                   :counter="64"
                   :rules="projectForm.name.validator"
                   required
-                  outlined
+                  variant="outlined"
                 ></v-text-field>
                 <v-divider class="mt-3 mb-3"></v-divider>
                 <v-card-actions>
                   <v-spacer />
                   <v-btn
                     text
-                    outlined
-                    color="green darken-1"
+                    variant="outlined"
+                    color="green-darken-1"
                     :loading="loading"
                     @click="handleCreate"
                     >Create</v-btn
@@ -121,13 +121,11 @@ export default {
         this.loading = false
         return Promise.reject(err)
       })
-      console.log(rule)
       const cond = await this.putDefaultAlertCondition().catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         this.loading = false
         return Promise.reject(err)
       })
-      console.log(cond)
       await this.putAlertConditionRule(
         cond.alert_condition_id,
         rule.alert_rule_id

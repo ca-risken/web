@@ -7,7 +7,7 @@
   >
     {{ snackbar.text }}
     <template v-slot:action="{ attrs }">
-      <v-btn dark icon v-bind="attrs" @click="snackbar.show = false">
+      <v-btn v-bind="attrs" dark icon @click="snackbar.show = false">
         <v-icon>close</v-icon>
       </v-btn>
     </template>

@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue lighten-2"
+              <v-icon large class="pr-2" color="blue-lighten-2"
                 >mdi-file-find-outline</v-icon
               >
               {{ $t(`submenu['Setting']`) }}
@@ -16,10 +16,10 @@
       <v-row dense justify="center" align-content="center">
         <v-col cols="6">
           <v-text-field
-            outlined
+            variant="outlined"
             clearable
-            dense
-            background-color="white"
+            density="compact"
+            bg-color="white"
             prepend-icon="mdi-magnify"
             placeholder="Type something..."
             v-model="table.search"
@@ -30,22 +30,21 @@
         <v-col cols="3">
           <v-checkbox
             required
+            density="compact"
             v-model="table.activeOnly"
             :label="$t(`view.finding['Active Only']`)"
-            @change="handleRefleshList"
+            @update:modelValue="handleRefleshList"
           ></v-checkbox>
         </v-col>
         <v-spacer />
         <v-btn
           class="mt-3 mr-4"
-          color="primary darken-3"
-          fab
-          dense
-          small
+          color="primary-darken-3"
+          size="large"
+          density="compact"
           @click="handleNewItem"
-        >
-          <v-icon>mdi-new-box</v-icon>
-        </v-btn>
+          icon="mdi-new-box"
+        />
       </v-row>
       <v-row>
         <v-col cols="12">
@@ -57,19 +56,23 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="alert_id"
-                @click:row="handleEditItem"
+                @click:row="handleClickItem"
               >
                 <template v-slot:[`item.status`]="{ item }">
                   <v-icon
-                    v-if="getAlertStatusText(item.status) == 'ACTIVE'"
+                    v-if="getAlertStatusText(item.value.status) == 'ACTIVE'"
                     color="success"
                     >mdi-check-circle</v-icon
                   >
@@ -78,37 +81,28 @@
                 <template v-slot:[`item.score_coefficient`]="{ item }">
                   <v-chip
                     class="ma-2"
-                    :color="getCoefficientColor(item.score_coefficient)"
-                    outlined
+                    :color="getCoefficientColor(item.value.score_coefficient)"
+                    variant="outlined"
                   >
                     <v-icon left> mdi-calculator </v-icon>
-                    x {{ item.score_coefficient }}
+                    x {{ item.value.score_coefficient }}
                   </v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in getActionList(item)"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -126,10 +120,10 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large class="pr-2" color="blue lighten-2"
+          <v-icon large class="pr-2" color="blue-lighten-2"
             >mdi-file-find-outline</v-icon
           >
-          <span class="mx-4 headline">{{ $t(`submenu['Setting']`) }}</span>
+          <span class="mx-4 text-h5">{{ $t(`submenu['Setting']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
@@ -137,7 +131,7 @@
               v-model="dataModel.finding_setting_id"
               :label="$t(`item['` + form.finding_setting_id.label + `']`)"
               :placeholder="form.finding_setting_id.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -152,7 +146,7 @@
               :items="resourceNameCombobox"
               @keydown="listResourceNameForCombobox"
               persistent-hint
-              outlined
+              variant="outlined"
               clearable
             />
             <v-text-field
@@ -160,7 +154,7 @@
               v-model="dataModel.resource_name"
               :label="$t(`item['` + form.resource_name.label + `']`)"
               :placeholder="form.resource_name.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -170,7 +164,7 @@
               :rules="form.score_coefficient.validator"
               :label="$t(`item['` + form.score_coefficient.label + `']`) + ' *'"
               :placeholder="form.score_coefficient.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-alert dense outlined type="info">
@@ -191,16 +185,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -215,58 +209,45 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
-          <span class="mx-4">Do you really want to delete this?</span>
+        <v-card-title class="text-h5">
+          <span class="mx-4">{{
+            $t(`message['Do you really want to delete this?']`)
+          }}</span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.finding_setting_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>Finding Setting ID</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.finding_setting_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>Finding Setting ID</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.resource_name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>Resource Name</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ dataModel.resource_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>Resource Name</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-calculator</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.score_coefficient }}
-              </v-list-item-title>
-              <v-list-item-subtitle>Score Coefficient</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-calculator">
+            <v-list-item-title>
+              {{ dataModel.score_coefficient }}
+            </v-list-item-title>
+            <v-list-item-subtitle>Score Coefficient</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -282,11 +263,13 @@
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'FindingSetting',
   mixins: [mixin, finding],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -335,7 +318,8 @@ export default {
         activeOnly: true,
         options: { page: 1, itemsPerPage: 10, sortBy: ['finding_setting_id'] },
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -349,46 +333,46 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'center',
           width: '10%',
           sortable: true,
-          value: 'finding_setting_id',
+          key: 'finding_setting_id',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'center',
           width: '10%',
           sortable: true,
-          value: 'status',
+          key: 'status',
         },
         {
-          text: this.$i18n.t('item["Resource Name"]'),
+          title: this.$i18n.t('item["Resource Name"]'),
           align: 'start',
           width: '50%',
           sortable: true,
-          value: 'resource_name',
+          key: 'resource_name',
         },
         {
-          text: this.$i18n.t('item["Score Coefficient"]'),
+          title: this.$i18n.t('item["Score Coefficient"]'),
           align: 'start',
           width: '10%',
           sortable: true,
-          value: 'score_coefficient',
+          key: 'score_coefficient',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           width: '10%',
           sortable: true,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -431,13 +415,15 @@ export default {
       let list = [
         { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
       ]
-      if (!item.status) {
+      if (!item.value.status) {
         list.push({
           text: 'Activate',
           icon: 'mdi-check-circle-outline',
           click: this.handleActivateItem,
         })
-      } else if (this.getFindingSettingStatusText(item.status) == 'ACTIVE') {
+      } else if (
+        this.getFindingSettingStatusText(item.value.status) == 'ACTIVE'
+      ) {
         list.push({
           text: 'Deactivate',
           icon: 'mdi-cancel',
@@ -516,6 +502,9 @@ export default {
       this.form.new = true
       this.editDialog = true
     },
+    handleClickItem(event, settings) {
+      this.handleEditItem(settings.item)
+    },
     handleEditItem(item) {
       this.assignDataModel(item)
       this.form.new = false
@@ -548,7 +537,7 @@ export default {
     },
     assignDataModel(item) {
       this.dataModel = {}
-      this.dataModel = Object.assign(this.dataModel, item)
+      this.dataModel = Object.assign(this.dataModel, item.value)
     },
 
     // finish process

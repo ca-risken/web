@@ -15,10 +15,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['` + searchForm.keyword.label + `']`)"
               :placeholder="searchForm.keyword.placeholder"
               v-model="searchModel.keyword"
@@ -26,19 +26,21 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
-            <v-icon>search</v-icon>
-          </v-btn>
           <v-btn
             class="mt-3 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            size="large"
+            density="compact"
+            @click="handleSearch"
+            icon="mdi-magnify"
+          />
+          <v-btn
+            class="mt-3 mr-4"
+            color="primary-darken-3"
+            size="large"
+            density="compact"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row dense>
@@ -50,58 +52,55 @@
                 :headers="headers"
                 :items="table.items"
                 :search="searchModel.keyword"
-                :options.sync="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="access_token_id"
-                @click:row="handleEditItem"
+                @click:row="handleRowClick"
                 @update:page="refleshList"
               >
-                <template v-slot:[`item.avator`]="">
-                  <v-avatar class="ma-3">
-                    <v-icon large>mdi-alpha-r-circle</v-icon>
+                <template v-slot:[`item.avator`]>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip :color="getColorByCount(item.role_cnt)" dark>{{
-                    item.role_cnt
-                  }}</v-chip>
+                  <v-chip
+                    variant="flat"
+                    :color="getColorByCount(item.value.role_cnt)"
+                    >{{ item.value.role_cnt }}</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.expired_at`]="{ item }">
                   <v-chip
-                    :color="getExpiredAtColor(item.expired_at)"
-                    :dark="getExpiredAtColor(item.expired_at) != ''"
-                    >{{ item.expired_at }}</v-chip
+                    :color="getExpiredAtColor(item.value.expired_at)"
+                    :dark="getExpiredAtColor(item.value.expired_at) != ''"
+                    >{{ item.value.expired_at }}</v-chip
                   >
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -121,7 +120,7 @@
       <v-card>
         <v-card-title>
           <v-icon large>mdi-shield-key-outline</v-icon>
-          <span class="mx-4 headline">
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['AccessToken']`) }}
           </span>
         </v-card-title>
@@ -142,7 +141,7 @@
                 :label="$t(`item['` + form.name.label + `']`) + ' *'"
                 :placeholder="form.name.placeholder"
                 required
-                outlined
+                variant="outlined"
               ></v-text-field>
             </template>
             <template v-else>
@@ -154,7 +153,7 @@
                 :placeholder="form.name.placeholder"
                 filled
                 disabled
-                outlined
+                variant="outlined"
               ></v-text-field>
             </template>
             <v-text-field
@@ -164,7 +163,7 @@
               :label="$t(`item['` + form.description.label + `']`)"
               :placeholder="form.description.placeholder"
               required
-              outlined
+              variant="outlined"
             ></v-text-field>
             <v-menu
               v-model="form.expired_at.datePicker"
@@ -174,23 +173,27 @@
               offset-y
               min-width="auto"
             >
-              <template v-slot:activator="{ on, attrs }">
+              <template v-slot:activator="{ props }">
                 <v-text-field
+                  v-bind="props"
                   outlined
                   clearable
                   v-model="dataModel.expired_at"
                   :placeholder="form.expired_at.placeholder"
                   :label="$t(`item['` + form.expired_at.label + `']`)"
                   show-current
-                  background-color="white"
-                  v-bind="attrs"
-                  v-on="on"
+                  bg-color="white"
                 ></v-text-field>
               </template>
-              <v-date-picker
+              <datepicker
+                inline
+                :enable-time-picker="false"
                 v-model="dataModel.expired_at"
-                @input="form.expired_at.datePicker = false"
-              ></v-date-picker>
+                model-type="yyyy-MM-dd"
+                :format="datePickerFormat"
+                @update:model-value="form.expired_at.datePicker = false"
+                :auto-apply="true"
+              ></datepicker>
             </v-menu>
 
             <!-- Role List -->
@@ -202,9 +205,7 @@
                 </span>
               </v-toolbar-title>
               <v-text-field
-                text
-                solo
-                flat
+                density="compact"
                 prepend-icon="mdi-magnify"
                 placeholder="Type something"
                 v-model="roleTable.search"
@@ -221,9 +222,13 @@
               v-model="roleTable.selected"
               :search="roleTable.search"
               :headers="roleHeaders"
-              :footer-props="roleTable.footer"
               :items="roleTable.items"
-              :options.sync="roleTable.options"
+              :sort-by="roleTable.options.sortBy"
+              :page="roleTable.options.page"
+              :items-per-page="roleTable.options.itemsPerPage"
+              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
+              :items-per-page-text="roleTable.footer.itemsPerPageText"
+              :showCurrentPage="roleTable.footer.showCurrentPage"
               :loading="loading"
               locale="ja-jp"
               loading-text="Loading..."
@@ -237,7 +242,7 @@
                   label
                   outliend
                   elevation="0"
-                  color="teal lighten-5"
+                  color="teal-lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -250,7 +255,7 @@
                   label
                   outliend
                   elevation="0"
-                  color="light-green lighten-5"
+                  color="light-green-lighten-5"
                   class="my-1"
                 >
                   <v-card-text class="font-weight-bold">
@@ -268,7 +273,7 @@
                     {{ $t(`item['Created']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title>
-                    <v-chip>{{ dataModel.created_at | formatTime }}</v-chip>
+                    <v-chip>{{ formatTime(dataModel.created_at) }}</v-chip>
                   </v-list-item-title>
                 </v-col>
                 <v-col cols="4">
@@ -277,7 +282,7 @@
                     {{ $t(`item['Updated']`) }}
                   </v-list-item-subtitle>
                   <v-list-item-title>
-                    <v-chip>{{ dataModel.updated_at | formatTime }}</v-chip>
+                    <v-chip>{{ formatTime(dataModel.updated_at) }}</v-chip>
                   </v-list-item-title>
                 </v-col>
                 <v-col cols="4">
@@ -300,16 +305,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="putItem"
               >
@@ -325,54 +330,44 @@
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.access_token_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.access_token_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-alpha-r-circle</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-alpha-r-circle">
+            <v-list-item-title>
+              {{ dataModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Name']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             @click="deleteItem(dataModel.access_token_id)"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -394,49 +389,39 @@
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-image-text</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-image-text">
+            <v-list-item-title>
+              {{ dataModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Name']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
           <v-list-item>
-            <v-list-item-avatar>
+            <template v-slot:prepend>
               <clip-board
                 name="Access Token"
+                size="small"
                 :text="String(dataModel.token_hash)"
               />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title class="text-body-2">
-                <v-card dark color="grey darken-3" class="ma-4">
-                  <v-card-text
-                    class="font-weight-bold"
-                    style="text-overflow: clip; word-break: break-all"
-                  >
-                    {{ dataModel.token_hash }}
-                  </v-card-text>
-                </v-card>
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Token']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            </template>
+            <v-list-item-title>
+              <v-card dark color="grey-darken-3" class="ma-4">
+                <v-card-text class="font-weight-bold text-wrap">
+                  {{ dataModel.token_hash }}
+                </v-card-text>
+              </v-card>
+            </v-list-item-title>
+            <v-list-item-subtitle class="ml-7">
+              {{ $t(`item['Token']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="tokenDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
@@ -455,12 +440,17 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
+import Datepicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 export default {
   name: 'AccessTokenList',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     ClipBoard,
+    VDataTable,
+    Datepicker,
   },
   data() {
     return {
@@ -532,10 +522,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -548,10 +537,9 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -561,69 +549,69 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'access_token_id',
+          key: 'access_token_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Roles"]'),
+          title: this.$i18n.t('item["Roles"]'),
           align: 'center',
           sortable: true,
-          value: 'role_cnt',
+          key: 'role_cnt',
         },
         {
-          text: this.$i18n.t('item["Expired At"]'),
+          title: this.$i18n.t('item["Expired At"]'),
           align: 'center',
           sortable: true,
-          value: 'expired_at',
+          key: 'expired_at',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: true,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Last Updated User"]'),
+          title: this.$i18n.t('item["Last Updated User"]'),
           align: 'center',
           sortable: true,
-          value: 'last_updated_user_name',
+          key: 'last_updated_user_name',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     roleHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
           value: 'role_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
       ]
     },
@@ -840,14 +828,17 @@ export default {
       this.form.newToken = true
       this.editDialog = true
     },
+    handleRowClick(event, tokens) {
+      this.handleEditItem(tokens.item)
+    },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.loadRoleList()
       this.form.newToken = false
       this.editDialog = true
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleSearch() {
@@ -866,6 +857,9 @@ export default {
         updated_at: '',
       }
       this.dataModel = Object.assign(this.dataModel, item)
+    },
+    datePickerFormat(date) {
+      return Util.formatDate(date, 'yyyy-MM-dd')
     },
   },
 }

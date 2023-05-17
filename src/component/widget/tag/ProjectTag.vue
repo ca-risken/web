@@ -1,7 +1,11 @@
 <template>
-  <v-dialog :value="tagDialog" max-width="400px" @click:outside="handleCancel">
+  <v-dialog
+    :model-value="tagDialog"
+    max-width="400px"
+    @click:outside="handleCancel"
+  >
     <v-card>
-      <v-card-title class="headline">
+      <v-card-title class="text-h5">
         <v-icon left>mdi-label</v-icon>
         <span class="mx-2">{{ $t(`view.project['Project Tag']`) }}</span>
       </v-card-title>
@@ -13,7 +17,7 @@
             :placeholder="projectTagForm.tag.placeholder"
             :counter="512"
             :rules="projectTagForm.tag.validator"
-            outlined
+            variant="outlined"
           ></v-text-field>
           <v-color-picker
             v-model="projectTagModel.color"
@@ -22,20 +26,19 @@
             mode="hexa"
             :swatches="projectTagForm.swatches"
             show-swatches
-            width="500"
+            width="100%"
             swatches-max-height="150"
           ></v-color-picker>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text outlined color="grey darken-1" @click="handleCancel">
+        <v-btn variant="outlined" color="grey-darken-1" @click="handleCancel">
           {{ $t(`btn['CANCEL']`) }}
         </v-btn>
         <v-btn
-          color="blue darken-1"
-          text
-          outlined
+          color="blue-darken-1"
+          variant="outlined"
           :loading="loading"
           @click="handleTagSubmit"
         >
@@ -45,8 +48,8 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          text
-          color="success darken-1"
+          variant="outlined"
+          color="success-darken-1"
           style="text-transform: none"
           @click="handleGoToProject"
         >
@@ -78,15 +81,7 @@ export default {
         tag: '',
         created_at: '',
         updated_at: '',
-        color: {
-          types: ['hex', 'hexa', 'rgba', 'hsla', 'hsva'],
-          type: 'hex',
-          hex: '#FF00FF',
-          hexa: '#FF00FFFF',
-          rgba: { r: 255, g: 0, b: 255, a: 1 },
-          hsla: { h: 300, s: 1, l: 0.5, a: 1 },
-          hsva: { h: 300, s: 1, v: 1, a: 1 },
-        },
+        color: '#FF00FF',
       },
       projectTagForm: {
         valid: false,
@@ -127,7 +122,7 @@ export default {
     async tagProject() {
       await this.tagProjectAPI(
         this.projectTagModel.tag,
-        this.projectTagModel.color.hexa
+        this.projectTagModel.color
       ).catch((err) => {
         this.$refs.snackbar.notifyError(err)
         return Promise.reject(err)

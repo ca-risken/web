@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="red lighten-2"
+              <v-icon large class="pr-2" color="red-lighten-2"
                 >mdi-alert</v-icon
               >
               {{ $t(`submenu['Notification']`) }}
@@ -17,10 +17,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -31,15 +31,13 @@
 
           <v-spacer />
           <v-btn
-            class="mt-1 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            class="mr-4"
+            color="primary-darken-3"
+            size="large"
+            density="compact"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -52,9 +50,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :showCurrentPage="table.footer.showCurrentPage"
+                :items-per-page-text="table.footer.itemsPerPageText"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -62,37 +64,28 @@
                 item-key="notification_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar icon class="ma-1">
-                    <v-icon large class="pr-2" color="brown darken-2"
+                    <v-icon large class="pr-2" color="brown-darken-2"
                       >mdi-slack</v-icon
                     >
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -110,8 +103,8 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <v-icon large class="pr-2" color="red lighten-2">mdi-alert</v-icon>
-          <span class="mx-4 headline">{{ $t(`submenu['Notification']`) }}</span>
+          <v-icon large class="pr-2" color="red-lighten-2">mdi-alert</v-icon>
+          <span class="mx-4 text-h5">{{ $t(`submenu['Notification']`) }}</span>
         </v-card-title>
         <v-card-text>
           <v-form v-model="form.valid" ref="form">
@@ -119,8 +112,7 @@
               v-model="dataModel.notification_id"
               :label="$t(`item['` + form.notification_id.label + `']`) + ' *'"
               :placeholder="form.notification_id.placeholder"
-              outlined
-              filled
+              variant="outlined"
               disabled
             ></v-text-field>
             <v-text-field
@@ -129,11 +121,11 @@
               :rules="form.name.validator"
               :label="$t(`item['` + form.name.label + `']`) + ' *'"
               :placeholder="form.name.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-combobox
-              outlined
+              variant="outlined"
               required
               clearable
               v-model="dataModel.type"
@@ -148,7 +140,7 @@
               :rules="form.webhook_url.validator"
               :label="$t(`item['` + form.webhook_url.label + `']`) + ' *'"
               :placeholder="form.webhook_url.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-alert
@@ -156,8 +148,8 @@
                 dataModel.masked_webhook_url != '' &&
                 dataModel.masked_webhook_url != null
               "
-              dense
-              outlined
+              density="compact"
+              variant="outlined"
               type="info"
             >
               <p class="text-caption">
@@ -167,7 +159,7 @@
                   )
                 }}
               </p>
-              <p>{{ dataModel.masked_webhook_url | formatSmartMaskString }}</p>
+              <p>{{ formatSmartMaskString(dataModel.masked_webhook_url) }}</p>
             </v-alert>
 
             <v-checkbox
@@ -182,7 +174,7 @@
               :rules="form.custom_message.validator"
               :label="$t(`item['` + form.custom_message.label + `']`)"
               :placeholder="form.custom_message.placeholder"
-              outlined
+              variant="outlined"
             ></v-text-field>
             <v-text-field
               v-show="form.show_option"
@@ -191,13 +183,13 @@
               :rules="form.channel.validator"
               :label="$t(`item['` + form.channel.label + `']`)"
               :placeholder="form.channel.placeholder"
-              outlined
+              variant="outlined"
             ></v-text-field>
             <v-alert
               v-show="form.show_option"
               v-if="dataModel.channel != '' && dataModel.channel != null"
-              dense
-              outlined
+              density="compact"
+              variant="outlined"
               type="error"
             >
               {{ $t(`view.alert['The specific channel setting is ']`) }}
@@ -212,8 +204,8 @@
             <v-card-actions>
               <v-btn
                 text
-                outlined
-                color="blue darken-1"
+                variant="outlined"
+                color="blue-darken-1"
                 @click="handleTestSubmit"
                 :disabled="form.new"
               >
@@ -222,16 +214,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -246,53 +238,41 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.notification_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Notification ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.notification_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Notification ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ dataModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
-            text
-            outlined
+            color="red-darken-1"
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -303,53 +283,41 @@
     </v-dialog>
     <v-dialog v-model="testDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you want to send a test notification?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.notification_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Notification ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.notification_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Notification ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item :prepend-icon="mdi - account - box">
+            <v-list-item-title>
+              {{ dataModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="testDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="green darken-1"
-            text
-            outlined
+            color="green-darken-1"
+            variant="outlined"
             :loading="loading"
             @click="handleTestSubmit"
           >
@@ -365,11 +333,13 @@
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertNotification',
   mixins: [mixin, alert],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -445,11 +415,13 @@ export default {
           },
         ],
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageOptions: [
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+            { value: 100, title: '100' },
+          ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -462,41 +434,41 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'notification_id',
+          key: 'notification_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Type"]'),
+          title: this.$i18n.t('item["Type"]'),
           align: 'start',
           sortable: true,
-          value: 'type',
+          key: 'type',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: true,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -587,8 +559,8 @@ export default {
       this.form.new = true
       this.editDialog = true
     },
-    handleRowClick(item) {
-      this.handleEditItem(item)
+    handleRowClick(event, notifications) {
+      this.handleEditItem(notifications.item)
     },
     handleEditItem(item) {
       this.assignDataModel(item)
@@ -625,7 +597,7 @@ export default {
     },
     assignDataModel(item) {
       this.dataModel = {}
-      this.dataModel = Object.assign(this.dataModel, item)
+      this.dataModel = Object.assign(this.dataModel, item.value)
 
       const setting = JSON.parse(this.dataModel.notify_setting)
       // slack

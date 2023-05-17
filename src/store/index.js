@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import VuexPersistence from 'vuex-persist'
 
 const vuexLocal = new VuexPersistence({
@@ -7,15 +6,15 @@ const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
 })
 
-Vue.use(Vuex)
-
-const store = new Vuex.Store({
-  state: {
-    user: {},
-    project: {},
-    interval: {},
-    locale: {},
-    findingHistory: [],
+const store = createStore({
+  state() {
+    return {
+      user: {},
+      project: {},
+      interval: {},
+      locale: {},
+      findingHistory: [],
+    }
   },
   mutations: {
     storeUser: (state, payload) => {

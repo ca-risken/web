@@ -1,13 +1,23 @@
-@@ -0,0 +1,40 @@
+<template>
+  <Bar :data="chartData" :options="options" />
+</template>
+
 <script>
-import { Bar, mixins } from 'vue-chartjs'
-import 'chartjs-plugin-colorschemes'
-const { reactiveProp } = mixins
+import { Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from 'chart.js'
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
   name: 'BarChart',
-  extends: Bar,
-  mixins: [reactiveProp],
+  components: { Bar },
   props: {
     chartData: {
       type: Object,
@@ -18,29 +28,22 @@ export default {
       default: () => {
         return {
           scales: {
-            xAxes: [
-              {
-                stacked: true,
-                time: {
-                  displayFormats: {
-                    day: 'MM/DD',
-                  },
-                  unit: 'day',
+            x: {
+              stacked: true,
+              time: {
+                displayFormats: {
+                  day: 'MM/DD',
                 },
+                unit: 'day',
               },
-            ],
-            yAxes: [
-              {
-                stacked: true,
-              },
-            ],
+            },
+            y: {
+              stacked: true,
+            },
           },
         }
       },
     },
-  },
-  mounted() {
-    this.renderChart(this.chartData, this.options)
   },
 }
 </script>

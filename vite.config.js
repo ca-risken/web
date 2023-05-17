@@ -1,21 +1,20 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue2'
-import { VuetifyResolver } from 'unplugin-vue-components/resolvers'
+import vue from '@vitejs/plugin-vue'
 import eslint from 'vite-plugin-eslint'
-import Components from 'unplugin-vue-components/vite'
-import path from 'path'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import { fileURLToPath, URL } from 'url'
 
 export default defineConfig({
     plugins: [
-        vue(),
-        Components({
-            resolvers: [VuetifyResolver()],
-        }),
+      vue({
+        template: { transformAssetUrls }
+      }),
+        vuetify(),
         eslint()
     ],
     resolve: {
         alias: {
-          '@': path.resolve(__dirname, './src')
+          "@": fileURLToPath(new URL("./src", import.meta.url))
         }
     },
     server: {

@@ -1,12 +1,16 @@
 <template>
-  <v-dialog max-width="50%" :value="userDialog" @click:outside="handleCancel">
+  <v-dialog
+    max-width="50%"
+    :model-value="userDialog"
+    @click:outside="handleCancel"
+  >
     <v-card>
       <v-card-title>
         <v-row justify="center" align="center">
           <v-col cols="4">
             <v-text-field
-              outlined
-              dense
+              density="compact"
+              variant="outlined"
               clearable
               :label="searchForm.userID.label"
               :placeholder="searchForm.userID.placeholder"
@@ -16,20 +20,23 @@
           </v-col>
           <v-col cols="6">
             <v-combobox
-              outlined
-              dense
+              density="compact"
+              variant="outlined"
               clearable
               :label="searchForm.userName.label"
               :placeholder="searchForm.userName.placeholder"
               :items="userNameList"
               v-model="searchModel.userName"
-              @change="handleSearch"
+              @update:modelValue="handleSearch"
             />
           </v-col>
-          <v-col cols="1" offset="1">
-            <v-btn fab small :loading="loading" @click="handleSearch">
-              <v-icon>search</v-icon>
-            </v-btn>
+          <v-spacer></v-spacer>
+          <v-col>
+            <v-btn
+              :loading="loading"
+              @click="handleSearch"
+              icon="mdi-magnify"
+            />
           </v-col>
         </v-row>
         <v-spacer />
@@ -39,10 +46,13 @@
         <v-data-table
           :headers="headers"
           :items="table.items"
-          :options.sync="table.options"
+          v-model:options="table.options"
           :server-items-length="table.total"
           :loading="loading"
-          :footer-props="table.footer"
+          :items-per-page-options="table.footer.itemsPerPageOptions"
+          :items-per-page="table.options.itemsPerPage"
+          :sort-by="table.options.sortBy"
+          :showCurrentPage="table.footer.showCurrentPage"
           locale="ja-jp"
           loading-text="Loading..."
           no-data-text="No data."
@@ -52,7 +62,7 @@
           @update:page="refleshList"
         >
           <template v-slot:[`item.updated_at`]="{ item }">
-            <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+            <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
           </template>
         </v-data-table>
       </v-card-text>
@@ -68,9 +78,8 @@
         </v-alert>
         <v-card-actions class="justify-center">
           <v-btn
-            text
-            outlined
-            color="teal darken-1"
+            variant="outlined"
+            color="teal-darken-1"
             risken-action-name="`click-handle-user-reserve"
             @click="handleUserReserve"
           >
@@ -80,7 +89,7 @@
       </template>
       <v-card-actions>
         <v-spacer />
-        <v-btn text outlined color="grey darken-1" @click="handleCancel">
+        <v-btn text outlined color="grey-darken-1" @click="handleCancel">
           {{ $t(`btn['CANCEL']`) }}
         </v-btn>
       </v-card-actions>
@@ -92,8 +101,12 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   mixins: [mixin, iam],
+  components: {
+    VDataTable,
+  },
   name: 'UserList',
   props: {
     userDialog: Boolean,
@@ -120,10 +133,8 @@ export default {
         options: { page: 1, itemsPerPage: 20, sortBy: ['user_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [20],
+          itemsPerPageOptions: [{ value: 20, title: '20' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -135,28 +146,28 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'user_id',
+          key: 'user_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["User Key"]'),
+          title: this.$i18n.t('item["User Key"]'),
           align: 'start',
           sortable: false,
-          value: 'user_idp_key',
+          key: 'user_idp_key',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
       ]
     },
@@ -225,8 +236,8 @@ export default {
       }
       this.refleshList(searchCond)
     },
-    handleSelectItem(item) {
-      this.$emit('handleUserDialogResponse', item)
+    handleSelectItem(event, users) {
+      this.$emit('handleUserDialogResponse', users.item.value)
     },
     handleUserReserve() {
       this.$emit('handleUserDialogResponse', {

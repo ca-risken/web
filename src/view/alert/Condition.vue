@@ -5,7 +5,7 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="red lighten-2"
+              <v-icon large class="pr-2" color="red-lighten-2"
                 >mdi-alert</v-icon
               >
               {{ $t(`submenu['Condition']`) }}
@@ -17,10 +17,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="6">
             <v-text-field
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -32,22 +32,21 @@
             <v-checkbox
               required
               v-model="table.enabledOnly"
+              density="compact"
               :label="$t(`view.alert['Enabled Only']`)"
-              @change="searchCondition"
+              @update:modelValue="searchCondition"
             ></v-checkbox>
           </v-col>
           <v-spacer />
 
           <v-btn
-            class="mt-3 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            class="mr-4"
+            color="primary-darken-3"
+            size="large"
+            density="compact"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -60,9 +59,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :showCurrentPage="table.footer.showCurrentPage"
+                :items-per-page-text="table.footer.itemsPerPageText"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -70,58 +73,47 @@
                 item-key="alert_condition_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
+                <template v-slot:[`item.avator`]>
                   <v-avatar icon class="ma-1">
                     <v-icon large class="pr-2" color="darken-2">mdi-cog</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.enabled`]="{ item }">
-                  <v-icon v-if="item.enabled == true" color="success"
+                  <v-icon v-if="item.value.enabled == true" color="success"
                     >mdi-check-circle</v-icon
                   >
                   <v-icon v-else color="grey">mdi-cancel</v-icon>
                 </template>
                 <template v-slot:[`item.severity`]="{ item }">
                   <v-chip
-                    class="ma-1"
-                    dark
-                    :color="getSeverityColor(item.severity)"
-                    >{{ item.severity }}</v-chip
+                    class="ma-1 text-white"
+                    variant="flat"
+                    :color="getSeverityColor(item.value.severity)"
+                    >{{ item.value.severity }}</v-chip
                   >
                 </template>
                 <template v-slot:[`item.and_or`]="{ item }">
-                  <template v-if="item.and_or == 'and'">
-                    <v-icon left color="teal lighten-2">mdi-set-center</v-icon
+                  <template v-if="item.value.and_or == 'and'">
+                    <v-icon left color="teal-lighten-2">mdi-set-center</v-icon
                     >AND
                   </template>
                   <template v-else>
-                    <v-icon left color="teal lighten-2">mdi-set-all</v-icon> OR
+                    <v-icon left color="teal-lighten-2">mdi-set-all</v-icon> OR
                   </template>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
+                        :title="$t(`action['` + action.text + `']`)"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -137,12 +129,12 @@
       <v-card>
         <!-- Alert Condition -->
         <v-card-title>
-          <v-icon large class="pr-2" color="grey darken-2">mdi-cog</v-icon>
-          <span class="mx-4 headline"
+          <v-icon large class="pr-2" color="grey-darken-2">mdi-cog</v-icon>
+          <span class="mx-4 text-h5"
             >{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Condition']`) }}</span
           >
-          <v-chip dark label color="primary darken-3">
-            <v-icon left>mdi-identifier</v-icon>
+          <v-chip variant="flat" label color="primary-darken-3">
+            <v-icon left size="x-large">mdi-identifier</v-icon>
             {{ dataModel.alert_condition_id }}
           </v-chip>
         </v-card-title>
@@ -156,7 +148,7 @@
                   :rules="form.description.validator"
                   :label="$t(`item['` + form.description.label + `']`) + ' *'"
                   :placeholder="form.description.placeholder"
-                  outlined
+                  variant="outlined"
                   required
                 ></v-text-field>
               </v-col>
@@ -164,7 +156,7 @@
             <v-row>
               <v-col cols="4">
                 <v-combobox
-                  outlined
+                  variant="outlined"
                   required
                   v-model="dataModel.severity"
                   :rules="form.severity.validator"
@@ -175,7 +167,7 @@
               </v-col>
               <v-col cols="4">
                 <v-combobox
-                  outlined
+                  variant="outlined"
                   required
                   v-model="dataModel.and_or"
                   :rules="form.and_or.validator"
@@ -199,31 +191,32 @@
         </v-card-text>
 
         <!-- Alert Rule -->
-        <v-card-title>
-          <v-icon large color="brown darken-2">mdi-book-open-variant</v-icon>
-          <span class="mx-4 headline"
+        <v-card-title class="d-flex">
+          <v-icon large color="brown-darken-2">mdi-book-open-variant</v-icon>
+          <span class="mx-4 text-h5"
             >{{ $t(`submenu['Alert']`) }} {{ $t(`submenu['Rule']`) }}</span
           >
           <v-chip outliend class="mx-4" v-if="dataModel.and_or == 'and'">
-            <v-icon left color="teal lighten-2">mdi-set-center</v-icon>
+            <v-icon left color="teal-lighten-2">mdi-set-center</v-icon>
             AND
           </v-chip>
           <v-chip outliend class="mx-4" v-else>
-            <v-icon left color="teal lighten-2">mdi-set-all</v-icon>
+            <v-icon left color="teal-lighten-2">mdi-set-all</v-icon>
             OR
           </v-chip>
           <v-spacer />
-          <v-btn text outlined link to="/alert/rule/">
-            {{ $t(`btn['CREATE NEW RULE']`) }}
-          </v-btn>
+          <v-btn
+            variant="outlined"
+            link
+            to="/alert/rule/"
+            :text="$t(`btn['CREATE NEW RULE']`)"
+          />
         </v-card-title>
         <v-card-text>
           <!-- Rule List -->
           <v-toolbar flat color="white">
             <v-text-field
-              text
-              solo
-              flat
+              variant="plain"
               prepend-icon="mdi-magnify"
               placeholder="Type something"
               v-model="ruleTable.search"
@@ -240,9 +233,12 @@
             v-model="ruleTable.selected"
             :search="ruleTable.search"
             :headers="ruleHeaders"
-            :footer-props="ruleTable.footer"
             :items="ruleTable.items"
-            :options.sync="ruleTable.options"
+            :sort-by="ruleTable.options.sortBy"
+            :page="ruleTable.options.page"
+            :items-per-page="ruleTable.options.itemsPerPage"
+            :items-per-page-options="ruleTable.footer.itemsPerPageOptions"
+            :showCurrentPage="ruleTable.footer.showCurrentPage"
             :loading="loading"
             locale="ja-jp"
             loading-text="Loading..."
@@ -252,48 +248,55 @@
             show-select
           >
             <template v-slot:[`item.resource_name`]="{ item }">
-              <template v-if="item.resource_name">
+              <template v-if="item.value.resource_name">
                 <v-chip label
                   ><v-icon left>mdi-file-find-outline</v-icon
-                  >{{ item.resource_name | cutString }}</v-chip
+                  >{{ cutString(item.value.resource_name) }}</v-chip
                 >
               </template>
               <template v-else>-</template>
             </template>
             <template v-slot:[`item.tag`]="{ item }">
-              <template v-if="item.tag">
+              <template v-if="item.value.tag">
                 <v-chip label
                   ><v-icon left>mdi-label</v-icon
-                  >{{ item.tag | cutString }}</v-chip
+                  >{{ cutString(item.value.tag) }}</v-chip
                 >
               </template>
               <template v-else>-</template>
             </template>
             <template v-slot:[`item.score`]="{ item }">
-              <v-chip :color="getColorByScore(item.score)" dark>{{
-                item.score
-              }}</v-chip>
+              <v-chip
+                :color="getColorByScore(item.value.score)"
+                variant="flat"
+                >{{ item.value.score || 0 }}</v-chip
+              >
             </template>
             <template v-slot:[`item.finding_cnt`]="{ item }">
-              <v-chip :color="getColorByCount(item.finding_cnt)" dark>{{
-                item.finding_cnt
-              }}</v-chip>
+              <v-chip
+                :color="getColorByCount(item.value.finding_cnt)"
+                variant="flat"
+                >{{ item.value.finding_cnt }}</v-chip
+              >
             </template>
           </v-data-table>
           <v-divider class="mt-3 mb-3"></v-divider>
         </v-card-text>
 
         <!-- Alert Notification -->
-        <v-card-title>
-          <v-icon large color="brown darken-2">mdi-email</v-icon>
-          <span class="mx-4 headline"
+        <v-card-title class="d-flex">
+          <v-icon large color="brown-darken-2">mdi-email</v-icon>
+          <span class="mx-4 text-h5"
             >{{ $t(`submenu['Alert']`) }}
             {{ $t(`submenu['Notification']`) }}</span
           >
           <v-spacer />
-          <v-btn text outlined link to="/alert/notification/">
-            {{ $t(`btn['CREATE NEW NOTIFICATION']`) }}
-          </v-btn>
+          <v-btn
+            variant="outlined"
+            link
+            to="/alert/notification/"
+            :text="$t(`btn['CREATE NEW NOTIFICATION']`)"
+          />
         </v-card-title>
         <v-card-text>
           <!-- Notification List -->
@@ -301,9 +304,9 @@
             <v-row>
               <v-col cols="4">
                 <v-combobox
-                  outlined
+                  variant="outlined"
                   required
-                  dense
+                  density="compact"
                   v-model="dataModel.noti_cache"
                   :rules="form.noti_cache.validator"
                   :label="$t(`item['` + form.noti_cache.label + `']`) + ' *'"
@@ -313,24 +316,23 @@
               </v-col>
               <v-col cols="8">
                 <v-alert
-                  dense
-                  border="left"
-                  colored-border
+                  border="start"
+                  border-color="info"
                   type="info"
+                  variant="outlined"
+                  density="compact"
                   elevation="2"
                   v-if="Number(dataModel.next_noti_time) > Number(nowUnix)"
                 >
                   {{ $t(`view.alert['The next notification will be after']`) }}
-                  <strong>{{ dataModel.next_noti_time | formatTime }}</strong> .
+                  <strong>{{ formatTime(dataModel.next_noti_time) }}</strong> .
                 </v-alert>
               </v-col>
             </v-row>
           </v-container>
           <v-toolbar flat color="white">
             <v-text-field
-              text
-              solo
-              flat
+              variant="plain"
               prepend-icon="mdi-magnify"
               placeholder="Type something"
               v-model="notiTable.search"
@@ -347,10 +349,13 @@
             v-model="notiTable.selected"
             :search="notiTable.search"
             :headers="notiHeaders"
-            :footer-props="notiTable.footer"
             :items="notiTable.items"
-            :options.sync="notiTable.options"
             :loading="loading"
+            :sort-by="notiTable.options.sortBy"
+            :page="notiTable.options.page"
+            :items-per-page="notiTable.options.itemsPerPage"
+            :items-per-page-options="notiTable.footer.itemsPerPageOptions"
+            :showCurrentPage="notiTable.footer.showCurrentPage"
             locale="ja-jp"
             loading-text="Loading..."
             no-data-text="No data."
@@ -363,7 +368,12 @@
         </v-card-text>
 
         <v-card-text>
-          <v-alert dense outlined type="info" v-if="!form.new">
+          <v-alert
+            density="compact"
+            variant="outlined"
+            type="info"
+            v-if="!form.new"
+          >
             {{
               $t(
                 "view.alert['If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.']"
@@ -378,26 +388,23 @@
         <v-card-actions class="pb-12">
           <v-btn
             v-if="!form.new"
-            text
-            outlined
-            color="red darken-1"
+            variant="outlined"
+            color="red-darken-1"
             @click="handleAnalyze()"
           >
             ANALYZE
           </v-btn>
           <v-spacer />
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="editDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            text
-            outlined
-            color="green darken-1"
+            variant="outlined"
+            color="green-darken-1"
             :loading="loading"
             @click="handleEditSubmit"
           >
@@ -410,53 +417,43 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.alert_condition_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Alert Condition ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ dataModel.alert_condition_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Alert Condition ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ dataModel.description }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Description']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ dataModel.description }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Description']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -474,11 +471,13 @@ import Util from '@/util'
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertCondition',
   mixins: [mixin, alert],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -578,11 +577,13 @@ export default {
           },
         ],
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [20, 50, 100],
+          itemsPerPageOptions: [
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+            { value: 100, title: '100' },
+          ],
           itemsPerPageText: 'Rows/Page',
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -592,10 +593,12 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [10, 20, 50],
+          itemsPerPageOptions: [
+            { value: 10, title: '10' },
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+          ],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -605,10 +608,12 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['alert_rule_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: false,
-          itemsPerPageOptions: [10, 20, 50],
+          itemsPerPageOptions: [
+            { value: 10, title: '10' },
+            { value: 20, title: '20' },
+            { value: 50, title: '50' },
+          ],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -620,109 +625,109 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '5%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["Enabled"]'),
+          title: this.$i18n.t('item["Enabled"]'),
           align: 'start',
           sortable: true,
-          value: 'enabled',
+          key: 'enabled',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'alert_condition_id',
+          key: 'alert_condition_id',
         },
         {
-          text: this.$i18n.t('item["Description"]'),
+          title: this.$i18n.t('item["Description"]'),
           align: 'start',
           sortable: true,
-          value: 'description',
+          key: 'description',
         },
         {
-          text: this.$i18n.t('item["Severity"]'),
+          title: this.$i18n.t('item["Severity"]'),
           align: 'center',
           sortable: true,
-          value: 'severity',
+          key: 'severity',
         },
         {
-          text: this.$i18n.t('item["And Or"]'),
+          title: this.$i18n.t('item["And Or"]'),
           align: 'start',
           sortable: true,
-          value: 'and_or',
+          key: 'and_or',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     ruleHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'alert_rule_id',
+          key: 'alert_rule_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Resource Name"]'),
+          title: this.$i18n.t('item["Resource Name"]'),
           align: 'start',
           sortable: true,
-          value: 'resource_name',
+          key: 'resource_name',
         },
         {
-          text: this.$i18n.t('item["Tag"]'),
+          title: this.$i18n.t('item["Tag"]'),
           align: 'start',
           sortable: true,
-          value: 'tag',
+          key: 'tag',
         },
         {
-          text: this.$i18n.t('item["Finding Count"]'),
+          title: this.$i18n.t('item["Finding Count"]'),
           align: 'center',
           sortable: true,
-          value: 'finding_cnt',
+          key: 'finding_cnt',
         },
         {
-          text: this.$i18n.t('item["Score"]'),
+          title: this.$i18n.t('item["Score"]'),
           align: 'center',
           sortable: true,
-          value: 'score',
+          key: 'score',
         },
       ]
     },
     notiHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'notification_id',
+          key: 'notification_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Type"]'),
+          title: this.$i18n.t('item["Type"]'),
           align: 'start',
           sortable: true,
-          value: 'type',
+          key: 'type',
         },
       ]
     },
@@ -969,11 +974,11 @@ export default {
       this.form.new = true
       this.editDialog = true
     },
-    handleRowClick(item) {
-      this.handleEditItem(item)
+    handleRowClick(event, conds) {
+      this.handleEditItem(conds.item)
     },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.listRule()
       this.listNotification()
       this.form.new = false
@@ -990,7 +995,7 @@ export default {
       this.finishSuccess('Success: Put alert condition.')
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleDeleteSubmit() {
@@ -998,12 +1003,13 @@ export default {
       this.deleteItem()
     },
     handleAnalyze(item) {
+      console.log(item)
       this.loading = true
       let alertConditionID = ''
       if (!item) {
         alertConditionID = this.dataModel.alert_condition_id
-      } else if (item.alert_condition_id) {
-        alertConditionID = item.alert_condition_id
+      } else if (item.value.alert_condition_id) {
+        alertConditionID = item.value.alert_condition_id
       }
       this.analyze(alertConditionID)
     },

@@ -16,12 +16,12 @@
           <v-col cols="6" offset="1">
             <v-combobox
               multiple
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
               small-chips
               deletable-chips
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['` + searchForm.dataSource.label + `']`)"
               :placeholder="searchForm.dataSource.placeholder"
               :items="dataSourceList"
@@ -30,8 +30,8 @@
           </v-col>
           <v-col cols="3">
             <v-slider
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               thumb-label
               min="0.0"
               max="1.0"
@@ -44,68 +44,29 @@
         </v-row>
         <v-row dense justify="start" align-content="center">
           <v-col cols="3" offset="1">
-            <v-menu
-              v-model="fromMenu"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  outlined
-                  dense
-                  clearable
-                  v-model="searchModel.fromDate"
-                  :label="$t(`item['` + searchForm.fromDate.label + `']`)"
-                  readonly
-                  background-color="white"
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="searchModel.fromDate"
-                @input="fromMenu = false"
-              ></v-date-picker>
-            </v-menu>
+            <datepicker
+              :enable-time-picker="false"
+              v-model="searchModel.fromDate"
+              model-type="yyyy-MM-dd"
+              :format="datePickerFormat"
+              auto-apply
+            ></datepicker>
           </v-col>
           <v-col cols="3">
-            <v-menu
-              v-model="toMenu"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  outlined
-                  dense
-                  clearable
-                  v-model="searchModel.toDate"
-                  :placeholder="searchForm.toDate.placeholder"
-                  :label="$t(`item['` + searchForm.toDate.label + `']`)"
-                  readonly
-                  background-color="white"
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="searchModel.toDate"
-                @input="toMenu = false"
-              ></v-date-picker>
-            </v-menu>
+            <datepicker
+              :enable-time-picker="false"
+              v-model="searchModel.toDate"
+              model-type="yyyy-MM-dd"
+              :format="datePickerFormat"
+              auto-apply
+            ></datepicker>
           </v-col>
           <v-col cols="3">
             <v-select
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['` + searchForm.format.label + `']`)"
               :items="availableFormat"
               v-model="searchModel.format"
@@ -140,8 +101,8 @@
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon x-large class="pr-2" color="indigo darken-2"
+            <v-toolbar-title class="grey--text text--darken-4 text-h5">
+              <v-icon x-large class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >
               {{ $t(`view.report['Finding Changes']`) }}
@@ -158,18 +119,20 @@
             hide-default-footer
           >
             <template v-slot:[`item.avatar`]="{ item }">
-              <v-avatar icon class="ma-2">
+              <v-avatar class="ma-2">
                 <v-icon
                   large
                   class="pr-2"
-                  :color="getDataSourceIconColor(item.category)"
-                  >{{ getDataSourceIcon(item.category) }}</v-icon
+                  :color="getDataSourceIconColor(item.value.category)"
+                  >{{ getDataSourceIcon(item.value.category) }}</v-icon
                 >
               </v-avatar>
             </template>
             <template v-slot:[`item.change`]="{ item }">
-              <v-icon dense> {{ getIconByCountChange(item.change) }} </v-icon>
-              {{ Math.abs(item.change) }}
+              <v-icon dense>
+                {{ getIconByCountChange(item.value.change) }}
+              </v-icon>
+              {{ Math.abs(item.value.change) }}
             </template>
           </v-data-table>
         </v-col>
@@ -188,14 +151,16 @@
                 <v-icon
                   large
                   class="pr-2"
-                  :color="getSeverityColor(item.severity)"
+                  :color="getSeverityColor(item.value.severity)"
                   >mdi-file-find-outline</v-icon
                 >
               </v-avatar>
             </template>
             <template v-slot:[`item.change`]="{ item }">
-              <v-icon dense> {{ getIconByCountChange(item.change) }} </v-icon>
-              {{ Math.abs(item.change) }}
+              <v-icon dense>
+                {{ getIconByCountChange(item.value.change) }}
+              </v-icon>
+              {{ Math.abs(item.value.change) }}
             </template>
           </v-data-table>
         </v-col>
@@ -204,8 +169,8 @@
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon x-large class="pr-2" color="indigo darken-2"
+            <v-toolbar-title class="grey--text text--darken-4 text-h5">
+              <v-icon x-large class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >
               {{ $t(`view.report['Number of Finding']`) }}
@@ -215,30 +180,26 @@
         <v-col cols="6" v-if="loadedDoughnut">
           <v-card class="mx-auto" outlined>
             <v-list-item three-line>
-              <v-list-item-content>
-                <div class="overline mb-4">
-                  {{ $t(`view.report['Per Category']`) }}
-                </div>
-                <doughnut-chart
-                  :chart-data="dataSourceDoughnutChart"
-                  :height="chartHeight"
-                ></doughnut-chart>
-              </v-list-item-content>
+              <div class="overline mb-4">
+                {{ $t(`view.report['Per Category']`) }}
+              </div>
+              <doughnut-chart
+                :chart-data="dataSourceDoughnutChart"
+                :height="chartHeight"
+              ></doughnut-chart>
             </v-list-item>
           </v-card>
         </v-col>
         <v-col cols="6" v-if="loadedDoughnut">
           <v-card class="mx-auto" outlined>
             <v-list-item three-line>
-              <v-list-item-content>
-                <div class="overline mb-4">
-                  {{ $t(`view.report['Per Severity']`) }}
-                </div>
-                <doughnut-chart
-                  :chart-data="severityDoughnutChart"
-                  :height="chartHeight"
-                ></doughnut-chart>
-              </v-list-item-content>
+              <div class="overline mb-4">
+                {{ $t(`view.report['Per Severity']`) }}
+              </div>
+              <doughnut-chart
+                :chart-data="severityDoughnutChart"
+                :height="chartHeight"
+              ></doughnut-chart>
             </v-list-item>
           </v-card>
         </v-col>
@@ -248,8 +209,8 @@
       <v-row justify="center" align-content="center">
         <v-col cols="8">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon x-large class="pr-2" color="indigo darken-2"
+            <v-toolbar-title class="grey--text text--darken-4 text-h5">
+              <v-icon x-large class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >
               {{ $t(`view.report['Finding Transition']`) }}
@@ -259,15 +220,15 @@
         <v-col cols="4">
           <v-select
             v-model="visibleDuration"
-            background-color="white"
+            bg-color="white"
             :items="visibleDurationList"
             item-text="duration"
             item-value="duration"
             :label="$t(`item['Duration']`)"
-            @change="SetBarChart"
+            @update:modelValue="SetBarChart"
             return-object
-            outlined
-            dense
+            variant="outlined"
+            density="compact"
           ></v-select>
         </v-col>
       </v-row>
@@ -275,30 +236,26 @@
         <v-col cols="6" v-if="loadedBar">
           <v-card class="mx-auto" outlined>
             <v-list-item three-line>
-              <v-list-item-content>
-                <div class="overline mb-4">
-                  {{ $t(`view.report['Per Category']`) }}
-                </div>
-                <bar-chart
-                  :chart-data="dataSourceBarChart"
-                  :height="chartHeight"
-                ></bar-chart>
-              </v-list-item-content>
+              <div class="overline mb-4">
+                {{ $t(`view.report['Per Category']`) }}
+              </div>
+              <bar-chart
+                :chart-data="dataSourceBarChart"
+                :height="chartHeight"
+              ></bar-chart>
             </v-list-item>
           </v-card>
         </v-col>
         <v-col cols="6" v-if="loadedBar">
           <v-card class="mx-auto" outlined>
             <v-list-item three-line>
-              <v-list-item-content>
-                <div class="overline mb-4">
-                  {{ $t(`view.report['Per Severity']`) }}
-                </div>
-                <bar-chart
-                  :chart-data="severityBarChart"
-                  :height="chartHeight"
-                ></bar-chart>
-              </v-list-item-content>
+              <div class="overline mb-4">
+                {{ $t(`view.report['Per Severity']`) }}
+              </div>
+              <bar-chart
+                :chart-data="severityBarChart"
+                :height="chartHeight"
+              ></bar-chart>
             </v-list-item>
           </v-card>
         </v-col>
@@ -319,7 +276,10 @@ import iam from '@/mixin/api/iam'
 import DoughnutChart from '@/component/widget/chart/DoughnutChart.vue'
 import BarChart from '@/component/widget/chart/BarChart.vue'
 import colors from 'vuetify/lib/util/colors'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import Datepicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 export default {
   name: 'ReportFinding',
   mixins: [mixin, finding, alert, iam],
@@ -327,6 +287,8 @@ export default {
     BottomSnackBar,
     DoughnutChart,
     BarChart,
+    VDataTable,
+    Datepicker,
   },
   data() {
     return {
@@ -387,76 +349,76 @@ export default {
       ReportFindingTable: {
         headersCategory: [
           {
-            text: '',
+            title: '',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'avatar',
+            key: 'avatar',
           },
           {
-            text: 'Category',
+            title: 'Category',
             sortable: false,
             align: 'left',
             width: '5%',
-            value: 'category',
+            key: 'category',
           },
           {
-            text: 'Previous',
+            title: 'Previous',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'previous',
+            key: 'previous',
           },
           {
-            text: 'Latest',
+            title: 'Latest',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'latest',
+            key: 'latest',
           },
           {
-            text: 'Change',
+            title: 'Change',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'change',
+            key: 'change',
           },
         ],
         headersSeverity: [
           {
-            text: '',
+            title: '',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'avatar',
+            key: 'avatar',
           },
           {
-            text: 'Severity',
+            title: 'Severity',
             sortable: false,
             align: 'left',
             width: '5%',
-            value: 'severity',
+            key: 'severity',
           },
           {
-            text: 'Previous',
+            title: 'Previous',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'previous',
+            key: 'previous',
           },
           {
-            text: 'Latest',
+            title: 'Latest',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'latest',
+            key: 'latest',
           },
           {
-            text: 'Change',
+            title: 'Change',
             sortable: false,
             align: 'center',
             width: '5%',
-            value: 'change',
+            key: 'change',
           },
         ],
         itemsPerCategory: [],
@@ -608,7 +570,7 @@ export default {
         if (this.searchModel.toDate) {
           searchCond += '&to_date=' + this.searchModel.toDate
         }
-        if (this.searchModel.score) {
+        if (this.searchModel.fromDate) {
           searchCond += '&from_date=' + this.searchModel.fromDate
         }
         await this.getReportFinding(searchCond, target)
@@ -683,7 +645,7 @@ export default {
       }
       var category = ''
       for (const fr of res.data.data.report_finding) {
-        var reportFinding = new this.newReportFinding(fr)
+        var reportFinding = this.newReportFinding(fr)
         this.ReportFindings.push(reportFinding)
         if (reportFinding.date.indexOf(this.latest) > -1) {
           this.todayReportFindings.push(reportFinding)
@@ -752,22 +714,24 @@ export default {
 
     SetDoughnutChartDataSource() {
       this.dataSourceDoughnutChart.labels = this.category
-      this.dataSourceDoughnutChart.datasets.push({
-        data: [
-          this.categoryFinding.aws,
-          this.categoryFinding.diagnosis,
-          this.categoryFinding.osint,
-          this.categoryFinding.code,
-          this.categoryFinding.google,
-        ],
-        backgroundColor: [
-          this.getRGBByCategory('aws'),
-          this.getRGBByCategory('diagnosis'),
-          this.getRGBByCategory('osint'),
-          this.getRGBByCategory('code'),
-          this.getRGBByCategory('google'),
-        ],
-      })
+      this.dataSourceDoughnutChart.datasets = [
+        {
+          data: [
+            this.categoryFinding.aws,
+            this.categoryFinding.diagnosis,
+            this.categoryFinding.osint,
+            this.categoryFinding.code,
+            this.categoryFinding.google,
+          ],
+          backgroundColor: [
+            this.getRGBByCategory('aws'),
+            this.getRGBByCategory('diagnosis'),
+            this.getRGBByCategory('osint'),
+            this.getRGBByCategory('code'),
+            this.getRGBByCategory('google'),
+          ],
+        },
+      ]
     },
     SetDoughnutChartSeverity() {
       this.severityDoughnutChart.labels = this.severity
@@ -929,6 +893,9 @@ export default {
       } else {
         return 'mdi-arrow-right'
       }
+    },
+    datePickerFormat(date) {
+      return Util.formatDate(date, 'yyyy-MM-dd')
     },
   },
 }

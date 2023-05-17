@@ -1,4 +1,5 @@
 <script>
+import { h } from 'vue'
 export default {
   name: 'AutoLink',
   props: {
@@ -7,22 +8,16 @@ export default {
       default: null,
     },
   },
-  render: function (createElement) {
+  render: function () {
     let a = this.text.split(/(https?:\/\/[\w!?/+-_~=;.,*&@#$%()']+)/g)
     let vnodes = a.map(function (x, i) {
       if (i % 2) {
-        return createElement(
-          'a',
-          { attrs: { href: x, target: '_blank', rel: 'noopener' } },
-          x
-        )
-      } else if (x) {
-        return this._v(x)
+        return h('a', { href: x }, x)
       } else {
-        return this._v('')
+        return x
       }
     }, this)
-    return createElement('span', { attrs: { class: 'auto-link' } }, vnodes)
+    return h('span', vnodes)
   },
 }
 </script>

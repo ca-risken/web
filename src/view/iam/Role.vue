@@ -15,10 +15,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-combobox
-              outlined
-              dense
+              variant="outlined"
+              density="compact"
               clearable
-              background-color="white"
+              bg-color="white"
               :label="$t(`item['` + searchForm.roleName.label + `']`)"
               :placeholder="searchForm.roleName.placeholder"
               :items="roleNameList"
@@ -27,19 +27,21 @@
           </v-col>
 
           <v-spacer />
-          <v-btn class="mt-3 mr-4" fab dense small @click="handleSearch">
-            <v-icon>search</v-icon>
-          </v-btn>
           <v-btn
             class="mt-3 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            size="large"
+            density="compact"
+            @click="handleSearch"
+            icon="mdi-magnify"
+          />
+          <v-btn
+            class="mt-3 mr-4"
+            color="primary-darken-3"
+            size="large"
+            density="compact"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row dense>
@@ -50,52 +52,49 @@
               <v-data-table
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
                 :server-items-length="table.total"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="role_id"
-                @click:row="handleEditItem"
+                @click:row="handleRowClick"
                 @update:page="loadList"
               >
-                <template v-slot:[`item.avator`]="">
-                  <v-avatar class="ma-3">
-                    <v-icon large>mdi-alpha-r-circle</v-icon>
+                <template v-slot:[`item.avator`]>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon size="x-large">mdi-alpha-r-circle</v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.policy_cnt`]="{ item }">
-                  <v-chip :color="getColorByCount(item.policy_cnt)" dark>{{
-                    item.policy_cnt
-                  }}</v-chip>
+                  <v-chip
+                    :color="getColorByCount(item.value.policy_cnt)"
+                    variant="flat"
+                    >{{ item.value.policy_cnt }}</v-chip
+                  >
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -114,8 +113,8 @@
     <v-dialog v-model="editDialog" max-width="70%">
       <v-card>
         <v-card-title>
-          <v-icon large>mdi-alpha-r-circle</v-icon>
-          <span class="mx-4 headline">
+          <v-icon size="large">mdi-alpha-r-circle</v-icon>
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Role']`) }}
           </span>
         </v-card-title>
@@ -152,16 +151,12 @@
             <!-- Policy List -->
             <template v-if="!roleForm.newRole">
               <v-toolbar flat color="white">
-                <v-toolbar-title class="grey--text text--darken-4">
-                  <v-icon large>mdi-certificate-outline</v-icon>
-                  <span class="mx-4">
-                    {{ $t(`submenu['Policy']`) }}
-                  </span>
-                </v-toolbar-title>
+                <v-icon size="large">mdi-certificate-outline</v-icon>
+                <span class="mx-4">
+                  {{ $t(`submenu['Policy']`) }}
+                </span>
                 <v-text-field
-                  text
-                  solo
-                  flat
+                  variant="plain"
                   prepend-icon="mdi-magnify"
                   placeholder="Type something"
                   v-model="policyTable.search"
@@ -178,10 +173,14 @@
                 v-model="policyTable.selected"
                 :search="policyTable.search"
                 :headers="policyHeaders"
-                :footer-props="policyTable.footer"
                 :items="policyTable.items"
-                :options.sync="policyTable.options"
                 :loading="loading"
+                :sort-by="policyTable.options.sortBy"
+                :page="policyTable.options.page"
+                :items-per-page="policyTable.options.itemsPerPage"
+                :items-per-page-options="policyTable.footer.itemsPerPageOptions"
+                :items-per-page-text="policyTable.footer.itemsPerPageText"
+                :showCurrentPage="policyTable.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -192,26 +191,24 @@
                 <template v-slot:[`item.action_ptn`]="{ item }">
                   <v-card
                     label
-                    outliend
                     elevation="0"
-                    color="teal lighten-5"
+                    color="teal-lighten-5"
                     class="my-1"
                   >
                     <v-card-text class="font-weight-bold">
-                      {{ item.action_ptn }}
+                      {{ item.value.action_ptn }}
                     </v-card-text>
                   </v-card>
                 </template>
                 <template v-slot:[`item.resource_ptn`]="{ item }">
                   <v-card
                     label
-                    outliend
                     elevation="0"
-                    color="light-green lighten-5"
+                    color="light-green-lighten-5"
                     class="my-1"
                   >
                     <v-card-text class="font-weight-bold">
-                      {{ item.resource_ptn }}
+                      {{ item.value.resource_ptn }}
                     </v-card-text>
                   </v-card>
                 </template>
@@ -223,16 +220,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="putItem"
               >
@@ -248,54 +245,44 @@
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ roleModel.role_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ roleModel.role_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-alpha-r-circle</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ roleModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Name']`) }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-alpha-r-circle">
+            <v-list-item-title>
+              {{ roleModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Name']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             @click="deleteItem(roleModel.role_id)"
           >
             {{ $t(`btn['DELETE']`) }}
@@ -312,11 +299,13 @@
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'RoleList',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
+    VDataTable,
   },
   data() {
     return {
@@ -359,10 +348,9 @@ export default {
         ],
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -375,10 +363,9 @@ export default {
         options: { page: 1, itemsPerPage: 5, sortBy: ['policy_id'] },
         total: 0,
         footer: {
-          disableItemsPerPage: true,
-          itemsPerPageOptions: [5],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 5, title: '5' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -388,69 +375,69 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'role_id',
+          key: 'role_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Policies"]'),
+          title: this.$i18n.t('item["Policies"]'),
           align: 'center',
           sortable: false,
-          value: 'policy_cnt',
+          key: 'policy_cnt',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     policyHeaders() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'policy_id',
+          key: 'policy_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Action Pattern"]'),
+          title: this.$i18n.t('item["Action Pattern"]'),
           align: 'start',
           sortable: true,
-          value: 'action_ptn',
+          key: 'action_ptn',
         },
         {
-          text: this.$i18n.t('item["Resource Pattern"]'),
+          title: this.$i18n.t('item["Resource Pattern"]'),
           align: 'start',
           sortable: true,
-          value: 'resource_ptn',
+          key: 'resource_ptn',
         },
       ]
     },
@@ -480,27 +467,29 @@ export default {
         (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.roles.slice(from, to)
-      ids.forEach(async (id) => {
-        const role = await this.getRoleAPI(id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-        const policies = await this.listPolicyAPI('&role_id=' + id).catch(
-          (err) => {
+      await Promise.all(
+        ids.map(async (id) => {
+          const role = await this.getRoleAPI(id).catch((err) => {
             this.clearList()
             return Promise.reject(err)
+          })
+          const policies = await this.listPolicyAPI('&role_id=' + id).catch(
+            (err) => {
+              this.clearList()
+              return Promise.reject(err)
+            }
+          )
+          const item = {
+            role_id: role.role_id,
+            name: role.name,
+            updated_at: role.updated_at,
+            policy_cnt: policies.length,
+            policies: policies,
           }
-        )
-        const item = {
-          role_id: role.role_id,
-          name: role.name,
-          updated_at: role.updated_at,
-          policy_cnt: policies.length,
-          policies: policies,
-        }
-        items.push(item)
-        roleNames.push(item.name)
-      })
+          items.push(item)
+          roleNames.push(item.name)
+        })
+      )
       this.table.items = items
       this.roleNameList = roleNames
       this.loading = false
@@ -603,14 +592,17 @@ export default {
       this.roleForm.newRole = true
       this.editDialog = true
     },
+    handleRowClick(event, roles) {
+      this.handleEditItem(roles.item)
+    },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.loadPolicyList()
       this.roleForm.newRole = false
       this.editDialog = true
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleSearch() {

@@ -21,9 +21,8 @@
                   v-model="projectModel.project_id"
                   :label="$t(`item['` + projectForm.ID.label + `']`)"
                   :placeholder="projectForm.ID.placeholder"
-                  filled
+                  variant="outlined"
                   disabled
-                  outlined
                 ></v-text-field>
                 <v-text-field
                   v-model="projectModel.name"
@@ -32,14 +31,13 @@
                   :counter="64"
                   :rules="projectForm.name.validator"
                   required
-                  outlined
+                  variant="outlined"
                 ></v-text-field>
                 <v-card-actions>
                   <v-spacer />
                   <v-btn
-                    text
-                    outlined
-                    color="green darken-1"
+                    variant="outlined"
+                    color="green-darken-1"
                     :loading="loading"
                     @click="handleEdit"
                   >
@@ -56,20 +54,19 @@
                 v-for="t in projectModel.tag"
                 :key="t.tag"
                 :color="t.color"
-                class="ma-2"
-                close
-                dark
+                class="ma-2 text-white"
+                :closable="true"
+                variant="flat"
                 @click="handleEditProjectTag(t)"
-                @click:close="handleDeleteTag(t)"
+                @click:close.stop.prevent="handleDeleteTag(t)"
               >
                 {{ t.tag }}
               </v-chip>
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  text
-                  outlined
-                  color="blue darken-1"
+                  variant="outlined"
+                  color="blue-darken-1"
                   :loading="loading"
                   @click="handleNewProjectTag"
                 >
@@ -89,9 +86,8 @@
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  text
-                  outlined
-                  color="red darken-1"
+                  variant="outlined"
+                  color="red-darken-1"
                   :loading="loading"
                   @click="handleDelete"
                 >
@@ -109,7 +105,7 @@
     <!-- Delete Dialog -->
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
@@ -118,17 +114,17 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
             :loading="loading"
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             @click="handleDeleteSubmit"
           >
             {{ $t(`btn['DELETE']`) }}

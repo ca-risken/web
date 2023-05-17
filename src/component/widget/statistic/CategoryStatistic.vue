@@ -1,11 +1,11 @@
 <template>
   <v-card class="mx-auto" @click="handleClick">
-    <v-system-bar height="10" :color="color" :dark="dark" />
+    <v-toolbar height="10" :color="color" />
     <v-card-title>
-      <v-icon :color="color" large left>{{ icon }}</v-icon>
+      <v-icon :color="color" size="large" start>{{ icon }}</v-icon>
       <span class="title font-weight-bold">{{ category }}</span>
     </v-card-title>
-    <v-card-text class="headline font-weight-black ml-4">
+    <v-card-text class="text-h5 font-weight-black ml-4">
       {{ title }}
     </v-card-text>
     <v-card-text class="subtitle font-weight-light">

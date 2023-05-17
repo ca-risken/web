@@ -2,10 +2,10 @@
   <div>
     <v-container>
       <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
+        <v-col>
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2" color="blue darken-1"
+              <v-icon size="large" color="blue-darken-1"
                 >mdi-google-cloud</v-icon
               >
               {{ $t(`submenu['GCP']`) }}
@@ -17,10 +17,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -31,10 +31,9 @@
 
           <v-spacer />
           <v-btn
-            text
-            outlined
-            class="mt-1 mr-4"
-            color="blue darken-1"
+            variant="outlined"
+            class="mr-4 mt-1"
+            color="blue-darken-1"
             @click="handleNewProjectTag"
           >
             {{ $t(`btn['TAG']`) }}
@@ -46,15 +45,13 @@
           />
 
           <v-btn
-            class="mt-1 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            class="mr-4"
+            size="large"
+            density="compact"
+            color="primary-darken-3"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -67,9 +64,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -77,37 +78,30 @@
                 item-key="gcp_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
-                  <v-avatar class="ma-3">
-                    <v-icon color="blue darken-1" large
-                      >mdi-google-cloud</v-icon
-                    >
+                <template v-slot:[`item.avator`]>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon
+                      color="blue-darken-1"
+                      size="x-large"
+                      icon="mdi-google-cloud"
+                    ></v-icon>
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -125,8 +119,8 @@
     <v-dialog v-model="editDialog" max-width="56%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue darken-1">mdi-google-cloud</v-icon>
-          <span class="mx-4 headline">
+          <v-icon large color="blue-darken-1">mdi-google-cloud</v-icon>
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['GCP']`) }}
           </span>
         </v-card-title>
@@ -146,7 +140,7 @@
                   v-model="gcpModel.gcp_id"
                   :label="$t(`item['` + gcpForm.gcp_id.label + `']`)"
                   :placeholder="gcpForm.gcp_id.placeholder"
-                  outlined
+                  variant="outlined"
                   filled
                   disabled
                 ></v-text-field>
@@ -168,7 +162,7 @@
                   :rules="gcpForm.name.validator"
                   :label="$t(`item['` + gcpForm.name.label + `']`) + ' *'"
                   :placeholder="gcpForm.name.placeholder"
-                  outlined
+                  variant="outlined"
                   required
                 ></v-text-field>
               </v-col>
@@ -191,7 +185,7 @@
                     $t(`item['` + gcpForm.gcp_project_id.label + `']`) + ' *'
                   "
                   :placeholder="gcpForm.gcp_project_id.placeholder"
-                  outlined
+                  variant="outlined"
                   required
                 ></v-text-field>
               </v-col>
@@ -215,7 +209,7 @@
                     $t(`item['` + gcpForm.verification_code.label + `']`) + ' *'
                   "
                   :placeholder="gcpForm.verification_code.placeholder"
-                  outlined
+                  variant="outlined"
                   required
                 ></v-text-field>
               </v-col>
@@ -224,14 +218,13 @@
               <v-col cols="1" />
               <v-col cols="11">
                 <v-btn
-                  text
-                  dense
-                  color="purple darken-2"
+                  variant="text"
+                  color="purple-darken-2"
                   @click="handleGenerateCode"
                 >
                   {{ $t(`btn['AUTO GENERATE VERIFICATION CODE']`) }}
                 </v-btn>
-                <v-alert outlined type="info">
+                <v-alert variant="outlined" type="info">
                   <p class="text-subtitle-2">
                     {{
                       $t(
@@ -247,17 +240,15 @@
             <v-card-actions>
               <v-spacer />
               <v-btn
-                text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
-                text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -276,66 +267,49 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ gcpModel.gcp_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['GCP ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ gcpModel.gcp_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['GCP ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ gcpModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ gcpModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-google-cloud</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ gcpModel.gcp_project_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['GCP ProjectID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-google-cloud">
+            <v-list-item-title>
+              {{ gcpModel.gcp_project_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['GCP ProjectID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
-            text
-            outlined
+            color="red-darken-1"
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -355,6 +329,7 @@ import google from '@/mixin/api/google'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'GCPProject',
   mixins: [mixin, project, google],
@@ -362,6 +337,7 @@ export default {
     BottomSnackBar,
     ClipBoard,
     ProjectTag,
+    VDataTable,
   },
   data() {
     return {
@@ -423,7 +399,8 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
           showFirstLastPage: true,
         },
@@ -437,41 +414,41 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: true,
-          value: 'gcp_id',
+          key: 'gcp_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["GCP ProjectID"]'),
+          title: this.$i18n.t('item["GCP ProjectID"]'),
           align: 'start',
           sortable: true,
-          value: 'gcp_project_id',
+          key: 'gcp_project_id',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: true,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -542,8 +519,10 @@ export default {
       this.gcpForm.verification_code.visible = false
       this.gcpForm.verification_code.visible = true
     },
-    handleRowClick(item) {
-      this.$router.push('/google/gcp-data-source?gcp_id=' + item.gcp_id)
+    handleRowClick(event, gcp) {
+      this.$router.push(
+        '/google/gcp-data-source?gcp_id=' + gcp.item.value.gcp_id
+      )
     },
     handleNewItem() {
       ;(this.gcpModel = {
@@ -569,7 +548,7 @@ export default {
       await this.putItem()
       await this.tagProjectAPI(
         'gcp:' + this.gcpModel.gcp_project_id,
-        'light-blue darken-1'
+        'light-blue-darken-1'
       )
     },
     handleDeleteItem(item) {
@@ -583,7 +562,7 @@ export default {
     },
     assignDataModel(item) {
       this.gcpModel = {}
-      this.gcpModel = Object.assign(this.gcpModel, item)
+      this.gcpModel = Object.assign(this.gcpModel, item.value)
     },
 
     async finish(msg) {

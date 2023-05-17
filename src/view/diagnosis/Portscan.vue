@@ -17,10 +17,10 @@
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              outlined
+              variant="outlined"
               clearable
-              dense
-              background-color="white"
+              density="compact"
+              bg-color="white"
               prepend-icon="mdi-magnify"
               placeholder="Type something..."
               v-model="table.search"
@@ -32,9 +32,9 @@
           <v-spacer />
           <v-btn
             text
-            outlined
-            class="mt-1 mr-4"
-            color="blue darken-1"
+            variant="outlined"
+            class="mr-4"
+            color="blue-darken-1"
             @click="handleNewProjectTag"
           >
             {{ $t(`btn['TAG']`) }}
@@ -45,15 +45,13 @@
             @projectTagUpdated="handleProjectTagUpdated"
           />
           <v-btn
-            class="mt-1 mr-4"
-            color="primary darken-3"
-            fab
-            dense
-            small
+            class="mr-4"
+            color="primary-darken-3"
+            size="large"
+            density="compact"
             @click="handleNewItem"
-          >
-            <v-icon>mdi-new-box</v-icon>
-          </v-btn>
+            icon="mdi-new-box"
+          />
         </v-row>
       </v-form>
       <v-row>
@@ -66,9 +64,13 @@
                 :search="table.search"
                 :headers="headers"
                 :items="table.items"
-                :options.sync="table.options"
                 :loading="loading"
-                :footer-props="table.footer"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :showCurrentPage="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
@@ -76,43 +78,34 @@
                 item-key="portscan_setting_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]="">
-                  <v-avatar class="ma-3">
-                    <v-icon color="blue darken-1" large
+                <template v-slot:[`item.avator`]>
+                  <v-avatar class="ma-3" size="48px">
+                    <v-icon color="blue-darken-1" size="36px"
                       >mdi-bug-check-outline</v-icon
                     >
                   </v-avatar>
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
                   <v-chip v-if="item.scan_at">{{
-                    item.scan_at | formatTime
+                    formatTime(item.value.scan_at)
                   }}</v-chip>
                   <v-chip v-else>Not yet scan...</v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn icon v-on="{ ...menu, tooltip }">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <span>Action</span>
-                      </v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
                         v-for="action in table.actions"
                         :key="action.text"
                         @click="action.click(item)"
+                        :prepend-icon="action.icon"
                       >
-                        <v-list-item-icon class="mr-2">
-                          <v-icon small>{{ action.icon }}</v-icon>
-                        </v-list-item-icon>
                         <v-list-item-title>{{
                           $t(`action['` + action.text + `']`)
                         }}</v-list-item-title>
@@ -130,8 +123,8 @@
     <v-dialog v-model="targetsDialog" max-width="80%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Portscan Target']`) }}
           </span>
         </v-card-title>
@@ -139,9 +132,9 @@
           <v-spacer />
           <v-btn
             text
-            outlined
+            variant="outlined"
             class="mt-1 mr-4"
-            color="blue darken-1"
+            color="blue-darken-1"
             @click="handleNewTarget"
           >
             {{ $t(`btn['ADD']`) }}
@@ -153,9 +146,13 @@
             :search="tableTargets.search"
             :headers="headersTarget"
             :items="tableTargets.items"
-            :options.sync="tableTargets.options"
             :loading="loading"
-            :footer-props="tableTargets.footer"
+            :sort-by="table.options.sortBy"
+            :page="table.options.page"
+            :items-per-page="table.options.itemsPerPage"
+            :items-per-page-options="table.footer.itemsPerPageOptions"
+            :items-per-page-text="table.footer.itemsPerPageText"
+            :showCurrentPage="table.footer.showCurrentPage"
             locale="ja-jp"
             loading-text="Loading..."
             no-data-text="No data."
@@ -163,27 +160,28 @@
             item-key="portscan_target_id"
             @click:row="handleEditTarget"
           >
-            <template v-slot:[`item.avator`]="">
+            <template v-slot:[`item.avator`]>
               <v-avatar class="ma-3">
-                <v-icon color="blue darken-1" large
+                <v-icon color="blue-darken-1" large
                   >mdi-bug-check-outline</v-icon
                 >
               </v-avatar>
             </template>
             <template v-slot:[`item.scan_at`]="{ item }">
               <v-chip v-if="item.scan_at">{{
-                item.scan_at | formatTime
+                formatTime(item.value.scan_at)
               }}</v-chip>
               <v-chip v-else>Not yet scan...</v-chip>
             </template>
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
-                v-if="item.portscan_target_id"
-                :color="getDataSourceStatusColor(item.status)"
-                dark
+                v-if="item.value.portscan_target_id"
+                :color="getDataSourceStatusColor(item.value.status)"
+                variant="flat"
+                class="text-white"
               >
                 <v-progress-circular
-                  v-if="isInProgressDataSourceStatus(item.status)"
+                  v-if="isInProgressDataSourceStatus(item.value.status)"
                   indeterminate
                   size="20"
                   width="2"
@@ -191,36 +189,27 @@
                   class="mr-2"
                 ></v-progress-circular>
                 <v-icon v-else small color="white" class="mr-2">{{
-                  getDataSourceStatusIcon(item.status)
+                  getDataSourceStatusIcon(item.value.status)
                 }}</v-icon>
-                {{ getDataSourceStatusText(item.status) }}
+                {{ getDataSourceStatusText(item.value.status) }}
               </v-chip>
-              <v-chip v-else color="grey" dark>Not configured</v-chip>
+              <v-chip v-else color="grey" variant="flat">Not configured</v-chip>
             </template>
             <template v-slot:[`item.updated_at`]="{ item }">
-              <v-chip>{{ item.updated_at | formatTime }}</v-chip>
+              <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
             </template>
             <template v-slot:[`item.action`]="{ item }">
               <v-menu>
-                <template v-slot:activator="{ on: menu }">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on: tooltip }">
-                      <v-btn icon v-on="{ ...menu, tooltip }">
-                        <v-icon>mdi-dots-vertical</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>Action</span>
-                  </v-tooltip>
+                <template v-slot:activator="{ props }">
+                  <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
                 </template>
                 <v-list class="pa-0" dense>
                   <v-list-item
                     v-for="action in tableTargets.actions"
                     :key="action.text"
                     @click="action.click(item)"
+                    :prepend-icon="action.icon"
                   >
-                    <v-list-item-icon class="mr-2">
-                      <v-icon small>{{ action.icon }}</v-icon>
-                    </v-list-item-icon>
                     <v-list-item-title>{{
                       $t(`action['` + action.text + `']`)
                     }}</v-list-item-title>
@@ -232,8 +221,8 @@
           <v-card-actions>
             <v-btn
               text
-              outlined
-              color="blue darken-1"
+              variant="outlined"
+              color="blue-darken-1"
               v-if="!this.portscanSettingForm.newPortscanSetting"
               :loading="loading"
               @click="handleScan"
@@ -249,8 +238,8 @@
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Portscan']`) }}
           </span>
         </v-card-title>
@@ -266,7 +255,7 @@
                 )
               "
               :placeholder="portscanSettingForm.portscan_setting_id.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -278,7 +267,7 @@
                 $t(`item['` + portscanSettingForm.name.label + `']`) + ' *'
               "
               :placeholder="portscanSettingForm.name.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-textarea
@@ -289,7 +278,7 @@
                 $t(`item['` + portscanSettingForm.target.label + `']`) + ' *'
               "
               :placeholder="portscanSettingForm.target.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-textarea>
             <v-divider class="mt-3 mb-3"></v-divider>
@@ -297,16 +286,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditSubmit"
               >
@@ -323,53 +312,43 @@
 
     <v-dialog v-model="deleteDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ portscanSettingModel.portscan_setting_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Portscan Setting ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ portscanSettingModel.portscan_setting_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Portscan Setting ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ portscanSettingModel.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Name']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ portscanSettingModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Name']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteSubmit"
           >
@@ -382,8 +361,8 @@
     <v-dialog v-model="editTargetDialog" max-width="40%">
       <v-card>
         <v-card-title>
-          <v-icon large color="blue darken-1">mdi-bug-check-outline</v-icon>
-          <span class="mx-4 headline">
+          <v-icon large color="blue-darken-1">mdi-bug-check-outline</v-icon>
+          <span class="mx-4 text-h5">
             {{ $t(`submenu['Portscan Target']`) }}
           </span>
         </v-card-title>
@@ -397,7 +376,7 @@
                 )
               "
               :placeholder="portscanTargetForm.portscan_setting_id.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -411,7 +390,7 @@
                 ) + ' *'
               "
               :placeholder="portscanTargetForm.portscan_target_id.placeholder"
-              outlined
+              variant="outlined"
               filled
               disabled
             ></v-text-field>
@@ -423,7 +402,7 @@
                 $t(`item['` + portscanTargetForm.target.label + `']`) + ' *'
               "
               :placeholder="portscanTargetForm.target.placeholder"
-              outlined
+              variant="outlined"
               required
             ></v-text-field>
             <v-textarea
@@ -434,7 +413,7 @@
                 ' *'
               "
               :placeholder="portscanTargetForm.status_detail.placeholder"
-              outlined
+              variant="outlined"
               disabled
             ></v-textarea>
             <v-divider class="mt-3 mb-3"></v-divider>
@@ -442,16 +421,16 @@
               <v-spacer />
               <v-btn
                 text
-                outlined
-                color="grey darken-1"
+                variant="outlined"
+                color="grey-darken-1"
                 @click="editTargetDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
               <v-btn
                 text
-                outlined
-                color="green darken-1"
+                variant="outlined"
+                color="green-darken-1"
                 :loading="loading"
                 @click="handleEditTargetSubmit"
               >
@@ -468,53 +447,43 @@
 
     <v-dialog v-model="deleteTargetDialog" max-width="40%">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-4">
             {{ $t(`message['Do you really want to delete this?']`) }}
           </span>
         </v-card-title>
         <v-list two-line>
-          <v-list-item>
-            <v-list-item-avatar
-              ><v-icon>mdi-identifier</v-icon></v-list-item-avatar
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ portscanTargetModel.portscan_target_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Portscan Target ID']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ portscanTargetModel.portscan_target_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Portscan Target ID']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>account_box</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ portscanTargetModel.target }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{
-                $t(`item['Target']`)
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ portscanTargetModel.target }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t(`item['Target']`)
+            }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             text
-            outlined
-            color="grey darken-1"
+            variant="outlined"
+            color="grey-darken-1"
             @click="deleteTargetDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
           <v-btn
-            color="red darken-1"
+            color="red-darken-1"
             text
-            outlined
+            variant="outlined"
             :loading="loading"
             @click="handleDeleteTargetSubmit"
           >
@@ -533,12 +502,14 @@ import diagnosis from '@/mixin/api/diagnosis'
 import project from '@/mixin/api/project'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectTag from '@/component/widget/tag/ProjectTag.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'DiagnosisPortscan',
   mixins: [mixin, diagnosis, project],
   components: {
     BottomSnackBar,
     ProjectTag,
+    VDataTable,
   },
   data() {
     return {
@@ -602,12 +573,16 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+          {
+            text: 'Scan',
+            icon: 'mdi-magnify-scan',
+            click: this.handleScanByAction,
+          },
         ],
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -628,9 +603,13 @@ export default {
           },
         ],
         footer: {
-          itemsPerPageOptions: [5, 10, 20],
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [
+            { value: 5, title: '5' },
+            { value: 10, title: '10' },
+            { value: 20, title: '20' },
+          ],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         items: [],
       },
@@ -645,82 +624,82 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'portscan_setting_id',
+          key: 'portscan_setting_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
     headersTarget() {
       return [
         {
-          text: this.$i18n.t('item[""]'),
+          title: this.$i18n.t('item[""]'),
           align: 'center',
           width: '10%',
           sortable: false,
-          value: 'avator',
+          key: 'avator',
         },
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           sortable: false,
-          value: 'portscan_target_id',
+          key: 'portscan_target_id',
         },
         {
-          text: this.$i18n.t('item["Target"]'),
+          title: this.$i18n.t('item["Target"]'),
           align: 'start',
           sortable: false,
-          value: 'target',
+          key: 'target',
         },
         {
-          text: this.$i18n.t('item["Status"]'),
+          title: this.$i18n.t('item["Status"]'),
           align: 'start',
           sortable: false,
-          value: 'status',
+          key: 'status',
         },
         {
-          text: this.$i18n.t('item["ScanAt"]'),
+          title: this.$i18n.t('item["ScanAt"]'),
           align: 'start',
           sortable: false,
-          value: 'scan_at',
+          key: 'scan_at',
         },
         {
-          text: this.$i18n.t('item["Updated"]'),
+          title: this.$i18n.t('item["Updated"]'),
           align: 'start',
           sortable: false,
-          value: 'updated_at',
+          key: 'updated_at',
         },
         {
-          text: this.$i18n.t('item["Action"]'),
+          title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
-          value: 'action',
+          key: 'action',
         },
       ]
     },
@@ -788,7 +767,7 @@ export default {
       })
       await this.tagProjectAPI(
         'portscan:' + this.portscanSettingModel.name,
-        'cyan darken-2'
+        'cyan-darken-2'
       )
       let msg = 'Success: Updated PortscanSetting.'
       if (this.portscanSettingForm.newPortscanSetting) {
@@ -818,10 +797,11 @@ export default {
       }
       this.finish(msg)
     },
-    async handleRowClick(item) {
-      await this.assignDataModel(item)
+    async handleRowClick(event, portscan) {
+      const item = portscan.item
+      await this.assignDataModel(item.value)
       const portscan_targets = await this.listPortscanTargetAPI(
-        item.portscan_setting_id
+        item.value.portscan_setting_id
       ).catch((err) => {
         this.clearTargetList()
         this.finishError(err.response.data)
@@ -846,7 +826,7 @@ export default {
       this.editDialog = true
     },
     async handleEditItem(item) {
-      await this.assignDataModel(item)
+      await this.assignDataModel(item.value)
       this.portscanSettingForm.newPortscanSetting = false
       this.editDialog = true
     },
@@ -858,7 +838,7 @@ export default {
       await this.putItem()
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     async handleDeleteSubmit() {
@@ -880,7 +860,7 @@ export default {
       this.editTargetDialog = true
     },
     async handleEditTarget(target) {
-      await this.assignTargetDataModel(target)
+      await this.assignTargetDataModel(target.value)
       this.portscanTargetForm.newPortscanTarget = false
       this.editTargetDialog = true
     },
@@ -893,13 +873,16 @@ export default {
       this.refleshTargetList(this.portscanTargetModel.portscan_setting_id)
     },
     handleDeleteTarget(target) {
-      this.assignTargetDataModel(target)
+      this.assignTargetDataModel(target.value)
       this.deleteTargetDialog = true
     },
     async handleDeleteTargetSubmit() {
       this.loading = true
       await this.deleteTarget(this.portscanTargetModel.portscan_target_id)
       this.refleshTargetList(this.portscanTargetModel.portscan_setting_id)
+    },
+    handleScanByAction(item) {
+      this.handleScan(item.value)
     },
     handleScan(item) {
       this.loading = true

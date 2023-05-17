@@ -1,5 +1,10 @@
 <template>
-  <v-chip v-if="true" :color="getDataSourceStatusColor(status)" dark>
+  <v-chip
+    v-if="true"
+    :color="getDataSourceStatusColor(status)"
+    variant="flat"
+    class="text-white"
+  >
     <v-progress-circular
       v-if="isInProgressDataSourceStatus(status)"
       indeterminate
@@ -13,7 +18,7 @@
     }}</v-icon>
     {{ getDataSourceStatusText(status) }}
   </v-chip>
-  <v-chip v-else color="grey" dark>Not configured</v-chip>
+  <v-chip v-else color="grey" variant="flat">Not configured</v-chip>
 </template>
 
 <script>

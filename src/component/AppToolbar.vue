@@ -1,237 +1,204 @@
 <template>
-  <v-app-bar color="primary" dark app>
-    <v-app-bar-nav-icon @click="handleDrawerToggle" />
-    <v-toolbar-items>
+  <v-card> </v-card>
+  <v-app-bar v-bind="$attrs" color="primary" extension-height="48" extended>
+    <template v-slot:prepend>
+      <v-app-bar-nav-icon @click="handleDrawerToggle" />
+    </template>
+    <v-app-bar-title>
       <v-menu
-        offset-y
-        origin="center center"
+        location="bottom"
         class="elelvation-1"
         transition="scale-transition"
       >
-        <template v-slot:activator="{ on }">
+        <template v-slot:activator="{ props }">
           <!-- Project -->
           <v-btn
-            text
-            dark
-            slot="activator"
-            v-on="on"
+            v-bind="props"
+            variant="text"
             class="pa-0 ml-4"
             style="text-transform: none"
             @click="handleSearchProject"
           >
-            <v-card color="primary" elevation="0">
-              <v-card-title>
-                <v-avatar tile size="42">
-                  <v-icon x-large>mdi-alpha-p-box</v-icon>
-                </v-avatar>
-                <v-layout
-                  align-center
-                  justify-center
-                  class="text-h5 ml-4 font-weight-black"
-                  style="text-decoration: underline"
-                >
-                  {{ projectName }}
-                </v-layout>
-              </v-card-title>
-            </v-card>
+            <v-icon size="42">mdi-alpha-p-box</v-icon>
+            <span class="text-h5 ml-4 font-weight-black">
+              {{ projectName }}
+            </span>
           </v-btn>
         </template>
       </v-menu>
-    </v-toolbar-items>
+    </v-app-bar-title>
     <v-spacer />
-    <v-toolbar-items>
-      <v-btn icon @click="handleFullScreen()">
-        <v-icon>fullscreen</v-icon>
-      </v-btn>
-      <v-menu
-        offset-y
-        origin="center center"
-        class="elelvation-1"
-        transition="scale-transition"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn text slot="activator" v-on="on">
-            <v-icon medium>mdi-web</v-icon>
-            <span class="ml-2"> {{ getLocaleText($i18n.locale) }} </span>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item-group v-model="$i18n.locale">
-            <v-list-item
-              @click="handleChangeLocale(item)"
-              v-for="item in availableLanguages"
-              :key="item.value"
-              :value="item.value"
-            >
-              <v-list-item-title>
-                {{ item.text }}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-menu>
-      <v-menu
-        offset-y
-        origin="center center"
-        class="elelvation-1"
-        transition="scale-transition"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn text slot="activator" v-on="on">
-            <v-icon>mdi-open-in-new</v-icon>
-            <span class="ml-2"> {{ $t(`item['Link']`) }} </span>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="(item, key) in staticRoutes"
-            :key="`static-${key}`"
-            :href="item.url"
-            rel="noopener"
-            target="_blank"
-            :risken-action-name="`click-link-${item.title}-from-header`"
-          >
-            <v-list-item-action class="mr-4">
-              <v-icon>mdi-open-in-new</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ item.title }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-menu offset-y origin="center center" transition="scale-transition">
-        <template v-slot:activator="{ on }">
-          <v-btn icon large text slot="activator" v-on="on">
-            <v-avatar size="30px">
-              <v-icon dark>settings</v-icon>
-            </v-avatar>
-          </v-btn>
-        </template>
-        <v-list class="pa-0">
-          <v-list-item
-            v-for="(item, index) in myMenu"
-            :to="!item.href ? { name: item.name } : null"
-            :href="item.href"
-            @click="item.click"
-            ripple="ripple"
-            :disabled="item.disabled"
-            :target="item.target"
-            rel="noopener"
-            :key="index"
-          >
-            <v-list-item-action v-if="item.icon" class="mr-4">
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-toolbar-items>
-    <v-toolbar tag="div" dense slot="extension" color="white" light>
-      <v-icon>mdi-home</v-icon>
-      <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
-      <v-spacer></v-spacer>
-      <v-btn icon small color="black">
-        <v-icon @click="handleGoBack">
-          {{ 'mdi-arrow-left' }}
-        </v-icon>
-      </v-btn>
-    </v-toolbar>
-
-    <!-- Project dialog -->
-    <v-dialog
-      max-width="64%"
-      v-model="projectDialog"
-      @click:outside="projectDialog = false"
+    <v-btn icon @click="handleFullScreen()">
+      <v-icon icon="mdi-fullscreen" size="x-large" />
+    </v-btn>
+    <v-menu
+      location="bottom"
+      class="elelvation-1"
+      transition="scale-transition"
     >
-      <v-card>
-        <v-card-title>
-          <span class="mx-2"> Project </span>
-          <v-text-field
-            outlined
-            clearable
-            dense
-            prepend-icon="mdi-magnify"
-            placeholder="Type something..."
-            v-model="projectTable.search"
-            hide-details
-            class="hidden-sm-and-down"
-          />
-        </v-card-title>
-        <v-divider />
-        <v-card-text class="pa-0">
-          <v-data-table
-            :search="projectTable.search"
-            :headers="headers"
-            :items="projectTable.item"
-            :options.sync="projectTable.options"
-            :loading="loading"
-            :footer-props="projectTable.footer"
-            locale="ja-jp"
-            loading-text="Loading..."
-            no-data-text="No data."
-            class="elevation-1"
-            item-key="project_id"
-            :custom-filter="customFilter"
-            @click:row="handleProjectClick"
-          >
-            <template v-slot:[`item.tag`]="{ item }">
-              <v-chip
-                v-for="t in item.tag"
-                :key="t.tag"
-                :color="t.color"
-                class="ma-1"
-                dark
-                link
-              >
-                {{ t.tag }}
-              </v-chip>
-            </template>
-          </v-data-table>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            text
-            outlined
-            color="blue darken-1"
-            v-if="currentProjectID"
-            @click="
-              $router.push('/project/setting/')
-              projectDialog = false
-            "
-          >
-            {{ $t(`btn['EDIT PROJECT']`) }}
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" variant="text">
+          <v-icon size="x-large" icon="mdi-web" />
+          <span class="ml-2"> {{ getLocaleText($i18n.locale) }} </span>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          @click="handleChangeLocale(item)"
+          v-for="item in availableLanguages"
+          :key="item.value"
+          v-model:value="item.value"
+        >
+          <v-list-item-title>
+            {{ item.text }}
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-menu
+      location="bottom"
+      class="elelvation-1"
+      transition="scale-transition"
+    >
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" variant="text">
+          <v-icon icon="mdi-open-in-new" size="x-large"></v-icon>
+          <span class="ml-2"> {{ $t(`item['Link']`) }} </span>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, key) in staticRoutes"
+          :key="`static-${key}`"
+          :href="item.url"
+          rel="noopener"
+          target="_blank"
+          :risken-action-name="`click-link-${item.title}-from-header`"
+          :title="item.title"
+          prepend-icon="mdi-open-in-new"
+        />
+      </v-list>
+    </v-menu>
+    <v-menu location="bottom" transition="scale-transition">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props">
+          <v-icon icon="mdi-cog" size="x-large" />
+        </v-btn>
+      </template>
+      <v-list class="pa-0">
+        <v-list-item
+          v-for="(item, index) in myMenu"
+          :to="!item.href ? { name: item.name } : null"
+          @click="item.click"
+          :disabled="item.disabled"
+          :target="item.target"
+          :key="index"
+          :model-value="index"
+          :title="item.title"
+          :prepend-icon="item.icon"
+        />
+      </v-list>
+    </v-menu>
+    <template v-slot:extension>
+      <v-card width="95%" class="mx-auto" flat>
+        <v-toolbar dense color="white" light class="ps-5">
+          <v-icon>mdi-home</v-icon>
+          <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
+          <v-spacer></v-spacer>
+          <v-btn icon size="small" color="black">
+            <v-icon @click="handleGoBack">
+              {{ 'mdi-arrow-left' }}
+            </v-icon>
           </v-btn>
-          <v-spacer />
-          <v-btn
-            text
-            outlined
-            color="grey darken-1"
-            @click="projectDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            text
-            outlined
-            color="green darken-1"
-            @click="
-              $router.push('/project/new/')
-              projectDialog = false
-            "
-          >
-            {{ $t(`btn['CREATE NEW PROJECT']`) }}
-          </v-btn>
-        </v-card-actions>
+        </v-toolbar>
       </v-card>
-    </v-dialog>
-    <bottom-snack-bar ref="snackbar" />
+    </template>
   </v-app-bar>
+
+  <!-- Project dialog -->
+  <v-dialog
+    max-width="64%"
+    v-model="projectDialog"
+    @click:outside="projectDialog = false"
+  >
+    <v-card>
+      <v-card-title>
+        <v-row>
+          <v-col cols="auto">
+            <span class="mx-2"> Project </span>
+          </v-col>
+          <v-col>
+            <v-text-field
+              variant="outlined"
+              clearable
+              density="compact"
+              prepend-icon="mdi-magnify"
+              placeholder="Type something..."
+              v-model="projectTable.search"
+              hide-details
+              class="hidden-sm-and-down"
+            />
+          </v-col>
+        </v-row>
+      </v-card-title>
+      <v-divider />
+      <v-card-text class="pa-0">
+        <v-data-table
+          :search="projectTable.search"
+          :headers="headers"
+          :items="projectTable.item"
+          item-key="project_id"
+          :items-per-page="projectTable.options.itemsPerPage"
+          :page="projectTable.options.page"
+          :loading="loading"
+          :items-per-page-options="projectTable.footer.itemsPerPageOptions"
+          :show-current-page="projectTable.footer.showCurrentPage"
+          locale="ja-jp"
+          loading-text="Loading..."
+          no-data-text="No data."
+          class="elevation-1"
+          hide-default-footer
+          :custom-filter="customFilter"
+          @click:row="handleProjectClick"
+        >
+          <template v-slot:[`item.tag`]="{ item }">
+            <v-chip
+              v-for="t in item.value.tag"
+              :key="t.tag"
+              :color="t.color"
+              variant="flat"
+              class="ma-1 text-white"
+              link
+            >
+              {{ t.tag }}
+            </v-chip>
+          </template>
+        </v-data-table>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          variant="outlined"
+          color="info"
+          v-if="currentProjectID"
+          @click="handleSettingProject"
+        >
+          {{ $t(`btn['EDIT PROJECT']`) }}
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          variant="outlined"
+          color="grey-en-1"
+          @click="projectDialog = false"
+        >
+          {{ $t(`btn['CANCEL']`) }}
+        </v-btn>
+        <v-btn variant="outlined" color="success" @click="handleNewProject">
+          {{ $t(`btn['CREATE NEW PROJECT']`) }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
 import { staticRoutes } from '@/router/config'
@@ -241,11 +208,12 @@ import store from '@/store'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import project from '@/mixin/api/project'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AppToolbar',
   components: {
-    // ProjectList,
     BottomSnackBar,
+    VDataTable,
   },
   mixins: [mixin, project, iam],
   data() {
@@ -256,9 +224,8 @@ export default {
         search: '',
         options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         footer: {
-          itemsPerPageOptions: [10],
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
-          showFirstLastPage: true,
         },
         item: [],
       },
@@ -295,25 +262,25 @@ export default {
     headers() {
       return [
         {
-          text: this.$i18n.t('item["ID"]'),
+          title: this.$i18n.t('item["ID"]'),
           align: 'start',
           width: '5%',
           sortable: true,
-          value: 'project_id',
+          key: 'project_id',
         },
         {
-          text: this.$i18n.t('item["Name"]'),
+          title: this.$i18n.t('item["Name"]'),
           align: 'start',
           width: '25%',
           sortable: true,
-          value: 'name',
+          key: 'name',
         },
         {
-          text: this.$i18n.t('item["Tag"]'),
+          title: this.$i18n.t('item["Tag"]'),
           align: 'start',
           width: '70%',
           sortable: true,
-          value: 'tag',
+          key: 'tag',
         },
       ]
     },
@@ -370,12 +337,12 @@ export default {
     })
   },
   methods: {
-    customFilter(value, search) {
+    customFilter(value, search, item) {
       return (
         value != null &&
         search != null &&
-        typeof value !== 'boolean' &&
-        (typeof value === 'object' ? value.map((v) => v.tag).join(',') : value)
+        typeof item !== 'boolean' &&
+        (typeof item === 'object' ? item.map((i) => i.tag).join(',') : item)
           .toString()
           .toLocaleLowerCase()
           .indexOf(search.toLocaleLowerCase()) !== -1
@@ -472,13 +439,18 @@ export default {
     handleGoBack() {
       this.$router.go(-1)
     },
-    async handleProjectClick(project) {
-      await this.setProjectQueryParam(project.project_id)
-      await store.commit('updateProject', project)
+    async handleProjectClick(event, project) {
+      await this.setProjectQueryParam(project.item.value.project_id)
+      await store.commit('updateProject', project.item.value)
       this.reload()
     },
     handleNewProject() {
       this.$router.push('/project/new')
+      this.projectDialog = false
+    },
+    handleSettingProject() {
+      this.$router.push('/project/setting/')
+      this.projectDialog = false
     },
     handleSearchProject() {
       this.loading = true

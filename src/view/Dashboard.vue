@@ -5,8 +5,8 @@
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon x-large class="pr-2" color="indigo darken-2"
+            <v-toolbar-title class="text-grey-darken-4 text-h5">
+              <v-icon size="x-large" class="pr-2" color="indigo-darken-2"
                 >mdi-thermometer</v-icon
               >
               {{ $t(`view.dashboard['Status']`) }}
@@ -30,19 +30,21 @@
 
         <!-- mini statistic start -->
         <v-col cols="4">
-          <v-card
+          <v-row
             v-for="factor in status.riskFactor"
             :key="factor.subTitle"
             @click="handleClickFactor(factor.link)"
           >
-            <mini-statistic
-              :icon="factor.icon"
-              :title="factor.title"
-              :sub-title="$t(`view.dashboard['` + factor.subTitle + `']`)"
-              :color="factor.color"
-              class="mb-2"
-            />
-          </v-card>
+            <v-col>
+              <mini-statistic
+                :icon="factor.icon"
+                :title="factor.title"
+                :sub-title="$t(`view.dashboard['` + factor.subTitle + `']`)"
+                :color="factor.color"
+                class="mb-2"
+              />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
 
@@ -50,8 +52,8 @@
       <v-row justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 headline">
-              <v-icon x-large class="pr-2" color="indigo darken-2"
+            <v-toolbar-title class="text-grey-darken-4 text-h5">
+              <v-icon size="x-large" class="pr-2" color="indigo-darken-2"
                 >mdi-shape</v-icon
               >
               {{ $t(`view.dashboard['Category']`) }}
@@ -76,69 +78,52 @@
 
     <v-dialog v-model="settingDialog" max-width="600px">
       <v-card>
-        <v-card-title class="headline">
+        <v-card-title class="text-h5">
           <span class="mx-2">{{
             $t(`view.dashboard['SETTING TUTORIAL']`)
           }}</span>
         </v-card-title>
-        <v-list two-line>
+        <v-list lines="two">
           <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                {{ $t(`view.dashboard['1. User invited']`) }}:
-                <span class="headline">{{ status.tutorial.invitedUsers }}</span>
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item-subtitle>
+              {{ $t(`view.dashboard['1. User invited']`) }}:
+              <span class="text-h5">{{ status.tutorial.invitedUsers }}</span>
+            </v-list-item-subtitle>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                {{
-                  $t(
-                    `view.dashboard['2. Setting data sources(≒ Store some findings)']`
-                  )
-                }}:
-                <span class="headline">{{
-                  status.tutorial.storeFindings
-                }}</span>
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item-subtitle>
+              {{
+                $t(
+                  `view.dashboard['2. Setting data sources(≒ Store some findings)']`
+                )
+              }}:
+              <span class="text-h5">{{ status.tutorial.storeFindings }}</span>
+            </v-list-item-subtitle>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                {{ $t(`view.dashboard['3. Setting alert condition']`) }}:
-                <span class="headline">{{
-                  status.tutorial.alertConditions
-                }}</span>
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item-subtitle>
+              {{ $t(`view.dashboard['3. Setting alert condition']`) }}:
+              <span class="text-h5">{{ status.tutorial.alertConditions }}</span>
+            </v-list-item-subtitle>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                {{ $t(`view.dashboard['4. Setting alert rule']`) }}:
-                <span class="headline">{{ status.tutorial.alertRules }}</span>
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item-subtitle>
+              {{ $t(`view.dashboard['4. Setting alert rule']`) }}:
+              <span class="text-h5">{{ status.tutorial.alertRules }}</span>
+            </v-list-item-subtitle>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content>
-              <v-list-item-subtitle>
-                {{ $t(`view.dashboard['5. Setting alert notification']`) }}:
-                <span class="headline">{{
-                  status.tutorial.notifications
-                }}</span>
-              </v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item-subtitle>
+              {{ $t(`view.dashboard['5. Setting alert notification']`) }}:
+              <span class="text-h5">{{ status.tutorial.notifications }}</span>
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
-            outlined
-            color="grey darken-1"
+            variant="text"
+            color="grey-darken-1"
             @click="settingDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
@@ -347,21 +332,21 @@ export default {
         title: this.status.alert.length.toString(),
         subTitle: 'Action required ....',
         icon: 'mdi-alert',
-        color: 'red darken-3',
+        color: 'red-darken-3',
         link: '/alert/alert/',
       })
       this.status.riskFactor.push({
         title: String(this.status.finding),
         subTitle: 'High score findings ',
         icon: 'mdi-file-find-outline',
-        color: 'blue darken-1',
+        color: 'blue-darken-1',
         link: '/finding/finding/?from_score=0.8',
       })
       this.status.riskFactor.push({
         title: this.status.compSettingRate,
         subTitle: 'Settings coverage...',
         icon: 'mdi-cog',
-        color: 'grey darken-2',
+        color: 'grey-darken-2',
         link: 'settingDialog',
       })
     },
@@ -416,15 +401,15 @@ export default {
         this.status.risk.description = 'No problem. 👌'
       } else if (0 < totalRisk && totalRisk <= 3) {
         this.status.risk.icon = 'mdi-weather-cloudy'
-        this.status.risk.color = 'grey darken-1'
+        this.status.risk.color = 'grey-darken-1'
         this.status.risk.description = 'Need to check a few things. 👀'
       } else if (3 < totalRisk && totalRisk <= 10) {
         this.status.risk.icon = 'mdi-weather-pouring'
-        this.status.risk.color = 'lime darken-3'
+        this.status.risk.color = 'lime-darken-3'
         this.status.risk.description = 'There are some problems... 😥'
       } else {
         this.status.risk.icon = 'mdi-weather-lightning'
-        this.status.risk.color = 'red darken-2'
+        this.status.risk.color = 'red-darken-2'
         this.status.risk.description = 'We have a lot of problems... 🙀'
       }
     },
@@ -437,8 +422,7 @@ export default {
         title: this.raw.invitedUser.length.toString(),
         subTitle: 'Project members',
         icon: 'mdi-account-multiple',
-        color: 'cyan lighten-2',
-        dark: false,
+        color: 'cyan-lighten-2',
         link: '/iam/user/',
       })
       this.category.push({
@@ -446,8 +430,7 @@ export default {
         title: String(this.raw.highScoreFindingAWS),
         subTitle: 'High score findings',
         icon: 'mdi-aws',
-        color: 'orange darken-1',
-        dark: true,
+        color: 'orange-darken-1',
         link: '/finding/finding/?from_score=0.8&data_source=aws:',
       })
       this.category.push({
@@ -455,17 +438,15 @@ export default {
         title: String(this.raw.highScoreFindingDiagnosis),
         subTitle: 'High score findings',
         icon: 'mdi-bug-check-outline',
-        color: 'indigo darken-1',
-        dark: true,
+        color: 'indigo-darken-1',
         link: '/finding/finding/?from_score=0.8&data_source=diagnosis:',
       })
       this.category.push({
         category: 'OSINT',
         title: String(this.raw.highScoreFindingOsint),
         subTitle: 'High score findings',
-        icon: 'http',
-        color: 'green darken-1',
-        dark: true,
+        icon: 'md:http',
+        color: 'green-darken-1',
         link: '/finding/finding/?from_score=0.8&data_source=osint:',
       })
       this.category.push({
@@ -474,7 +455,6 @@ export default {
         subTitle: 'High score findings',
         icon: 'mdi-github',
         color: 'black',
-        dark: true,
         link: '/finding/finding/?from_score=0.8&data_source=code:',
       })
       this.category.push({
@@ -482,8 +462,7 @@ export default {
         title: String(this.raw.highScoreFindingGoogle),
         subTitle: 'High score findings',
         icon: 'mdi-google',
-        color: 'light-blue darken-1',
-        dark: true,
+        color: 'light-blue-darken-1',
         link: '/finding/finding/?from_score=0.8&data_source=google:',
       })
     },
