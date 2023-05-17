@@ -412,7 +412,7 @@
                 </v-card-text>
               </v-card>
             </v-list-item-title>
-            <v-list-item-subtitle>
+            <v-list-item-subtitle class="ml-7">
               {{ $t(`item['Token']`) }}
             </v-list-item-subtitle>
           </v-list-item>

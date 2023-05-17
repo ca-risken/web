@@ -140,7 +140,6 @@
               :label="$t(`item['` + form.alert_rule_id.label + `']`)"
               :placeholder="form.alert_rule_id.placeholder"
               variant="outlined"
-              filled
               disabled
             ></v-text-field>
             <v-text-field

@@ -111,7 +111,7 @@
                     v-if="getStatus(item.value.dependencySetting)"
                   >
                   </scan-status>
-                  <v-chip dark color="grey" v-else> Disabled </v-chip>
+                  <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
                 </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>

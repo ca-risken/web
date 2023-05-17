@@ -58,7 +58,7 @@
                 :closable="true"
                 variant="flat"
                 @click="handleEditProjectTag(t)"
-                @click:close="handleDeleteTag(t)"
+                @click:close.stop.prevent="handleDeleteTag(t)"
               >
                 {{ t.tag }}
               </v-chip>

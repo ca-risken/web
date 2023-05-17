@@ -113,6 +113,7 @@
               :label="$t(`item['` + form.notification_id.label + `']`) + ' *'"
               :placeholder="form.notification_id.placeholder"
               variant="outlined"
+              disabled
             ></v-text-field>
             <v-text-field
               v-model="dataModel.name"

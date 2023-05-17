@@ -152,7 +152,7 @@
           <strong class="mx-4 text-h5">{{ alertModel.description }}</strong>
         </v-card-title>
         <v-card-text class="py-0">
-          <v-chip-group active-class="primary--text" column>
+          <v-chip-group column>
             <v-chip
               v-for="(resouruce, idx) in getResourceList(alertResource)"
               :key="idx"
@@ -264,7 +264,7 @@
             <v-list-item-title>
               <v-chip
                 class="ma-1"
-                dark
+                variant="flat"
                 :color="getSeverityColor(alertModel.severity)"
                 >{{ alertModel.severity }}</v-chip
               >

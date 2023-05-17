@@ -978,7 +978,7 @@ export default {
       this.handleEditItem(conds.item)
     },
     handleEditItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.listRule()
       this.listNotification()
       this.form.new = false
@@ -995,7 +995,7 @@ export default {
       this.finishSuccess('Success: Put alert condition.')
     },
     handleDeleteItem(item) {
-      this.assignDataModel(item)
+      this.assignDataModel(item.value)
       this.deleteDialog = true
     },
     handleDeleteSubmit() {
@@ -1003,18 +1003,19 @@ export default {
       this.deleteItem()
     },
     handleAnalyze(item) {
+      console.log(item)
       this.loading = true
       let alertConditionID = ''
       if (!item) {
         alertConditionID = this.dataModel.alert_condition_id
-      } else if (item.alert_condition_id) {
-        alertConditionID = item.alert_condition_id
+      } else if (item.value.alert_condition_id) {
+        alertConditionID = item.value.alert_condition_id
       }
       this.analyze(alertConditionID)
     },
     assignDataModel(item) {
       this.dataModel = {}
-      this.dataModel = Object.assign(this.dataModel, item.value)
+      this.dataModel = Object.assign(this.dataModel, item)
     },
 
     // Notification Cache

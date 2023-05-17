@@ -124,16 +124,12 @@
 
             <!-- Role List -->
             <v-toolbar flat color="white">
-              <v-toolbar-title class="grey--text text--darken-4">
-                <v-icon large>mdi-alpha-r-circle</v-icon>
-                <span class="mx-4">
-                  {{ $t(`submenu['Role']`) }}
-                </span>
-              </v-toolbar-title>
+              <v-icon large>mdi-alpha-r-circle</v-icon>
+              <span class="mx-4">
+                {{ $t(`submenu['Role']`) }}
+              </span>
               <v-text-field
-                text
-                solo
-                flat
+                variant="plain"
                 prepend-icon="mdi-magnify"
                 placeholder="Type something"
                 v-model="roleTable.search"

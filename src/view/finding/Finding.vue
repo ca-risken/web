@@ -202,36 +202,6 @@
         </v-col>
       </v-row>
 
-      <!-- <v-chip
-          variant="outlined"
-          color="gray-lighten-1"
-          closable
-          close-icon="mdi-close-circle-outline"
-          @click="searchByHistory(history)"
-          @click:close="deleteSearchHistory(history)"
-          risken-action-name="search-finding-by-history-from-finding"
-          :text="history.label">
-          <v-tooltip location="bottom" activator="parent">
-          <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
-          </v-tooltip>         -->
-      <!-- </v-chip> -->
-      <!-- <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-chip
-            v-bind="props"
-            variant="outlined"
-            color="gray-lighten-1"
-            closable
-            close-icon="mdi-close-circle-outline"
-            @click="searchByHistory(history)"
-            @click:close="deleteSearchHistory(history)"
-            risken-action-name="search-finding-by-history-from-finding"
-            :text="history.label">
-          </v-chip>
-          <span style="white-space: pre-wrap">{{ history.tooltip }}</span>
-          </template>
-        </v-tooltip> -->
-
       <v-row class="mt-2">
         <v-col>
           <v-tabs
@@ -255,20 +225,19 @@
                 :headers="headers"
                 :items-length="table.total"
                 :items="table.items"
-                :sort-by="table.options.sortBy"
-                :page="table.options.page"
+                v-model:sort-by="table.options.sortBy"
+                v-model:items-per-page="table.options.itemsPerPage"
                 :items-per-page-options="table.footer.itemsPerPageOptions"
                 :show-current-page="table.footer.showCurrentPage"
                 :items-per-page-text="table.footer.itemsPerPageText"
-                v-model:items-per-page="table.options.itemsPerPage"
                 :loading="loading"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="finding_id"
-                @click:row="handleViewItem"
-                @update:page="loadList"
+                @click:row="handleRowClick"
+                @update:options="updateOptions"
                 @update:sort-by="handleSort($event)"
                 v-model="table.selected"
                 show-select
@@ -1199,7 +1168,13 @@ export default {
   methods: {
     refleshList(parse) {
       this.table.options.page = 1
+      this.table.total = 0
       this.loadList(parse)
+    },
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.table.options.itemsPerPage = options.itemsPerPage
+      this.loadList(true)
     },
     async loadList(parse) {
       this.loading = true
@@ -1243,8 +1218,6 @@ export default {
       }
     },
     clearList() {
-      this.findings = []
-      this.table.total = 0
       this.table.items = []
     },
     isPending(pend) {
@@ -1327,8 +1300,11 @@ export default {
     },
 
     // handler
-    async handleViewItem(event, findings) {
-      this.findingModel = Object.assign(this.findingModel, findings.item.value)
+    async handleRowClick(event, findings) {
+      this.handleViewItem(findings.item)
+    },
+    async handleViewItem(item) {
+      this.findingModel = Object.assign(this.findingModel, item.value)
       this.recommendModel = await this.getRecommend(
         this.findingModel.finding_id
       )

@@ -178,6 +178,7 @@
                 $t(`item['` + policyForm.resource_ptn.label + `']`) + ' *'
               "
               :placeholder="policyForm.resource_ptn.placeholder"
+              disabled
             ></v-text-field>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>

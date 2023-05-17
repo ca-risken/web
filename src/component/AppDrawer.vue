@@ -41,6 +41,7 @@
               :to="sub.path"
               :title="$t(`submenu['` + sub.meta.title + `']`)"
               :prepend-icon="sub.meta.icon"
+              v-show="!sub.meta.hiddenInMenu"
             ></v-list-item>
           </v-list-group>
         </template>
