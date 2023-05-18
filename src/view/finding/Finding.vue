@@ -606,7 +606,15 @@
             color="red-darken-1"
             text
             variant="outlined"
-            @click="pendDialog = true"
+            @click="handleArchiveButtonClick"
+          >
+            {{ $t(`btn['ARCHIVE']`) }}
+          </v-btn>
+          <v-btn
+            color="red-darken-1"
+            text
+            variant="outlined"
+            @click="handlePendButtonClick"
           >
             {{ $t(`btn['PEND']`) }}
           </v-btn>
@@ -1546,6 +1554,16 @@ export default {
       this.finishSuccess('Success: Activated ' + count + ' findings.')
     },
     // Pend
+    handleArchiveButtonClick() {
+      this.pendAll = false
+      this.isArchived = true
+      this.pendDialog = true
+    },
+    handlePendButtonClick() {
+      this.pendAll = false
+      this.isArchived = false
+      this.pendDialog = true
+    },
     handleArchiveItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
       this.pendModel = {
