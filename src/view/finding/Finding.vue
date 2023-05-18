@@ -1241,6 +1241,11 @@ export default {
       ]
       if (!item.value.status) return list
       if (item.value.status === 'ACTIVE') {
+          list.push({
+          text: 'Archive Finding',
+          icon: 'mdi-archive',
+          click: this.handleArchiveItem,
+        })
         list.push({
           text: 'Pend Finding',
           icon: 'mdi-check-circle-outline',
@@ -1263,6 +1268,11 @@ export default {
     getSelectedActionList() {
       let list = []
       if (this.searchModel.status != this.getFindingStatus('PENDING')) {
+        list.push({
+          text: 'Archive selected findings',
+          icon: 'mdi-archive',
+          click: this.handleArchiveSelected,
+        })
         list.push({
           text: 'Pend selected findings',
           icon: 'mdi-check-circle-outline',
@@ -1512,27 +1522,45 @@ export default {
       this.finishSuccess('Success: Activated ' + count + ' findings.')
     },
     // Pend
+    handleArchiveItem(row) {
+      this.findingModel = Object.assign(this.findingModel, row.value)
+      this.pendModel = {
+        finding_id: this.findingModel.finding_id,
+        note: '',
+        expired_at: null,
+      }
+      this.handlePendItemSubmit(true)
+    },
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
       this.pendAll = false
       this.pendModel.note = ''
       this.pendDialog = true
     },
-    async handlePendItemSubmit() {
+    async handlePendItemSubmit(isArchived) {
       this.loading = true
       await this.putPendFinding(
         this.findingModel.finding_id,
         this.pendModel.note,
         this.getPendExpiredSecound(this.pendModel.expired_at)
       )
+      if (isArchived) {
+        this.finishSuccess('Success: Archived.')
+        return        
+      }
       this.finishSuccess('Success: Pending.')
+    },
+    async handleArchiveSelected() {
+      this.pendAll = true
+      this.pendModel.note = ''
+      this.pendModel.expired_at = null
+      await this.handlePendSelectedSubmit(true)
     },
     async handlePendSelected() {
       this.pendAll = true
       this.pendModel.note = ''
-      this.pendDialog = true
     },
-    async handlePendSelectedSubmit() {
+    async handlePendSelectedSubmit(isArchived) {
       this.loading = true
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
@@ -1544,6 +1572,10 @@ export default {
         )
       })
       this.table.selected = []
+      if (isArchived) {
+        this.finishSuccess('Success: Archived ' + count + ' findings.')   
+        return     
+      }
       this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
     getPendExpiredSecound(expiredAt) {
