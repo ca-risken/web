@@ -721,7 +721,7 @@
       <v-card>
         <v-card-title class="text-h5">
           <span class="mx-4">
-            {{ $t(`message['Do you want to update PENDING this?']`) }}
+            {{ $t(pendDialogTitle) }}
           </span>
         </v-card-title>
         <v-card-text>
@@ -743,10 +743,13 @@
                 clearable
                 clear-icon="mdi-close-circle"
                 v-model="pendModel.note"
-                label="pending note"
+                :label="pendDialogNoteLabel"
               ></v-textarea>
             </v-list-item>
-            <v-list-item prepend-icon="mdi-clock-time-eight-outline">
+            <v-list-item
+              v-if="!isArchived"
+              prepend-icon="mdi-clock-time-eight-outline"
+            >
               <v-combobox
                 variant="outlined"
                 density="compact"
@@ -775,23 +778,19 @@
           <v-btn
             color="red-darken-1"
             v-if="pendAll"
-            text
+            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
             variant="outlined"
             :loading="loading"
             @click="handlePendSelectedSubmit"
-          >
-            {{ $t(`btn['PEND ALL']`) }}
-          </v-btn>
+          />
           <v-btn
             color="red-darken-1"
             v-else
-            text
+            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
             variant="outlined"
             :loading="loading"
             @click="handlePendItemSubmit"
-          >
-            {{ $t(`btn['PEND']`) }}
-          </v-btn>
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -1051,6 +1050,7 @@ export default {
         '90 days',
         'No expiration',
       ],
+      isArchived: false,
       pendAll: false,
       table: {
         selected: [],
@@ -1157,6 +1157,30 @@ export default {
         }
         return 0
       }
+    },
+    pendDialogTitle() {
+      if (this.isArchived) {
+        return `message['Do you want to archive this?']`
+      }
+      return `message['Do you want to update PENDING this?']`
+    },
+    pendDialogNoteLabel() {
+      if (this.isArchived) {
+        return 'archive note'
+      }
+      return 'pending note'
+    },
+    pendDialogSubmitButtonText() {
+      let label = ''
+      if (this.isArchived) {
+        label = 'ARCHIVE'
+      } else {
+        label = 'PEND'
+      }
+      if (this.pendAll) {
+        label += ' ALL'
+      }
+      return label
     },
   },
   async mounted() {
@@ -1529,12 +1553,15 @@ export default {
         note: '',
         expired_at: null,
       }
-      this.handlePendItemSubmit(true)
+      this.pendAll = false
+      this.isArchived = true
+      this.pendDialog = true
     },
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
       this.pendAll = false
       this.pendModel.note = ''
+      this.isArchived = false
       this.pendDialog = true
     },
     async handlePendItemSubmit(isArchived) {
@@ -1554,11 +1581,14 @@ export default {
       this.pendAll = true
       this.pendModel.note = ''
       this.pendModel.expired_at = null
-      await this.handlePendSelectedSubmit(true)
+      this.isArchived = true
+      this.pendDialog = true
     },
     async handlePendSelected() {
       this.pendAll = true
       this.pendModel.note = ''
+      this.isArchived = false
+      this.pendDialog = true
     },
     async handlePendSelectedSubmit(isArchived) {
       this.loading = true
