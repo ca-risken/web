@@ -1241,7 +1241,7 @@ export default {
       ]
       if (!item.value.status) return list
       if (item.value.status === 'ACTIVE') {
-          list.push({
+        list.push({
           text: 'Archive Finding',
           icon: 'mdi-archive',
           click: this.handleArchiveItem,
@@ -1546,7 +1546,7 @@ export default {
       )
       if (isArchived) {
         this.finishSuccess('Success: Archived.')
-        return        
+        return
       }
       this.finishSuccess('Success: Pending.')
     },
@@ -1573,8 +1573,8 @@ export default {
       })
       this.table.selected = []
       if (isArchived) {
-        this.finishSuccess('Success: Archived ' + count + ' findings.')   
-        return     
+        this.finishSuccess('Success: Archived ' + count + ' findings.')
+        return
       }
       this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
