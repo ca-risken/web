@@ -7,6 +7,8 @@ const ja = {
     'CREATE NEW PROJECT': '新規プロジェクト作成',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: '追加',
+    ARCHIVE: 'アーカイブ',
+    'ARCHIVE ALL': '全てアーカイブ',
     REGIST: '登録',
     RESERVE: '予約',
     EDIT: '編集',
@@ -216,6 +218,8 @@ const ja = {
     Activate: '有効化',
     'Activate selected findings': '選択中のFindingを有効化する',
     'Analyze Alert': 'アラート状態の解析',
+    'Archive Finding': 'アーカイブする',
+    'Archive selected findings': '選択中のFindingをアーカイブする',
     'Attach DataSource': 'データソースを設定する',
     Deactivate: '無効化',
     'Deactivate Gitleaks': 'Gitleaksの設定を解除する',
@@ -242,6 +246,7 @@ const ja = {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
       '無効化すると、保存されていない設定が失われます。本当に削除しますか？',
+    'Do you want to archive this?': 'アーカイブしますか？',
     'Do you want to update PENDING this?': 'ペンディング状態に更新しますか？',
     'Do you really want to detach this?': '設定解除しますか?',
     'Do you want to send a test notification?':

@@ -168,9 +168,7 @@
             </v-chip>
           </v-chip-group>
         </v-card-text>
-      </v-card>
-      <!-- History -->
-      <v-card>
+        <!-- History -->
         <v-card-title>
           <span class="mx-4 text-h5">
             {{ $t(`view.alert['AlertHistory']`) }}

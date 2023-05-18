@@ -606,7 +606,15 @@
             color="red-darken-1"
             text
             variant="outlined"
-            @click="pendDialog = true"
+            @click="handleArchiveButtonClick"
+          >
+            {{ $t(`btn['ARCHIVE']`) }}
+          </v-btn>
+          <v-btn
+            color="red-darken-1"
+            text
+            variant="outlined"
+            @click="handlePendButtonClick"
           >
             {{ $t(`btn['PEND']`) }}
           </v-btn>
@@ -721,7 +729,7 @@
       <v-card>
         <v-card-title class="text-h5">
           <span class="mx-4">
-            {{ $t(`message['Do you want to update PENDING this?']`) }}
+            {{ $t(pendDialogTitle) }}
           </span>
         </v-card-title>
         <v-card-text>
@@ -743,10 +751,13 @@
                 clearable
                 clear-icon="mdi-close-circle"
                 v-model="pendModel.note"
-                label="pending note"
+                :label="pendDialogNoteLabel"
               ></v-textarea>
             </v-list-item>
-            <v-list-item prepend-icon="mdi-clock-time-eight-outline">
+            <v-list-item
+              v-if="!isArchived"
+              prepend-icon="mdi-clock-time-eight-outline"
+            >
               <v-combobox
                 variant="outlined"
                 density="compact"
@@ -775,23 +786,19 @@
           <v-btn
             color="red-darken-1"
             v-if="pendAll"
-            text
+            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
             variant="outlined"
             :loading="loading"
             @click="handlePendSelectedSubmit"
-          >
-            {{ $t(`btn['PEND ALL']`) }}
-          </v-btn>
+          />
           <v-btn
             color="red-darken-1"
             v-else
-            text
+            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
             variant="outlined"
             :loading="loading"
             @click="handlePendItemSubmit"
-          >
-            {{ $t(`btn['PEND']`) }}
-          </v-btn>
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -1051,6 +1058,7 @@ export default {
         '90 days',
         'No expiration',
       ],
+      isArchived: false,
       pendAll: false,
       table: {
         selected: [],
@@ -1158,6 +1166,30 @@ export default {
         return 0
       }
     },
+    pendDialogTitle() {
+      if (this.isArchived) {
+        return `message['Do you want to archive this?']`
+      }
+      return `message['Do you want to update PENDING this?']`
+    },
+    pendDialogNoteLabel() {
+      if (this.isArchived) {
+        return 'archive note'
+      }
+      return 'pending note'
+    },
+    pendDialogSubmitButtonText() {
+      let label = ''
+      if (this.isArchived) {
+        label = 'ARCHIVE'
+      } else {
+        label = 'PEND'
+      }
+      if (this.pendAll) {
+        label += ' ALL'
+      }
+      return label
+    },
   },
   async mounted() {
     this.findingHistory = this.getSearchHistory()
@@ -1242,6 +1274,11 @@ export default {
       if (!item.value.status) return list
       if (item.value.status === 'ACTIVE') {
         list.push({
+          text: 'Archive Finding',
+          icon: 'mdi-archive',
+          click: this.handleArchiveItem,
+        })
+        list.push({
           text: 'Pend Finding',
           icon: 'mdi-check-circle-outline',
           click: this.handlePendItem,
@@ -1263,6 +1300,11 @@ export default {
     getSelectedActionList() {
       let list = []
       if (this.searchModel.status != this.getFindingStatus('PENDING')) {
+        list.push({
+          text: 'Archive selected findings',
+          icon: 'mdi-archive',
+          click: this.handleArchiveSelected,
+        })
         list.push({
           text: 'Pend selected findings',
           icon: 'mdi-check-circle-outline',
@@ -1512,27 +1554,61 @@ export default {
       this.finishSuccess('Success: Activated ' + count + ' findings.')
     },
     // Pend
+    handleArchiveButtonClick() {
+      this.pendAll = false
+      this.isArchived = true
+      this.pendDialog = true
+    },
+    handlePendButtonClick() {
+      this.pendAll = false
+      this.isArchived = false
+      this.pendDialog = true
+    },
+    handleArchiveItem(row) {
+      this.findingModel = Object.assign(this.findingModel, row.value)
+      this.pendModel = {
+        finding_id: this.findingModel.finding_id,
+        note: '',
+        expired_at: null,
+      }
+      this.pendAll = false
+      this.isArchived = true
+      this.pendDialog = true
+    },
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
       this.pendAll = false
       this.pendModel.note = ''
+      this.isArchived = false
       this.pendDialog = true
     },
-    async handlePendItemSubmit() {
+    async handlePendItemSubmit(isArchived) {
       this.loading = true
       await this.putPendFinding(
         this.findingModel.finding_id,
         this.pendModel.note,
         this.getPendExpiredSecound(this.pendModel.expired_at)
       )
+      if (isArchived) {
+        this.finishSuccess('Success: Archived.')
+        return
+      }
       this.finishSuccess('Success: Pending.')
+    },
+    async handleArchiveSelected() {
+      this.pendAll = true
+      this.pendModel.note = ''
+      this.pendModel.expired_at = null
+      this.isArchived = true
+      this.pendDialog = true
     },
     async handlePendSelected() {
       this.pendAll = true
       this.pendModel.note = ''
+      this.isArchived = false
       this.pendDialog = true
     },
-    async handlePendSelectedSubmit() {
+    async handlePendSelectedSubmit(isArchived) {
       this.loading = true
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
@@ -1544,6 +1620,10 @@ export default {
         )
       })
       this.table.selected = []
+      if (isArchived) {
+        this.finishSuccess('Success: Archived ' + count + ' findings.')
+        return
+      }
       this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
     getPendExpiredSecound(expiredAt) {

@@ -7,6 +7,8 @@ const en = {
     'CREATE NEW PROJECT': 'CREATE NEW PROJECT',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
+    ARCHIVE: 'ARCHIVE',
+    'ARCHIVE ALL': 'ARCHIVE ALL',
     REGIST: 'REGIST',
     RESERVE: 'RESERVE',
     EDIT: 'EDIT',
@@ -216,6 +218,8 @@ const en = {
     Activate: 'Activate',
     'Activate selected findings': 'Activate selected findings',
     'Analyze Alert': 'Analyze Alert',
+    'Archive Finding': 'Archive Finding',
+    'Archive selected findings': 'Archive selected findings',
     'Attach DataSource': 'Attach DataSource',
     Deactivate: 'Deactivate',
     'Deactivate Gitleaks': 'Deactivate Gitleaks',
@@ -242,6 +246,7 @@ const en = {
     'Do you really want to delete this?': 'Do you really want to delete this?',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
       'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?',
+    'Do you want to archive this?': 'Do you want to archive this?',
     'Do you want to update PENDING this?':
       'Do you want to update PENDING this?',
     'Do you really want to detach this?': 'Do you really want to detach this?',
