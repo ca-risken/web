@@ -43,11 +43,11 @@
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pa-0" v-if="!noUser">
-        <v-data-table
+        <v-data-table-server
           :headers="headers"
           :items="table.items"
           v-model:options="table.options"
-          :server-items-length="table.total"
+          :items-length="table.total"
           :loading="loading"
           :items-per-page-options="table.footer.itemsPerPageOptions"
           :items-per-page="table.options.itemsPerPage"
@@ -64,7 +64,7 @@
           <template v-slot:[`item.updated_at`]="{ item }">
             <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-card-text>
       <template v-if="noUser">
         <v-alert
@@ -101,11 +101,11 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import { VDataTable } from 'vuetify/labs/VDataTable'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   mixins: [mixin, iam],
   components: {
-    VDataTable,
+    VDataTableServer,
   },
   name: 'UserList',
   props: {
