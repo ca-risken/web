@@ -337,12 +337,12 @@ export default {
     })
   },
   methods: {
-    customFilter(value, search, item) {
+    customFilter(value, search) {
       return (
         value != null &&
         search != null &&
-        typeof item !== 'boolean' &&
-        (typeof item === 'object' ? item.map((i) => i.tag).join(',') : item)
+        value.type !== 'item' &&
+        (typeof value === 'object' ? value.map((i) => i.tag).join(',') : value)
           .toString()
           .toLocaleLowerCase()
           .indexOf(search.toLocaleLowerCase()) !== -1
