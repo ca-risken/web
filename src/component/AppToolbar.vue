@@ -1,5 +1,4 @@
 <template>
-  <v-card> </v-card>
   <v-app-bar v-bind="$attrs" color="primary" extension-height="48" extended>
     <template v-slot:prepend>
       <v-app-bar-nav-icon @click="handleDrawerToggle" />
@@ -17,10 +16,11 @@
             variant="text"
             class="pa-0 ml-4"
             style="text-transform: none"
+            height="42"
             @click="handleSearchProject"
           >
             <v-icon size="42">mdi-alpha-p-box</v-icon>
-            <span class="text-h5 ml-4 font-weight-black">
+            <span class="text-h5 mx-4 font-weight-black">
               {{ projectName }}
             </span>
           </v-btn>
@@ -85,7 +85,7 @@
           <v-icon icon="mdi-cog" size="x-large" />
         </v-btn>
       </template>
-      <v-list class="pa-0">
+      <v-list class="pa-1 my-1">
         <v-list-item
           v-for="(item, index) in myMenu"
           :to="!item.href ? { name: item.name } : null"
@@ -101,7 +101,7 @@
     </v-menu>
     <template v-slot:extension>
       <v-card width="95%" class="mx-auto" flat>
-        <v-toolbar dense color="white" light class="ps-5">
+        <v-toolbar dense color="white" light class="mx-5">
           <v-icon>mdi-home</v-icon>
           <v-breadcrumbs :items="breadcrumbs" class="pa-3" />
           <v-spacer></v-spacer>
