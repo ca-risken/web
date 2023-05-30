@@ -1,23 +1,33 @@
 <template>
-  <Bar :data="chartData" :options="options" />
+  <Line :data="chartData" :options="options" />
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
+import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
 } from 'chart.js'
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement,
+  CategoryScale,
+  LinearScale
+)
 
 export default {
-  name: 'BarChart',
-  components: { Bar },
+  name: 'LineChart',
+  /* eslint vue/no-reserved-component-names: 0 */
+  components: { Line },
   props: {
     chartData: {
       type: Object,

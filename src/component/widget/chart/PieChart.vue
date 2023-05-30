@@ -1,15 +1,15 @@
 <template>
-  <doughnut :data="chartData" :options="options" />
+  <Pie :data="chartData" :options="options" />
 </template>
 
 <script>
-import { Doughnut } from 'vue-chartjs'
+import { Pie } from 'vue-chartjs'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 export default {
-  name: 'DoughnutChart',
-  components: { Doughnut },
+  name: 'PieChart',
+  components: { Pie },
   props: {
     chartData: {
       type: Object,
@@ -27,14 +27,7 @@ export default {
     options: {
       type: Object,
       default: () => {
-        return {
-          // plugins: {
-          //   colorschemes: {
-          //     // scheme: 'brewer.Set3-12'
-          //     scheme: 'tableau.NurielStone9',
-          //   }
-          // },
-        }
+        return {}
       },
     },
   },

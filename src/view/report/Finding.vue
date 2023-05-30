@@ -1,213 +1,128 @@
 <template>
   <div class="list-table">
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-file-chart</v-icon>
-              {{ $t(`view.report['Download Finding Report']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="start" align-content="center">
-          <v-col cols="6" offset="1">
-            <v-combobox
-              multiple
-              variant="outlined"
-              density="compact"
-              clearable
-              small-chips
-              deletable-chips
-              bg-color="white"
-              :label="$t(`item['` + searchForm.dataSource.label + `']`)"
-              :placeholder="searchForm.dataSource.placeholder"
-              :items="dataSourceList"
-              v-model="searchModel.dataSource"
-            />
-          </v-col>
-          <v-col cols="3">
-            <v-slider
-              variant="outlined"
-              density="compact"
-              thumb-label
-              min="0.0"
-              max="1.0"
-              step="0.1"
-              :label="$t(`item['` + searchForm.score.label + `']`)"
-              :messages="searchForm.score.placeholder"
-              v-model="searchModel.score"
-            ></v-slider>
-          </v-col>
-        </v-row>
-        <v-row dense justify="start" align-content="center">
-          <v-col cols="3" offset="1">
-            <datepicker
-              :enable-time-picker="false"
-              v-model="searchModel.fromDate"
-              model-type="yyyy-MM-dd"
-              :format="datePickerFormat"
-              auto-apply
-            ></datepicker>
-          </v-col>
-          <v-col cols="3">
-            <datepicker
-              :enable-time-picker="false"
-              v-model="searchModel.toDate"
-              model-type="yyyy-MM-dd"
-              :format="datePickerFormat"
-              auto-apply
-            ></datepicker>
-          </v-col>
-          <v-col cols="3">
-            <v-select
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.format.label + `']`)"
-              :items="availableFormat"
-              v-model="searchModel.format"
-            />
-          </v-col>
-        </v-row>
-        <v-row dense justify="center" align-content="center">
-          <v-btn
-            depressed
-            elevation="1"
-            color="primary"
-            class="ma-4"
-            @click="handleGet('')"
-          >
-            {{ $t(`btn['DOWNLOAD REPORT (PROJECT)']`) }}
-          </v-btn>
-        </v-row>
-        <v-row v-if="flagAdmin" dense justify="center" align-content="center">
-          <v-btn
-            depressed
-            elevation="1"
-            color="primary"
-            class="ma-4"
-            @click="handleGet('all')"
-          >
-            {{ $t(`btn['DOWNLOAD REPORT (ALL)']`) }}
-          </v-btn>
-        </v-row>
-      </v-form>
-
       <!-- Visual -->
-      <v-row justify="center" align-content="center">
+      <v-row>
         <v-col cols="12">
-          <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 text-h5">
-              <v-icon x-large class="pr-2" color="indigo-darken-2"
-                >mdi-thermometer</v-icon
-              >
-              {{ $t(`view.report['Finding Changes']`) }}
+          <v-toolbar color="background">
+            <v-toolbar-title class="grey--text text-h5">
+              <v-icon large class="pr-2">mdi-file-chart</v-icon>
+              {{ $t(`view.report['Finding Summary']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
-        <v-col cols="5">
-          <v-data-table
-            :headers="ReportFindingTable.headersCategory"
-            :items="ReportFindingTable.itemsPerCategory"
-            locale="ja-jp"
-            no-data-text="No data."
-            class="elevation-1"
-            hide-default-footer
-          >
-            <template v-slot:[`item.avatar`]="{ item }">
-              <v-avatar class="ma-2">
-                <v-icon
-                  large
-                  class="pr-2"
-                  :color="getDataSourceIconColor(item.value.category)"
-                  >{{ getDataSourceIcon(item.value.category) }}</v-icon
-                >
-              </v-avatar>
-            </template>
-            <template v-slot:[`item.change`]="{ item }">
-              <v-icon dense>
-                {{ getIconByCountChange(item.value.change) }}
-              </v-icon>
-              {{ Math.abs(item.value.change) }}
-            </template>
-          </v-data-table>
+      </v-row>
+      <v-row>
+        <v-col cols="3">
+          <v-select
+            v-model="visibleDataSource"
+            bg-color="white"
+            :items="visibleDataSourceList"
+            item-text="datasource"
+            item-value="datasource"
+            :label="$t(`view.dashboard['Category']`)"
+            @update:modelValue="setReport"
+            return-object
+            variant="outlined"
+            density="compact"
+          ></v-select>
         </v-col>
-        <v-col cols="5">
-          <v-data-table
-            :headers="ReportFindingTable.headersSeverity"
-            :items="ReportFindingTable.itemsPerSeverity"
-            locale="ja-jp"
-            no-data-text="No data."
-            class="elevation-1"
-            hide-default-footer
-          >
-            <!-- Sortable Header -->
-            <template v-slot:[`item.avatar`]="{ item }">
-              <v-avatar icon class="ma-2">
-                <v-icon
-                  large
-                  class="pr-2"
-                  :color="getSeverityColor(item.value.severity)"
-                  >mdi-file-find-outline</v-icon
-                >
-              </v-avatar>
-            </template>
-            <template v-slot:[`item.change`]="{ item }">
-              <v-icon dense>
-                {{ getIconByCountChange(item.value.change) }}
-              </v-icon>
-              {{ Math.abs(item.value.change) }}
-            </template>
-          </v-data-table>
+        <v-col cols="3">
+          <v-select
+            v-model="visibleScore"
+            bg-color="white"
+            :items="visibleScoreList"
+            item-title="title"
+            item-value="value"
+            :label="$t(`item['Score']`)"
+            @update:modelValue="setReport"
+            return-object
+            variant="outlined"
+            density="compact"
+          ></v-select>
         </v-col>
       </v-row>
-
-      <v-row justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar flat color="background">
-            <v-toolbar-title class="grey--text text--darken-4 text-h5">
-              <v-icon x-large class="pr-2" color="indigo-darken-2"
-                >mdi-thermometer</v-icon
+      <v-row>
+        <v-col cols="7">
+          <v-row>
+            <v-col cols="4">
+              <report-number-statistic
+                icon="mdi-magnify"
+                category="All"
+                color="cyan-lighten-2"
+                :title="findingNumber('total')"
               >
-              {{ $t(`view.report['Number of Finding']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
+              </report-number-statistic>
+            </v-col>
+            <v-col cols="4">
+              <report-number-statistic
+                icon="mdi-aws"
+                :category="$t(`menu['AWS']`)"
+                color="orange-darken-1"
+                :title="findingNumber('aws')"
+              >
+              </report-number-statistic>
+            </v-col>
+            <v-col cols="4">
+              <report-number-statistic
+                icon="mdi-google"
+                :category="$t(`menu['Google']`)"
+                color="light-blue-darken-1"
+                :title="findingNumber('google')"
+              >
+              </report-number-statistic>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="4">
+              <report-number-statistic
+                icon="mdi-bug-check-outline"
+                :category="$t(`menu['Diagnosis']`)"
+                color="indigo-darken-1"
+                :title="findingNumber('diagnosis')"
+              >
+              </report-number-statistic>
+            </v-col>
+            <v-col cols="4">
+              <report-number-statistic
+                icon="md:http"
+                :category="$t(`menu['OSINT']`)"
+                color="green-darken-1"
+                :title="findingNumber('osint')"
+              >
+              </report-number-statistic>
+            </v-col>
+            <v-col cols="4">
+              <report-number-statistic
+                icon="mdi-github"
+                :category="$t(`menu['Code']`)"
+                color="black"
+                :title="findingNumber('code')"
+              >
+              </report-number-statistic>
+            </v-col>
+          </v-row>
         </v-col>
-        <v-col cols="6" v-if="loadedDoughnut">
-          <v-card class="mx-auto" outlined>
-            <v-list-item three-line>
-              <div class="overline mb-4">
-                {{ $t(`view.report['Per Category']`) }}
-              </div>
-              <doughnut-chart
-                :chart-data="dataSourceDoughnutChart"
-                :height="chartHeight"
-              ></doughnut-chart>
-            </v-list-item>
-          </v-card>
-        </v-col>
-        <v-col cols="6" v-if="loadedDoughnut">
-          <v-card class="mx-auto" outlined>
-            <v-list-item three-line>
-              <div class="overline mb-4">
-                {{ $t(`view.report['Per Severity']`) }}
-              </div>
-              <doughnut-chart
-                :chart-data="severityDoughnutChart"
-                :height="chartHeight"
-              ></doughnut-chart>
-            </v-list-item>
-          </v-card>
+        <v-col align-self="center">
+          <v-row justify="center">
+            <v-col v-if="loadedPie" cols="9">
+              <v-card class="mx-auto" outlined>
+                <v-list-item three-line>
+                  <div class="overline mb-4">
+                    {{ $t(`view.report['Per Category']`) }}
+                  </div>
+                  <pie-chart
+                    :chart-data="pieChart"
+                    :options="pieOptions"
+                  ></pie-chart>
+                </v-list-item>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
-
-      <!-- Bar Chart -->
-      <v-row justify="center" align-content="center">
-        <v-col cols="8">
+      <v-row justify="start" align-content="center">
+        <v-col cols="4">
           <v-toolbar flat color="background">
             <v-toolbar-title class="grey--text text--darken-4 text-h5">
               <v-icon x-large class="pr-2" color="indigo-darken-2"
@@ -217,45 +132,82 @@
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
-        <v-col cols="4">
-          <v-select
-            v-model="visibleDuration"
-            bg-color="white"
-            :items="visibleDurationList"
-            item-text="duration"
-            item-value="duration"
-            :label="$t(`item['Duration']`)"
-            @update:modelValue="SetBarChart"
-            return-object
-            variant="outlined"
+      </v-row>
+      <!-- Line Chart -->
+      <v-row dense justify="start" align-content="center">
+        <v-col cols="3">
+          <datepicker
+            :enable-time-picker="false"
+            v-model="searchModel.fromDate"
+            model-type="yyyy-MM-dd"
+            :format="datePickerFormat"
+            :max-date="searchModel.toDate"
+            auto-apply
+          ></datepicker>
+        </v-col>
+        <v-col cols="3">
+          <datepicker
+            :enable-time-picker="false"
+            v-model="searchModel.toDate"
+            model-type="yyyy-MM-dd"
+            :format="datePickerFormat"
+            :min-date="searchModel.fromDate"
+            :max-date="new Date()"
+            auto-apply
+          ></datepicker>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col offset="3">
+          <v-btn
+            class=""
+            color="grey-darken-2"
+            size="large"
             density="compact"
-          ></v-select>
+            icon="mdi-refresh"
+            variant="outlined"
+            :loading="loading"
+            @click="setData"
+          />
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                class="ms-4"
+                size="large"
+                density="compact"
+                variant="outlined"
+                color="green-darken-2"
+                :loading="loading"
+                icon="mdi-format-list-bulleted-square"
+              >
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="action in getDownloadActionList()"
+                :key="action.text"
+                @click="action.click"
+                :prepend-icon="action.icon"
+              >
+                <v-list-item-title class="ma-1">{{
+                  action.text
+                }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="6" v-if="loadedBar">
+        <v-col cols="12" v-if="loadedLine">
           <v-card class="mx-auto" outlined>
             <v-list-item three-line>
               <div class="overline mb-4">
                 {{ $t(`view.report['Per Category']`) }}
               </div>
-              <bar-chart
-                :chart-data="dataSourceBarChart"
-                :height="chartHeight"
-              ></bar-chart>
-            </v-list-item>
-          </v-card>
-        </v-col>
-        <v-col cols="6" v-if="loadedBar">
-          <v-card class="mx-auto" outlined>
-            <v-list-item three-line>
-              <div class="overline mb-4">
-                {{ $t(`view.report['Per Severity']`) }}
-              </div>
-              <bar-chart
-                :chart-data="severityBarChart"
-                :height="chartHeight"
-              ></bar-chart>
+              <line-chart
+                :chart-data="lineChart"
+                :height="lineChartHeight"
+              ></line-chart>
             </v-list-item>
           </v-card>
         </v-col>
@@ -273,22 +225,29 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
-import DoughnutChart from '@/component/widget/chart/DoughnutChart.vue'
-import BarChart from '@/component/widget/chart/BarChart.vue'
+import PieChart from '@/component/widget/chart/PieChart.vue'
+import LineChart from '@/component/widget/chart/LineChart.vue'
 import colors from 'vuetify/lib/util/colors'
-import { VDataTable } from 'vuetify/labs/VDataTable'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import Datepicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+import ReportNumberStatistic from '@/component/widget/statistic/ReportNumberStatistic.vue'
 export default {
   name: 'ReportFinding',
   mixins: [mixin, finding, alert, iam],
   components: {
     BottomSnackBar,
-    DoughnutChart,
-    BarChart,
-    VDataTable,
+    PieChart,
+    LineChart,
     Datepicker,
+    ReportNumberStatistic,
+  },
+  computed: {
+    findingNumber() {
+      return (category) => {
+        return this.getFindingNumber(category)
+      }
+    },
   },
   data() {
     return {
@@ -320,136 +279,54 @@ export default {
       yesterday: 0,
       dateLastMonth: 0,
       latest: '',
-      lastDay: '',
       lastMonth: '',
       todayReportFindings: [],
-      lastDayReportFindings: [],
       ReportFindings: [],
-      totalFindings: 0,
-      totalHighFindings: 0,
-      lastDayTotalFindings: 0,
-      lastDayTotalHighFindings: 0,
       category: ['aws', 'diagnosis', 'osint', 'code', 'google'],
       severity: ['Low', 'Medium', 'High'],
-      categorystatistics: [],
       categoryFinding: {
-        aws: 0,
-        google: 0,
-        diagnosis: 0,
-        osint: 0,
-        code: 0,
+        RISKEN: { Low: 0, Medium: 0, High: 0 },
+        total: { Low: 0, Medium: 0, High: 0 },
+        aws: { Low: 0, Medium: 0, High: 0 },
+        google: { Low: 0, Medium: 0, High: 0 },
+        diagnosis: { Low: 0, Medium: 0, High: 0 },
+        osint: { Low: 0, Medium: 0, High: 0 },
+        code: { Low: 0, Medium: 0, High: 0 },
       },
-      lastDayCategoryFinding: {
-        aws: 0,
-        google: 0,
-        diagnosis: 0,
-        osint: 0,
-        code: 0,
-      },
-      ReportFindingTable: {
-        headersCategory: [
-          {
-            title: '',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'avatar',
-          },
-          {
-            title: 'Category',
-            sortable: false,
-            align: 'left',
-            width: '5%',
-            key: 'category',
-          },
-          {
-            title: 'Previous',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'previous',
-          },
-          {
-            title: 'Latest',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'latest',
-          },
-          {
-            title: 'Change',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'change',
-          },
-        ],
-        headersSeverity: [
-          {
-            title: '',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'avatar',
-          },
-          {
-            title: 'Severity',
-            sortable: false,
-            align: 'left',
-            width: '5%',
-            key: 'severity',
-          },
-          {
-            title: 'Previous',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'previous',
-          },
-          {
-            title: 'Latest',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'latest',
-          },
-          {
-            title: 'Change',
-            sortable: false,
-            align: 'center',
-            width: '5%',
-            key: 'change',
-          },
-        ],
-        itemsPerCategory: [],
-        itemsPerSeverity: [],
-      },
-      settingDialog: false,
-      chartHeight: 300,
-      // DoughnutChart
-      dataSourceDoughnutChart: {
+      lineChartHeight: 150,
+      // visual config
+      visibleScore: { title: '>= 0.8', value: 'High' },
+      visibleScoreList: [
+        { title: '>= 0.1', value: 'Low' },
+        { title: '>= 0.6', value: 'Medium' },
+        { title: '>= 0.8', value: 'High' },
+      ],
+      visibleDataSource: 'All',
+      visibleDataSourceList: [
+        'All',
+        'aws',
+        'diagnosis',
+        'osint',
+        'code',
+        'google',
+      ],
+      // PieChart
+      pieChart: {
         labels: [],
         datasets: [],
       },
-      severityDoughnutChart: {
+      pieOptions: {
+        plugins: {
+        },
+      },
+      // LineChart
+      labelLineChart: [],
+      lineChart: {
         labels: [],
         datasets: [],
       },
-      // BarChart
-      visibleDuration: 'week',
-      visibleDurationList: ['week', 'month'],
-      labelBarChart: [],
-      dataSourceBarChart: {
-        labels: [],
-        datasets: [],
-      },
-      severityBarChart: {
-        labels: [],
-        datasets: [],
-      },
-      barChartOption: { responsive: true },
-      loadedDoughnut: false,
-      loadedBar: false,
+      loadedPie: false,
+      loadedLine: false,
     }
   },
   mounted() {
@@ -461,15 +338,14 @@ export default {
     this.yesterday.setDate(now.getDate() - 1)
     this.latest = Util.formatDate(this.yesterday, 'yyyy-MM-dd')
 
-    // last day
-    let dateLastDay = new Date()
-    dateLastDay.setDate(now.getDate() - 2)
-    this.lastDay = Util.formatDate(dateLastDay, 'yyyy-MM-dd')
-
     // last month
     this.dateLastMonth = new Date()
     this.dateLastMonth.setMonth(now.getMonth() - 1)
     this.lastMonth = Util.formatDate(this.dateLastMonth, 'yyyy-MM-dd')
+
+    // default date condition
+    this.searchModel.toDate = this.latest
+    this.searchModel.fromDate = this.lastMonth
 
     this.setData()
   },
@@ -550,8 +426,18 @@ export default {
     },
     clearList() {
       this.reportFindings = []
+      this.ReportFindings = []
+      this.categoryFinding = {
+        RISKEN: { Low: 0, Medium: 0, High: 0 },
+        total: { Low: 0, Medium: 0, High: 0 },
+        aws: { Low: 0, Medium: 0, High: 0 },
+        google: { Low: 0, Medium: 0, High: 0 },
+        diagnosis: { Low: 0, Medium: 0, High: 0 },
+        osint: { Low: 0, Medium: 0, High: 0 },
+        code: { Low: 0, Medium: 0, High: 0 },
+      }
     },
-    async handleGet(target) {
+    async handleGet(target, format) {
       this.clearList()
       let searchCond = ''
       if (this.searchModel.dataSource) {
@@ -575,7 +461,7 @@ export default {
         }
         await this.getReportFinding(searchCond, target)
       }
-      if (this.searchModel.format == 'csv') {
+      if (format == 'csv') {
         var csv =
           '\ufeff' +
           'report_finding_id,report_date,category,data_source,project_id,project_name,score,count\n'
@@ -604,7 +490,7 @@ export default {
         link.href = window.URL.createObjectURL(blob)
         link.download = 'finding_report.csv'
         link.click()
-      } else if (this.searchModel.format == 'json') {
+      } else if (format == 'json') {
         var json = JSON.stringify({ data: this.reportFindings })
         let blob = new Blob([json], { type: 'text/json' })
         let link = document.createElement('a')
@@ -618,14 +504,9 @@ export default {
     },
     // -- Raw Data ---------------------------------
     async setData() {
-      // default date condition
-      this.searchModel.toDate = this.latest
-      this.searchModel.fromDate = this.lastMonth
-
+      this.clearList()
       await this.setReportFinding()
-      this.SetTableData()
-      this.SetDoughnutChart()
-      this.SetBarChart()
+      this.setReport()
     },
     async setReportFinding() {
       const res = await this.$axios
@@ -633,9 +514,9 @@ export default {
           '/report/get-report/?project_id=' +
             this.getCurrentProjectID() +
             '&from_date=' +
-            this.lastMonth +
+            this.searchModel.fromDate +
             '&to_date=' +
-            this.latest
+            this.searchModel.toDate
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -648,22 +529,13 @@ export default {
         var reportFinding = this.newReportFinding(fr)
         this.ReportFindings.push(reportFinding)
         if (reportFinding.date.indexOf(this.latest) > -1) {
+          var severity = this.getSeverityByScore(reportFinding.score)
           this.todayReportFindings.push(reportFinding)
-          this.totalFindings += reportFinding.count
-          if (reportFinding.score >= 0.8) {
-            this.totalHighFindings += reportFinding.count
-          }
           category = reportFinding.data_source.split(':')[0]
-          this.categoryFinding[category] += reportFinding.count
-        }
-        if (reportFinding.date.indexOf(this.lastDay) > -1) {
-          this.todayReportFindings.push(reportFinding)
-          this.lastDayTotalFindings += reportFinding.count
-          if (reportFinding.score >= 0.8) {
-            this.lastDayTotalHighFindings += reportFinding.count
+          if (reportFinding.score > 0) {
+            this.categoryFinding.total[severity] += reportFinding.count
+            this.categoryFinding[category][severity] += reportFinding.count
           }
-          category = reportFinding.data_source.split(':')[0]
-          this.lastDayCategoryFinding[category] += reportFinding.count
         }
       }
     },
@@ -675,129 +547,86 @@ export default {
         count: finding_report.count,
       }
     },
-    // TableData ---------------
-    SetTableData() {
-      this.SetTableDataPerCategory()
-      this.SetTableDataPerSeverity()
+    setReport() {
+      this.SetPieChart()
+      this.SetLineChart()
     },
-    SetTableDataPerCategory() {
-      this.category.map((category) =>
-        this.ReportFindingTable.itemsPerCategory.push({
-          category: category,
-          previous: this.lastDayCategoryFinding[category],
-          latest: this.categoryFinding[category],
-          change:
-            this.categoryFinding[category] -
-            this.lastDayCategoryFinding[category],
-        })
-      )
+    // PieChart -----------------------------
+    SetPieChart() {
+      this.loadedPie = false
+      this.clearPieChart()
+      this.SetPieChartData()
+      this.loadedPie = true
     },
-    SetTableDataPerSeverity() {
-      this.severity.map((severity) =>
-        this.ReportFindingTable.itemsPerSeverity.push({
-          severity: severity,
-          previous: this.CountFindingsPerSeverityDate(severity, this.lastDay),
-          latest: this.CountFindingsPerSeverityDate(severity, this.latest),
-          change:
-            this.CountFindingsPerSeverityDate(severity, this.latest) -
-            this.CountFindingsPerSeverityDate(severity, this.lastDay),
-        })
-      )
+    clearPieChart() {
+      this.pieChart = {
+        labels: [],
+        datasets: [],
+      }
     },
-    // DoughnutChart -----------------------------
-    SetDoughnutChart() {
-      this.loadedDoughnut = false
-      this.SetDoughnutChartDataSource()
-      this.SetDoughnutChartSeverity()
-      this.loadedDoughnut = true
-    },
-
-    SetDoughnutChartDataSource() {
-      this.dataSourceDoughnutChart.labels = this.category
-      this.dataSourceDoughnutChart.datasets = [
+    SetPieChartData() {
+      if (this.visibleDataSource == 'All') {
+        this.pieChart.labels = this.category
+      } else {
+        this.pieChart.labels = [this.visibleDataSource]
+      }
+      let data = []
+      let bgColor = []
+      for (const ds in this.pieChart.labels) {
+        const cat = this.pieChart.labels[ds]
+        data.push(this.getFindingNumber(cat))
+        bgColor.push(this.getRGBByCategory(cat))
+      }
+      this.pieChart.datasets = [
         {
-          data: [
-            this.categoryFinding.aws,
-            this.categoryFinding.diagnosis,
-            this.categoryFinding.osint,
-            this.categoryFinding.code,
-            this.categoryFinding.google,
-          ],
-          backgroundColor: [
-            this.getRGBByCategory('aws'),
-            this.getRGBByCategory('diagnosis'),
-            this.getRGBByCategory('osint'),
-            this.getRGBByCategory('code'),
-            this.getRGBByCategory('google'),
-          ],
+          data: data,
+          backgroundColor: bgColor,
         },
       ]
     },
-    SetDoughnutChartSeverity() {
-      this.severityDoughnutChart.labels = this.severity
-      this.severityDoughnutChart.datasets.push({
-        data: this.severity.map((sev) =>
-          this.CountFindingsPerSeverityDate(sev, this.latest)
-        ),
-        backgroundColor: [
-          this.getRGBBySeverity('low'),
-          this.getRGBBySeverity('medium'),
-          this.getRGBBySeverity('high'),
-        ],
-      })
+    // LineChart ------------------------------------
+    SetLineChart() {
+      this.loadedLine = false
+      this.clearLineChart()
+      this.SetLabelLineChart()
+      this.SetLineChartData()
+      this.loadedLine = true
     },
-    // BarChart ------------------------------------
-    SetBarChart() {
-      this.loadedBar = false
-      this.clearBarChart()
-      this.SetLabelBarChart()
-      this.SetBarChartDataSource()
-      this.SetBarChartSeverity()
-      this.loadedBar = true
-    },
-    clearBarChart() {
-      this.labelBarChart = []
-      this.dataSourceBarChart = {
-        labels: [],
-        datasets: [],
-      }
-      this.severityBarChart = {
+    clearLineChart() {
+      this.labelLineChart = []
+      this.lineChart = {
         labels: [],
         datasets: [],
       }
     },
-    SetLabelBarChart() {
+    SetLabelLineChart() {
       var label = []
-      var day = new Date(this.yesterday.getTime())
-      switch (this.visibleDuration) {
-        case 'week':
-          day.setDate(this.yesterday.getDate() - 6)
-          break
-        case 'month':
-        default:
-          day.setMonth(this.yesterday.getMonth() - 1)
-          break
-      }
-      var yesterdayDate = Util.formatDate(this.yesterday, 'yyyy-MM-dd')
+      var day = new Date(this.searchModel.fromDate)
       var date = ''
-      while (date != yesterdayDate) {
+      while (date != this.searchModel.toDate) {
         date = Util.formatDate(day, 'yyyy-MM-dd')
         label.push(date)
         day.setDate(day.getDate() + 1)
       }
-      this.labelBarChart = label
+      this.labelLineChart = label
     },
-    SetBarChartDataSource() {
-      this.dataSourceBarChart.datasets = this.category.map((cat) =>
-        this.GetBarDataPerDataSource(cat, this.labelBarChart)
+    SetLineChartData() {
+      let category = []
+      if (this.visibleDataSource == 'All') {
+        category = this.category
+      } else {
+        category = [this.visibleDataSource]
+      }
+      this.lineChart.datasets = category.map((cat) =>
+        this.GetLineDataPerDataSource(cat, this.labelLineChart, this.visibleScore)
       )
-      this.dataSourceBarChart.labels = this.labelBarChart.map((label) =>
+      this.lineChart.labels = this.labelLineChart.map((label) =>
         label.slice(-5)
       )
     },
-    GetBarDataPerDataSource(category, dateArr) {
+    GetLineDataPerDataSource(category, dateArr, severity) {
       const countPerDataSource = dateArr.map((date) =>
-        this.GetBarCountPerDataSource(category, date)
+        this.GetLineCountPerDataSource(category, date, severity)
       )
       return {
         label: category,
@@ -807,48 +636,27 @@ export default {
         data: countPerDataSource,
       }
     },
-    GetBarCountPerDataSource(category, date) {
+    GetLineCountPerDataSource(category, date, severity) {
+      let score = 0
+      switch (severity) {
+        case 'High':
+          score = 0.8
+          break
+        case 'Medium':
+          score = 0.6
+          break
+        case 'Low':
+          score = 0.1
+          break
+        default:
+          break
+      }
       const data = this.ReportFindings.filter((rf) => {
         return (
-          rf.date.indexOf(date) > -1 && rf.data_source.indexOf(category) > -1
+          rf.date.indexOf(date) > -1 &&
+          rf.data_source.indexOf(category) > -1 &&
+          rf.score >= score
         )
-      })
-      const countPerDate = data.reduce(function (sum, element) {
-        return sum + element.count
-      }, 0)
-      return countPerDate
-    },
-    SetBarChartSeverity() {
-      this.severityBarChart.datasets = this.severity.map((sev) =>
-        this.GetBarDataPerSeverity(sev, this.labelBarChart)
-      )
-      this.severityBarChart.labels = this.labelBarChart.map((label) =>
-        label.slice(-5)
-      )
-    },
-    GetBarDataPerSeverity(severity, dateArr) {
-      const countPerSeverity = dateArr.map((date) =>
-        this.CountFindingsPerSeverityDate(severity, date)
-      )
-      return {
-        label: severity,
-        backgroundColor: this.getRGBBySeverity(severity),
-        borderColor: this.getRGBBySeverity(severity),
-        data: countPerSeverity,
-      }
-    },
-    CountFindingsPerSeverityDate(severity, date) {
-      const data = this.ReportFindings.filter((rf) => {
-        switch (severity.toLowerCase()) {
-          case 'high':
-            return rf.score >= 0.8 && rf.date.indexOf(date) > -1
-          case 'low':
-            return rf.score < 0.6 && rf.date.indexOf(date) > -1
-          case 'medium':
-            return (
-              rf.score >= 0.6 && rf.score < 0.8 && rf.date.indexOf(date) > -1
-            )
-        }
       })
       const countPerDate = data.reduce(function (sum, element) {
         return sum + element.count
@@ -872,30 +680,56 @@ export default {
           return colors.gray
       }
     },
-    getRGBBySeverity(severity) {
-      severity = severity.toLowerCase()
-      switch (severity) {
-        case 'high':
-          return colors.red.lighten2
-        case 'medium':
-          return colors.yellow.lighten2
-        case 'low':
-          return colors.teal.lighten2
-        default:
-          return colors.gray
-      }
-    },
-    getIconByCountChange(num) {
-      if (num > 0) {
-        return 'mdi-arrow-up'
-      } else if (num < 0) {
-        return 'mdi-arrow-down'
-      } else {
-        return 'mdi-arrow-right'
-      }
-    },
     datePickerFormat(date) {
       return Util.formatDate(date, 'yyyy-MM-dd')
+    },
+    getSeverityByScore(score) {
+      switch (true) {
+        case score >= 0.8:
+          return 'High'
+        case score >= 0.6:
+          return 'Medium'
+        case score > 0.0:
+          return 'Low'
+        default:
+          return ''
+      }
+    },
+    getFindingNumber(category) {
+      let count = this.categoryFinding[category].High
+      if (this.visibleScore.value == 'Medium') {
+        count += this.categoryFinding[category].Medium
+      }
+      if (this.visibleScore.value == 'Low') {
+        count += this.categoryFinding[category].Low
+      }
+      return count
+    },
+    getDownloadActionList() {
+      let list = []
+      list.push({
+        text: this.$t(`btn['DOWNLOAD REPORT (PROJECT)']`) + ' (csv)',
+        icon: 'mdi-file-download',
+        click: () => this.handleGet('', 'csv'),
+      })
+      list.push({
+        text: this.$t(`btn['DOWNLOAD REPORT (PROJECT)']`) + ' (json)',
+        icon: 'mdi-file-download',
+        click: () => this.handleGet('', 'json'),
+      })
+      if (this.flagAdmin) {
+        list.push({
+          text: this.$t(`btn['DOWNLOAD REPORT (ALL)']`) + ' (csv)',
+          icon: 'mdi-file-download',
+          click: () => this.handleGet('all', 'csv'),
+        })
+        list.push({
+          text: this.$t(`btn['DOWNLOAD REPORT (ALL)']`) + ' (json)',
+          icon: 'mdi-file-download',
+          click: () => this.handleGet('all', 'json'),
+        })
+      }
+      return list
     },
   },
 }

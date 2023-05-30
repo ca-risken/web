@@ -324,10 +324,10 @@ const en = {
         'Running ANALYZE will move to the alert screen.',
     },
     report: {
-      'Download Finding Report': 'Download Finding Report',
-      'Finding Changes': 'Finding Changes',
+      'All Data Source': 'All Data Source',
       'Number of Finding': 'Number of Finding',
       'Finding Transition': 'Finding Transition',
+      'Finding Summary': 'Finding Summary',
       'Per Category': 'Per Category',
       'Per Severity': 'Per Severity',
     },
