@@ -316,8 +316,7 @@ export default {
         datasets: [],
       },
       pieOptions: {
-        plugins: {
-        },
+        plugins: {},
       },
       // LineChart
       labelLineChart: [],
@@ -618,7 +617,11 @@ export default {
         category = [this.visibleDataSource]
       }
       this.lineChart.datasets = category.map((cat) =>
-        this.GetLineDataPerDataSource(cat, this.labelLineChart, this.visibleScore)
+        this.GetLineDataPerDataSource(
+          cat,
+          this.labelLineChart,
+          this.visibleScore
+        )
       )
       this.lineChart.labels = this.labelLineChart.map((label) =>
         label.slice(-5)
