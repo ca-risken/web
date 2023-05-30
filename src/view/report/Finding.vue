@@ -439,12 +439,10 @@ export default {
     async handleGet(target, format) {
       this.clearList()
       let searchCond = ''
-      if (this.searchModel.dataSource) {
-        searchCond += '&data_source=' + this.searchModel.dataSource
+      if (this.visibleDataSource != 'All') {
+        searchCond += '&data_source=' + this.visibleDataSource
       }
-      if (this.searchModel.score) {
-        searchCond += '&score=' + this.searchModel.score
-      }
+      searchCond += '&score=' + this.getScoreBySeverity(this.visibleScore.value)
       if (target == 'all') {
         await this.getReportFindingAll(
           searchCond,
@@ -696,6 +694,18 @@ export default {
           return 'Low'
         default:
           return ''
+      }
+    },
+    getScoreBySeverity(severity) {
+      switch (severity) {
+        case 'High':
+          return 0.8
+        case 'Medium':
+          return 0.6
+        case 'Low':
+          return 0.1
+        default:
+          return 0.0
       }
     },
     getFindingNumber(category) {
