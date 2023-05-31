@@ -322,10 +322,10 @@ const ja = {
         'ANALYZEを実行するとアラート画面に移動します。',
     },
     report: {
-      'Download Finding Report': 'レポートのダウンロード',
-      'Finding Changes': '昨日との差分',
+      'All Data Source': '全データソース',
       'Number of Finding': 'ファインディング数',
       'Finding Transition': 'Finding推移',
+      'Finding Summary': 'Findingサマリー',
       'Per Category': 'カテゴリ別',
       'Per Severity': '重大度別',
     },
