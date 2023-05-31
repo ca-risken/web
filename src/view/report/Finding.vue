@@ -13,7 +13,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-select
             v-model="visibleDataSource"
             bg-color="white"
@@ -27,7 +27,7 @@
             density="compact"
           ></v-select>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-select
             v-model="visibleScore"
             bg-color="white"
@@ -40,6 +40,112 @@
             variant="outlined"
             density="compact"
           ></v-select>
+        </v-col>
+        <v-col cols="3">
+          <v-menu
+            v-model="fromDatePicker"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ props }">
+              <v-text-field
+                v-bind="props"
+                density="compact"
+                variant="outlined"
+                v-model="fromDate"
+                :label="$t(`item['FromDate']`)"
+                show-current
+                bg-color="white"
+              ></v-text-field>
+            </template>
+            <datepicker
+              inline
+              :enable-time-picker="false"
+              v-model="fromDate"
+              model-type="yyyy-MM-dd"
+              :format="datePickerFormat"
+              :max-date="toDate"
+              @update:model-value="fromDatePicker = false"
+              auto-apply
+              no-today
+            ></datepicker>
+          </v-menu>
+        </v-col>
+        <v-col cols="3">
+          <v-menu
+            v-model="toDatePicker"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ props }">
+              <v-text-field
+                v-bind="props"
+                density="compact"
+                variant="outlined"
+                v-model="toDate"
+                :label="$t(`item['ToDate']`)"
+                show-current
+                bg-color="white"
+              ></v-text-field>
+            </template>
+            <datepicker
+              inline
+              :enable-time-picker="false"
+              v-model="toDate"
+              model-type="yyyy-MM-dd"
+              :format="datePickerFormat"
+              :min-date="fromDate"
+              :max-date="latest"
+              @update:model-value="toDatePicker = false"
+              auto-apply
+              no-today
+            ></datepicker>
+          </v-menu>
+        </v-col>
+        <v-col>
+          <v-btn
+            class=""
+            color="grey-darken-2"
+            size="large"
+            density="compact"
+            icon="mdi-refresh"
+            variant="outlined"
+            :loading="loading"
+            @click="setData"
+          />
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                class="ms-4"
+                size="large"
+                density="compact"
+                variant="outlined"
+                color="green-darken-2"
+                :loading="loading"
+                icon="mdi-format-list-bulleted-square"
+              >
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="action in getDownloadActionList()"
+                :key="action.text"
+                @click="action.click"
+                :prepend-icon="action.icon"
+              >
+                <v-list-item-title class="ma-1">{{
+                  action.text
+                }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-col>
       </v-row>
       <v-row>
@@ -107,10 +213,7 @@
           <v-row justify="center">
             <v-col v-if="loadedPie" cols="9">
               <v-card class="mx-auto" outlined>
-                <v-list-item three-line>
-                  <div class="overline mb-4">
-                    {{ $t(`view.report['Per Category']`) }}
-                  </div>
+                <v-list-item>
                   <pie-chart
                     :chart-data="pieChart"
                     :options="pieOptions"
@@ -134,76 +237,10 @@
         </v-col>
       </v-row>
       <!-- Line Chart -->
-      <v-row dense justify="start" align-content="center">
-        <v-col cols="3">
-          <datepicker
-            :enable-time-picker="false"
-            v-model="searchModel.fromDate"
-            model-type="yyyy-MM-dd"
-            :format="datePickerFormat"
-            :max-date="searchModel.toDate"
-            auto-apply
-          ></datepicker>
-        </v-col>
-        <v-col cols="3">
-          <datepicker
-            :enable-time-picker="false"
-            v-model="searchModel.toDate"
-            model-type="yyyy-MM-dd"
-            :format="datePickerFormat"
-            :min-date="searchModel.fromDate"
-            :max-date="new Date()"
-            auto-apply
-          ></datepicker>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col offset="3">
-          <v-btn
-            class=""
-            color="grey-darken-2"
-            size="large"
-            density="compact"
-            icon="mdi-refresh"
-            variant="outlined"
-            :loading="loading"
-            @click="setData"
-          />
-          <v-menu>
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                class="ms-4"
-                size="large"
-                density="compact"
-                variant="outlined"
-                color="green-darken-2"
-                :loading="loading"
-                icon="mdi-format-list-bulleted-square"
-              >
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="action in getDownloadActionList()"
-                :key="action.text"
-                @click="action.click"
-                :prepend-icon="action.icon"
-              >
-                <v-list-item-title class="ma-1">{{
-                  action.text
-                }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-col>
-      </v-row>
       <v-row>
         <v-col cols="12" v-if="loadedLine">
           <v-card class="mx-auto" outlined>
-            <v-list-item three-line>
-              <div class="overline mb-4">
-                {{ $t(`view.report['Per Category']`) }}
-              </div>
+            <v-list-item>
               <line-chart
                 :chart-data="lineChart"
                 :height="lineChartHeight"
@@ -252,35 +289,11 @@ export default {
   data() {
     return {
       loading: false,
-      fromMenu: false,
-      toMenu: false,
-      format: 'csv',
       flagAdmin: false,
-      availableFormat: ['csv', 'json'],
       reportFindings: [],
-      searchModel: {
-        dataSource: [],
-        score: 0.0,
-        fromDate: '',
-        toDate: '',
-        format: 'csv',
-      },
-      searchForm: {
-        dataSource: {
-          label: 'Data Source',
-          placeholder: 'Filter data sources',
-        },
-        score: { label: 'Score', placeholder: 'Filter score( from )' },
-        format: { label: 'Format', placeholder: 'select format' },
-        fromDate: { label: 'FromDate', placeholder: 'Filter date( from )' },
-        toDate: { label: 'ToDate', placeholder: 'Filter date( to )' },
-      },
       // for visual
-      yesterday: 0,
       dateLastMonth: 0,
       latest: '',
-      lastMonth: '',
-      todayReportFindings: [],
       ReportFindings: [],
       category: ['aws', 'diagnosis', 'osint', 'code', 'google'],
       severity: ['Low', 'Medium', 'High'],
@@ -294,7 +307,11 @@ export default {
         code: { Low: 0, Medium: 0, High: 0 },
       },
       lineChartHeight: 150,
-      // visual config
+      // filter config
+      fromDate: '',
+      toDate: '',
+      fromDatePicker: false,
+      toDatePicker: false,
       visibleScore: { title: '>= 0.8', value: 'High' },
       visibleScoreList: [
         { title: '>= 0.1', value: 'Low' },
@@ -333,18 +350,18 @@ export default {
     const now = new Date()
 
     // latest
-    this.yesterday = new Date()
-    this.yesterday.setDate(now.getDate() - 1)
-    this.latest = Util.formatDate(this.yesterday, 'yyyy-MM-dd')
+    let yesterday = new Date()
+    yesterday.setDate(now.getDate() - 1)
+    this.latest = Util.formatDate(yesterday, 'yyyy-MM-dd')
 
     // last month
     this.dateLastMonth = new Date()
     this.dateLastMonth.setMonth(now.getMonth() - 1)
-    this.lastMonth = Util.formatDate(this.dateLastMonth, 'yyyy-MM-dd')
+    const lastMonth = Util.formatDate(this.dateLastMonth, 'yyyy-MM-dd')
 
     // default date condition
-    this.searchModel.toDate = this.latest
-    this.searchModel.fromDate = this.lastMonth
+    this.toDate = this.latest
+    this.fromDate = lastMonth
 
     this.setData()
   },
@@ -444,17 +461,13 @@ export default {
       }
       searchCond += '&score=' + this.getScoreBySeverity(this.visibleScore.value)
       if (target == 'all') {
-        await this.getReportFindingAll(
-          searchCond,
-          this.searchModel.fromDate,
-          this.searchModel.toDate
-        )
+        await this.getReportFindingAll(searchCond, this.fromDate, this.toDate)
       } else {
-        if (this.searchModel.toDate) {
-          searchCond += '&to_date=' + this.searchModel.toDate
+        if (this.toDate) {
+          searchCond += '&to_date=' + this.toDate
         }
-        if (this.searchModel.fromDate) {
-          searchCond += '&from_date=' + this.searchModel.fromDate
+        if (this.fromDate) {
+          searchCond += '&from_date=' + this.fromDate
         }
         await this.getReportFinding(searchCond, target)
       }
@@ -497,7 +510,7 @@ export default {
       }
     },
     save(date) {
-      this.$refs.searchModel.fromDate.save(date)
+      this.$refs.fromDate.save(date)
     },
     // -- Raw Data ---------------------------------
     async setData() {
@@ -511,9 +524,9 @@ export default {
           '/report/get-report/?project_id=' +
             this.getCurrentProjectID() +
             '&from_date=' +
-            this.searchModel.fromDate +
+            this.fromDate +
             '&to_date=' +
-            this.searchModel.toDate
+            this.toDate
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -525,9 +538,8 @@ export default {
       for (const fr of res.data.data.report_finding) {
         var reportFinding = this.newReportFinding(fr)
         this.ReportFindings.push(reportFinding)
-        if (reportFinding.date.indexOf(this.latest) > -1) {
+        if (reportFinding.date.indexOf(this.toDate) > -1) {
           var severity = this.getSeverityByScore(reportFinding.score)
-          this.todayReportFindings.push(reportFinding)
           category = reportFinding.data_source.split(':')[0]
           if (reportFinding.score > 0) {
             this.categoryFinding.total[severity] += reportFinding.count
@@ -598,9 +610,9 @@ export default {
     },
     SetLabelLineChart() {
       var label = []
-      var day = new Date(this.searchModel.fromDate)
+      var day = new Date(this.fromDate)
       var date = ''
-      while (date != this.searchModel.toDate) {
+      while (date != this.toDate) {
         date = Util.formatDate(day, 'yyyy-MM-dd')
         label.push(date)
         day.setDate(day.getDate() + 1)
@@ -618,7 +630,7 @@ export default {
         this.GetLineDataPerDataSource(
           cat,
           this.labelLineChart,
-          this.visibleScore
+          this.visibleScore.value
         )
       )
       this.lineChart.labels = this.labelLineChart.map((label) =>
