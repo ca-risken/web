@@ -645,7 +645,6 @@ export default {
         label: category,
         borderColor: this.getRGBByCategory(category),
         backgroundColor: this.getRGBByCategory(category),
-        fill: false,
         data: countPerDataSource,
       }
     },

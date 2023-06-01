@@ -39,16 +39,12 @@ export default {
         return {
           scales: {
             x: {
-              stacked: true,
               time: {
                 displayFormats: {
                   day: 'MM/DD',
                 },
                 unit: 'day',
               },
-            },
-            y: {
-              stacked: true,
             },
           },
         }
