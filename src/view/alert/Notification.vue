@@ -297,7 +297,7 @@
               $t(`item['Notification ID']`)
             }}</v-list-item-subtitle>
           </v-list-item>
-          <v-list-item :prepend-icon="mdi - account - box">
+          <v-list-item prepend-icon="mdi-account-box">
             <v-list-item-title>
               {{ dataModel.name }}
             </v-list-item-title>
@@ -529,6 +529,7 @@ export default {
               channel: this.dataModel.channel,
               message: this.dataModel.custom_message,
             },
+            locale: this.$i18n.locale,
           }),
         },
       }
@@ -598,7 +599,6 @@ export default {
     assignDataModel(item) {
       this.dataModel = {}
       this.dataModel = Object.assign(this.dataModel, item.value)
-
       const setting = JSON.parse(this.dataModel.notify_setting)
       // slack
       if (this.dataModel.type === 'slack') {
