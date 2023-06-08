@@ -628,6 +628,8 @@ export default {
         }
         if (setting.locale) {
           this.dataModel.locale = setting.locale
+        } else {
+          this.dataModel.locale = this.$i18n.locale
         }
         if (setting.data && setting.data.channel) {
           this.dataModel.channel = setting.data.channel
