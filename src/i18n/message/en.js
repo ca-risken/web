@@ -139,7 +139,7 @@ const en = {
     'Google Data Source ID': 'Google Data Source ID',
     Keyword: 'Keyword',
     ID: 'ID',
-    'Japanese': 'Japanese',
+    Japanese: 'Japanese',
     Link: 'Link',
     'Last Updated User': 'Last Updated User',
     'MAX Score': 'MAX Score',

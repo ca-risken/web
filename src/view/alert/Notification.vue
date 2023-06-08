@@ -135,14 +135,16 @@
               :items="form.type.list"
             />
             <v-select
-            v-model="dataModel.locale"
-            bg-color="white"
-            :items="form.notification_language.list"
-            item-title="title"
-            item-value="value"
-            :label="$t(`item['` + form.notification_language.label + `']`) + ' *'"
-            variant="outlined"
-          ></v-select>
+              v-model="dataModel.locale"
+              bg-color="white"
+              :items="form.notification_language.list"
+              item-title="title"
+              item-value="value"
+              :label="
+                $t(`item['` + form.notification_language.label + `']`) + ' *'
+              "
+              variant="outlined"
+            ></v-select>
             <v-text-field
               v-model="dataModel.webhook_url"
               :counter="200"
@@ -378,10 +380,11 @@ export default {
         notification_language: {
           label: 'Notification Language',
           placeholder: 'English',
-          list: [{'title': this.$t(`item["English"]`), 'value': 'en'}, {'title': this.$t(`item["Japanese"]`), 'value': 'ja'}],
-          validator: [
-            (v) => !!v || 'Language is required',
+          list: [
+            { title: this.$t(`item["English"]`), value: 'en' },
+            { title: this.$t(`item["Japanese"]`), value: 'ja' },
           ],
+          validator: [(v) => !!v || 'Language is required'],
         },
         webhook_url: {
           label: 'Webhook URL',
