@@ -134,6 +134,15 @@
               :placeholder="form.type.placeholder"
               :items="form.type.list"
             />
+            <v-select
+            v-model="dataModel.locale"
+            bg-color="white"
+            :items="form.notification_language.list"
+            item-title="title"
+            item-value="value"
+            :label="$t(`item['` + form.notification_language.label + `']`) + ' *'"
+            variant="outlined"
+          ></v-select>
             <v-text-field
               v-model="dataModel.webhook_url"
               :counter="200"
@@ -161,7 +170,6 @@
               </p>
               <p>{{ formatSmartMaskString(dataModel.masked_webhook_url) }}</p>
             </v-alert>
-
             <v-checkbox
               v-model="form.show_option"
               :label="$t(`view.alert['Show options']`)"
@@ -367,6 +375,14 @@ export default {
             (v) => v === 'slack' || 'Type is invalid type',
           ],
         },
+        notification_language: {
+          label: 'Notification Language',
+          placeholder: 'English',
+          list: [{'title': this.$t(`item["English"]`), 'value': 'en'}, {'title': this.$t(`item["Japanese"]`), 'value': 'ja'}],
+          validator: [
+            (v) => !!v || 'Language is required',
+          ],
+        },
         webhook_url: {
           label: 'Webhook URL',
           placeholder: 'https://xxx',
@@ -392,6 +408,7 @@ export default {
         type: 'slack',
         notify_setting: {},
         masked_webhook_url: '',
+        locale: '',
         webhook_url: '',
         custom_message: '',
         channel: '',
@@ -529,7 +546,7 @@ export default {
               channel: this.dataModel.channel,
               message: this.dataModel.custom_message,
             },
-            locale: this.$i18n.locale,
+            locale: this.dataModel.locale,
           }),
         },
       }
@@ -552,6 +569,7 @@ export default {
         type: 'slack',
         masked_webhook_url: '',
         webhook_url: '',
+        locale: this.$i18n.locale,
         custom_message: '',
         channel: '',
         updated_at: '',
@@ -604,6 +622,9 @@ export default {
       if (this.dataModel.type === 'slack') {
         if (setting.webhook_url) {
           this.dataModel.webhook_url = setting.webhook_url
+        }
+        if (setting.locale) {
+          this.dataModel.locale = setting.locale
         }
         if (setting.data && setting.data.channel) {
           this.dataModel.channel = setting.data.channel
