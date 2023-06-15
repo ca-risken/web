@@ -280,8 +280,8 @@
                     color="blue-darken-1"
                     :loading="loading"
                     @click="handleAttachSubmit"
-                    icon="mdi-update"
                   >
+                    <v-icon left>mdi-update</v-icon>
                     {{ $t(`btn['Upgrade']`) }}
                   </v-btn>
                 </v-list-item-title>
@@ -609,6 +609,7 @@ export default {
         aws_account_id: '',
         aws_data_source_id: '',
         data_source: '',
+        name: '',
         max_score: '',
         assume_role_arn: '',
         external_id: '',
