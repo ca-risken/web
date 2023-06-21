@@ -46,7 +46,6 @@
         <v-data-table-server
           :headers="headers"
           :items="table.items"
-          v-model:options="table.options"
           :items-length="table.total"
           :loading="loading"
           :items-per-page-options="table.footer.itemsPerPageOptions"
@@ -59,7 +58,7 @@
           class="elevation-1"
           item-key="user_id"
           @click:row="handleSelectItem"
-          @update:page="refleshList"
+          @update:options="updateOptions"
         >
           <template v-slot:[`item.updated_at`]="{ item }">
             <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
@@ -179,9 +178,6 @@ export default {
     async refleshList(searchCond) {
       this.loading = true
       this.noUser = false
-      this.table.options.page = 1
-      this.clearList()
-
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         return Promise.reject(err)
       })
@@ -235,6 +231,10 @@ export default {
         searchCond += '&user_id=' + this.searchModel.userID
       }
       this.refleshList(searchCond)
+    },
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.refleshList('')
     },
     handleSelectItem(event, users) {
       this.$emit('handleUserDialogResponse', users.item.value)
