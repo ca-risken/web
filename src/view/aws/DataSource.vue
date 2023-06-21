@@ -985,6 +985,7 @@ export default {
         aws_id: this.awsModel.aws_id,
         aws_account_id: this.awsModel.aws_account_id,
         aws_data_source_id: '',
+        name: this.awsModel.name,
         data_source: '',
         max_score: '',
         assume_role_arn: '',

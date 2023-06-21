@@ -92,6 +92,11 @@
                   <v-chip v-else color="grey" variant="flat"
                     >Not configured</v-chip
                   >
+                  <v-icon
+                    v-if="hasDataSourceWarning(item.value)"
+                    color="yellow-darken-4"
+                    >mdi-alert</v-icon
+                  >
                 </template>
                 <template v-slot:[`item.scan_at`]="{ item }">
                   <v-chip v-if="item.value.scan_at">{{
@@ -254,7 +259,7 @@
                     {{ $t(`item['` + form.status_detail.label + `']`) }}
                   </span>
                 </v-card-title>
-                <v-card-text>
+                <v-card-text class="wrap">
                   {{ dataModel.status_detail }}
                 </v-card-text>
               </v-card>
