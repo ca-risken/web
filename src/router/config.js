@@ -446,7 +446,7 @@ export const appRoute = [
               title: 'Report',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/report/Finding.vue'),
+            component: () => import('@/view/analysis/Finding.vue'),
           },
         ],
       },
