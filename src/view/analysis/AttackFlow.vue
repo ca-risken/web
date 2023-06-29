@@ -134,10 +134,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="item in parseMetaData(resourceModel.metadata)"
-                :key="item.name"
-              >
+              <tr v-for="item in metaList" :key="item.name">
                 <td class="font-weight-medium text-body-2">{{ item.name }}</td>
                 <td class="font-italic text-body-2">{{ item.value }}</td>
               </tr>
@@ -281,6 +278,7 @@ export default {
         layer: '',
         meta_data: '',
       },
+      metaList: [],
       findingList: [],
       scoreFilter: true,
     }
@@ -325,11 +323,14 @@ export default {
       this.loading = false
     },
     async handleClickNode(node) {
+      this.metaList = []
+      this.findingList = []
       this.drawer = true
       this.drawerMetaData = true
       this.drawerFindings = true
       this.scoreFilter = true
       this.resourceModel = node
+      this.parseMetaData(node.meta_data)
       await this.getFindingList()
     },
     async handleScoreFilter() {
@@ -552,7 +553,7 @@ export default {
           value: m[key],
         })
       }
-      return meta
+      this.metaList = meta
     },
 
     // finish
