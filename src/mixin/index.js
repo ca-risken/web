@@ -577,6 +577,26 @@ let mixin = {
       }
       return masked.replace(maskedPattern, '*****')
     },
+    parseAPIErrorMessage: (err) => {
+      if (!err) {
+        return ''
+      }
+      if (err.response && err.response.data && err.response.data.error) {
+        if (err.response.data.error.code && err.response.data.error.message) {
+          return (
+            err.response.data.error.code +
+            ': ' +
+            err.response.data.error.message
+          )
+        }
+        return err.response.statusText + ': ' + err.response.data.error
+      }
+      if (err.response)
+        if (err.code && err.message) {
+          return err.code + ': ' + err.message
+        }
+      return ''
+    },
   },
 }
 

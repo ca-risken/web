@@ -53,7 +53,7 @@ const en = {
     OSINT: 'OSINT',
     Code: 'Code',
     IAM: 'IAM',
-    Report: 'Report',
+    Analysis: 'Analysis',
     Admin: 'Admin',
   },
   submenu: {
@@ -82,7 +82,8 @@ const en = {
     Role: 'Role', // IAM
     Policy: 'Policy', // IAM
     AccessToken: 'AccessToken', // IAM
-    ReportFinding: 'Report Finding', // Report
+    AttackFlow: 'AttackFlow', // Analysis
+    ReportFinding: 'Report Finding', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
     Profile: 'Profile',
