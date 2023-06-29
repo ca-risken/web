@@ -136,7 +136,9 @@
             <tbody>
               <tr v-for="item in metaList" :key="item.name">
                 <td class="font-weight-medium text-body-2">{{ item.name }}</td>
-                <td class="font-italic text-body-2">{{ item.value }}</td>
+                <td class="font-weight-regular text-body-2 wrap">
+                  {{ formatMetaDataValue(item.value) }}
+                </td>
               </tr>
             </tbody>
           </v-table>
@@ -555,6 +557,16 @@ export default {
       }
       this.metaList = meta
     },
+    formatMetaDataValue(v) {
+      if (Array.isArray(v)) {
+        let list = ''
+        for (const i of v) {
+          list += '- ' + i + '\n'
+        }
+        return list
+      }
+      return v
+    },
 
     // finish
     async finishSuccess(msg) {
@@ -583,5 +595,9 @@ export default {
 .node-internet {
   background: lightblue;
   border: 2px solid whitesmoke;
+}
+.wrap {
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 </style>
