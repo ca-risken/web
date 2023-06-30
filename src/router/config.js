@@ -293,6 +293,34 @@ export const appRoute = [
         ],
       },
       {
+        path: '/analysis',
+        component: RouteWrapper,
+        redirect: '/analysis/attack-flow',
+        meta: {
+          title: 'Analysis',
+          icon: 'mdi-file-chart',
+          group: 'analysis',
+        },
+        children: [
+          {
+            path: '/analysis/attack-flow',
+            name: 'AttackFlow',
+            meta: {
+              title: 'AttackFlow',
+            },
+            component: () => import('@/view/analysis/AttackFlow.vue'),
+          },
+          {
+            path: '/analysis/finding',
+            name: 'ReportFinding',
+            meta: {
+              title: 'ReportFinding',
+            },
+            component: () => import('@/view/analysis/Finding.vue'),
+          },
+        ],
+      },
+      {
         path: '/iam',
         component: RouteWrapper,
         redirect: '/iam/user',
@@ -350,26 +378,6 @@ export const appRoute = [
               title: 'User Reservation',
             },
             component: () => import('@/view/iam/UserReservation.vue'),
-          },
-        ],
-      },
-      {
-        path: '/report',
-        component: RouteWrapper,
-        redirect: '/report/finding',
-        meta: {
-          title: 'Report',
-          icon: 'mdi-file-chart',
-          group: 'report',
-        },
-        children: [
-          {
-            path: '/report/finding',
-            name: 'ReportFinding',
-            meta: {
-              title: 'ReportFinding',
-            },
-            component: () => import('@/view/report/Finding.vue'),
           },
         ],
       },
@@ -438,7 +446,7 @@ export const appRoute = [
               title: 'Report',
               hiddenInMenu: true,
             },
-            component: () => import('@/view/report/Finding.vue'),
+            component: () => import('@/view/analysis/Finding.vue'),
           },
         ],
       },

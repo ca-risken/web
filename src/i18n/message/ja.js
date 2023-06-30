@@ -53,7 +53,7 @@ const ja = {
     OSINT: 'OSINT',
     Code: 'ソースコード',
     IAM: 'IAM',
-    Report: 'レポート',
+    Analysis: '分析',
     Admin: '管理者',
   },
   submenu: {
@@ -82,6 +82,7 @@ const ja = {
     Role: 'ロール',
     Policy: 'ポリシー',
     AccessToken: 'アクセストークン',
+    AttackFlow: 'アタックフロー',
     ReportFinding: 'Findingレポート',
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
