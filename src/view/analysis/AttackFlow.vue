@@ -233,7 +233,7 @@ const LAYER_PRIORITY = new Map([
   [LAYER_CDN, 2],
   [LAYER_DATASTORE, 3],
 ])
-const MSG_COMPETE_ANALYSIS = 'Success attack flow analysis'
+const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
 
 export default {
   name: 'AWSAttackFlow',
@@ -392,7 +392,6 @@ export default {
       let searchCond = ''
       searchCond += '&tag=' + this.searchModel.cloudID
       searchCond += '&resource_name=' + this.resourceModel.resource_name
-      searchCond += '&from_score=0.1'
       searchCond += '&sort=score&direction=desc'
       if (this.scoreFilter) {
         searchCond += '&from_score=0.6'
@@ -429,7 +428,7 @@ export default {
 
       // nodes
       if (!apiResponse.nodes || apiResponse.nodes.length < 1) {
-        this.finishSuccess(MSG_COMPETE_ANALYSIS)
+        this.finishSuccess(MSG_COMPLETE_ANALYSIS)
         return
       }
       apiResponse.nodes.forEach(async (n) => {
@@ -458,7 +457,7 @@ export default {
 
       // edges
       if (!apiResponse.edges || apiResponse.edges.length < 1) {
-        this.finishSuccess(MSG_COMPETE_ANALYSIS)
+        this.finishSuccess(MSG_COMPLETE_ANALYSIS)
         return
       }
       apiResponse.edges.forEach(async (e) => {
@@ -480,7 +479,7 @@ export default {
         })
       })
 
-      this.finishSuccess(MSG_COMPETE_ANALYSIS)
+      this.finishSuccess(MSG_COMPLETE_ANALYSIS)
     },
 
     generateLayerMap(nodes) {
