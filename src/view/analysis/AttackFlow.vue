@@ -401,6 +401,7 @@ export default {
       }
       const list = await this.listFinding(searchCond)
       if (!list.finding_id || list.finding_id.length == 0) {
+        this.drawerFindings = false
         this.loading = false
         return
       }
@@ -545,8 +546,12 @@ export default {
     },
     parseMetaData() {
       let meta = []
-      if (this.resourceModel.meta_data === '') {
-        return meta
+      if (
+        !this.resourceModel.meta_data ||
+        this.resourceModel.meta_data === ''
+      ) {
+        this.drawerMetaData = false
+        return
       }
       const m = JSON.parse(this.resourceModel.meta_data)
       for (const key in m) {
