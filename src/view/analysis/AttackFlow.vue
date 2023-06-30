@@ -485,7 +485,7 @@ export default {
     },
 
     async getPositionMap(nodes) {
-      let xIdx = -1
+      let xIdx = 0
       let yIdx = 0
       let currentX = 0
       let currentY = 0
@@ -500,19 +500,20 @@ export default {
 
         if (LAYER_PRIORITY.has(n.layer)) {
           if (currentLayer !== n.layer) {
+            if (currentLayer !== LAYER_INTERNET) {
+              xIdx++ // next column
+            }
+            yIdx = 0 // reset row
             currentLayer = n.layer
-            xIdx++
-            yIdx = 0
           }
           currentX = 200 + xIdx * 300
-          currentY = 200 + yIdx * 100
+          currentY = 200
           posMap.set(n.resource_name, { X: currentX, Y: currentY })
-          yIdx++
           return
         }
         yIdx++
         currentX = 200 + xIdx * 300
-        currentY = 200 + yIdx * 60
+        currentY = 200 + yIdx * 150
         posMap.set(n.resource_name, { X: currentX, Y: currentY })
       })
       return posMap
