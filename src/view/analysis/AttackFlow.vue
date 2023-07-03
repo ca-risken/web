@@ -33,11 +33,10 @@
           <v-col cols="2">
             <v-select
               label="Service"
-              :items="['cloudfront', 's3']"
+              :items="['cloudfront', 's3', 'lambda']"
               variant="outlined"
               density="comfortable"
               bg-color="white"
-              clearable
               :loading="loading"
               v-model="searchModel.service"
               @update:modelValue="handleChangeService"
@@ -227,11 +226,14 @@ import datasource from '@/mixin/api/datasource'
 
 const LAYER_INTERNET = 'INTERNET'
 const LAYER_CDN = 'CDN'
+const LAYER_COMPUTE = 'COMPUTE'
 const LAYER_DATASTORE = 'DATASTORE'
+const LAYER_LATERAL_MOVEMENT = 'LATERAL_MOVEMENT'
 const LAYER_PRIORITY = new Map([
   [LAYER_INTERNET, 1],
   [LAYER_CDN, 2],
-  [LAYER_DATASTORE, 3],
+  [LAYER_COMPUTE, 3],
+  [LAYER_DATASTORE, 4],
 ])
 const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
 
@@ -421,8 +423,6 @@ export default {
 
     async generateVueFlow() {
       const apiResponse = await this.analyzeAttackFlow()
-      const layerMap = this.generateLayerMap(apiResponse.nodes)
-
       this.nodes = []
       this.edges = []
 
@@ -431,7 +431,9 @@ export default {
         this.finishSuccess(MSG_COMPLETE_ANALYSIS)
         return
       }
-      apiResponse.nodes.forEach(async (n) => {
+      const positionMap = await this.getPositionMap(apiResponse.nodes)
+      await apiResponse.nodes.forEach(async (n) => {
+        const pos = await positionMap.get(n.resource_name)
         this.nodes.push({
           id: n.resource_name,
           type: this.getNodeType(n.layer),
@@ -441,8 +443,8 @@ export default {
             '" />' +
             n.short_name,
           position: {
-            x: layerMap.get(n.layer),
-            y: n.layer === LAYER_INTERNET ? 50 : 200,
+            x: pos.X,
+            y: pos.Y,
           },
           class: n.layer === LAYER_INTERNET ? 'node-internet' : 'light',
           sourcePosition: 'bottom',
@@ -482,29 +484,39 @@ export default {
       this.finishSuccess(MSG_COMPLETE_ANALYSIS)
     },
 
-    generateLayerMap(nodes) {
-      let layerMap = new Map()
-      // make deduplicated layer
+    async getPositionMap(nodes) {
+      let xIdx = 0
+      let yIdx = 0
+      let currentX = 0
+      let currentY = 0
+      let currentLayer = LAYER_INTERNET
+      let posMap = new Map()
+
       nodes.forEach(async (n) => {
-        layerMap.set(n.layer, 0)
-      })
-
-      // sort layer by priority
-      let layerKeys = Array.from(layerMap.keys())
-      layerKeys.sort((a, b) => {
-        if (LAYER_PRIORITY.get(a) < LAYER_PRIORITY.get(b)) {
-          return -1
+        if (n.layer === LAYER_INTERNET) {
+          posMap.set(n.resource_name, { X: 50, Y: 80 }) // fixed position
+          return
         }
-        return 0
-      })
 
-      // set layer position
-      let idx = 0
-      for (const layer of layerKeys) {
-        layerMap.set(layer, 50 + idx * 300)
-        idx++
-      }
-      return layerMap
+        if (LAYER_PRIORITY.has(n.layer)) {
+          if (currentLayer !== n.layer) {
+            if (currentLayer !== LAYER_INTERNET) {
+              xIdx++ // next column
+            }
+            yIdx = 0 // reset row
+            currentLayer = n.layer
+          }
+          currentX = 200 + xIdx * 300
+          currentY = 200
+          posMap.set(n.resource_name, { X: currentX, Y: currentY })
+          return
+        }
+        yIdx++
+        currentX = 200 + xIdx * 300
+        currentY = 200 + yIdx * 150
+        posMap.set(n.resource_name, { X: currentX, Y: currentY })
+      })
+      return posMap
     },
     async analyzeAttackFlow() {
       const resp = await this.getAttackFlowAnalysis(
@@ -525,7 +537,7 @@ export default {
       switch (layer) {
         case LAYER_INTERNET:
           return 'input'
-        case LAYER_DATASTORE:
+        case (LAYER_DATASTORE, LAYER_LATERAL_MOVEMENT):
           return 'output'
         default:
           return 'default'
@@ -539,6 +551,16 @@ export default {
           return '/static/icon/cloudfront.jpeg'
         case 's3':
           return '/static/icon/s3.jpeg'
+        case 'lambda':
+          return '/static/icon/lambda.png'
+        case 'iam':
+          return '/static/icon/iam.png'
+        case 'sns':
+          return '/static/icon/sns.png'
+        case 'sqs':
+          return '/static/icon/sqs.png'
+        case 'events':
+          return '/static/icon/eventbridge.png'
         default:
           return '/static/aws/default.png'
       }
