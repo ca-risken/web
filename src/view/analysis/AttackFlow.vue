@@ -33,7 +33,7 @@
           <v-col cols="2">
             <v-select
               label="Service"
-              :items="['cloudfront', 's3', 'lambda']"
+              :items="['cloudfront', 's3', 'lambda', 'apigateway']"
               variant="outlined"
               density="comfortable"
               bg-color="white"
@@ -225,16 +225,9 @@ import finding from '@/mixin/api/finding'
 import datasource from '@/mixin/api/datasource'
 
 const LAYER_INTERNET = 'INTERNET'
-const LAYER_CDN = 'CDN'
-const LAYER_COMPUTE = 'COMPUTE'
+const LAYER_EXTERNAL_SERVICE = 'EXTERNAL_SERVICE'
 const LAYER_DATASTORE = 'DATASTORE'
 const LAYER_LATERAL_MOVEMENT = 'LATERAL_MOVEMENT'
-const LAYER_PRIORITY = new Map([
-  [LAYER_INTERNET, 1],
-  [LAYER_CDN, 2],
-  [LAYER_COMPUTE, 3],
-  [LAYER_DATASTORE, 4],
-])
 const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
 
 export default {
@@ -431,7 +424,7 @@ export default {
         this.finishSuccess(MSG_COMPLETE_ANALYSIS)
         return
       }
-      const positionMap = await this.getPositionMap(apiResponse.nodes)
+      const positionMap = await this.getPositionMap(apiResponse.edges)
       await apiResponse.nodes.forEach(async (n) => {
         const pos = await positionMap.get(n.resource_name)
         this.nodes.push({
@@ -462,7 +455,7 @@ export default {
         this.finishSuccess(MSG_COMPLETE_ANALYSIS)
         return
       }
-      apiResponse.edges.forEach(async (e) => {
+      await apiResponse.edges.forEach(async (e) => {
         this.edges.push({
           id: e.relation_id,
           source: e.source_resource_name,
@@ -484,37 +477,72 @@ export default {
       this.finishSuccess(MSG_COMPLETE_ANALYSIS)
     },
 
-    async getPositionMap(nodes) {
-      let xIdx = 0
-      let yIdx = 0
-      let currentX = 0
-      let currentY = 0
-      let currentLayer = LAYER_INTERNET
-      let posMap = new Map()
+    async getPositionMap(edges) {
+      let currentIdx = 0
+      let currentPos = new Map() // key: idx, value: {X: 0, Y: 0}
+      let posMap = new Map() // key: resource_name, value: {X: 0, Y: 0, idx: 0}
 
-      nodes.forEach(async (n) => {
-        if (n.layer === LAYER_INTERNET) {
-          posMap.set(n.resource_name, { X: 50, Y: 80 }) // fixed position
+      let first = true
+      posMap.set('Internet', { X: 50, Y: 80, Idx: -1 }) // fixed position
+      edges.forEach(async (e) => {
+        if (first) {
+          first = false
+          posMap.set(e.source_resource_name, {
+            X: 200,
+            Y: 200,
+            Idx: currentIdx,
+          })
+          currentPos.set(currentIdx, { X: 200, Y: 200 })
+
+          currentIdx++
+          posMap.set(e.target_resource_name, {
+            X: 500,
+            Y: 200,
+            Idx: currentIdx,
+          }) // x + 300
+          currentPos.set(currentIdx, { X: 500, Y: 200 })
           return
         }
 
-        if (LAYER_PRIORITY.has(n.layer)) {
-          if (currentLayer !== n.layer) {
-            if (currentLayer !== LAYER_INTERNET) {
-              xIdx++ // next column
-            }
-            yIdx = 0 // reset row
-            currentLayer = n.layer
+        if (
+          posMap.has(e.source_resource_name) &&
+          posMap.has(e.target_resource_name)
+        ) {
+          return
+        }
+
+        if (!posMap.has(e.source_resource_name)) {
+          const current = currentPos.get(currentIdx)
+          currentIdx++
+          posMap.set(e.source_resource_name, {
+            X: current.X + 300,
+            Y: 200,
+            Idx: currentIdx,
+          })
+          currentPos.set(currentIdx, { X: current.X + 300, Y: 200 })
+        }
+
+        if (!posMap.has(e.target_resource_name)) {
+          const source = posMap.get(e.source_resource_name)
+          const idx = source.Idx + 1
+          if (currentIdx < idx) {
+            currentIdx = idx
+            posMap.set(e.target_resource_name, {
+              X: source.X + 300,
+              Y: 200,
+              Idx: idx,
+            })
+            currentPos.set(idx, { X: source.X + 300, Y: 200 })
+          } else {
+            const current = currentPos.get(idx)
+            posMap.set(e.target_resource_name, {
+              X: source.X + 300,
+              Y: current.Y + 150,
+              Idx: idx,
+            })
+            currentPos.set(idx, { X: source.X + 300, Y: current.Y + 150 })
           }
-          currentX = 200 + xIdx * 300
-          currentY = 200
-          posMap.set(n.resource_name, { X: currentX, Y: currentY })
-          return
         }
-        yIdx++
-        currentX = 200 + xIdx * 300
-        currentY = 200 + yIdx * 150
-        posMap.set(n.resource_name, { X: currentX, Y: currentY })
       })
       return posMap
     },
@@ -537,7 +565,7 @@ export default {
       switch (layer) {
         case LAYER_INTERNET:
           return 'input'
-        case (LAYER_DATASTORE, LAYER_LATERAL_MOVEMENT):
+        case (LAYER_EXTERNAL_SERVICE, LAYER_DATASTORE, LAYER_LATERAL_MOVEMENT):
           return 'output'
         default:
           return 'default'
@@ -547,6 +575,8 @@ export default {
       switch (service) {
         case 'internet':
           return '/static/icon/internet.png'
+        case 'apigateway':
+          return '/static/icon/apigateway.png'
         case 'cloudfront':
           return '/static/icon/cloudfront.jpeg'
         case 's3':
@@ -586,12 +616,24 @@ export default {
     formatMetaDataValue(v) {
       if (Array.isArray(v)) {
         let list = ''
+        let idx = 0
         for (const i of v) {
-          list += '- ' + i + '\n'
+          idx++
+          list += '(' + idx + ') ' + this.parseObject(i) + '\n'
         }
         return list
       }
-      return v
+      return this.parseObject(v)
+    },
+    parseObject(obj) {
+      if (obj instanceof Object === true) {
+        let ret = ''
+        Object.keys(obj).forEach(async (key) => {
+          ret += key + ': ' + obj[key] + ', '
+        })
+        return ret.slice(0, -2)
+      }
+      return obj
     },
 
     // finish
