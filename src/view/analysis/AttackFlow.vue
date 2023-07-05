@@ -455,7 +455,7 @@ export default {
         this.finishSuccess(MSG_COMPLETE_ANALYSIS)
         return
       }
-      await apiResponse.edges.forEach(async (e) => {
+      apiResponse.edges.forEach(async (e) => {
         this.edges.push({
           id: e.relation_id,
           source: e.source_resource_name,
@@ -482,28 +482,9 @@ export default {
       let currentPos = new Map() // key: idx, value: {X: 0, Y: 0}
       let posMap = new Map() // key: resource_name, value: {X: 0, Y: 0, idx: 0}
 
-      let first = true
-      posMap.set('Internet', { X: 50, Y: 80, Idx: -1 }) // fixed position
+      posMap.set('Internet', { X: 50, Y: 80, Idx: 0 }) // fixed position (Internet)
+      currentPos.set(currentIdx, { X: 50, Y: 80 })
       edges.forEach(async (e) => {
-        if (first) {
-          first = false
-          posMap.set(e.source_resource_name, {
-            X: 200,
-            Y: 200,
-            Idx: currentIdx,
-          })
-          currentPos.set(currentIdx, { X: 200, Y: 200 })
-
-          currentIdx++
-          posMap.set(e.target_resource_name, {
-            X: 500,
-            Y: 200,
-            Idx: currentIdx,
-          }) // x + 300
-          currentPos.set(currentIdx, { X: 500, Y: 200 })
-          return
-        }
-
         if (
           posMap.has(e.source_resource_name) &&
           posMap.has(e.target_resource_name)
@@ -513,19 +494,40 @@ export default {
 
         if (!posMap.has(e.source_resource_name)) {
           const current = currentPos.get(currentIdx)
-          currentIdx++
-          posMap.set(e.source_resource_name, {
-            X: current.X + 300,
-            Y: 200,
-            Idx: currentIdx,
-          })
-          currentPos.set(currentIdx, { X: current.X + 300, Y: 200 })
+          const idx = currentIdx + 1
+          if (currentIdx === 0) {
+            // first index
+            posMap.set(e.source_resource_name, {
+              X: 200,
+              Y: 200,
+              Idx: idx,
+            })
+            currentPos.set(idx, { X: 200, Y: 200 })
+          } else {
+            posMap.set(e.source_resource_name, {
+              X: current.X + 300,
+              Y: 200,
+              Idx: idx,
+            })
+            currentPos.set(idx, { X: current.X + 300, Y: 200 })
+          }
+          currentIdx = idx
         }
 
         if (!posMap.has(e.target_resource_name)) {
           const source = posMap.get(e.source_resource_name)
           const idx = source.Idx + 1
-          if (currentIdx < idx) {
+          if (currentIdx === 0) {
+            // first index
+            currentIdx = idx
+            posMap.set(e.target_resource_name, {
+              X: 200,
+              Y: 200,
+              Idx: idx,
+            })
+            currentPos.set(idx, { X: 200, Y: 200 })
+          } else if (currentIdx < idx) {
+            // last index
             currentIdx = idx
             posMap.set(e.target_resource_name, {
               X: source.X + 300,
