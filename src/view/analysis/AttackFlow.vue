@@ -33,7 +33,7 @@
           <v-col cols="2">
             <v-select
               label="Service"
-              :items="['cloudfront', 's3', 'lambda', 'apigateway']"
+              :items="['cloudfront', 's3', 'lambda', 'apigateway', 'ec2']"
               variant="outlined"
               density="comfortable"
               bg-color="white"
@@ -229,6 +229,12 @@ const LAYER_EXTERNAL_SERVICE = 'EXTERNAL_SERVICE'
 const LAYER_DATASTORE = 'DATASTORE'
 const LAYER_LATERAL_MOVEMENT = 'LATERAL_MOVEMENT'
 const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
+const SERVICE_FILTER = new Map([
+  ['cloudfront', ':distribution/'],
+  ['lambda', ':function:'],
+  ['apigateway', 'apis/'],
+  ['ec2', 'instance/'],
+])
 
 export default {
   name: 'AWSAttackFlow',
@@ -361,7 +367,6 @@ export default {
       searchCond += '&namespace=' + this.searchModel.cloudType
       searchCond += '&resource_type=' + this.searchModel.service
       searchCond += '&tag=' + this.searchModel.cloudID
-      searchCond += '&status=' + this.searchModel.cloudID
       searchCond += '&resource_name=arn:aws:' + this.searchModel.service
       const list = await this.listResourceID(searchCond)
       if (!list.resource_id || list.resource_id.length == 0) {
@@ -369,16 +374,19 @@ export default {
         return
       }
       let resources = []
+      const filter = SERVICE_FILTER.get(this.searchModel.service)
       for (const id of list.resource_id) {
-        resources.push(this.getResourceDetail(id))
+        resources.push(this.getResourceDetail(id, filter))
       }
       this.resourceNameList = []
       await Promise.all(resources) // Parallel API call
       this.loading = false
     },
-    async getResourceDetail(id) {
+    async getResourceDetail(id, filter) {
       const resource = await this.getResource(id)
-      this.resourceNameList.push(resource.resource_name)
+      if (resource.resource_name.includes(filter)) {
+        this.resourceNameList.push(resource.resource_name)
+      }
     },
 
     async getFindingList() {
@@ -426,7 +434,13 @@ export default {
       }
       const positionMap = await this.getPositionMap(apiResponse.edges)
       await apiResponse.nodes.forEach(async (n) => {
-        const pos = await positionMap.get(n.resource_name)
+        let pos = await positionMap.get(n.resource_name)
+        if (!pos) {
+          pos = {
+            X: 200,
+            Y: 200,
+          }
+        }
         this.nodes.push({
           id: n.resource_name,
           type: this.getNodeType(n.layer),
@@ -484,6 +498,9 @@ export default {
 
       posMap.set('Internet', { X: 50, Y: 80, Idx: 0 }) // fixed position (Internet)
       currentPos.set(currentIdx, { X: 50, Y: 80 })
+      if (!edges || edges.size === 0) {
+        return posMap
+      }
       edges.forEach(async (e) => {
         if (
           posMap.has(e.source_resource_name) &&
@@ -593,6 +610,10 @@ export default {
           return '/static/icon/sqs.png'
         case 'events':
           return '/static/icon/eventbridge.png'
+        case 'external-service':
+          return '/static/icon/internet.png'
+        case 'ec2':
+          return '/static/icon/ec2.png'
         default:
           return '/static/aws/default.png'
       }
