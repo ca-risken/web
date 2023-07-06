@@ -373,13 +373,13 @@ export default {
         this.loading = false
         return
       }
-      let resources = []
+      let promiseFuncs = []
       const filter = SERVICE_FILTER.get(this.searchModel.service)
       for (const id of list.resource_id) {
-        resources.push(this.getResourceDetail(id, filter))
+        promiseFuncs.push(this.getResourceDetail(id, filter))
       }
       this.resourceNameList = []
-      await Promise.all(resources) // Parallel API call
+      await Promise.all(promiseFuncs) // Parallel API call
       this.loading = false
     },
     async getResourceDetail(id, filter) {
