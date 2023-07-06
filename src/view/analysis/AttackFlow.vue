@@ -367,7 +367,6 @@ export default {
       searchCond += '&namespace=' + this.searchModel.cloudType
       searchCond += '&resource_type=' + this.searchModel.service
       searchCond += '&tag=' + this.searchModel.cloudID
-      searchCond += '&status=' + this.searchModel.cloudID
       searchCond += '&resource_name=arn:aws:' + this.searchModel.service
       const list = await this.listResourceID(searchCond)
       if (!list.resource_id || list.resource_id.length == 0) {
