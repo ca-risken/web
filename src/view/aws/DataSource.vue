@@ -800,9 +800,9 @@ export default {
     getAWSDataSourceIcon(dataSource) {
       switch (dataSource) {
         case 'aws:guard-duty':
-          return '/static/aws/guard-duty.png'
+          return '/static/aws/guardduty.png'
         case 'aws:access-analyzer':
-          return '/static/aws/s3.webp'
+          return '/static/aws/accessanalyzer.png'
         case 'aws:admin-checker':
           return '/static/aws/iam.png'
         case 'aws:cloudsploit':
