@@ -35,11 +35,12 @@
               label="Service"
               :items="[
                 'cloudfront',
-                's3',
-                'lambda',
-                'apigateway',
-                'ec2',
                 'elasticloadbalancing',
+                'apigateway',
+                'lambda',
+                'ec2',
+                'apprunner',
+                's3',
               ]"
               variant="outlined"
               density="comfortable"
@@ -242,6 +243,7 @@ const SERVICE_FILTER = new Map([
   ['apigateway', 'apis/'],
   ['ec2', 'instance/'],
   ['elasticloadbalancing', ':loadbalancer/'],
+  ['apprunner', ':service/'],
 ])
 
 export default {
@@ -371,6 +373,7 @@ export default {
     },
     async listResource() {
       this.loading = true
+      this.resourceNameList = []
       let searchCond = ''
       searchCond += '&namespace=' + this.searchModel.cloudType
       searchCond += '&resource_type=' + this.searchModel.service
@@ -386,7 +389,6 @@ export default {
       for (const id of list.resource_id) {
         promiseFuncs.push(this.getResourceDetail(id, filter))
       }
-      this.resourceNameList = []
       await Promise.all(promiseFuncs) // Parallel API call
       this.loading = false
     },
@@ -626,6 +628,8 @@ export default {
           return '/static/aws/ec2.png'
         case 'elasticloadbalancing':
           return '/static/aws/elb.png'
+        case 'apprunner':
+          return '/static/aws/apprunner.png'
         default:
           return '/static/aws/default.png'
       }
