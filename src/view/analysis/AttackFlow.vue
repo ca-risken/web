@@ -33,7 +33,14 @@
           <v-col cols="2">
             <v-select
               label="Service"
-              :items="['cloudfront', 's3', 'lambda', 'apigateway', 'ec2']"
+              :items="[
+                'cloudfront',
+                's3',
+                'lambda',
+                'apigateway',
+                'ec2',
+                'elasticloadbalancing',
+              ]"
               variant="outlined"
               density="comfortable"
               bg-color="white"
@@ -126,7 +133,7 @@
           <v-table fixed-header density="compact">
             <thead>
               <tr>
-                <th class="text-left text-subtitle-2 font-weight-bold">Name</th>
+                <th class="text-left text-subtitle-2 font-weight-bold">Key</th>
                 <th class="text-left text-subtitle-2 font-weight-bold">
                   Value
                 </th>
@@ -234,6 +241,7 @@ const SERVICE_FILTER = new Map([
   ['lambda', ':function:'],
   ['apigateway', 'apis/'],
   ['ec2', 'instance/'],
+  ['elasticloadbalancing', ':loadbalancer/'],
 ])
 
 export default {
@@ -612,8 +620,12 @@ export default {
           return '/static/icon/eventbridge.png'
         case 'external-service':
           return '/static/icon/internet.png'
+        case 'internal-service':
+          return '/static/icon/internet.png'
         case 'ec2':
           return '/static/icon/ec2.png'
+        case 'elasticloadbalancing':
+          return '/static/icon/elb.png'
         default:
           return '/static/aws/default.png'
       }
