@@ -603,29 +603,29 @@ export default {
         case 'internet':
           return '/static/icon/internet.png'
         case 'apigateway':
-          return '/static/icon/apigateway.png'
+          return '/static/aws/apigateway.png'
         case 'cloudfront':
-          return '/static/icon/cloudfront.jpeg'
+          return '/static/aws/cloudfront.jpeg'
         case 's3':
-          return '/static/icon/s3.jpeg'
+          return '/static/aws/s3.jpeg'
         case 'lambda':
-          return '/static/icon/lambda.png'
+          return '/static/aws/lambda.png'
         case 'iam':
-          return '/static/icon/iam.png'
+          return '/static/aws/iam.png'
         case 'sns':
-          return '/static/icon/sns.png'
+          return '/static/aws/sns.png'
         case 'sqs':
-          return '/static/icon/sqs.png'
+          return '/static/aws/sqs.png'
         case 'events':
-          return '/static/icon/eventbridge.png'
+          return '/static/aws/eventbridge.png'
         case 'external-service':
           return '/static/icon/internet.png'
         case 'internal-service':
           return '/static/icon/internet.png'
         case 'ec2':
-          return '/static/icon/ec2.png'
+          return '/static/aws/ec2.png'
         case 'elasticloadbalancing':
-          return '/static/icon/elb.png'
+          return '/static/aws/elb.png'
         default:
           return '/static/aws/default.png'
       }
