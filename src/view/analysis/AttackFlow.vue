@@ -119,17 +119,31 @@
       </v-list-item>
       <v-divider />
       <v-list nav>
-        <v-list-item prepend-icon="mdi-note" title="ResourceName"
-          >{{ resourceModel.resource_name }}
+        <v-list-item title="ResourceName">
+          <template v-slot:prepend>
+            <v-icon color="indigo-darken-2">mdi-note</v-icon>
+          </template>
+          {{ resourceModel.resource_name }}
         </v-list-item>
-        <v-list-item prepend-icon="mdi-earth" title="Region">{{
-          resourceModel.region
-        }}</v-list-item>
-        <v-list-item
-          prepend-icon="mdi-format-list-bulleted"
-          title="MetaData"
-          @click="drawerMetaData = !drawerMetaData"
-        ></v-list-item>
+        <v-list-item title="Region">
+          <template v-slot:prepend>
+            <v-icon color="blue-darken-2">mdi-earth</v-icon>
+          </template>
+
+          {{ resourceModel.region }}</v-list-item
+        >
+        <v-list-item title="Layer">
+          <template v-slot:prepend>
+            <v-icon color="teal-darken-2">mdi-layers</v-icon>
+          </template>
+
+          {{ resourceModel.layer }}</v-list-item
+        >
+        <v-list-item title="MetaData" @click="drawerMetaData = !drawerMetaData">
+          <template v-slot:prepend>
+            <v-icon color="grey-darken-2">mdi-format-list-bulleted</v-icon>
+          </template>
+        </v-list-item>
         <v-card class="ml-16" v-show="drawerMetaData">
           <v-table fixed-header density="compact">
             <thead>
@@ -150,11 +164,10 @@
             </tbody>
           </v-table>
         </v-card>
-        <v-list-item
-          prepend-icon="mdi-alert"
-          title="Findings"
-          @click="drawerFindings = !drawerFindings"
-        >
+        <v-list-item title="Findings" @click="drawerFindings = !drawerFindings">
+          <template v-slot:prepend>
+            <v-icon color="red-darken-2">mdi-alert</v-icon>
+          </template>
         </v-list-item>
         <v-card class="ml-16" v-show="drawerFindings">
           <v-checkbox
@@ -234,8 +247,10 @@ import datasource from '@/mixin/api/datasource'
 
 const LAYER_INTERNET = 'INTERNET'
 const LAYER_EXTERNAL_SERVICE = 'EXTERNAL_SERVICE'
+const LAYER_INTERNAL_SERVICE = 'INTERNAL_SERVICE'
 const LAYER_DATASTORE = 'DATASTORE'
 const LAYER_LATERAL_MOVEMENT = 'LATERAL_MOVEMENT'
+const LAYER_CODE_REPOSITORY = 'CODE_REPOSITORY'
 const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
 const SERVICE_FILTER = new Map([
   ['cloudfront', ':distribution/'],
@@ -594,7 +609,15 @@ export default {
       switch (layer) {
         case LAYER_INTERNET:
           return 'input'
-        case (LAYER_EXTERNAL_SERVICE, LAYER_DATASTORE, LAYER_LATERAL_MOVEMENT):
+        case LAYER_EXTERNAL_SERVICE:
+          return 'output'
+        case LAYER_DATASTORE:
+          return 'output'
+        case LAYER_LATERAL_MOVEMENT:
+          return 'output'
+        case LAYER_CODE_REPOSITORY:
+          return 'output'
+        case LAYER_INTERNAL_SERVICE:
           return 'output'
         default:
           return 'default'
@@ -620,9 +643,7 @@ export default {
           return '/static/aws/sqs.png'
         case 'events':
           return '/static/aws/eventbridge.png'
-        case 'external-service':
-          return '/static/icon/internet.png'
-        case 'internal-service':
+        case ('external-service', 'internal-service'):
           return '/static/icon/internet.png'
         case 'ec2':
           return '/static/aws/ec2.png'
@@ -630,6 +651,12 @@ export default {
           return '/static/aws/elb.png'
         case 'apprunner':
           return '/static/aws/apprunner.png'
+        case 'ecr':
+          return '/static/aws/ecr.png'
+        case 'ecr-public':
+          return '/static/aws/ecr.png'
+        case 'github':
+          return '/static/code/github.png'
         default:
           return '/static/aws/default.png'
       }
