@@ -400,7 +400,10 @@ export default {
         return
       }
       let promiseFuncs = []
-      const filter = SERVICE_FILTER.get(this.searchModel.service)
+      let filter = ''
+      if (SERVICE_FILTER.has(this.searchModel.service)) {
+        filter = SERVICE_FILTER.get(this.searchModel.service)
+      }
       for (const id of list.resource_id) {
         promiseFuncs.push(this.getResourceDetail(id, filter))
       }
@@ -417,9 +420,23 @@ export default {
     async getFindingList() {
       this.loading = true
       this.findingList = []
+      let resource_name = this.resourceModel.resource_name
+      if (
+        resource_name.startsWith('http://') ||
+        resource_name.startsWith('https://')
+      ) {
+        const splitURL = resource_name.split('/')
+        resource_name = splitURL[0] + '//' + splitURL[2]
+        if (resource_name.endsWith('/')) {
+          resource_name = resource_name.slice(0, -1)
+        }
+      }
+      await this.addFindingList(resource_name)
+      this.loading = false
+    },
+    async addFindingList(resource_name) {
       let searchCond = ''
-      searchCond += '&tag=' + this.searchModel.cloudID
-      searchCond += '&resource_name=' + this.resourceModel.resource_name
+      searchCond += '&resource_name=' + resource_name
       searchCond += '&sort=score&direction=desc'
       if (this.scoreFilter) {
         searchCond += '&from_score=0.6'
@@ -429,7 +446,6 @@ export default {
       const list = await this.listFinding(searchCond)
       if (!list.finding_id || list.finding_id.length == 0) {
         this.drawerFindings = false
-        this.loading = false
         return
       }
       let findings = []
@@ -440,7 +456,6 @@ export default {
       this.findingList.sort((a, b) => {
         return b.score - a.score
       })
-      this.loading = false
     },
     async getFindingDetail(id) {
       const f = await this.getFinding(id)
@@ -627,6 +642,10 @@ export default {
       switch (service) {
         case 'internet':
           return '/static/icon/internet.png'
+        case 'external-service':
+          return '/static/icon/internet.png'
+        case 'internal-service':
+          return '/static/icon/internet.png'
         case 'apigateway':
           return '/static/aws/apigateway.png'
         case 'cloudfront':
@@ -643,8 +662,6 @@ export default {
           return '/static/aws/sqs.png'
         case 'events':
           return '/static/aws/eventbridge.png'
-        case ('external-service', 'internal-service'):
-          return '/static/icon/internet.png'
         case 'ec2':
           return '/static/aws/ec2.png'
         case 'elasticloadbalancing':
