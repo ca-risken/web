@@ -1,10 +1,17 @@
+import axios from 'axios'
+
+const longAxios = axios.create({
+  baseURL: '/api/v1',
+  timeout: 120000,
+})
+
 const datasource = {
   data: () => {
     return {}
   },
   methods: {
     async getAttackFlowAnalysis(cloudType, cloudID, resourceName) {
-      const res = await this.$axios
+      const res = await longAxios
         .get(
           '/datasource/get-attack-flow-analysis/?project_id=' +
             this.getCurrentProjectID() +
