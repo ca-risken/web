@@ -221,6 +221,7 @@ const en = {
     Activate: 'Activate',
     'Activate selected findings': 'Activate selected findings',
     'Analyze Alert': 'Analyze Alert',
+    'Analyze Attack Flow': 'Analyze Attack Flow',
     'Archive Finding': 'Archive Finding',
     'Archive selected findings': 'Archive selected findings',
     'Attach DataSource': 'Attach DataSource',

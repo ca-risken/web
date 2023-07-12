@@ -322,8 +322,33 @@ export default {
     this.searchModel.cloudID = this.cloudList[0].cloud_id
     this.searchModel.cloudName = this.cloudList[0].name
 
+    // query
+    if (
+      this.$route.query &&
+      this.$route.query.resource_name &&
+      this.canAttackFlowAnalyze(this.$route.query.resource_name)
+    ) {
+      const resourceName = this.$route.query.resource_name
+      // ARN format: arn:aws:{service}:{region}:{cloud_id}:xxxx
+      const split = resourceName.split(':')
+      if (split[4]) {
+        this.searchModel.cloudID = split[4]
+      } else {
+        this.searchModel.cloudID = ''
+      }
+      if (split[2]) {
+        this.searchModel.service = split[2]
+      }
+      this.searchModel.resourceName = resourceName
+    }
+
     // refresh resource list
     this.listResource()
+
+    // generate initial attack flow
+    if (this.searchModel.cloudID && this.searchModel.resourceName) {
+      await this.generateVueFlow()
+    }
     this.loading = false
   },
   methods: {
@@ -371,7 +396,6 @@ export default {
     async listAWS() {
       const aws = await this.listAWSAPI().catch((err) => {
         this.finishError(this.parseAPIErrorMessage(err))
-        this.loading = false
         return Promise.reject(err)
       })
       if (!aws) {
@@ -384,7 +408,6 @@ export default {
           cloud_name: a.name,
         })
       })
-      this.loading = false
     },
     async listResource() {
       this.loading = true
@@ -396,7 +419,6 @@ export default {
       searchCond += '&resource_name=arn:aws:' + this.searchModel.service
       const list = await this.listResourceID(searchCond)
       if (!list.resource_id || list.resource_id.length == 0) {
-        this.loading = false
         return
       }
       let promiseFuncs = []
@@ -408,7 +430,6 @@ export default {
         promiseFuncs.push(this.getResourceDetail(id, filter))
       }
       await Promise.all(promiseFuncs) // Parallel API call
-      this.loading = false
     },
     async getResourceDetail(id, filter) {
       const resource = await this.getResource(id)
@@ -717,6 +738,27 @@ export default {
         return ret.slice(0, -2)
       }
       return obj
+    },
+    canAttackFlowAnalyze(resourceName) {
+      if (!resourceName) {
+        return false
+      }
+      if (resourceName.startsWith('arn:aws:cloudfront:')) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:elasticloadbalancing:')) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:apigateway:')) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:lambda:')) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:ec2:')) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:apprunner:')) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:s3:')) {
+        return true
+      }
+      return false
     },
 
     // finish

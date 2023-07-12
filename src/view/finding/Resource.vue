@@ -303,6 +303,11 @@ export default {
             click: this.handleViewFinding,
           },
           {
+            text: 'Analyze Attack Flow',
+            icon: 'mdi-sitemap-outline',
+            click: this.handleAttackFlow,
+          },
+          {
             text: 'Delete Item',
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
@@ -440,6 +445,11 @@ export default {
       this.$router.push(
         '/finding/finding?from_score=0&resource_name=' +
           item.value.resource_name
+      )
+    },
+    handleAttackFlow(item) {
+      this.$router.push(
+        '/analysis/attack-flow?resource_name=' + item.value.resource_name
       )
     },
     handleSearch() {

@@ -221,6 +221,7 @@ const ja = {
     Activate: '有効化',
     'Activate selected findings': '選択中のFindingを有効化する',
     'Analyze Alert': 'アラート状態の解析',
+    'Analyze Attack Flow': 'アタックフロー解析',
     'Archive Finding': 'アーカイブする',
     'Archive selected findings': '選択中のFindingをアーカイブする',
     'Attach DataSource': 'データソースを設定する',
