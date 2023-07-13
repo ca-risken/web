@@ -323,6 +323,7 @@
           <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
           <v-spacer />
           <v-btn
+            v-if="canAttackFlowAnalyze(findingModel.resource_name)"
             color="blue-grey"
             variant="outlined"
             style="text-transform: none"

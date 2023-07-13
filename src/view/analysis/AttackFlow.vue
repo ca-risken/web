@@ -252,14 +252,6 @@ const LAYER_DATASTORE = 'DATASTORE'
 const LAYER_LATERAL_MOVEMENT = 'LATERAL_MOVEMENT'
 const LAYER_CODE_REPOSITORY = 'CODE_REPOSITORY'
 const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
-const SERVICE_FILTER = new Map([
-  ['cloudfront', ':distribution/'],
-  ['lambda', ':function:'],
-  ['apigateway', 'apis/'],
-  ['ec2', 'instance/'],
-  ['elasticloadbalancing', ':loadbalancer/'],
-  ['apprunner', ':service/'],
-])
 
 export default {
   name: 'AWSAttackFlow',
@@ -323,24 +315,7 @@ export default {
     this.searchModel.cloudName = this.cloudList[0].name
 
     // query
-    if (
-      this.$route.query &&
-      this.$route.query.resource_name &&
-      this.canAttackFlowAnalyze(this.$route.query.resource_name)
-    ) {
-      const resourceName = this.$route.query.resource_name
-      // ARN format: arn:aws:{service}:{region}:{cloud_id}:xxxx
-      const split = resourceName.split(':')
-      if (split[4]) {
-        this.searchModel.cloudID = split[4]
-      } else {
-        this.searchModel.cloudID = ''
-      }
-      if (split[2]) {
-        this.searchModel.service = split[2]
-      }
-      this.searchModel.resourceName = resourceName
-    }
+    this.parseQuery()
 
     // refresh resource list
     this.listResource()
@@ -422,18 +397,14 @@ export default {
         return
       }
       let promiseFuncs = []
-      let filter = ''
-      if (SERVICE_FILTER.has(this.searchModel.service)) {
-        filter = SERVICE_FILTER.get(this.searchModel.service)
-      }
       for (const id of list.resource_id) {
-        promiseFuncs.push(this.getResourceDetail(id, filter))
+        promiseFuncs.push(this.getResourceDetail(id))
       }
       await Promise.all(promiseFuncs) // Parallel API call
     },
-    async getResourceDetail(id, filter) {
+    async getResourceDetail(id) {
       const resource = await this.getResource(id)
-      if (resource.resource_name.includes(filter)) {
+      if (this.canAttackFlowAnalyze(resource.resource_name)) {
         this.resourceNameList.push(resource.resource_name)
       }
     },
@@ -739,26 +710,26 @@ export default {
       }
       return obj
     },
-    canAttackFlowAnalyze(resourceName) {
-      if (!resourceName) {
-        return false
+    parseQuery() {
+      if (
+        !this.$route.query ||
+        !this.$route.query.resource_name ||
+        !this.canAttackFlowAnalyze(this.$route.query.resource_name)
+      ) {
+        return
       }
-      if (resourceName.startsWith('arn:aws:cloudfront:')) {
-        return true
-      } else if (resourceName.startsWith('arn:aws:elasticloadbalancing:')) {
-        return true
-      } else if (resourceName.startsWith('arn:aws:apigateway:')) {
-        return true
-      } else if (resourceName.startsWith('arn:aws:lambda:')) {
-        return true
-      } else if (resourceName.startsWith('arn:aws:ec2:')) {
-        return true
-      } else if (resourceName.startsWith('arn:aws:apprunner:')) {
-        return true
-      } else if (resourceName.startsWith('arn:aws:s3:')) {
-        return true
+      const resourceName = this.$route.query.resource_name
+      // ARN format: arn:aws:{service}:{region}:{cloud_id}:xxxx
+      const split = resourceName.split(':')
+      if (split[4]) {
+        this.searchModel.cloudID = split[4]
+      } else {
+        this.searchModel.cloudID = ''
       }
-      return false
+      if (split[2]) {
+        this.searchModel.service = split[2]
+      }
+      this.searchModel.resourceName = resourceName
     },
 
     // finish
