@@ -323,18 +323,31 @@
           <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
           <v-spacer />
           <v-btn
+            v-if="canAttackFlowAnalyze(findingModel.resource_name)"
+            color="blue-grey"
+            variant="outlined"
+            style="text-transform: none"
+            class="mx-2"
+            :to="{
+              path: '/analysis/attack-flow/',
+              query: { resource_name: findingModel.resource_name },
+            }"
+          >
+            <template v-slot:prepend>
+              <v-icon color="success">mdi-sitemap-outline</v-icon>
+            </template>
+            {{ $t(`action['Analyze Attack Flow']`) }}
+          </v-btn>
+
+          <v-btn
             color="blue-grey"
             variant="outlined"
             style="text-transform: none"
             @click="handleChatGPT"
           >
-            <v-avatar class="mr-2" size="x-small">
-              <img
-                color="white"
-                src="/static/icon/question_answer_black_24dp.svg"
-                alt="question"
-              />
-            </v-avatar>
+            <template v-slot:prepend>
+              <v-icon color="purple">mdi-forum-outline</v-icon>
+            </template>
             {{ $t(`btn['Summarize with ChatGPT']`) }}
           </v-btn>
         </v-toolbar>

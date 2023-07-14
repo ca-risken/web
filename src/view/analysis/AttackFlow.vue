@@ -252,14 +252,6 @@ const LAYER_DATASTORE = 'DATASTORE'
 const LAYER_LATERAL_MOVEMENT = 'LATERAL_MOVEMENT'
 const LAYER_CODE_REPOSITORY = 'CODE_REPOSITORY'
 const MSG_COMPLETE_ANALYSIS = 'Success attack flow analysis'
-const SERVICE_FILTER = new Map([
-  ['cloudfront', ':distribution/'],
-  ['lambda', ':function:'],
-  ['apigateway', 'apis/'],
-  ['ec2', 'instance/'],
-  ['elasticloadbalancing', ':loadbalancer/'],
-  ['apprunner', ':service/'],
-])
 
 export default {
   name: 'AWSAttackFlow',
@@ -322,8 +314,16 @@ export default {
     this.searchModel.cloudID = this.cloudList[0].cloud_id
     this.searchModel.cloudName = this.cloudList[0].name
 
+    // query
+    this.parseQuery()
+
     // refresh resource list
     this.listResource()
+
+    // generate initial attack flow
+    if (this.searchModel.cloudID && this.searchModel.resourceName) {
+      await this.generateVueFlow()
+    }
     this.loading = false
   },
   methods: {
@@ -371,7 +371,6 @@ export default {
     async listAWS() {
       const aws = await this.listAWSAPI().catch((err) => {
         this.finishError(this.parseAPIErrorMessage(err))
-        this.loading = false
         return Promise.reject(err)
       })
       if (!aws) {
@@ -384,7 +383,6 @@ export default {
           cloud_name: a.name,
         })
       })
-      this.loading = false
     },
     async listResource() {
       this.loading = true
@@ -396,23 +394,17 @@ export default {
       searchCond += '&resource_name=arn:aws:' + this.searchModel.service
       const list = await this.listResourceID(searchCond)
       if (!list.resource_id || list.resource_id.length == 0) {
-        this.loading = false
         return
       }
       let promiseFuncs = []
-      let filter = ''
-      if (SERVICE_FILTER.has(this.searchModel.service)) {
-        filter = SERVICE_FILTER.get(this.searchModel.service)
-      }
       for (const id of list.resource_id) {
-        promiseFuncs.push(this.getResourceDetail(id, filter))
+        promiseFuncs.push(this.getResourceDetail(id))
       }
       await Promise.all(promiseFuncs) // Parallel API call
-      this.loading = false
     },
-    async getResourceDetail(id, filter) {
+    async getResourceDetail(id) {
       const resource = await this.getResource(id)
-      if (resource.resource_name.includes(filter)) {
+      if (this.canAttackFlowAnalyze(resource.resource_name)) {
         this.resourceNameList.push(resource.resource_name)
       }
     },
@@ -717,6 +709,27 @@ export default {
         return ret.slice(0, -2)
       }
       return obj
+    },
+    parseQuery() {
+      if (
+        !this.$route.query ||
+        !this.$route.query.resource_name ||
+        !this.canAttackFlowAnalyze(this.$route.query.resource_name)
+      ) {
+        return
+      }
+      const resourceName = this.$route.query.resource_name
+      // ARN format: arn:aws:{service}:{region}:{cloud_id}:xxxx
+      const split = resourceName.split(':')
+      if (split[4]) {
+        this.searchModel.cloudID = split[4]
+      } else {
+        this.searchModel.cloudID = ''
+      }
+      if (split[2]) {
+        this.searchModel.service = split[2]
+      }
+      this.searchModel.resourceName = resourceName
     },
 
     // finish

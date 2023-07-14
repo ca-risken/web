@@ -576,6 +576,45 @@ let mixin = {
       }
       return masked.replace(maskedPattern, '*****')
     },
+    canAttackFlowAnalyze(resourceName) {
+      if (!resourceName) {
+        return false
+      }
+      if (
+        resourceName.startsWith('arn:aws:cloudfront:') &&
+        resourceName.includes(':distribution/')
+      ) {
+        return true
+      } else if (
+        resourceName.startsWith('arn:aws:elasticloadbalancing:') &&
+        resourceName.includes(':loadbalancer/')
+      ) {
+        return true
+      } else if (
+        resourceName.startsWith('arn:aws:apigateway:') &&
+        resourceName.includes('apis/')
+      ) {
+        return true
+      } else if (
+        resourceName.startsWith('arn:aws:lambda:') &&
+        resourceName.includes(':function:')
+      ) {
+        return true
+      } else if (
+        resourceName.startsWith('arn:aws:ec2:') &&
+        resourceName.includes(':instance/')
+      ) {
+        return true
+      } else if (
+        resourceName.startsWith('arn:aws:apprunner:') &&
+        resourceName.includes(':service/')
+      ) {
+        return true
+      } else if (resourceName.startsWith('arn:aws:s3:')) {
+        return true
+      }
+      return false
+    },
     parseAPIErrorMessage: (err) => {
       if (!err) {
         return ''

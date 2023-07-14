@@ -167,7 +167,7 @@
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
-                        v-for="action in table.actions"
+                        v-for="action in getActionList(item)"
                         :key="action.text"
                         @click="action.click(item)"
                         :prepend-icon="action.icon"
@@ -296,18 +296,6 @@ export default {
           key: 'resource_id',
           direction: 'asc',
         },
-        actions: [
-          {
-            text: 'View Finding',
-            icon: 'mdi-eye',
-            click: this.handleViewFinding,
-          },
-          {
-            text: 'Delete Item',
-            icon: 'mdi-trash-can-outline',
-            click: this.handleDeleteItem,
-          },
-        ],
         total: 0,
         footer: {
           itemsPerPageText: 'Rows/Page',
@@ -440,6 +428,11 @@ export default {
       this.$router.push(
         '/finding/finding?from_score=0&resource_name=' +
           item.value.resource_name
+      )
+    },
+    handleAttackFlow(item) {
+      this.$router.push(
+        '/analysis/attack-flow?resource_name=' + item.value.resource_name
       )
     },
     handleSearch() {
@@ -618,6 +611,27 @@ export default {
       this.searchForm.tagList = []
       const tag = await this.listResourceTagName()
       this.searchForm.tagList = tag
+    },
+    getActionList(item) {
+      let list = []
+      list.push({
+        text: 'View Finding',
+        icon: 'mdi-eye',
+        click: this.handleViewFinding,
+      })
+      if (this.canAttackFlowAnalyze(item.value.resource_name)) {
+        list.push({
+          text: 'Analyze Attack Flow',
+          icon: 'mdi-sitemap-outline',
+          click: this.handleAttackFlow,
+        })
+      }
+      list.push({
+        text: 'Delete Item',
+        icon: 'mdi-trash-can-outline',
+        click: this.handleDeleteItem,
+      })
+      return list
     },
 
     // finish
