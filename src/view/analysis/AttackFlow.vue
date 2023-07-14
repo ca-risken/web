@@ -66,6 +66,16 @@
               ref="refResourceName"
             />
           </v-col>
+          <v-col cols="1">
+            <v-checkbox
+              label="Public"
+              v-model="searchModel.isPublic"
+              :loading="loading"
+              color="success"
+              dense
+              hide-details
+            />
+          </v-col>
           <v-spacer />
           <v-col cols="1">
             <v-btn
@@ -280,6 +290,7 @@ export default {
         cloudName: '',
         service: 'cloudfront',
         resourceName: '',
+        isPublic: true,
         validator: {
           resourceName: [
             (v) => !!v || 'ResourceName is required',
@@ -390,8 +401,8 @@ export default {
       let searchCond = ''
       searchCond += '&namespace=' + this.searchModel.cloudType
       searchCond += '&resource_type=' + this.searchModel.service
-      searchCond += '&tag=' + this.searchModel.cloudID
       searchCond += '&resource_name=arn:aws:' + this.searchModel.service
+      searchCond += '&tag=' + this.searchModel.cloudID
       const list = await this.listResourceID(searchCond)
       if (!list.resource_id || list.resource_id.length == 0) {
         return
@@ -405,8 +416,30 @@ export default {
     async getResourceDetail(id) {
       const resource = await this.getResource(id)
       if (this.canAttackFlowAnalyze(resource.resource_name)) {
-        this.resourceNameList.push(resource.resource_name)
+        if (!this.searchModel.isPublic) {
+          this.resourceNameList.push(resource.resource_name)
+        }
+        const isPublic = await this.isPublicFacingResource(id)
+        if (isPublic) {
+          this.resourceNameList.push(resource.resource_name)
+        }
       }
+    },
+    async isPublicFacingResource(id) {
+      if (
+        this.searchModel.service == 'cloudfront' ||
+        this.searchModel.service == 'apigateway' ||
+        this.searchModel.service == 'apprunner'
+      ) {
+        return true
+      }
+      const tags = await await this.listResourceTag(id)
+      for (const tag of tags) {
+        if (tag.tag == 'public-facing') {
+          return true
+        }
+      }
+      return false
     },
 
     async getFindingList() {
