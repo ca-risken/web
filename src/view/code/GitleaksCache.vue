@@ -7,7 +7,7 @@
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
-          label="Search"
+          label="Filter"
           single-line
           hide-details
           clearable
@@ -38,7 +38,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text outlined color="grey-darken-1" @click="handleCancel">
+        <v-btn variant="outlined" color="grey-darken-1" @click="handleCancel">
           {{ $t(`btn['CANCEL']`) }}
         </v-btn>
       </v-card-actions>
@@ -63,9 +63,6 @@ export default {
   data() {
     return {
       loading: false,
-      searchModel: {
-        repositoryName: null,
-      },
       search: '',
       table: {
         options: {
@@ -80,8 +77,6 @@ export default {
         },
         items: [],
       },
-      users: [],
-      noUser: false,
     }
   },
   computed: {
