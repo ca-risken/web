@@ -108,6 +108,23 @@ const code = {
           return Promise.reject(err)
         })
     },
+    async listGitleaksCacheAPI(github_setting_id) {
+      const query =
+        '?project_id=' +
+        this.getCurrentProjectID() +
+        '&github_setting_id=' +
+        github_setting_id
+
+      const res = await this.$axios
+        .get('/code/list-gitleaks-cache/' + query)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data || !res.data.data || !res.data.data.gitleaks_cache) {
+        return []
+      }
+      return res.data.data.gitleaks_cache
+    },
     async invokeScanGitleaksAPI(github_setting_id, fullscan) {
       const param = {
         project_id: this.getCurrentProjectID(),

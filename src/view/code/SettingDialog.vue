@@ -193,7 +193,7 @@
                   </v-col>
                 </v-row>
                 <v-row>
-                  <v-col cols="3">
+                  <v-col cols="2">
                     <v-list-item two-line>
                       <v-list-item-subtitle>
                         {{ $t(`item['Data Source ID']`) }}
@@ -203,7 +203,7 @@
                       </v-list-item-title>
                     </v-list-item>
                   </v-col>
-                  <v-col cols="3">
+                  <v-col cols="2">
                     <v-list-item>
                       <v-list-item-title class="text-h5">
                         <v-list-item-subtitle>
@@ -215,7 +215,7 @@
                       </v-list-item-title>
                     </v-list-item>
                   </v-col>
-                  <v-col cols="3">
+                  <v-col cols="2">
                     <v-list-item>
                       <v-list-item-title class="text-h5">
                         <v-list-item-subtitle>
@@ -250,13 +250,35 @@
                         <v-list-item-subtitle>
                           {{ $t(`item['ScanAt']`) }}
                         </v-list-item-subtitle>
-                        <v-chip
-                          color="grey-lighten-3"
-                          v-if="gitleaksSetting.scan_at"
-                        >
+                        <v-chip v-if="gitleaksSetting.scan_at">
                           {{ formatTime(gitleaksSetting.scan_at) }}
                         </v-chip>
                         <v-chip v-else>Not yet scan...</v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="3" v-if="getStatus(gitleaksSetting) == 1">
+                    <v-list-item>
+                      <v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{ $t(`view.code['Scan History']`) }}
+                        </v-list-item-subtitle>
+                        <v-btn
+                          @click="openGitleaksCacheDialog()"
+                          density="comfortable"
+                          variant="outlined"
+                          color="cyan-darken-2"
+                        >
+                          {{ $t(`btn['CHECK']`) }}
+                        </v-btn>
+                        <gitleaks-cache
+                          v-if="gitleaksCacheDialog"
+                          :gitleaksCacheDialog="gitleaksCacheDialog"
+                          :githubSettingID="githubSettingID"
+                          @handleGitleaksCacheResponse="
+                            this.gitleaksCacheDialog = false
+                          "
+                        />
                       </v-list-item-title>
                     </v-list-item>
                   </v-col>
@@ -506,10 +528,7 @@
                             <v-list-item-subtitle>
                               {{ $t(`item['ScanAt']`) }}
                             </v-list-item-subtitle>
-                            <v-chip
-                              color="grey-lighten-3"
-                              v-if="dependencySetting.scan_at"
-                            >
+                            <v-chip v-if="dependencySetting.scan_at">
                               {{ formatTime(dependencySetting.scan_at) }}
                             </v-chip>
                             <v-chip v-else>Not yet scan...</v-chip>
@@ -618,9 +637,13 @@ import Util from '@/util'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import code from '@/mixin/api/code'
+import GitleaksCache from './GitleaksCache.vue'
 export default {
   name: 'SettingDialog',
   mixins: [mixin, project, code],
+  components: {
+    GitleaksCache,
+  },
   props: {
     isReadOnly: {
       type: Boolean,
@@ -693,6 +716,8 @@ export default {
       isEnabledDependency: this.gitHubModel.isEnabledDependency,
       isDeleteGitleaks: false,
       isDeleteDependency: false,
+      gitleaksCacheDialog: false,
+      githubSettingID: 0,
       loading: false,
       gitHubForm: {
         valid: false,
@@ -1030,6 +1055,10 @@ export default {
     },
     handleChangeStatus() {
       this.e6 = 2
+    },
+    openGitleaksCacheDialog() {
+      this.gitleaksCacheDialog = true
+      this.githubSettingID = this.gitHubSetting.github_setting_id
     },
   },
 }
