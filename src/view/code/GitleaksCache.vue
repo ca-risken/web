@@ -2,7 +2,7 @@
   <v-dialog max-width="50%" v-model="showDialog">
     <v-card>
       <v-card-title>
-        {{ $t(`view.code['Scan History']`) }}
+        {{ $t(`view.code['Repository List']`) }}
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"

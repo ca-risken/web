@@ -364,7 +364,7 @@ const ja = {
       'Activate DataSource': '登録時にDataSourceを有効化する',
     },
     code: {
-      'Scan History': 'スキャン履歴',
+      'Repository List': 'リポジトリ一覧',
     },
   },
 }

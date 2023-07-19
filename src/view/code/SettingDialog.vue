@@ -261,7 +261,7 @@
                     <v-list-item>
                       <v-list-item-title>
                         <v-list-item-subtitle>
-                          {{ $t(`view.code['Scan History']`) }}
+                          {{ $t(`view.code['Repository List']`) }}
                         </v-list-item-subtitle>
                         <v-btn
                           @click="openGitleaksCacheDialog()"

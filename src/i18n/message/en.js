@@ -367,7 +367,7 @@ const en = {
       'Activate DataSource': 'Activate DataSource',
     },
     code: {
-      'Scan History': 'Scan History',
+      'Repository List': 'Repository List',
     },
   },
 }
