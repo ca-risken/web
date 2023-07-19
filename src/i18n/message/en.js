@@ -39,6 +39,7 @@ const en = {
     'View registerd project tags': 'View registerd project tags',
     Recommendation: 'Recommendation',
     Upgrade: 'Upgrade',
+    CHECK: 'CHECK',
   },
   menu: {
     Home: 'Home',
@@ -364,6 +365,9 @@ const en = {
     },
     osint: {
       'Activate DataSource': 'Activate DataSource',
+    },
+    code: {
+      'Repository List': 'Repository List',
     },
   },
 }

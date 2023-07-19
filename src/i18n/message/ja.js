@@ -39,6 +39,7 @@ const ja = {
     'View registerd project tags': '登録済みのプロジェクトタグを確認する',
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
+    CHECK: '確認',
   },
   menu: {
     Home: 'ホーム',
@@ -361,6 +362,9 @@ const ja = {
     },
     osint: {
       'Activate DataSource': '登録時にDataSourceを有効化する',
+    },
+    code: {
+      'Repository List': 'リポジトリ一覧',
     },
   },
 }
