@@ -954,7 +954,7 @@
                   color="green-darken-2"
                   class="ma-6 px-12"
                 ></v-progress-circular>
-                <v-card-text v-else class="text-sm-h6 ma-0 pa-0">
+                <v-card-text v-else class="text-sm-h6 ma-0 pa-0 wrap">
                   <auto-link :text="aiAnswer" />
                 </v-card-text>
               </v-alert>
@@ -1989,5 +1989,9 @@ export default {
       }
     }
   }
+}
+.wrap {
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 </style>
