@@ -612,6 +612,8 @@ let mixin = {
         return true
       } else if (resourceName.startsWith('arn:aws:s3:')) {
         return true
+      } else if (resourceName.startsWith('arn:aws:sns:')) {
+        return true
       }
       return false
     },

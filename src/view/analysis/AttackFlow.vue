@@ -41,6 +41,7 @@
                 'ec2',
                 'apprunner',
                 's3',
+                'sns',
               ]"
               variant="outlined"
               density="comfortable"
