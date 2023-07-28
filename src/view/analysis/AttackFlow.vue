@@ -75,6 +75,7 @@
               color="success"
               dense
               hide-details
+              @update:modelValue="handleChangePublic"
             />
           </v-col>
           <v-spacer />
@@ -346,6 +347,11 @@ export default {
       this.loading = false
     },
     async handleChangeService() {
+      this.loading = true
+      await this.listResource()
+      this.loading = false
+    },
+    async handleChangePublic() {
       this.loading = true
       await this.listResource()
       this.loading = false
