@@ -279,7 +279,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import { VDataTable,VDataTableServer } from 'vuetify/labs/VDataTable'
+import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
