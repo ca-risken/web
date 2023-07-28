@@ -26,7 +26,7 @@
               density="comfortable"
               bg-color="white"
               :loading="loading"
-              @update:modelValue="handleChangeCloudID"
+              @update:modelValue="handleChangeFilter"
               ref="refCloudID"
             ></v-select>
           </v-col>
@@ -48,7 +48,7 @@
               bg-color="white"
               :loading="loading"
               v-model="searchModel.service"
-              @update:modelValue="handleChangeService"
+              @update:modelValue="handleChangeFilter"
               ref="refService"
             ></v-select>
           </v-col>
@@ -75,7 +75,7 @@
               color="success"
               dense
               hide-details
-              @update:modelValue="handleChangePublic"
+              @update:modelValue="handleChangeFilter"
             />
           </v-col>
           <v-spacer />
@@ -341,17 +341,7 @@ export default {
   },
   methods: {
     // handler
-    async handleChangeCloudID() {
-      this.loading = true
-      await this.listResource()
-      this.loading = false
-    },
-    async handleChangeService() {
-      this.loading = true
-      await this.listResource()
-      this.loading = false
-    },
-    async handleChangePublic() {
+    async handleChangeFilter() {
       this.loading = true
       await this.listResource()
       this.loading = false
