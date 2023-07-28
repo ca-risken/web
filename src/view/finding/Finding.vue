@@ -183,18 +183,16 @@
             >
               <v-chip
                 :text="history.label"
-                variant="outlined"
+                label
                 closable
-                style="white-space: pre-wrap"
+                class="wrap mx-1"
                 @click="searchByHistory(history)"
                 @click:close="deleteSearchHistory(history)"
                 risken-action-name="search-finding-by-history-from-finding"
               >
                 {{ history.label }}
                 <v-tooltip activator="parent" location="bottom"
-                  ><span style="white-space: pre-wrap">{{
-                    history.tooltip
-                  }}</span></v-tooltip
+                  ><span class="wrap">{{ history.tooltip }}</span></v-tooltip
                 >
               </v-chip>
             </v-slide-group-item>
