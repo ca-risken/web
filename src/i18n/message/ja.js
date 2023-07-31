@@ -22,7 +22,7 @@ const ja = {
     'NEW WORD': '新規キーワード',
     TAG: 'タグ',
     SCAN: 'スキャン',
-    'Summarize with ChatGPT': 'ChatGPTに聞いてみる',
+    'Summarize with ChatGPT': 'ChatGPTに要約してもらう',
     'FULL SCAN': 'フルスキャン',
     'SHOW SCAN RESULT': 'スキャン結果を見る',
     ATTACH: '有効化',
