@@ -59,11 +59,11 @@
           <v-card>
             <v-divider></v-divider>
             <v-card-text class="pa-0">
-              <v-data-table
+              <v-data-table-server
                 :headers="headers"
                 :items="table.items"
                 v-model:options="table.options"
-                :server-items-length="table.total"
+                :items-length="table.total"
                 :sort-by="table.options.sortBy"
                 :page="table.options.page"
                 :items-per-page="table.options.itemsPerPage"
@@ -77,7 +77,7 @@
                 class="elevation-1"
                 item-key="user_id"
                 @click:row="handleRowClick"
-                @update:page="loadList"
+                @update:options="updateOptions"
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-2">
@@ -113,7 +113,7 @@
                     </v-list>
                   </v-menu>
                 </template>
-              </v-data-table>
+              </v-data-table-server>
             </v-card-text>
           </v-card>
         </v-col>
@@ -279,7 +279,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import { VDataTable } from 'vuetify/labs/VDataTable'
+import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
@@ -287,6 +287,7 @@ export default {
     BottomSnackBar,
     UserList,
     VDataTable,
+    VDataTableServer,
   },
   data() {
     return {
@@ -565,6 +566,10 @@ export default {
       }
 
       this.refleshList(searchCond)
+    },
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.refleshList('')
     },
     assignDataModel(item) {
       this.awsuserModelModel = {
