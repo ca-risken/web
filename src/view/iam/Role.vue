@@ -66,7 +66,6 @@
                 class="elevation-1"
                 item-key="role_id"
                 @click:row="handleRowClick"
-                @update:page="loadList"
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3" size="48px">
@@ -463,12 +462,8 @@ export default {
       this.loading = true
       let items = []
       let roleNames = []
-      const from =
-        (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.roles.slice(from, to)
       await Promise.all(
-        ids.map(async (id) => {
+        this.roles.map(async (id) => {
           const role = await this.getRoleAPI(id).catch((err) => {
             this.clearList()
             return Promise.reject(err)

@@ -49,8 +49,9 @@
           <v-card>
             <v-divider></v-divider>
             <v-card-text class="pa-0">
-              <v-data-table
+              <v-data-table-server
                 :headers="headers"
+                :items-length="table.total"
                 :items="table.items"
                 :loading="loading"
                 :sort-by="table.options.sortBy"
@@ -58,14 +59,13 @@
                 :items-per-page="table.options.itemsPerPage"
                 :items-per-page-options="table.footer.itemsPerPageOptions"
                 :items-per-page-text="table.footer.itemsPerPageText"
-                :showCurrentPage="table.footer.showCurrentPage"
+                :show-current-page="table.footer.showCurrentPage"
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="user_id"
-                @click:row="handleRowClick"
-                @update:page="loadList"
+                @update:options="updateOptions"
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-2">
@@ -109,7 +109,7 @@
                     </v-list>
                   </v-menu>
                 </template>
-              </v-data-table>
+              </v-data-table-server>
             </v-card-text>
           </v-card>
         </v-col>
@@ -306,7 +306,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import { VDataTable } from 'vuetify/labs/VDataTable'
+import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'UserManagement',
   mixins: [mixin, iam],
@@ -314,6 +314,7 @@ export default {
     BottomSnackBar,
     UserList,
     VDataTable,
+    VDataTableServer,
   },
   data() {
     return {
@@ -706,6 +707,11 @@ export default {
         updated_at: '',
       }
       this.userModel = Object.assign(this.userModel, item)
+    },
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.table.options.itemsPerPage = options.itemsPerPage
+      this.loadList(true)
     },
   },
 }
