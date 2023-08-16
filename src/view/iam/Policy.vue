@@ -67,7 +67,6 @@
                 class="elevation-1"
                 item-key="policy_id"
                 @click:row="handleRowClick"
-                @update:page="loadList"
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3" size="48px">
@@ -411,12 +410,8 @@ export default {
       this.loading = true
       let items = []
       let policyNames = []
-      const from =
-        (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.policies.slice(from, to)
       await Promise.all(
-        ids.map(async (id) => {
+        this.policies.map(async (id) => {
           const policy = await this.getPolicyAPI(id).catch((err) => {
             this.clearList()
             return Promise.reject(err)
