@@ -1003,7 +1003,6 @@ export default {
       this.deleteItem()
     },
     handleAnalyze(item) {
-      console.log(item)
       this.loading = true
       let alertConditionID = ''
       if (!item) {

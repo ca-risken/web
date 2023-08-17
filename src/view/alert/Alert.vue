@@ -400,6 +400,7 @@ export default {
     },
   },
   mounted() {
+    this.UpdateAlertFirstViewedAt()
     this.handleRefleshList()
   },
   methods: {

@@ -983,6 +983,7 @@ import mixin from '@/mixin'
 import Util from '@/util'
 import store from '@/store'
 import finding from '@/mixin/api/finding'
+import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
@@ -990,7 +991,7 @@ import AutoLink from '@/component/text/AutoLink.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'FindingList',
-  mixins: [mixin, finding],
+  mixins: [mixin, finding, alert],
   components: {
     BottomSnackBar,
     ClipBoard,
@@ -1203,6 +1204,7 @@ export default {
     },
   },
   async mounted() {
+    this.UpdateAlertFirstViewedAt()
     this.findingHistory = this.getSearchHistory()
     this.getTag()
     this.listResourceNameForCombobox()
