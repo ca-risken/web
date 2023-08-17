@@ -400,6 +400,7 @@ export default {
     },
   },
   mounted() {
+    this.UpdateAlertFirstViewedAt()
     this.handleRefleshList()
   },
   methods: {
@@ -509,6 +510,23 @@ export default {
         return Promise.reject(err)
       })
       this.finishSuccess('Success: Update alert status.')
+    },
+
+    async UpdateAlertFirstViewedAt() {
+      if (!this.$route.query) return
+      const query = this.$route.query
+      let alert_id = 0
+      let from = ''
+      if (query.from && query.from != '') {
+        from = query.from
+      }
+      if (query.alert_id && query.alert_id != '') {
+        alert_id = parseInt(query.alert_id)
+      }
+      if (!alert_id || from == '') {
+        return
+      }
+      await this.putAlertFirstViewedAt(alert_id)
     },
 
     // handler

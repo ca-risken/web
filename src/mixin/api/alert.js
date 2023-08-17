@@ -60,6 +60,18 @@ const alert = {
       })
     },
 
+    async putAlertFirstViewedAt(alert_id) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        alert_id: alert_id,
+      }
+      await this.$axios
+        .post('/alert/put-alert-first-viewed-at/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
     // AlertCondition
     async listAlertCondition(enabledOnly) {
       let enabledParam = ''
