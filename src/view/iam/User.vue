@@ -488,9 +488,16 @@ export default {
       if (displayedUserReservedLength < 0) {
         displayedUserReservedLength = 0
       }
-      items = items.concat(
-        this.appendUserReserved(displayedUserReservedLength, items.length)
-      )
+      const displayRemain = this.table.options.itemsPerPage - items.length
+      if (displayRemain > 0) {
+        let to = from + displayRemain
+        if (to > this.userReserved.length) {
+          to = this.userReserved.length
+        }
+        items = items.concat(
+          this.userReserved.slice(displayedUserReservedLength, to)
+        )
+      }
       this.table.items = items
       this.userIDList = userIDs
       this.userNameList = userNames
@@ -515,18 +522,6 @@ export default {
         reserved: false,
       }
       return item
-    },
-    appendUserReserved(from, itemLength) {
-      const displayRemain = this.table.options.itemsPerPage - itemLength
-      if (displayRemain < 0) {
-        return []
-      }
-      let to = from + displayRemain
-      if (to > this.userReserved.length) {
-        to = this.userReserved.length
-      }
-      const userReserved = this.userReserved.slice(from, to)
-      return userReserved
     },
     async listUserReserved(userIdpKey) {
       var searchCond = ''
