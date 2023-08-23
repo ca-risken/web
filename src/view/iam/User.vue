@@ -484,9 +484,20 @@ export default {
         userIDs.push(item.user_id)
         userNames.push(item.name)
       })
-      items = items.concat(
-        this.appendUserReserved(this.users.length - items.length, items.length)
-      )
+      let displayedUserReservedLength = from - this.users.length
+      if (displayedUserReservedLength < 0) {
+        displayedUserReservedLength = 0
+      }
+      const displayRemain = this.table.options.itemsPerPage - items.length
+      if (displayRemain > 0) {
+        let to = from + displayRemain
+        if (to > this.userReserved.length) {
+          to = this.userReserved.length
+        }
+        items = items.concat(
+          this.userReserved.slice(displayedUserReservedLength, to)
+        )
+      }
       this.table.items = items
       this.userIDList = userIDs
       this.userNameList = userNames
@@ -511,14 +522,6 @@ export default {
         reserved: false,
       }
       return item
-    },
-    appendUserReserved(start, itemLength) {
-      const displayRemain = this.table.options.itemsPerPage - itemLength
-      if (displayRemain < 0) {
-        return []
-      }
-      const userReserved = this.userReserved.slice(start, displayRemain)
-      return userReserved
     },
     async listUserReserved(userIdpKey) {
       var searchCond = ''
@@ -711,7 +714,7 @@ export default {
     updateOptions(options) {
       this.table.options.page = options.page
       this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList(true)
+      this.loadList()
     },
   },
 }
