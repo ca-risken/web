@@ -484,8 +484,12 @@ export default {
         userIDs.push(item.user_id)
         userNames.push(item.name)
       })
+      let displayedUserReservedLength = from - this.users.length
+      if (displayedUserReservedLength < 0) {
+        displayedUserReservedLength = 0
+      }
       items = items.concat(
-        this.appendUserReserved(this.users.length - items.length, items.length)
+        this.appendUserReserved(displayedUserReservedLength, items.length)
       )
       this.table.items = items
       this.userIDList = userIDs
@@ -512,12 +516,16 @@ export default {
       }
       return item
     },
-    appendUserReserved(start, itemLength) {
+    appendUserReserved(from, itemLength) {
       const displayRemain = this.table.options.itemsPerPage - itemLength
       if (displayRemain < 0) {
         return []
       }
-      const userReserved = this.userReserved.slice(start, displayRemain)
+      let to = from + displayRemain
+      if (to > this.userReserved.length) {
+        to = this.userReserved.length
+      }
+      const userReserved = this.userReserved.slice(from, to)
       return userReserved
     },
     async listUserReserved(userIdpKey) {
@@ -711,7 +719,7 @@ export default {
     updateOptions(options) {
       this.table.options.page = options.page
       this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList(true)
+      this.loadList()
     },
   },
 }
