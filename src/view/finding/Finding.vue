@@ -1116,16 +1116,16 @@ export default {
         'No expiration',
       ],
       popularSearchConditions: [
-        { label: 'ALL', search_condition: { status: 1, from_score: 0.0 } },
+        { label: 'ALL', search_condition: { status: 1, scoreFrom: 0.0 } },
         {
           label: 'HighScore',
-          search_condition: { status: 1, from_score: 0.8 },
+          search_condition: { status: 1, scoreFrom: 0.8 },
         },
         {
           label: 'AWS',
           search_condition: {
             status: 1,
-            from_score: 0.5,
+            scoreFrom: 0.5,
             dataSource: ['aws:'],
           },
         },
@@ -1133,7 +1133,7 @@ export default {
           label: 'GCP',
           search_condition: {
             status: 1,
-            from_score: 0.5,
+            scoreFrom: 0.5,
             dataSource: ['google:'],
           },
           tooltip: '',
@@ -1142,7 +1142,7 @@ export default {
           label: 'SecretKey',
           search_condition: {
             status: 1,
-            from_score: 0.5,
+            scoreFrom: 0.5,
             dataSource: ['code:gitleaks'],
           },
         },
@@ -1150,19 +1150,19 @@ export default {
           label: 'WordPress',
           search_condition: {
             status: 1,
-            from_score: 0.5,
+            scoreFrom: 0.5,
             dataSource: ['diagnosis:wpscan'],
           },
         },
         {
           label: 'IAM',
-          search_condition: { status: 1, from_score: 0.5, tag: ['IAM', 'iam'] },
+          search_condition: { status: 1, scoreFrom: 0.5, tag: ['IAM', 'iam'] },
         },
         {
           label: 'PublicFacing',
           search_condition: {
             status: 1,
-            from_score: 0.5,
+            scoreFrom: 0.5,
             tag: ['PublicFacing'],
           },
         },
