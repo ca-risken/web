@@ -305,6 +305,29 @@ const en = {
       'ChatGPT Question-2':
         'Also, please include any ways to address the problem.',
       'ChatGPT Examples': 'Finding details...',
+      SearchHistory: 'SearchHistory',
+      PopularSearch: {
+        label: {
+          ALL: 'ALL',
+          HighScore: 'HighScore',
+          AWS: 'AWS',
+          GCP: 'GCP',
+          SecretKey: 'SecretKey',
+          WordPress: 'WordPress',
+          IAM: 'IAM',
+          PublicFacing: 'PublicFacing',
+        },
+        tooltip: {
+          ALL: 'Search all Findings',
+          HighScore: 'Search high scores Findings',
+          AWS: 'Search for AWS-related Findings',
+          GCP: 'Search for GCP-related Findings',
+          SecretKey: 'Search for secret keys',
+          WordPress: 'Search for WordPress',
+          IAM: 'Search for IAM-related Findings',
+          PublicFacing: 'Search for resources exposed to the internet',
+        },
+      },
     },
     alert: {
       'Active Only': 'Active Only',
