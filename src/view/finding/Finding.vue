@@ -102,7 +102,7 @@
               </template>
               <span>search</span>
             </v-tooltip>
-            <v-menu :disabled="!table.selected || table.selected.length <= 0">
+            <v-menu>
               <template v-slot:activator="{ props }">
                 <v-btn
                   v-bind="props"
@@ -122,6 +122,7 @@
                   :key="action.text"
                   @click="action.click"
                   :prepend-icon="action.icon"
+                  :disabled="!table.selected || table.selected.length <= 0"
                 >
                   <v-list-item-title class="ma-1">{{
                     $t(`action['` + action.text + `']`)
@@ -132,67 +133,111 @@
           </v-col>
         </v-row>
         <transition name="fade">
-          <v-row v-show="searchMenuDetail">
-            <v-col cols="3" class="px-1">
-              <v-combobox
-                multiple
-                variant="outlined"
-                density="compact"
-                clearable
-                small-chips
-                deletable-chips
-                hide-details
-                bg-color="white"
-                :label="$t(`item['` + searchForm.tag.label + `']`)"
-                :placeholder="searchForm.tag.placeholder"
-                :items="searchForm.tagList"
-                :loading="loading"
-                v-model="searchModel.tag"
-                ref="refTag"
-              />
-            </v-col>
+          <div>
+            <v-row v-show="searchMenuDetail">
+              <v-col cols="3" class="px-1">
+                <v-combobox
+                  multiple
+                  variant="outlined"
+                  density="compact"
+                  clearable
+                  small-chips
+                  deletable-chips
+                  hide-details
+                  bg-color="white"
+                  :label="$t(`item['` + searchForm.tag.label + `']`)"
+                  :placeholder="searchForm.tag.placeholder"
+                  :items="searchForm.tagList"
+                  :loading="loading"
+                  v-model="searchModel.tag"
+                  ref="refTag"
+                />
+              </v-col>
 
-            <v-col cols="4" class="px-1">
-              <v-combobox
-                multiple
-                variant="outlined"
-                density="compact"
-                clearable
-                small-chips
-                deletable-chips
-                hide-details
-                bg-color="white"
-                v-model="searchModel.resourceName"
-                :loading="loading"
-                :label="$t(`item['` + searchForm.resourceName.label + `']`)"
-                :placeholder="searchForm.resourceName.placeholder"
-                :items="resourceNameCombobox"
-                ref="refResourceName"
-                no-filter
-              />
-            </v-col>
-          </v-row>
+              <v-col cols="4" class="px-1">
+                <v-combobox
+                  multiple
+                  variant="outlined"
+                  density="compact"
+                  clearable
+                  small-chips
+                  deletable-chips
+                  hide-details
+                  bg-color="white"
+                  v-model="searchModel.resourceName"
+                  :loading="loading"
+                  :label="$t(`item['` + searchForm.resourceName.label + `']`)"
+                  :placeholder="searchForm.resourceName.placeholder"
+                  :items="resourceNameCombobox"
+                  ref="refResourceName"
+                  no-filter
+                />
+              </v-col>
+            </v-row>
+
+            <!-- SearchHistory -->
+            <v-row v-show="searchMenuDetail">
+              <v-col>
+                <p class="ml-4">{{ $t(`view.finding['SearchHistory']`) }}</p>
+              </v-col>
+            </v-row>
+            <v-row v-show="searchMenuDetail">
+              <v-col class="pb-10">
+                <v-slide-group show-arrows>
+                  <v-slide-group-item
+                    v-for="history in sortedFindingHistory"
+                    :key="history.search_at"
+                  >
+                    <v-chip
+                      :text="history.label"
+                      label
+                      closable
+                      class="wrap mx-1"
+                      @click="searchByHistory(history)"
+                      @click:close="deleteSearchHistory(history)"
+                      risken-action-name="search-finding-by-history-from-finding"
+                    >
+                      {{ history.label }}
+                      <v-tooltip activator="parent" location="bottom"
+                        ><span class="wrap">{{
+                          history.tooltip
+                        }}</span></v-tooltip
+                      >
+                    </v-chip>
+                  </v-slide-group-item>
+                </v-slide-group>
+              </v-col>
+            </v-row>
+          </div>
         </transition>
       </v-form>
+
+      <!-- Popular Search -->
       <v-row>
         <v-col class="pb-10">
-          <v-slide-group show-arrows>
+          <v-slide-group show-arrows="false">
             <v-slide-group-item
-              v-for="history in sortedFindingHistory"
-              :key="history.search_at"
+              v-for="cond in popularSearchConditions"
+              :key="cond.label"
             >
               <v-chip
-                :text="history.label"
+                :text="cond.label"
                 label
-                closable
-                class="wrap mx-1"
-                @click="searchByHistory(history)"
-                @click:close="deleteSearchHistory(history)"
-                risken-action-name="search-finding-by-history-from-finding"
+                color="indigo-darken-4"
+                text-color="white"
+                class="wrap mx-2"
+                @click="searchByPopularCondition(cond)"
+                risken-action-name="search-finding-by-popular-condition"
               >
-                {{ history.label }}
+                {{
+                  $t(`view.finding.PopularSearch.label['` + cond.label + `']`)
+                }}
                 <v-tooltip activator="parent" location="bottom"
-                  ><span class="wrap">{{ history.tooltip }}</span></v-tooltip
+                  ><span class="wrap">{{
+                    $t(
+                      `view.finding.PopularSearch.tooltip['` + cond.label + `']`
+                    )
+                  }}</span></v-tooltip
                 >
               </v-chip>
             </v-slide-group-item>
@@ -1070,6 +1115,58 @@ export default {
         '90 days',
         'No expiration',
       ],
+      popularSearchConditions: [
+        { label: 'ALL', search_condition: { status: 1, from_score: 0.0 } },
+        {
+          label: 'HighScore',
+          search_condition: { status: 1, from_score: 0.8 },
+        },
+        {
+          label: 'AWS',
+          search_condition: {
+            status: 1,
+            from_score: 0.5,
+            dataSource: ['aws:'],
+          },
+        },
+        {
+          label: 'GCP',
+          search_condition: {
+            status: 1,
+            from_score: 0.5,
+            dataSource: ['google:'],
+          },
+          tooltip: '',
+        },
+        {
+          label: 'SecretKey',
+          search_condition: {
+            status: 1,
+            from_score: 0.5,
+            dataSource: ['code:gitleaks'],
+          },
+        },
+        {
+          label: 'Wordpress',
+          search_condition: {
+            status: 1,
+            from_score: 0.5,
+            dataSource: ['diagnosis:wpscan'],
+          },
+        },
+        {
+          label: 'IAM',
+          search_condition: { status: 1, from_score: 0.5, tag: ['IAM'] },
+        },
+        {
+          label: 'PublicFacing',
+          search_condition: {
+            status: 1,
+            from_score: 0.5,
+            tag: ['PublicFacing'],
+          },
+        },
+      ],
       isArchived: false,
       pendAll: false,
       table: {
@@ -1787,7 +1884,14 @@ export default {
       this.refleshList()
       await this.updateSearchHistory()
     },
-
+    async searchByPopularCondition(target) {
+      this.searchModel = Object.assign(
+        this.searchModel,
+        target.search_condition
+      ) // merge & ovveride
+      this.refleshList()
+      await this.updateSearchHistory()
+    },
     async updateSearchHistory() {
       const currentSearch = {
         search_at: Date.now(),
