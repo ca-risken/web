@@ -215,7 +215,7 @@
       <!-- Popular Search -->
       <v-row>
         <v-col class="pb-10">
-          <v-slide-group show-arrows="false">
+          <v-slide-group>
             <v-slide-group-item
               v-for="cond in popularSearchConditions"
               :key="cond.label"
