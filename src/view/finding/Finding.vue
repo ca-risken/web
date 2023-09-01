@@ -1163,7 +1163,7 @@ export default {
           search_condition: {
             status: 1,
             scoreFrom: 0.5,
-            tag: ['PublicFacing'],
+            tag: ['public-facing'],
           },
         },
       ],
