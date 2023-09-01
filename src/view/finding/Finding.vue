@@ -1892,7 +1892,7 @@ export default {
         target.search_condition
       ) // merge & ovveride
       this.refleshList()
-      await this.updateSearchHistory()
+      this.setStatusTab()
     },
     async updateSearchHistory() {
       const currentSearch = {
