@@ -1156,7 +1156,7 @@ export default {
         },
         {
           label: 'IAM',
-          search_condition: { status: 1, from_score: 0.5, tag: ['IAM'] },
+          search_condition: { status: 1, from_score: 0.5, tag: ['IAM', 'iam'] },
         },
         {
           label: 'PublicFacing',
@@ -1877,6 +1877,7 @@ export default {
       this.findingHistory = history
     },
     async searchByHistory(target) {
+      this.searchModel = {}
       this.searchModel = Object.assign(
         this.searchModel,
         target.search_condition
@@ -1885,6 +1886,7 @@ export default {
       await this.updateSearchHistory()
     },
     async searchByPopularCondition(target) {
+      this.searchModel = {}
       this.searchModel = Object.assign(
         this.searchModel,
         target.search_condition
