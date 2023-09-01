@@ -1147,7 +1147,7 @@ export default {
           },
         },
         {
-          label: 'Wordpress',
+          label: 'WordPress',
           search_condition: {
             status: 1,
             from_score: 0.5,
