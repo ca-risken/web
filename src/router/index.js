@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { commonRoute, appRoute } from './config'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -7,7 +7,7 @@ import axios from '@/axios'
 const routes = commonRoute.concat(appRoute)
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: routes,
 })
 
