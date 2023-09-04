@@ -1,13 +1,9 @@
 TARGET=web
 BUILD_OPT=""
-# IMAGE_TAG=latest
-IMAGE_TAG=local-test
+IMAGE_TAG=latest
 MANIFEST_TAG=latest
-# IMAGE_PREFIX=gateway
-IMAGE_PREFIX=local-test
-DEFAULT_REGION=ap-northeast-1
-# IMAGE_REGISTRY=local
-IMAGE_REGISTRY=315855282677.dkr.ecr.ap-northeast-1.amazonaws.com
+IMAGE_PREFIX=gateway
+IMAGE_REGISTRY=local
 
 .PHONY: all
 all: help
@@ -35,10 +31,6 @@ build: lint
 build-ci:
 	TARGET=$(TARGET) IMAGE_TAG=$(IMAGE_TAG) IMAGE_PREFIX=$(IMAGE_PREFIX) BUILD_OPT="$(BUILD_OPT)" . hack/docker-build.sh
 	docker tag $(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG) $(IMAGE_REGISTRY)/$(IMAGE_PREFIX)/$(TARGET):$(IMAGE_TAG)
-
-.PHONY: ecr-login
-ecr-login:
-	aws ecr get-login-password --region $(DEFAULT_REGION) | docker login --username AWS --password-stdin $(IMAGE_REGISTRY)
 
 .PHONY: push-image
 push-image:
