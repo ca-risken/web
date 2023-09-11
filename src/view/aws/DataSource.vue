@@ -112,7 +112,9 @@
                 </template>
                 <template v-slot:[`item.specific_version`]="{ item }">
                   <template v-if="item.value.specific_version">
-                    {{ $t(`version["old"]`) }} ({{ item.specific_version }})
+                    {{ $t(`version["old"]`) }} ({{
+                      item.value.specific_version
+                    }})
                   </template>
                   <template v-else> {{ $t(`version["latest"]`) }} </template>
                 </template>
