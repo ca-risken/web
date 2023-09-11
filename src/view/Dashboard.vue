@@ -6,9 +6,7 @@
         <v-col cols="12">
           <v-toolbar flat color="background">
             <v-toolbar-title class="text-grey-darken-4 text-h5">
-              <v-icon size="x-large" class="pr-2" color="indigo-darken-2"
-                >mdi-thermometer</v-icon
-              >
+              <v-icon size="x-large" class="pr-2" color="indigo-darken-2">mdi-thermometer</v-icon>
               {{ $t(`view.dashboard['Status']`) }}
             </v-toolbar-title>
           </v-toolbar>
@@ -17,32 +15,16 @@
       <v-row class="mx-2">
         <!-- Status -->
         <v-col cols="8">
-          <status-statistic
-            :icon="status.risk.icon"
-            :color="status.risk.color"
-            :description="
-              $t(`view.dashboard['` + status.risk.description + `']`)
-            "
-            :detail="status.risk.detail"
-            class="mx-2"
-          />
+          <status-statistic :icon="status.risk.icon" :color="status.risk.color" :description="$t(`view.dashboard['` + status.risk.description + `']`)
+            " :detail="status.risk.detail" class="mx-2" />
         </v-col>
 
         <!-- mini statistic start -->
         <v-col cols="4">
-          <v-row
-            v-for="factor in status.riskFactor"
-            :key="factor.subTitle"
-            @click="handleClickFactor(factor.link)"
-          >
+          <v-row v-for="factor in status.riskFactor" :key="factor.subTitle" @click="handleClickFactor(factor.link)">
             <v-col>
-              <mini-statistic
-                :icon="factor.icon"
-                :title="factor.title"
-                :sub-title="$t(`view.dashboard['` + factor.subTitle + `']`)"
-                :color="factor.color"
-                class="mb-2"
-              />
+              <mini-statistic :icon="factor.icon" :title="factor.title"
+                :sub-title="$t(`view.dashboard['` + factor.subTitle + `']`)" :color="factor.color" class="mb-2" />
             </v-col>
           </v-row>
         </v-col>
@@ -53,9 +35,7 @@
         <v-col cols="12">
           <v-toolbar flat color="background">
             <v-toolbar-title class="text-grey-darken-4 text-h5">
-              <v-icon size="x-large" class="pr-2" color="indigo-darken-2"
-                >mdi-shape</v-icon
-              >
+              <v-icon size="x-large" class="pr-2" color="indigo-darken-2">mdi-shape</v-icon>
               {{ $t(`view.dashboard['Category']`) }}
             </v-toolbar-title>
           </v-toolbar>
@@ -63,15 +43,8 @@
       </v-row>
       <v-row class="mx-2">
         <v-col cols="3" v-for="c in category" :key="c.category">
-          <category-statistic
-            :icon="c.icon"
-            :category="c.category"
-            :title="c.title"
-            :sub-title="c.subTitle"
-            :color="c.color"
-            :dark="c.dark"
-            :link="c.link"
-          />
+          <category-statistic :icon="c.icon" :category="c.category" :title="c.title" :sub-title="c.subTitle"
+            :color="c.color" :dark="c.dark" :link="c.link" />
         </v-col>
       </v-row>
     </v-container>
@@ -121,11 +94,7 @@
         </v-list>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            variant="text"
-            color="grey-darken-1"
-            @click="settingDialog = false"
-          >
+          <v-btn variant="text" color="grey-darken-1" @click="settingDialog = false">
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
         </v-card-actions>
@@ -264,7 +233,7 @@ export default {
       this.raw.highScoreFindingGoogle = google
     },
     async setStoreFinding() {
-      const storeFindings = await this.getFindingCount(0, 'RISKEN', 1)
+      const storeFindings = await this.getFindingCount(0, '', 1)
       this.status.tutorial.storeFindings = storeFindings > 0
     },
     async getFindingCount(fromScore, dataSource, limit) {
@@ -323,8 +292,8 @@ export default {
     // -- Status ---------------------------------
     setStatus() {
       this.status.alert = this.raw.activeAlert
-      ;(this.status.finding = this.raw.highScoreFinding),
-        this.setSettingStatus()
+        ; (this.status.finding = this.raw.highScoreFinding),
+          this.setSettingStatus()
 
       this.setTotalStatus()
       this.status.riskFactor = []
