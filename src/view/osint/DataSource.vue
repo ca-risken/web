@@ -531,7 +531,11 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDetachItem,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScanByAction },
+          {
+            text: 'Scan',
+            icon: 'mdi-magnify-scan',
+            click: this.handleScanByAction,
+          },
         ],
         footer: {
           itemsPerPageOptions: [
