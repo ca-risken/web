@@ -314,7 +314,7 @@
               color="blue-darken-1"
               v-if="dataModel.rel_osint_data_source_id"
               :loading="loading"
-              @click="handleScan"
+              @click="handleScan(dataModel)"
             >
               <v-icon left>mdi-magnify-scan</v-icon>
               {{ $t(`btn['SCAN']`) }}
@@ -531,7 +531,7 @@ export default {
             icon: 'mdi-trash-can-outline',
             click: this.handleDetachItem,
           },
-          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScan },
+          { text: 'Scan', icon: 'mdi-magnify-scan', click: this.handleScanByAction },
         ],
         footer: {
           itemsPerPageOptions: [
@@ -811,6 +811,7 @@ export default {
 
     // Scan
     async scanDataSource() {
+      console.log(this.dataModel)
       const param = {
         project_id: this.getCurrentProjectID(),
         rel_osint_data_source_id: this.dataModel.rel_osint_data_source_id,
@@ -885,7 +886,10 @@ export default {
       }
       this.finishSuccess('Success: Deleted.')
     },
-    handleScan(item) {
+    handleScan() {
+      this.scanDataSource()
+    },
+    handleScanByAction(item) {
       this.loading = true
       if (item.value.osint_data_source_id) {
         this.assignDataModel(item.value)
