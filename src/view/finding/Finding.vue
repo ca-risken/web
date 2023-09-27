@@ -1216,6 +1216,8 @@ export default {
       findingHistory: [],
       aiDialog: false,
       aiAnswer: '',
+      aiFetchProgress: false,
+      aiFetchController: new AbortController(),
     }
   },
   filters: {},
@@ -2003,15 +2005,25 @@ export default {
       return tooltip
     },
     async getAISummaryContent() {
+      if (this.aiFetchProgress) {
+        this.abortAIFetching()
+        this.aiFetchController = new AbortController()
+      }
+      this.aiFetchProgress = true
       this.aiAnswer = ''
       const self = this // reference `this`（Vue instance）
       // api
-      this.getAISummaryStream(this.findingModel.finding_id, this.$i18n.locale)
+      this.getAISummaryStream(
+        this.findingModel.finding_id,
+        this.$i18n.locale,
+        this.aiFetchController.signal
+      )
         .then((resp) => {
           const reader = resp.body.getReader()
           const decoder = new TextDecoder()
           return reader.read().then(function processText({ done, value }) {
             if (done) {
+              self.aiFetchProgress = false
               return
             }
             self.aiAnswer += decoder.decode(value) // `self.aiAnswer` = `this.aiAnswer`
@@ -2019,8 +2031,17 @@ export default {
           })
         })
         .catch((err) => {
-          return Promise.reject(err)
+          this.aiFetchProgress = false
+          if (err.name === 'AbortError') {
+            console.warn('Fetch aborted')
+            return
+          } else {
+            return Promise.reject(err)
+          }
         })
+    },
+    async abortAIFetching() {
+      this.aiFetchController.abort() // Abort the fetch request
     },
 
     // finish

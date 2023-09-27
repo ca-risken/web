@@ -337,7 +337,7 @@ const finding = {
       }
       return res.data.data.answer
     },
-    async getAISummaryStream(findingID, lang) {
+    async getAISummaryStream(findingID, lang, signal) {
       // Using fetch API for streaming response
       const fetchOptions = {
         method: 'GET',
@@ -345,6 +345,7 @@ const finding = {
           'X-Xsrf-Token': getCookies('XSRF-TOKEN'),
         },
         credentials: 'same-origin',
+        signal: signal, // Abort signal
       }
       return await fetch(
         '/api/v1/finding/get-ai-summary-stream/?project_id=' +
