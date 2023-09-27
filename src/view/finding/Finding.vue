@@ -899,9 +899,9 @@
                 <v-list-item-title>
                   {{ recommendModel.type }}
                 </v-list-item-title>
-                <v-list-item-subtitle>{{
-                  $t(`item['Type']`)
-                }}</v-list-item-subtitle>
+                <v-list-item-subtitle>
+                  {{ $t(`item['Type']`) }}
+                </v-list-item-subtitle>
               </v-list-item>
             </v-col>
             <v-col cols="6">
@@ -921,7 +921,7 @@
           <v-row>
             <v-col cols="12">
               <v-list-item prepend-icon="mdi-comment-alert-outline">
-                <v-list-item class="pa-0 ma-0">
+                <v-list-item class="pa-0 ma-0 wrap">
                   <auto-link :text="recommendModel.risk" />
                 </v-list-item>
                 <v-list-item-subtitle>{{
@@ -941,7 +941,7 @@
                 variant="outlined"
                 border="start"
                 border-color="purple-lighten-2"
-                class="mb-4 mt-4 pa-6 font-weight-medium"
+                class="mb-4 mt-4 pa-6 font-weight-medium wrap"
               >
                 <auto-link :text="recommendModel.recommendation" />
               </v-alert>
@@ -982,12 +982,11 @@
             <v-col cols="12">
               <v-alert
                 title="ChatGPT"
-                type="success"
                 icon="$success"
-                variant="outlined"
+                variant="tonal"
                 border="end"
                 border-color="green-lighten-2"
-                class="my-4 pl-6 pr-8 font-weight-medium"
+                class="my-4 pl-6 pr-8"
               >
                 <v-progress-circular
                   v-if="loading"
@@ -997,7 +996,7 @@
                   color="green-darken-2"
                   class="ma-6 px-12"
                 ></v-progress-circular>
-                <v-card-text v-else class="text-sm-h6 ma-0 pa-0 wrap">
+                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
                   <auto-link :text="aiAnswer" />
                 </v-card-text>
               </v-alert>
@@ -1793,19 +1792,31 @@ export default {
 
     // ChatGPT
     async handleChatGPT() {
+      const self = this // reference `this`（Vue instance）
       this.aiAnswer = ''
       this.loading = true
       this.aiDialog = true
 
       // api
-      this.aiAnswer = await this.getAISummary(
-        this.findingModel.finding_id,
-        this.$i18n.locale
-      ).catch((err) => {
-        this.loading = false
-        return Promise.reject(err)
-      })
-      this.loading = false
+      this.getAISummaryStream(this.findingModel.finding_id, this.$i18n.locale)
+        .then((resp) => {
+          if (this.loading) {
+            this.loading = false
+          }
+          const reader = resp.body.getReader()
+          const decoder = new TextDecoder()
+          return reader.read().then(function processText({ done, value }) {
+            if (done) {
+              return
+            }
+            self.aiAnswer += decoder.decode(value) // `self.aiAnswer` = `this.aiAnswer`
+            return reader.read().then(processText) // recursive read the next chunk
+          })
+        })
+        .catch((err) => {
+          this.loading = false
+          return Promise.reject(err)
+        })
     },
 
     // CSV
