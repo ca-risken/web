@@ -386,12 +386,12 @@
             color="blue-grey"
             variant="outlined"
             style="text-transform: none"
-            @click="handleChatGPT"
+            @click="handleGenerativeAI"
           >
             <template v-slot:prepend>
               <v-icon color="purple">mdi-forum-outline</v-icon>
             </template>
-            {{ $t(`btn['Summarize with ChatGPT']`) }}
+            {{ $t(`btn['Summarize with Generative AI']`) }}
           </v-btn>
         </v-toolbar>
         <v-container fluid>
@@ -970,10 +970,8 @@
             <v-col cols="12">
               <v-list-item prepend-icon="mdi-chat">
                 <v-list-item class="px-0 pt-10 ma-0">
-                  {{ $t(`view.finding['ChatGPT Question-1']`) }}<br />
-                  {{ $t(`view.finding['ChatGPT Question-2']`) }}<br />
-                  <br />
-                  {{ $t(`view.finding['ChatGPT Examples']`) }}
+                  {{ $t(`view.finding['GenerativeAI Question-1']`) }}<br />
+                  {{ $t(`view.finding['GenerativeAI Question-2']`) }}<br />
                 </v-list-item>
               </v-list-item>
             </v-col>
@@ -981,11 +979,11 @@
           <v-row>
             <v-col cols="12">
               <v-alert
-                title="ChatGPT"
+                :title="$t(`view.finding['Generative AI']`)"
                 icon="$success"
                 variant="tonal"
                 border="end"
-                border-color="green-lighten-2"
+                border-color="indigo-darken-4"
                 class="my-4 pl-6 pr-8"
               >
                 <v-progress-circular
@@ -1790,8 +1788,8 @@ export default {
       }
     },
 
-    // ChatGPT
-    async handleChatGPT() {
+    // GenerativeAI
+    async handleGenerativeAI() {
       const self = this // reference `this`（Vue instance）
       this.aiAnswer = ''
       this.loading = true
