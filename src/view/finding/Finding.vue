@@ -2031,7 +2031,6 @@ export default {
           })
         })
         .catch((err) => {
-          this.aiFetchProgress = false
           if (err.name === 'AbortError') {
             console.warn('Fetch aborted')
             return
