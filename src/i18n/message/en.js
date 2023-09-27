@@ -302,9 +302,9 @@ const en = {
         "against the Resource Name's Base Score. The score can be adjusted according to the actual risk of each resource.",
       'Generative AI': 'Generative AI',
       'GenerativeAI Question-1':
-        'I have detected a security issue in my cloud environment; please summarize in 500 words or less.',
+        'I have detected the following security issue in my cloud environment. Please summarize the contents.',
       'GenerativeAI Question-2':
-        'Also, please include any ways to address the problem.',
+        'Also, please include any ways to address the issue.',
       SearchHistory: 'SearchHistory',
       PopularSearch: {
         label: {

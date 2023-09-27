@@ -597,6 +597,30 @@
               </v-list-item-title>
             </v-col>
           </v-row>
+          <v-row v-if="generativeAIEnabled">
+            <v-col cols="12">
+              <v-alert
+                :title="$t(`view.finding['Generative AI']`)"
+                icon="$success"
+                variant="tonal"
+                border="end"
+                border-color="indigo-darken-4"
+                class="my-4 pl-6 pr-8"
+              >
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="40"
+                  width="4"
+                  color="green-darken-2"
+                  class="ma-6 px-12"
+                ></v-progress-circular>
+                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
+                  <auto-link :text="aiAnswer" />
+                </v-card-text>
+              </v-alert>
+            </v-col>
+          </v-row>
 
           <v-row class="ma-2">
             <v-col cols="12">
@@ -1459,6 +1483,9 @@ export default {
       )
       this.orverrideRecommend()
       this.viewDialog = true
+      if (this.generativeAIEnabled) {
+        await this.getAISummaryContent()
+      }
     },
     orverrideRecommend() {
       const d = JSON.parse(this.findingModel.data)
@@ -1790,31 +1817,8 @@ export default {
 
     // GenerativeAI
     async handleGenerativeAI() {
-      const self = this // reference `this`（Vue instance）
-      this.aiAnswer = ''
-      this.loading = true
       this.aiDialog = true
-
-      // api
-      this.getAISummaryStream(this.findingModel.finding_id, this.$i18n.locale)
-        .then((resp) => {
-          if (this.loading) {
-            this.loading = false
-          }
-          const reader = resp.body.getReader()
-          const decoder = new TextDecoder()
-          return reader.read().then(function processText({ done, value }) {
-            if (done) {
-              return
-            }
-            self.aiAnswer += decoder.decode(value) // `self.aiAnswer` = `this.aiAnswer`
-            return reader.read().then(processText) // recursive read the next chunk
-          })
-        })
-        .catch((err) => {
-          this.loading = false
-          return Promise.reject(err)
-        })
+      this.getAISummaryContent()
     },
 
     // CSV
@@ -1997,6 +2001,26 @@ export default {
       }
       tooltip += '- score: ' + this.searchModel.scoreFrom + '\n'
       return tooltip
+    },
+    async getAISummaryContent() {
+      this.aiAnswer = ''
+      const self = this // reference `this`（Vue instance）
+      // api
+      this.getAISummaryStream(this.findingModel.finding_id, this.$i18n.locale)
+        .then((resp) => {
+          const reader = resp.body.getReader()
+          const decoder = new TextDecoder()
+          return reader.read().then(function processText({ done, value }) {
+            if (done) {
+              return
+            }
+            self.aiAnswer += decoder.decode(value) // `self.aiAnswer` = `this.aiAnswer`
+            return reader.read().then(processText) // recursive read the next chunk
+          })
+        })
+        .catch((err) => {
+          return Promise.reject(err)
+        })
     },
 
     // finish

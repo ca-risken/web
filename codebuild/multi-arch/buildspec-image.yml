@@ -2,13 +2,14 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_PREFIX: "risken-gateway"
+    IMAGE_PREFIX: 'risken-gateway'
   parameter-store:
-    DOCKER_USER: "/build/DOCKER_USER"
-    DOCKER_TOKEN: "/build/DOCKER_TOKEN"
-    VITE_RUM_ID: "/build/datadog/VITE_RUM_ID"
-    VITE_RUM_TOKEN: "/build/datadog/VITE_RUM_TOKEN"
-    VITE_STATIC_LINK: "/build/web/VITE_STATIC_LINK"
+    DOCKER_USER: '/build/DOCKER_USER'
+    DOCKER_TOKEN: '/build/DOCKER_TOKEN'
+    VITE_RUM_ID: '/build/datadog/VITE_RUM_ID'
+    VITE_RUM_TOKEN: '/build/datadog/VITE_RUM_TOKEN'
+    VITE_STATIC_LINK: '/build/web/VITE_STATIC_LINK'
+    VITE_GENERATIVE_AI_ENABLED: '/build/web/VITE_GENERATIVE_AI_ENABLED'
 
 phases:
   pre_build:
@@ -35,6 +36,7 @@ phases:
       - echo "VITE_RUM_ID=${VITE_RUM_ID}" > .env.prd
       - echo "VITE_RUM_TOKEN=${VITE_RUM_TOKEN}" >> .env.prd
       - echo "VITE_STATIC_LINK='${VITE_STATIC_LINK}'" >> .env.prd
+      - echo "VITE_GENERATIVE_AI_ENABLED='${VITE_GENERATIVE_AI_ENABLED}'" >> .env.prd
 
       - echo Building the Docker images...
       - make build-ci -j BUILD_OPT="${BUILD_OPT}" IMAGE_PREFIX=${IMAGE_PREFIX} IMAGE_TAG=${TAG} IMAGE_REGISTRY=${REGISTRY}
