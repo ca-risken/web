@@ -31,5 +31,12 @@ if (
 const app = createApp(App)
 app.config.globalProperties.$axios = axios
 app.use(router).use(store).use(vuetify).use(interval).use(i18n)
-
 app.mount('#app')
+
+// Generative AI
+if (
+  import.meta.env.VITE_GENERATIVE_AI_ENABLED &&
+  import.meta.env.VITE_GENERATIVE_AI_ENABLED !== ''
+) {
+  app.config.globalProperties.$generativeAIEnabled = true
+}

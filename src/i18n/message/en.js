@@ -22,7 +22,7 @@ const en = {
     'NEW WORD': 'NEW WORD',
     TAG: 'TAG',
     SCAN: 'SCAN',
-    'Summarize with ChatGPT': 'Summarize with ChatGPT',
+    'Summarize with Generative AI': 'Summarize with Generative AI',
     'FULL SCAN': 'FULL SCAN',
     'SHOW SCAN RESULT': 'SHOW SCAN RESULT',
     ATTACH: 'ATTACH',
@@ -300,11 +300,11 @@ const en = {
       recalculated: 'recalculated',
       ' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.':
         "against the Resource Name's Base Score. The score can be adjusted according to the actual risk of each resource.",
-      'ChatGPT Question-1':
-        'I have detected a security issue in my cloud environment; please summarize in 500 words or less.',
-      'ChatGPT Question-2':
-        'Also, please include any ways to address the problem.',
-      'ChatGPT Examples': 'Finding details...',
+      'Generative AI Title': 'Generative AI Summary',
+      'GenerativeAI Question-1':
+        'I have detected the following security issue in my cloud environment. Please summarize the contents.',
+      'GenerativeAI Question-2':
+        'Also, please include any ways to address the issue.',
       SearchHistory: 'SearchHistory',
       PopularSearch: {
         label: {

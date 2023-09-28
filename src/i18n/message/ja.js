@@ -22,7 +22,7 @@ const ja = {
     'NEW WORD': '新規キーワード',
     TAG: 'タグ',
     SCAN: 'スキャン',
-    'Summarize with ChatGPT': 'ChatGPTに要約してもらう',
+    'Summarize with Generative AI': '生成AIに要約してもらう',
     'FULL SCAN': 'フルスキャン',
     'SHOW SCAN RESULT': 'スキャン結果を見る',
     ATTACH: '有効化',
@@ -299,10 +299,10 @@ const ja = {
       recalculated: 'スコアが再計算',
       ' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.':
         'されます.（各リソースの実際のリスクに応じてスコア調整が可能です）',
-      'ChatGPT Question-1':
-        '私のクラウド環境でセキュリティの問題を検知しました。500字以内の日本語で内容を要約してください。',
-      'ChatGPT Question-2': 'また、問題の対処方法もあれば含めてください。',
-      'ChatGPT Examples': '（略）Findingの詳細...',
+      'Generative AI Title': '生成AIの要約',
+      'GenerativeAI Question-1':
+        'クラウド環境で以下のセキュリティの問題を検知しました。日本語で内容を要約してください。',
+      'GenerativeAI Question-2': 'また、問題の対処方法もあれば含めてください。',
       SearchHistory: '検索履歴',
       PopularSearch: {
         label: {

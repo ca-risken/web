@@ -155,7 +155,11 @@ let mixin = {
         tag: '',
         color: {},
       },
+      generativeAIEnabled: false,
     }
+  },
+  mounted() {
+    this.generativeAIEnabled = this.$generativeAIEnabled
   },
   methods: {
     async signinUser() {

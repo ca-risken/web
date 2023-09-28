@@ -5,6 +5,13 @@ const longAxios = axios.create({
   timeout: 120000,
 })
 
+const getCookies = (name) => {
+  const value = '; ' + document.cookie
+  const parts = value.split('; ' + name + '=')
+  if (parts.length == 2) return parts.pop().split(';').shift()
+  return null
+}
+
 const finding = {
   data: () => {
     return {}
@@ -329,6 +336,26 @@ const finding = {
         return '' // empty
       }
       return res.data.data.answer
+    },
+    async getAISummaryStream(findingID, lang, signal) {
+      // Using fetch API for streaming response
+      const fetchOptions = {
+        method: 'GET',
+        headers: {
+          'X-Xsrf-Token': getCookies('XSRF-TOKEN'),
+        },
+        credentials: 'same-origin',
+        signal: signal, // Abort signal
+      }
+      return await fetch(
+        '/api/v1/finding/get-ai-summary-stream/?project_id=' +
+          this.getCurrentProjectID() +
+          '&finding_id=' +
+          findingID +
+          '&lang=' +
+          lang,
+        fetchOptions
+      )
     },
   },
 }

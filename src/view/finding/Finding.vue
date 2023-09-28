@@ -386,12 +386,12 @@
             color="blue-grey"
             variant="outlined"
             style="text-transform: none"
-            @click="handleChatGPT"
+            @click="handleGenerativeAI"
           >
             <template v-slot:prepend>
               <v-icon color="purple">mdi-forum-outline</v-icon>
             </template>
-            {{ $t(`btn['Summarize with ChatGPT']`) }}
+            {{ $t(`btn['Summarize with Generative AI']`) }}
           </v-btn>
         </v-toolbar>
         <v-container fluid>
@@ -595,6 +595,30 @@
                   <v-icon class="ml-1" color="grey">mdi-open-in-new</v-icon>
                 </v-chip>
               </v-list-item-title>
+            </v-col>
+          </v-row>
+          <v-row v-if="generativeAIEnabled">
+            <v-col cols="12">
+              <v-alert
+                :title="$t(`view.finding['Generative AI Title']`)"
+                icon="$success"
+                variant="tonal"
+                border="end"
+                border-color="indigo-darken-4"
+                class="my-4 pl-6 pr-8"
+              >
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="40"
+                  width="4"
+                  color="green-darken-2"
+                  class="ma-6 px-12"
+                ></v-progress-circular>
+                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
+                  <auto-link :text="aiAnswer" />
+                </v-card-text>
+              </v-alert>
             </v-col>
           </v-row>
 
@@ -899,9 +923,9 @@
                 <v-list-item-title>
                   {{ recommendModel.type }}
                 </v-list-item-title>
-                <v-list-item-subtitle>{{
-                  $t(`item['Type']`)
-                }}</v-list-item-subtitle>
+                <v-list-item-subtitle>
+                  {{ $t(`item['Type']`) }}
+                </v-list-item-subtitle>
               </v-list-item>
             </v-col>
             <v-col cols="6">
@@ -921,7 +945,7 @@
           <v-row>
             <v-col cols="12">
               <v-list-item prepend-icon="mdi-comment-alert-outline">
-                <v-list-item class="pa-0 ma-0">
+                <v-list-item class="pa-0 ma-0 wrap">
                   <auto-link :text="recommendModel.risk" />
                 </v-list-item>
                 <v-list-item-subtitle>{{
@@ -941,7 +965,7 @@
                 variant="outlined"
                 border="start"
                 border-color="purple-lighten-2"
-                class="mb-4 mt-4 pa-6 font-weight-medium"
+                class="mb-4 mt-4 pa-6 font-weight-medium wrap"
               >
                 <auto-link :text="recommendModel.recommendation" />
               </v-alert>
@@ -970,10 +994,8 @@
             <v-col cols="12">
               <v-list-item prepend-icon="mdi-chat">
                 <v-list-item class="px-0 pt-10 ma-0">
-                  {{ $t(`view.finding['ChatGPT Question-1']`) }}<br />
-                  {{ $t(`view.finding['ChatGPT Question-2']`) }}<br />
-                  <br />
-                  {{ $t(`view.finding['ChatGPT Examples']`) }}
+                  {{ $t(`view.finding['GenerativeAI Question-1']`) }}<br />
+                  {{ $t(`view.finding['GenerativeAI Question-2']`) }}<br />
                 </v-list-item>
               </v-list-item>
             </v-col>
@@ -981,13 +1003,12 @@
           <v-row>
             <v-col cols="12">
               <v-alert
-                title="ChatGPT"
-                type="success"
+                :title="$t(`view.finding['Generative AI Title']`)"
                 icon="$success"
-                variant="outlined"
+                variant="tonal"
                 border="end"
-                border-color="green-lighten-2"
-                class="my-4 pl-6 pr-8 font-weight-medium"
+                border-color="indigo-darken-4"
+                class="my-4 pl-6 pr-8"
               >
                 <v-progress-circular
                   v-if="loading"
@@ -997,7 +1018,7 @@
                   color="green-darken-2"
                   class="ma-6 px-12"
                 ></v-progress-circular>
-                <v-card-text v-else class="text-sm-h6 ma-0 pa-0 wrap">
+                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
                   <auto-link :text="aiAnswer" />
                 </v-card-text>
               </v-alert>
@@ -1195,6 +1216,8 @@ export default {
       findingHistory: [],
       aiDialog: false,
       aiAnswer: '',
+      aiFetchProgress: false,
+      aiFetchController: new AbortController(),
     }
   },
   filters: {},
@@ -1462,6 +1485,9 @@ export default {
       )
       this.orverrideRecommend()
       this.viewDialog = true
+      if (this.generativeAIEnabled) {
+        await this.getAISummaryContent()
+      }
     },
     orverrideRecommend() {
       const d = JSON.parse(this.findingModel.data)
@@ -1791,21 +1817,10 @@ export default {
       }
     },
 
-    // ChatGPT
-    async handleChatGPT() {
-      this.aiAnswer = ''
-      this.loading = true
+    // GenerativeAI
+    async handleGenerativeAI() {
       this.aiDialog = true
-
-      // api
-      this.aiAnswer = await this.getAISummary(
-        this.findingModel.finding_id,
-        this.$i18n.locale
-      ).catch((err) => {
-        this.loading = false
-        return Promise.reject(err)
-      })
-      this.loading = false
+      this.getAISummaryContent()
     },
 
     // CSV
@@ -1988,6 +2003,44 @@ export default {
       }
       tooltip += '- score: ' + this.searchModel.scoreFrom + '\n'
       return tooltip
+    },
+    async getAISummaryContent() {
+      if (this.aiFetchProgress) {
+        this.abortAIFetching()
+        this.aiFetchController = new AbortController()
+      }
+      this.aiFetchProgress = true
+      this.aiAnswer = ''
+      const self = this // reference `this`（Vue instance）
+      // api
+      this.getAISummaryStream(
+        this.findingModel.finding_id,
+        this.$i18n.locale,
+        this.aiFetchController.signal
+      )
+        .then((resp) => {
+          const reader = resp.body.getReader()
+          const decoder = new TextDecoder()
+          return reader.read().then(function processText({ done, value }) {
+            if (done) {
+              self.aiFetchProgress = false
+              return
+            }
+            self.aiAnswer += decoder.decode(value) // `self.aiAnswer` = `this.aiAnswer`
+            return reader.read().then(processText) // recursive read the next chunk
+          })
+        })
+        .catch((err) => {
+          if (err.name === 'AbortError') {
+            console.warn('Fetch aborted')
+            return
+          } else {
+            return Promise.reject(err)
+          }
+        })
+    },
+    async abortAIFetching() {
+      this.aiFetchController.abort() // Abort the fetch request
     },
 
     // finish
