@@ -600,7 +600,7 @@
           <v-row v-if="generativeAIEnabled">
             <v-col cols="12">
               <v-alert
-                :title="$t(`view.finding['Generative AI']`)"
+                :title="$t(`view.finding['Generative AI Title']`)"
                 icon="$success"
                 variant="tonal"
                 border="end"
@@ -1003,7 +1003,7 @@
           <v-row>
             <v-col cols="12">
               <v-alert
-                :title="$t(`view.finding['Generative AI']`)"
+                :title="$t(`view.finding['Generative AI Title']`)"
                 icon="$success"
                 variant="tonal"
                 border="end"

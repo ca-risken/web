@@ -300,7 +300,7 @@ const en = {
       recalculated: 'recalculated',
       ' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.':
         "against the Resource Name's Base Score. The score can be adjusted according to the actual risk of each resource.",
-      'Generative AI': 'Generative AI',
+      'Generative AI Title': 'Generative AI Summary',
       'GenerativeAI Question-1':
         'I have detected the following security issue in my cloud environment. Please summarize the contents.',
       'GenerativeAI Question-2':

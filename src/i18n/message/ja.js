@@ -299,7 +299,7 @@ const ja = {
       recalculated: 'スコアが再計算',
       ' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.':
         'されます.（各リソースの実際のリスクに応じてスコア調整が可能です）',
-      'Generative AI': '生成AI',
+      'Generative AI Title': '生成AIの要約',
       'GenerativeAI Question-1':
         'クラウド環境で以下のセキュリティの問題を検知しました。日本語で内容を要約してください。',
       'GenerativeAI Question-2': 'また、問題の対処方法もあれば含めてください。',
