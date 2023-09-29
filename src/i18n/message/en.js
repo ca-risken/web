@@ -11,7 +11,7 @@ const en = {
     'ARCHIVE ALL': 'ARCHIVE ALL',
     REGIST: 'REGIST',
     RESERVE: 'RESERVE',
-    EDIT: 'EDIT',
+    SAVE: 'SAVE',
     SUBMIT: 'SUBMIT',
     PEND: 'PEND',
     'PEND ALL': 'PEND ALL',

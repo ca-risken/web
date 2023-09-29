@@ -334,7 +334,7 @@
                   "
                   >{{ $t(`btn['REGIST']`) }}</template
                 >
-                <template v-else>{{ $t(`btn['EDIT']`) }}</template>
+                <template v-else>{{ $t(`btn['SAVE']`) }}</template>
               </v-btn>
             </v-card-actions>
           </v-form>
