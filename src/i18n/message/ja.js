@@ -11,7 +11,7 @@ const ja = {
     'ARCHIVE ALL': '全てアーカイブ',
     REGIST: '登録',
     RESERVE: '予約',
-    EDIT: '編集',
+    SAVE: '保存',
     SUBMIT: '送信',
     PEND: 'ペンディング',
     'PEND ALL': '全てペンディング',

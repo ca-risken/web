@@ -161,7 +161,7 @@
                       v-if="!isReadOnly"
                       :loading="loading"
                     >
-                      {{ $t(`btn['EDIT']`) }}
+                      {{ $t(`btn['SAVE']`) }}
                     </v-btn>
                     <v-btn
                       variant="outlined"
@@ -429,7 +429,7 @@
                       :disabled="!isConfiguredGitHubSetting"
                       :loading="loading"
                       v-else
-                      >{{ $t(`btn['EDIT']`) }}
+                      >{{ $t(`btn['SAVE']`) }}
                     </v-btn>
                     <v-btn
                       class="ml-2"
@@ -603,7 +603,7 @@
                       :disabled="!isConfiguredGitHubSetting"
                       :loading="loading"
                       v-else
-                      >{{ $t(`btn['EDIT']`) }}
+                      >{{ $t(`btn['SAVE']`) }}
                     </v-btn>
                     <v-btn
                       variant="outlined"

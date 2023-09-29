@@ -369,7 +369,7 @@
                 :loading="loading"
                 @click="handleEditSubmit"
               >
-                {{ $t(`btn['EDIT']`) }}
+                {{ $t(`btn['SAVE']`) }}
               </v-btn>
             </v-card-actions>
           </v-form>
