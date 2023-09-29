@@ -362,7 +362,7 @@ let mixin = {
           return 0
         case 'ACTIVE':
           return 1
-        case 'PENDING':
+        case 'ARCHIVE':
           return 2
         default:
           return 0
@@ -375,7 +375,7 @@ let mixin = {
         case 1:
           return 'ACTIVE'
         case 2:
-          return 'PENDING'
+          return 'ARCHIVE'
         default:
           return 'ALL'
       }

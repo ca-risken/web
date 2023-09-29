@@ -291,7 +291,7 @@ const ja = {
     finding: {
       ResourceMap: 'リソースマップ',
       ACTIVE: 'アクティブ',
-      PENDING: 'ペンディング',
+      ARCHIVE: 'アーカイブ',
       ALL: '全て',
       'Active Only': 'アクティブのみ',
       'If you set a `Score Coefficient`, the score will be ':
