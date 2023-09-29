@@ -254,7 +254,7 @@
             @update:modelValue="handleChangeStatus"
           >
             <v-tab class="mx-0 px-0">{{ $t(`view.finding['ACTIVE']`) }}</v-tab>
-            <v-tab class="mx-0 px-0">{{ $t(`view.finding['PENDING']`) }}</v-tab>
+            <v-tab class="mx-0 px-0">{{ $t(`view.finding['ARCHIVE']`) }}</v-tab>
             <v-tab class="mx-0 px-0">{{ $t(`view.finding['ALL']`) }}</v-tab>
           </v-tabs>
         </v-col>
@@ -554,7 +554,7 @@
               <v-col v-if="findingModel.pend_note != ''" cols="8">
                 <v-list-item-subtitle>
                   <v-icon left>mdi-check-circle-outline</v-icon>
-                  {{ $t(`view.finding['PENDING']`) }}
+                  {{ $t(`view.finding['ARCHIVE']`) }}
                 </v-list-item-subtitle>
                 <v-list-item-title>
                   <v-alert
@@ -1418,7 +1418,7 @@ export default {
       if (pend.expired_at && pend.expired_at < Math.floor(Date.now() / 1000)) {
         return 'ACTIVE'
       }
-      return 'PENDING'
+      return 'ARCHIVE'
     },
 
     async getTag() {
@@ -1458,7 +1458,7 @@ export default {
     },
     getSelectedActionList() {
       let list = []
-      if (this.searchModel.status != this.getFindingStatus('PENDING')) {
+      if (this.searchModel.status != this.getFindingStatus('ARCHIVE')) {
         list.push({
           text: 'Archive selected findings',
           icon: 'mdi-archive',
@@ -1816,7 +1816,7 @@ export default {
           this.searchModel.status = this.getFindingStatus('ACTIVE')
           break
         case 1:
-          this.searchModel.status = this.getFindingStatus('PENDING')
+          this.searchModel.status = this.getFindingStatus('ARCHIVE')
           break
         case 2:
           this.searchModel.status = this.getFindingStatus('ALL')
@@ -1832,7 +1832,7 @@ export default {
         case 'ACTIVE':
           this.searchModel.tab = 0
           break
-        case 'PENDING':
+        case 'ARCHIVE':
           this.searchModel.tab = 1
           break
         case 'ALL':

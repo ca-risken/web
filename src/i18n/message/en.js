@@ -292,7 +292,7 @@ const en = {
     finding: {
       ResourceMap: 'Resource Map',
       ACTIVE: 'ACTIVE',
-      PENDING: 'PENDING',
+      ARCHIVE: 'ARCHIVE',
       ALL: 'ALL',
       'Active Only': 'Active Only',
       'If you set a `Score Coefficient`, the score will be ':
