@@ -475,7 +475,7 @@
           </v-row>
 
           <v-row dense class="mx-2">
-            <v-col cols="3">
+            <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-subtitle>
                   <v-icon :color="getColorByScore(findingModel.score)"
@@ -492,7 +492,7 @@
                 </v-list-item-title>
               </v-list-item>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="2">
               <v-list-item two-line>
                 <v-list-item-subtitle>
                   <v-icon>mdi-scoreboard</v-icon>
@@ -518,6 +518,32 @@
                   @click="handleRecommendItem"
                 >
                   {{ $t(`btn['Recommendation']`) }}
+                </v-btn>
+              </v-list-item-title>
+            </v-col>
+            <v-col cols="4">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-gesture-tap</v-icon>
+                {{ $t(`item['Action']`) }}
+              </v-list-item-subtitle>
+              <v-list-item-title>
+                <v-btn
+                  color="red-darken-1"
+                  text
+                  variant="outlined"
+                  class="ma-1"
+                  @click="handleArchiveButtonClick"
+                >
+                  {{ $t(`btn['ARCHIVE']`) }}
+                </v-btn>
+                <v-btn
+                  color="red-darken-1"
+                  text
+                  variant="outlined"
+                  class="ma-1"
+                  @click="handlePendButtonClick"
+                >
+                  {{ $t(`btn['PEND']`) }}
                 </v-btn>
               </v-list-item-title>
             </v-col>
