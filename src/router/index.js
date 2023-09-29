@@ -29,6 +29,7 @@ router.beforeEach(async (to, from, next) => {
     typeof user_id != 'undefined' &&
     project_id != current_project_id
   ) {
+    // Change project
     const admin = await axios
       .get('/iam/is-admin/?user_id=' + user_id)
       .catch((err) => {
@@ -46,13 +47,19 @@ router.beforeEach(async (to, from, next) => {
     if (res.data.data.project) {
       await store.commit('updateProject', res.data.data.project[0])
       let query = Object.assign({}, to.query)
-      // delete query["project_id"]
       query.project_id = store.state.project.project_id
       router.push({ query: query }) // Edit query parameter
       router.go({ path: to.currentRoute })
       next()
       return
     }
+  }
+  if (!to.query.project_id && current_project_id != '') {
+    // Force set project_id parameter
+    let query = Object.assign({}, to.query)
+    query.project_id = current_project_id
+    next({ ...to, query })
+    return
   }
   next()
 })
