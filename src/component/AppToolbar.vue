@@ -6,7 +6,7 @@
     <v-app-bar-title>
       <v-menu
         location="bottom"
-        class="elelvation-1"
+        class="elevation-1"
         transition="scale-transition"
       >
         <template v-slot:activator="{ props }">
@@ -31,11 +31,7 @@
     <v-btn icon @click="handleFullScreen()">
       <v-icon icon="mdi-fullscreen" size="x-large" />
     </v-btn>
-    <v-menu
-      location="bottom"
-      class="elelvation-1"
-      transition="scale-transition"
-    >
+    <v-menu location="bottom" class="elevation-1" transition="scale-transition">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" variant="text">
           <v-icon size="x-large" icon="mdi-web" />
@@ -55,11 +51,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-menu
-      location="bottom"
-      class="elelvation-1"
-      transition="scale-transition"
-    >
+    <v-menu location="bottom" class="elevation-1" transition="scale-transition">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" variant="text">
           <v-icon icon="mdi-open-in-new" size="x-large"></v-icon>
@@ -324,17 +316,18 @@ export default {
 
     this.currentProjectID = store.state.project.project_id
     const userLocale = store.state.locale
+    const browserLocale = Util.getNavigatorLanguage()
     if (userLocale.lang && userLocale.text) {
       this.handleChangeLocale({
         value: userLocale.lang,
         text: userLocale.text,
       })
+    } else {
+      this.handleChangeLocale({
+        value: browserLocale,
+        text: this.getLocaleText(browserLocale),
+      })
     }
-    const browserLocale = Util.getNavigatorLanguage()
-    this.handleChangeLocale({
-      value: browserLocale,
-      text: this.getLocaleText(browserLocale),
-    })
   },
   methods: {
     customFilter(value, search) {
