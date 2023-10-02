@@ -54,7 +54,7 @@ router.beforeEach(async (to, from, next) => {
       return
     }
   }
-  if (!to.query.project_id && current_project_id != '') {
+  if (!to.query.project_id && current_project_id && current_project_id != '') {
     // Force set project_id parameter
     let query = Object.assign({}, to.query)
     query.project_id = current_project_id
