@@ -839,6 +839,11 @@
           </span>
         </v-card-title>
         <v-card-text>
+          <v-checkbox
+            v-model="pendModel.false_positive"
+            hide-details
+            :label="$t(`view.finding['False Positive']`)"
+          ></v-checkbox>
           <v-list two-line>
             <v-list-item prepend-icon="mdi-identifier">
               <v-list-item-title v-if="pendAll">
@@ -876,13 +881,6 @@
                 :label="$t(`item['Expired At']`)"
                 :items="pendExpiredItems"
               />
-            </v-list-item>
-            <v-list-item>
-              <v-checkbox
-                v-model="pendModel.false_positive"
-                hide-details
-                :label="$t(`view.finding['False Positive']`)"
-              ></v-checkbox>
             </v-list-item>
           </v-list>
         </v-card-text>
@@ -1754,7 +1752,7 @@ export default {
     },
     async handlePendItemSubmit(isArchived) {
       this.loading = true
-      let pendReason = this.getPendReason(this.pendModel.false_positive)
+      const pendReason = this.getPendReason(this.pendModel.false_positive)
       await this.putPendFinding(
         this.findingModel.finding_id,
         this.pendModel.note,
@@ -1783,7 +1781,7 @@ export default {
     async handlePendSelectedSubmit(isArchived) {
       this.loading = true
       const count = this.table.selected.length
-      let pendReason = this.getPendReason(this.pendModel.false_positive)
+      const pendReason = this.getPendReason(this.pendModel.false_positive)
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
         await this.putPendFinding(
