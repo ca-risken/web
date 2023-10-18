@@ -303,6 +303,7 @@ const ja = {
       'GenerativeAI Question-1':
         'クラウド環境で以下のセキュリティの問題を検知しました。日本語で内容を要約してください。',
       'GenerativeAI Question-2': 'また、問題の対処方法もあれば含めてください。',
+      'False Positive': 'Findingが誤検知の場合にチェックしてください',
       SearchHistory: '検索履歴',
       PopularSearch: {
         label: {

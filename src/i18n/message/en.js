@@ -305,6 +305,7 @@ const en = {
         'I have detected the following security issue in my cloud environment. Please summarize the contents.',
       'GenerativeAI Question-2':
         'Also, please include any ways to address the issue.',
+      'False Positive': 'Check if Finding is a false positive',
       SearchHistory: 'SearchHistory',
       PopularSearch: {
         label: {
