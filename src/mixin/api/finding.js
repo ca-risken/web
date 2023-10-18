@@ -228,13 +228,14 @@ const finding = {
           return Promise.reject(err)
         })
     },
-    async putPendFinding(finding_id, note, expired_at) {
+    async putPendFinding(finding_id, note, reason, expired_at) {
       const param = {
         project_id: this.getCurrentProjectID(),
         pend_finding: {
           finding_id: finding_id,
           project_id: this.getCurrentProjectID(),
           note: note,
+          reason: reason,
         },
       }
       if (expired_at) {

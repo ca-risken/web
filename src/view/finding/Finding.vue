@@ -839,6 +839,11 @@
           </span>
         </v-card-title>
         <v-card-text>
+          <v-checkbox
+            v-model="pendModel.false_positive"
+            hide-details
+            :label="$t(`view.finding['False Positive']`)"
+          ></v-checkbox>
           <v-list two-line>
             <v-list-item prepend-icon="mdi-identifier">
               <v-list-item-title v-if="pendAll">
@@ -1154,6 +1159,7 @@ export default {
         finding_id: '',
         note: '',
         expired_at: '',
+        false_positive: false,
       },
       pendExpiredItems: [
         '3 days',
@@ -1746,9 +1752,11 @@ export default {
     },
     async handlePendItemSubmit(isArchived) {
       this.loading = true
+      const pendReason = this.getPendReason(this.pendModel.false_positive)
       await this.putPendFinding(
         this.findingModel.finding_id,
         this.pendModel.note,
+        pendReason,
         this.getPendExpiredSecound(this.pendModel.expired_at)
       )
       if (isArchived) {
@@ -1773,11 +1781,13 @@ export default {
     async handlePendSelectedSubmit(isArchived) {
       this.loading = true
       const count = this.table.selected.length
+      const pendReason = this.getPendReason(this.pendModel.false_positive)
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
         await this.putPendFinding(
           item.finding_id,
           this.pendModel.note,
+          pendReason,
           this.getPendExpiredSecound(this.pendModel.expired_at)
         )
       })
@@ -1806,7 +1816,12 @@ export default {
           return null
       }
     },
-
+    getPendReason(false_positive) {
+      if (false_positive) {
+        return 1
+      }
+      return 0
+    },
     async handleRecommendItem() {
       this.recommendDialog = true
     },
