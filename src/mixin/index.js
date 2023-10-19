@@ -642,7 +642,6 @@ let mixin = {
       return ''
     },
     async UpdateAlertFirstViewedAt() {
-      console.log('called')
       if (!this.$route.query) return
       const query = this.$route.query
       let project_id = 0
