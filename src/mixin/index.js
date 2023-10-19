@@ -642,21 +642,18 @@ let mixin = {
       return ''
     },
     async UpdateAlertFirstViewedAt() {
+      console.log('called')
       if (!this.$route.query) return
       const query = this.$route.query
       let project_id = 0
       let alert_id = 0
-      let from = ''
-      if (query.from && query.from != '') {
-        from = query.from
-      }
       if (query.project_id && query.project_id != '') {
         project_id = parseInt(query.project_id)
       }
       if (query.alert_id && query.alert_id != '') {
         alert_id = parseInt(query.alert_id)
       }
-      if (!project_id || !alert_id || from == '') {
+      if (!project_id) {
         return
       }
       await this.putAlertFirstViewedAt(project_id, alert_id)
