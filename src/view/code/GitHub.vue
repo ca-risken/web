@@ -113,6 +113,14 @@
                   </scan-status>
                   <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
                 </template>
+                <template v-slot:[`item.status_code_scan`]="{ item }">
+                  <scan-status
+                    :status="getStatus(item.value.codeScanSetting)"
+                    v-if="getStatus(item.value.codeScanSetting)"
+                  >
+                  </scan-status>
+                  <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
+                </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
@@ -196,6 +204,7 @@
       :isReadOnly="isReadOnlyForm"
       :gitleaksDataSourceModel="gitleaksDataSourceModel"
       :dependencyDataSourceModel="dependencyDataSourceModel"
+      :codeScanDataSourceModel="codeScanDataSourceModel"
       @closeDialog="closeDialogEdit"
       v-on:edit-notify="handleEditFinish"
     ></setting-dialog>
@@ -240,6 +249,13 @@ export default {
         max_score: '',
         updated_at: '',
       },
+      codeScanDataSourceModel: {
+        code_data_source_id: '',
+        name: '',
+        description: '',
+        max_score: '',
+        updated_at: '',
+      },
       gitHubModel: {
         github_setting_id: '',
         code_data_source_id: '',
@@ -267,10 +283,22 @@ export default {
           scan_at: '',
           updated_at: '',
         },
+        codeScanSetting: {
+          repository_pattern: '',
+          scan_public: '',
+          scan_internal: '',
+          scan_private: '',
+          status: '',
+          status_detail: '',
+          scan_at: '',
+          updated_at: '',
+        },
         isEnabledGitleaks: false,
         isEnabledDependency: false,
+        isEnabledCodeScan: false,
         isDeleteGitleaks: false,
         isDeleteDependency: false,
+        isDeleteCodeScan: false,
       },
       table: {
         selected: [],
@@ -303,6 +331,7 @@ export default {
       editDialog: false,
       editGitleaksDialog: false,
       editDependencyDialog: false,
+      editCodeScanDialog: false,
       settingDialog: false,
     }
   },
@@ -358,6 +387,12 @@ export default {
           key: 'status_dependency',
         },
         {
+          title: this.$i18n.t('item["CodeScan Status"]'),
+          align: 'start',
+          sortable: true,
+          key: 'status_code_scan',
+        },
+        {
           title: this.$i18n.t('item["Updated"]'),
           align: 'start',
           sortable: true,
@@ -380,7 +415,7 @@ export default {
   },
   methods: {
     async getDataSource() {
-      const datasources = await this.getGitleaksDataSourceAPI().catch((err) => {
+      const datasources = await this.listCodeDataSourceAPI().catch((err) => {
         this.clearList()
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -396,6 +431,9 @@ export default {
             break
           case this.dependency_datasource_id:
             this.dependencyDataSourceModel = datasource
+            break
+          case this.code_scan_datasource_id:
+            this.codeScanDataSourceModel = datasource
             break
           default:
             break
@@ -456,6 +494,25 @@ export default {
             updated_at: github_setting.dependency_setting.updated_at,
           }
         }
+        if (github_setting.code_scan_setting) {
+          item.isEnabledCodeScan = true
+          item.codeScanSetting = {
+            github_setting_id:
+              github_setting.code_scan_setting.github_setting_id,
+            code_data_source_id:
+              github_setting.code_scan_setting.code_data_source_id,
+            repository_pattern:
+              github_setting.code_scan_setting.repository_pattern,
+            scan_public: github_setting.code_scan_setting.scan_public,
+            scan_internal: github_setting.code_scan_setting.scan_internal,
+            scan_private: github_setting.code_scan_setting.scan_private,
+            status: github_setting.code_scan_setting.status,
+            status_detail: github_setting.code_scan_setting.status_detail,
+            scan_at: github_setting.code_scan_setting.scan_at,
+            updated_at: github_setting.code_scan_setting.updated_at,
+          }
+        }
+
         items.push(item)
       })
       this.table.items = items
@@ -518,6 +575,7 @@ export default {
       this.gitHubModel = {}
       this.newGitleaksSetting()
       this.newDependencySetting()
+      this.newCodeScanSetting()
       this.isReadOnlyForm = false
       this.settingDialog = true
     },
@@ -532,6 +590,14 @@ export default {
     newDependencySetting() {
       this.gitHubModel.dependencySetting = {}
       this.gitHubModel.isEnabledDependency = true
+    },
+    newCodeScanSetting() {
+      this.gitHubModel.codeScanSetting = {
+        scan_public: true,
+        scan_internal: true,
+        scan_private: false,
+      }
+      this.gitHubModel.isEnabledCodeScan = true
     },
     handleEditItem(item) {
       this.assignDataModel(item.value)
@@ -567,6 +633,15 @@ export default {
           }
         )
       }
+      if (this.gitHubModel.isEnabledCodeScan) {
+        await this.invokeScanCodeScanAPI(item.value.github_setting_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      }
+
       this.finishSuccess('Success: Invoke scan for Data Source.')
     },
     assignDataModel(item) {
@@ -587,6 +662,14 @@ export default {
         )
       } else {
         this.gitHubModel.dependencySetting = {}
+      }
+      if (item.codeScanSetting) {
+        this.gitHubModel.codeScanSetting = Object.assign(
+          this.gitHubModel.codeScanSetting,
+          item.codeScanSetting
+        )
+      } else {
+        this.gitHubModel.codeScanSetting = {}
       }
     },
     async finishInfo(msg) {

@@ -4,7 +4,7 @@ const code = {
   },
   methods: {
     // API
-    async getGitleaksDataSourceAPI() {
+    async listCodeDataSourceAPI() {
       const res = await this.$axios
         .get('/code/list-datasource/')
         .catch((err) => {
@@ -108,6 +108,33 @@ const code = {
           return Promise.reject(err)
         })
     },
+    async putCodeScanSettingAPI(code_scan_setting) {
+      const paramCodeScanSetting = {
+        project_id: this.getCurrentProjectID(),
+        code_scan_setting: code_scan_setting,
+      }
+      const res = await this.$axios
+        .post('/code/put-code-scan-setting/', paramCodeScanSetting)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data || !res.data.data || !res.data.data.code_scan_setting) {
+        return {}
+      }
+      return res.data.data.code_scan_setting
+    },
+    async deleteCodeScanSettingAPI(github_setting_id) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        github_setting_id: github_setting_id,
+      }
+      await this.$axios
+        .post('/code/delete-code-scan-setting/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
     async listGitleaksCacheAPI(github_setting_id) {
       const query =
         '?project_id=' +
@@ -144,6 +171,17 @@ const code = {
       }
       await this.$axios
         .post('/code/invoke-scan-dependency/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+    async invokeScanCodeScanAPI(github_setting_id) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        github_setting_id: github_setting_id,
+      }
+      await this.$axios
+        .post('/code/invoke-scan-code-scan/', param)
         .catch((err) => {
           return Promise.reject(err)
         })
