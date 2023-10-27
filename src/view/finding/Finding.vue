@@ -642,7 +642,12 @@
                   class="ma-6 px-12"
                 ></v-progress-circular>
                 <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <auto-link :text="aiAnswer" />
+                  <Markdown
+                    breaks
+                    linkify
+                    class="markdown"
+                    :source="aiAnswer"
+                  />
                 </v-card-text>
               </v-alert>
             </v-col>
@@ -1050,7 +1055,12 @@
                   class="ma-6 px-12"
                 ></v-progress-circular>
                 <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <auto-link :text="aiAnswer" />
+                  <Markdown
+                    breaks
+                    linkify
+                    class="markdown"
+                    :source="aiAnswer"
+                  />
                 </v-card-text>
               </v-alert>
             </v-col>
@@ -1086,6 +1096,9 @@ import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
 import AutoLink from '@/component/text/AutoLink.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
+import Markdown from 'vue3-markdown-it'
+import 'highlight.js/styles/monokai.css'
+
 export default {
   name: 'FindingList',
   mixins: [mixin, finding, alert],
@@ -1095,6 +1108,7 @@ export default {
     JsonViewer,
     AutoLink,
     VDataTableServer,
+    Markdown,
   },
   data() {
     return {
@@ -2193,5 +2207,21 @@ export default {
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
+}
+.markdown {
+  ul,
+  ol {
+    padding-left: 20px;
+    margin-top: -20px;
+    margin-bottom: -20px;
+  }
+  li {
+    margin-top: -5px;
+    margin-bottom: -5px;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 }
 </style>

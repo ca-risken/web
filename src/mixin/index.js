@@ -654,7 +654,7 @@ let mixin = {
       if (query.alert_id && query.alert_id != '') {
         alert_id = parseInt(query.alert_id)
       }
-      if (!project_id) {
+      if (project_id === 0 || alert_id === 0) {
         return
       }
       await this.putAlertFirstViewedAt(project_id, alert_id)
