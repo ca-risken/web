@@ -17,6 +17,7 @@ let mixin = {
         'osint:website',
         'code:gitleaks',
         'code:dependency',
+        'code:codescan',
         'google:asset',
         'google:cloudsploit',
         'google:scc',
@@ -28,6 +29,7 @@ let mixin = {
       diagnosis_application_scan_datasource_id: 1004,
       gitleaks_datasource_id: 1001,
       dependency_datasource_id: 1002,
+      code_scan_datasource_id: 1003,
       resourceNameCombobox: [],
       projectTagDialog: false,
       namespaceTagMap: new Map([
@@ -652,7 +654,7 @@ let mixin = {
       if (query.alert_id && query.alert_id != '') {
         alert_id = parseInt(query.alert_id)
       }
-      if (!project_id) {
+      if (project_id === 0 || alert_id === 0) {
         return
       }
       await this.putAlertFirstViewedAt(project_id, alert_id)

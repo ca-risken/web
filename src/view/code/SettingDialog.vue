@@ -29,6 +29,12 @@
             :disabled="!isConfiguredGitHubSetting"
             >{{ $t(`item['Dependency Setting']`) }}</v-tab
           >
+          <v-tab
+            class="mx-0 px-0"
+            :value="4"
+            :disabled="!isConfiguredGitHubSetting"
+            >{{ $t(`item['CodeScan Setting']`) }}</v-tab
+          >
         </v-tabs>
         <v-window v-model="e6">
           <v-window-item :value="1">
@@ -619,6 +625,237 @@
               </v-card-actions>
             </v-card>
           </v-window-item>
+          <v-window-item :value="4">
+            <v-card variant="flat" class="pb-4">
+              <v-card-text>
+                <v-row>
+                  <v-col>
+                    <v-list-item two-line>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Data Source']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="text-h5">
+                        {{ codeScanDataSourceModel.name }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="2">
+                    <v-list-item two-line>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Data Source ID']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="text-h5">
+                        {{ codeScanDataSourceModel.code_data_source_id }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="2">
+                    <v-list-item>
+                      <v-list-item-title class="text-h5">
+                        <v-list-item-subtitle>
+                          {{ $t(`item['MAX Score']`) }}
+                        </v-list-item-subtitle>
+                        <v-chip outlined>
+                          {{ codeScanDataSourceModel.max_score }}
+                        </v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="2">
+                    <v-list-item>
+                      <v-list-item-title class="text-h5">
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Status']`) }}
+                        </v-list-item-subtitle>
+                        <v-chip
+                          variant="flat"
+                          class="text-white"
+                          :color="
+                            getDataSourceStatusColor(codeScanSetting.status)
+                          "
+                          v-if="getStatus(codeScanSetting)"
+                        >
+                          {{ getDataSourceStatusText(codeScanSetting.status) }}
+                        </v-chip>
+                        <v-chip
+                          variant="flat"
+                          class="text-white"
+                          :color="
+                            getDataSourceStatusColor(codeScanSetting.status)
+                          "
+                          v-else
+                        >
+                          Disabled
+                        </v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="3" v-if="getStatus(codeScanSetting)">
+                    <v-list-item>
+                      <v-list-item-title class="text-h5">
+                        <v-list-item-subtitle>
+                          {{ $t(`item['ScanAt']`) }}
+                        </v-list-item-subtitle>
+                        <v-chip v-if="codeScanSetting.scan_at">
+                          {{ formatTime(codeScanSetting.scan_at) }}
+                        </v-chip>
+                        <v-chip v-else>Not yet scan...</v-chip>
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
+                <v-row dense v-if="getStatusDetail(codeScanSetting)">
+                  <v-col>
+                    <v-list-item two-line>
+                      <v-list-item-subtitle>
+                        {{ $t(`item['Status Detail']`) }}
+                      </v-list-item-subtitle>
+                      <v-list-item-title class="wrap-text">
+                        {{ getStatusDetail(codeScanSetting) }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col>
+                    <v-switch
+                      class="ml-2"
+                      v-model="isEnabledCodeScan"
+                      :label="$t(`action['Enable CodeScan']`)"
+                      color="info"
+                      :disabled="isReadOnly"
+                    ></v-switch>
+                  </v-col>
+                </v-row>
+                <v-card variant="flat" class="mb-4" v-if="isEnabledCodeScan">
+                  <v-card-text class="pb-0">
+                    <v-form v-model="codeScanForm.valid" ref="formCodeScan">
+                      <v-row>
+                        <v-col cols="4" class="mb-0 pb-0">
+                          <v-text-field
+                            density="compact"
+                            v-model="codeScanSetting.repository_pattern"
+                            :counter="128"
+                            :rules="codeScanForm.repository_pattern.validator"
+                            :label="
+                              $t(
+                                `item['` +
+                                  codeScanForm.repository_pattern.label +
+                                  `']`
+                              )
+                            "
+                            :placeholder="
+                              codeScanForm.repository_pattern.placeholder
+                            "
+                            :disabled="isReadOnly"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row class="my-0">
+                        <v-col cols="3" class="py-0">
+                          <v-switch
+                            v-model="codeScanSetting.scan_public"
+                            :label="
+                              $t(
+                                `item['` + codeScanForm.scan_public.label + `']`
+                              )
+                            "
+                            color="info"
+                            :disabled="isReadOnly"
+                          ></v-switch>
+                        </v-col>
+                        <v-col cols="3" class="py-0">
+                          <v-switch
+                            v-model="codeScanSetting.scan_internal"
+                            :label="
+                              $t(
+                                `item['` +
+                                  codeScanForm.scan_internal.label +
+                                  `']`
+                              )
+                            "
+                            color="info"
+                            :disabled="isReadOnly"
+                          ></v-switch>
+                        </v-col>
+                        <v-col cols="3" class="py-0">
+                          <v-switch
+                            v-model="codeScanSetting.scan_private"
+                            :label="
+                              $t(
+                                `item['` +
+                                  codeScanForm.scan_private.label +
+                                  `']`
+                              )
+                            "
+                            color="info"
+                            :disabled="isReadOnly"
+                          ></v-switch>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </v-card-text>
+                </v-card>
+              </v-card-text>
+              <v-card-actions>
+                <v-row>
+                  <v-col class="text-right">
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleScanCodeScan(false)"
+                      v-if="isReadOnly"
+                      :disabled="!isEnabledCodeScan"
+                      :loading="loading"
+                    >
+                      <v-icon left>mdi-magnify-scan</v-icon>
+                      {{ $t(`btn['SCAN']`) }}
+                    </v-btn>
+                    <v-btn
+                      class="mr-2"
+                      variant="outlined"
+                      color="cyan-darken-2"
+                      v-if="isReadOnly"
+                      :loading="loading"
+                      link
+                      :to="{
+                        path: '/finding/finding/',
+                        query: {
+                          data_source: codeScanDataSourceModel.name,
+                        },
+                      }"
+                      risken-action-name="search-finding-by-datasource-from-codescan"
+                    >
+                      <v-icon left>mdi-magnify</v-icon>
+                      {{ $t(`btn['SHOW SCAN RESULT']`) }}
+                    </v-btn>
+
+                    <v-btn
+                      variant="outlined"
+                      color="blue-darken-1"
+                      @click="handleCodeScanEditSubmit"
+                      :disabled="!isConfiguredCodeScanSetting"
+                      :loading="loading"
+                      v-else
+                      >{{ $t(`btn['SAVE']`) }}
+                    </v-btn>
+                    <v-btn
+                      class="ml-2"
+                      variant="outlined"
+                      color="grey-darken-1"
+                      @click="$emit('closeDialog')"
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['CANCEL']`) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
+            </v-card>
+          </v-window-item>
         </v-window>
         <!-- dependency -->
       </v-card>
@@ -658,6 +895,10 @@ export default {
       default: null,
     },
     dependencyDataSourceModel: {
+      type: Object,
+      default: null,
+    },
+    codeScanDataSourceModel: {
       type: Object,
       default: null,
     },
@@ -705,6 +946,15 @@ export default {
       this.isDeleteDependency = true
       return
     },
+    isEnabledCodeScan: function () {
+      if (this.isEnabledCodeScan) {
+        this.newCodeScanSetting()
+        this.isDeleteCodeScan = false
+        return
+      }
+      this.isDeleteCodeScan = true
+      return
+    },
   },
   data() {
     return {
@@ -712,10 +962,13 @@ export default {
       gitHubSetting: this.gitHubModel,
       gitleaksSetting: this.gitHubModel.gitleaksSetting,
       dependencySetting: this.gitHubModel.dependencySetting,
+      codeScanSetting: this.gitHubModel.codeScanSetting,
       isEnabledGitleaks: this.gitHubModel.isEnabledGitleaks,
       isEnabledDependency: this.gitHubModel.isEnabledDependency,
+      isEnabledCodeScan: this.gitHubModel.isEnabledCodeScan,
       isDeleteGitleaks: false,
       isDeleteDependency: false,
+      isDeleteCodeScan: false,
       gitleaksCacheDialog: false,
       githubSettingID: 0,
       loading: false,
@@ -723,7 +976,7 @@ export default {
         valid: false,
         name: {
           label: 'Name',
-          placeholder: 'Gitleaks setting name',
+          placeholder: 'GitHub setting name',
           validator: [
             (v) => !!v || 'Name is required',
             (v) =>
@@ -823,6 +1076,34 @@ export default {
           validator: [],
         },
       },
+      codeScanForm: {
+        valid: false,
+        repository_pattern: {
+          label: 'RepositoryPattern',
+          placeholder: '-',
+          validator: [
+            (v) =>
+              !v ||
+              v.length <= 128 ||
+              'RepositoryPattern must be less than 128 characters',
+          ],
+        },
+        scan_public: {
+          label: 'Scan Public Repository',
+          placeholder: '-',
+          validator: [],
+        },
+        scan_internal: {
+          label: 'Scan Internal Repository',
+          placeholder: '-',
+          validator: [],
+        },
+        scan_private: {
+          label: 'Scan Private Repository',
+          placeholder: '-',
+          validator: [],
+        },
+      },
     }
   },
   methods: {
@@ -854,6 +1135,7 @@ export default {
       }
       this.gitleaksSetting = github_setting[0].gitleaks_setting
       this.dependencySetting = github_setting[0].dependency_setting
+      this.codeScanSetting = github_setting[0].code_scan_setting
     },
     async editGitHubSetting() {
       const github_setting = {
@@ -943,6 +1225,40 @@ export default {
       })
       return dependencySetting
     },
+    async editCodeScanSetting(gitHubSettingID) {
+      if (this.isDeleteCodeScan) {
+        await this.deleteCodeScanSettingAPI(gitHubSettingID).catch((err) => {
+          return Promise.reject(err)
+        })
+        return
+      }
+      if (!this.isEnabledCodeScan) {
+        return
+      }
+      let scan_at = 0
+      if (this.codeScanSetting.scan_at) {
+        scan_at = this.codeScanSetting.scan_at
+      }
+      const paramCodeScanSetting = {
+        github_setting_id: gitHubSettingID,
+        code_data_source_id: this.code_scan_datasource_id,
+        project_id: this.getCurrentProjectID(),
+        repository_pattern: this.codeScanSetting.repository_pattern,
+        scan_public: Boolean(this.codeScanSetting.scan_public),
+        scan_internal: Boolean(this.codeScanSetting.scan_internal),
+        scan_private: Boolean(this.codeScanSetting.scan_private),
+        status: 2, // CONFIGURED
+        status_detail:
+          'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
+        scan_at: scan_at,
+      }
+      const codeScanSetting = await this.putCodeScanSettingAPI(
+        paramCodeScanSetting
+      ).catch((err) => {
+        return Promise.reject(err)
+      })
+      return codeScanSetting
+    },
     async handleGitHubEditSubmit() {
       if (!this.$refs.formGitHub.validate()) {
         return
@@ -997,6 +1313,27 @@ export default {
       this.$emit('edit-notify', 'Success: Updated.')
       this.$emit('closeDialog')
     },
+    async handleCodeScanEditSubmit() {
+      if (this.isEnabledCodeScan && !this.$refs.formCodeScan.validate()) {
+        return
+      }
+      this.loading = true
+      const codeScanSetting = await this.editCodeScanSetting(
+        this.gitHubSetting.github_setting_id
+      )
+        .catch((err) => {
+          this.$emit('edit-notify', err)
+          return
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      if (codeScanSetting) {
+        this.codeScanSetting = codeScanSetting
+      }
+      this.e6 = 3
+    },
+
     async handleScanGitleaks(fullscan) {
       this.loading = true
       if (!this.isEnabledGitleaks) {
@@ -1033,6 +1370,24 @@ export default {
       this.$emit('edit-notify', 'Success: Invoke scan for Dependency.')
       this.refreshDialogDataSource(this.gitHubSetting.github_setting_id)
     },
+    async handleScanCodeScan() {
+      this.loading = true
+      if (!this.isEnabledCodeScan) {
+        this.$emit('edit-notify', '', 'CodeScan is not enabled.')
+        this.loading = false
+        return
+      }
+      await this.invokeScanCodeScanAPI(this.gitHubSetting.github_setting_id)
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      this.$emit('edit-notify', 'Success: Invoke scan for CodeScan.')
+      this.refreshDialogDataSource(this.gitHubSetting.github_setting_id)
+    },
+
     newGitleaksSetting() {
       this.gitleaksSetting = {
         scan_public: true,
@@ -1043,6 +1398,14 @@ export default {
     newDependencySetting() {
       this.dependencySetting = {}
     },
+    newCodeScanSetting() {
+      this.codeScanSetting = {
+        scan_public: true,
+        scan_internal: true,
+        scan_private: false,
+      }
+    },
+
     getGitHubTypeCode(typeText) {
       switch (typeText) {
         case 'Organization':
