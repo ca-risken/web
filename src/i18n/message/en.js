@@ -229,8 +229,6 @@ const en = {
     'Archive selected findings': 'Archive selected findings',
     'Attach DataSource': 'Attach DataSource',
     Deactivate: 'Deactivate',
-    'Deactivate Gitleaks': 'Deactivate Gitleaks',
-    'Deactivate CodeScan': 'Deactivate CodeScan',
     'Delete Finding': 'Delete Finding',
     'Delete Item': 'Delete Item',
     'Delete selected findings': 'Delete selected findings',
