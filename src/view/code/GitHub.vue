@@ -121,9 +121,6 @@
                   </scan-status>
                   <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
                 </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ props }">
@@ -391,12 +388,6 @@ export default {
           align: 'start',
           sortable: true,
           key: 'status_code_scan',
-        },
-        {
-          title: this.$i18n.t('item["Updated"]'),
-          align: 'start',
-          sortable: true,
-          key: 'updated_at',
         },
         {
           title: this.$i18n.t('item["Action"]'),
