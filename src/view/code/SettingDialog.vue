@@ -837,7 +837,7 @@
                       variant="outlined"
                       color="blue-darken-1"
                       @click="handleCodeScanEditSubmit"
-                      :disabled="!isConfiguredCodeScanSetting"
+                      :disabled="!isConfiguredGitHubSetting"
                       :loading="loading"
                       v-else
                       >{{ $t(`btn['SAVE']`) }}
@@ -1310,8 +1310,7 @@ export default {
       if (dependencySetting) {
         this.dependencySetting = dependencySetting
       }
-      this.$emit('edit-notify', 'Success: Updated.')
-      this.$emit('closeDialog')
+      this.e6 = 4
     },
     async handleCodeScanEditSubmit() {
       if (this.isEnabledCodeScan && !this.$refs.formCodeScan.validate()) {
@@ -1331,7 +1330,8 @@ export default {
       if (codeScanSetting) {
         this.codeScanSetting = codeScanSetting
       }
-      this.e6 = 3
+      this.$emit('edit-notify', 'Success: Updated.')
+      this.$emit('closeDialog')
     },
 
     async handleScanGitleaks(fullscan) {
