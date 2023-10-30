@@ -1739,11 +1739,13 @@ export default {
     handleArchiveButtonClick() {
       this.pendAll = false
       this.isArchived = true
+      this.pendModel.false_positive = false
       this.pendDialog = true
     },
     handlePendButtonClick() {
       this.pendAll = false
       this.isArchived = false
+      this.pendModel.false_positive = false
       this.pendDialog = true
     },
     handleArchiveItem(row) {
