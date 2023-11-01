@@ -623,7 +623,7 @@
               </v-list-item-title>
             </v-col>
           </v-row>
-          <v-row v-if="generativeAIEnabled">
+          <v-row>
             <v-col cols="12">
               <v-alert
                 :title="$t(`view.finding['Generative AI Title']`)"
@@ -1531,9 +1531,7 @@ export default {
       )
       this.orverrideRecommend()
       this.viewDialog = true
-      if (this.generativeAIEnabled) {
-        await this.getAISummaryContent()
-      }
+      await this.getAISummaryContent()
     },
     orverrideRecommend() {
       const d = JSON.parse(this.findingModel.data)
