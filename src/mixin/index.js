@@ -654,23 +654,25 @@ let mixin = {
       if (query.alert_id && query.alert_id != '') {
         alert_id = parseInt(query.alert_id)
       }
-      const userInProject = await this.UserInProject(project_id)
-      if (project_id === 0 || !userInProject) {
-        return
-      }
-      await this.putAlertFirstViewedAt(project_id, alert_id)
+      let userInProject = false
+      await setTimeout(async () => {
+        userInProject = await this.UserInProject(project_id)
+        if (project_id === 0 || !userInProject) {
+          return
+        }
+        await this.putAlertFirstViewedAt(project_id, alert_id)
+      }, 3000)
     },
     async UserInProject(project_id) {
-      console.log(await this.$store.state.user)
-      const user = this.$store.state.user
-      if (!user || !user.user_id) {
-        return false
-      }
       const searchCond = '&project_id=' + project_id
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         return Promise.reject(err)
       })
       if (!userIDs) {
+        return false
+      }
+      const user = store.state.user
+      if (!user || !user.user_id) {
         return false
       }
       if (userIDs.includes(user.user_id)) {
