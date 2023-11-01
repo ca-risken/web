@@ -655,6 +655,14 @@ let mixin = {
         alert_id = parseInt(query.alert_id)
       }
       let userInProject = false
+      if (store.state && store.state.user && store.state.user.user_id ){
+        userInProject = await this.UserInProject(project_id)
+        if (project_id === 0 || !userInProject) {
+          return
+        }
+        await this.putAlertFirstViewedAt(project_id, alert_id)
+        return
+      }
       await setTimeout(async () => {
         userInProject = await this.UserInProject(project_id)
         if (project_id === 0 || !userInProject) {
