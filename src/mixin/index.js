@@ -647,20 +647,16 @@ let mixin = {
       if (!this.$route.query) return
       const query = this.$route.query
       let project_id = 0
-      let alert_id = 0
       if (query.project_id && query.project_id != '') {
         project_id = parseInt(query.project_id)
       }
-      if (query.alert_id && query.alert_id != '') {
-        alert_id = parseInt(query.alert_id)
-      }
       let userInProject = false
-      if (store.state && store.state.user && store.state.user.user_id ){
+      if (store.state && store.state.user && store.state.user.user_id) {
         userInProject = await this.UserInProject(project_id)
         if (project_id === 0 || !userInProject) {
           return
         }
-        await this.putAlertFirstViewedAt(project_id, alert_id)
+        await this.putAlertFirstViewedAt(project_id)
         return
       }
       await setTimeout(async () => {
@@ -668,7 +664,7 @@ let mixin = {
         if (project_id === 0 || !userInProject) {
           return
         }
-        await this.putAlertFirstViewedAt(project_id, alert_id)
+        await this.putAlertFirstViewedAt(project_id)
       }, 3000)
     },
     async UserInProject(project_id) {

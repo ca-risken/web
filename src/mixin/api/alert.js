@@ -60,10 +60,9 @@ const alert = {
       })
     },
 
-    async putAlertFirstViewedAt(project_id, alert_id) {
+    async putAlertFirstViewedAt(project_id) {
       const param = {
         project_id: project_id,
-        alert_id: alert_id,
       }
       await this.$axios
         .post('/alert/put-alert-first-viewed-at/', param)
