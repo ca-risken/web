@@ -651,24 +651,24 @@ let mixin = {
       if (query.project_id && query.project_id != '') {
         project_id = parseInt(query.project_id)
       }
-      let userID
+      let user_id
       if (store.state && store.state.user && store.state.user.user_id) {
-        userID = store.state.user.user_id
+        user_id = store.state.user.user_id
       } else {
-        userID = await this.signin()
+        user_id = await this.signin()
       }
-      if (!userID) {
+      if (!user_id) {
         return
       }
-      const userInProject = await this.UserInProject(project_id)
+      const userInProject = await this.UserInProject(project_id,user_id)
       if (project_id === 0 || !userInProject) {
         return
       }
-      await this.putAlertFirstViewedAt(project_id)
+      await this.putAlertFirstViewedAt(project_id, user_id)
       return
     },
-    async UserInProject(project_id) {
-      const searchCond = '&project_id=' + project_id
+    async UserInProject(project_id,user_id) {
+      const searchCond = '&project_id=' + project_id + '&user_id=' + user_id
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         return Promise.reject(err)
       })
