@@ -308,11 +308,12 @@
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
 import finding from '@/mixin/api/finding'
+import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertList',
-  mixins: [mixin, alert, finding],
+  mixins: [mixin, alert, finding, iam],
   components: {
     BottomSnackBar,
     VDataTable,

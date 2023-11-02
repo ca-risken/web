@@ -1091,6 +1091,7 @@ import Util from '@/util'
 import store from '@/store'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
+import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
@@ -1101,7 +1102,7 @@ import 'highlight.js/styles/monokai.css'
 
 export default {
   name: 'FindingList',
-  mixins: [mixin, finding, alert],
+  mixins: [mixin, finding, alert, iam],
   components: {
     BottomSnackBar,
     ClipBoard,

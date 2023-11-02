@@ -165,11 +165,12 @@ let mixin = {
   },
   methods: {
     async signinUser() {
-      await store.commit('storeUser', {})
-      const userID = await this.signin().catch((err) => {
+      const userID = await this.signin().catch(async (err) => {
+        await store.commit('storeUser', {})
         return Promise.reject(err)
       })
-      const user = await this.getUserAPI(userID).catch((err) => {
+      const user = await this.getUserAPI(userID).catch(async (err) => {
+        await store.commit('storeUser', {})
         return Promise.reject(err)
       })
       await store.commit('storeUser', user)
@@ -647,17 +648,41 @@ let mixin = {
       if (!this.$route.query) return
       const query = this.$route.query
       let project_id = 0
-      let alert_id = 0
       if (query.project_id && query.project_id != '') {
         project_id = parseInt(query.project_id)
       }
-      if (query.alert_id && query.alert_id != '') {
-        alert_id = parseInt(query.alert_id)
+      let user_id
+      if (store.state && store.state.user && store.state.user.user_id) {
+        user_id = store.state.user.user_id
+      } else {
+        user_id = await this.signin()
       }
-      if (project_id === 0 || alert_id === 0) {
+      if (!user_id) {
         return
       }
-      await this.putAlertFirstViewedAt(project_id, alert_id)
+      const userInProject = await this.UserInProject(project_id, user_id)
+      if (project_id === 0 || !userInProject) {
+        return
+      }
+      await this.putAlertFirstViewedAt(project_id, user_id)
+      return
+    },
+    async UserInProject(project_id, user_id) {
+      const searchCond = '&project_id=' + project_id + '&user_id=' + user_id
+      const userIDs = await this.listUserAPI(searchCond).catch((err) => {
+        return Promise.reject(err)
+      })
+      if (!userIDs) {
+        return false
+      }
+      const user = store.state.user
+      if (!user || !user.user_id) {
+        return false
+      }
+      if (userIDs.includes(user.user_id)) {
+        return true
+      }
+      return false
     },
   },
 }
