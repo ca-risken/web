@@ -165,11 +165,12 @@ let mixin = {
   },
   methods: {
     async signinUser() {
-      await store.commit('storeUser', {})
-      const userID = await this.signin().catch((err) => {
+      const userID = await this.signin().catch(async (err) => {
+        await store.commit('storeUser', {})
         return Promise.reject(err)
       })
-      const user = await this.getUserAPI(userID).catch((err) => {
+      const user = await this.getUserAPI(userID).catch(async (err) => {
+        await store.commit('storeUser', {})
         return Promise.reject(err)
       })
       await store.commit('storeUser', user)
@@ -650,22 +651,21 @@ let mixin = {
       if (query.project_id && query.project_id != '') {
         project_id = parseInt(query.project_id)
       }
-      let userInProject = false
+      let userID
       if (store.state && store.state.user && store.state.user.user_id) {
-        userInProject = await this.UserInProject(project_id)
-        if (project_id === 0 || !userInProject) {
-          return
-        }
-        await this.putAlertFirstViewedAt(project_id)
+        userID = store.state.user.user_id
+      } else {
+        userID = await this.signin()
+      }
+      if (!userID) {
         return
       }
-      await setTimeout(async () => {
-        userInProject = await this.UserInProject(project_id)
-        if (project_id === 0 || !userInProject) {
-          return
-        }
-        await this.putAlertFirstViewedAt(project_id)
-      }, 3000)
+      const userInProject = await this.UserInProject(project_id)
+      if (project_id === 0 || !userInProject) {
+        return
+      }
+      await this.putAlertFirstViewedAt(project_id)
+      return
     },
     async UserInProject(project_id) {
       const searchCond = '&project_id=' + project_id
