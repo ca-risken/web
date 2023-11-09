@@ -145,71 +145,119 @@
               "
               variant="outlined"
             ></v-select>
-            <v-text-field
-              v-model="dataModel.webhook_url"
-              :counter="200"
-              :rules="form.webhook_url.validator"
-              :label="$t(`item['` + form.webhook_url.label + `']`) + ' *'"
-              :placeholder="form.webhook_url.placeholder"
-              variant="outlined"
-              required
-            ></v-text-field>
-            <v-alert
-              v-if="
-                dataModel.masked_webhook_url != '' &&
-                dataModel.masked_webhook_url != null
-              "
-              density="compact"
-              variant="outlined"
-              type="info"
-            >
-              <p class="text-caption">
-                {{
-                  $t(
-                    `view.alert['Currently, the following webhook URL (masked) is registered. If webhook_url is blank when editing, it will be not updated.']`
-                  )
-                }}
-              </p>
-              <p>{{ formatSmartMaskString(dataModel.masked_webhook_url) }}</p>
-            </v-alert>
-            <v-checkbox
-              v-model="form.show_option"
-              :label="$t(`view.alert['Show options']`)"
-            />
 
-            <v-text-field
-              v-show="form.show_option"
-              v-model="dataModel.custom_message"
-              :counter="128"
-              :rules="form.custom_message.validator"
-              :label="$t(`item['` + form.custom_message.label + `']`)"
-              :placeholder="form.custom_message.placeholder"
-              variant="outlined"
-            ></v-text-field>
-            <v-text-field
-              v-show="form.show_option"
-              v-model="dataModel.channel"
-              :counter="60"
-              :rules="form.channel.validator"
-              :label="$t(`item['` + form.channel.label + `']`)"
-              :placeholder="form.channel.placeholder"
-              variant="outlined"
-            ></v-text-field>
-            <v-alert
-              v-show="form.show_option"
-              v-if="dataModel.channel != '' && dataModel.channel != null"
-              density="compact"
-              variant="outlined"
-              type="error"
+            <v-tabs
+              v-model="tab"
+              color="deep-purple-accent-4"
+              align-tabs="center"
             >
-              {{ $t(`view.alert['The specific channel setting is ']`) }}
-              <strong>{{ $t(`view.alert['deprecated']`) }}</strong>
-              {{
-                $t(
-                  `view.alert['... It is recommended to use the default channels.']`
-                )
-              }}
-            </v-alert>
+              <v-tab :value="1">Slack App</v-tab>
+              <v-tab :value="2">Webhook URL</v-tab>
+            </v-tabs>
+            <v-window v-model="tab">
+              <v-window-item :value="1">
+                <p class="text-body-2 ma-4">
+                  {{
+                    $t(
+                      `view.alert['Please specify the channel ID for notifications.']`
+                    )
+                  }}
+                  <br />
+                  {{
+                    $t(
+                      `view.alert['(You need to add the Slack App to the desired channel in advance.)']`
+                    )
+                  }}
+                </p>
+                <v-text-field
+                  v-model="dataModel.channel_id"
+                  :counter="60"
+                  label="Channel ID"
+                  placeholder="Cxxxxx"
+                  variant="outlined"
+                ></v-text-field>
+              </v-window-item>
+
+              <v-window-item :value="2">
+                <p class="text-body-2 ma-4">
+                  {{
+                    $t(`view.alert['Please specify the Slack Webhook URL.']`)
+                  }}
+                  <br />
+                  {{
+                    $t(`view.alert['(You need to issue the URL in advance.)']`)
+                  }}
+                </p>
+                <v-text-field
+                  v-model="dataModel.webhook_url"
+                  :counter="200"
+                  :rules="form.webhook_url.validator"
+                  :label="$t(`item['` + form.webhook_url.label + `']`) + ' *'"
+                  :placeholder="form.webhook_url.placeholder"
+                  variant="outlined"
+                  required
+                ></v-text-field>
+                <v-alert
+                  v-if="
+                    dataModel.masked_webhook_url != '' &&
+                    dataModel.masked_webhook_url != null
+                  "
+                  density="compact"
+                  variant="outlined"
+                  type="info"
+                >
+                  <p class="text-caption">
+                    {{
+                      $t(
+                        `view.alert['Currently, the following webhook URL (masked) is registered. If webhook_url is blank when editing, it will be not updated.']`
+                      )
+                    }}
+                  </p>
+                  <p>
+                    {{ formatSmartMaskString(dataModel.masked_webhook_url) }}
+                  </p>
+                </v-alert>
+                <v-checkbox
+                  v-model="form.show_option"
+                  :label="$t(`view.alert['Show options']`)"
+                />
+
+                <v-text-field
+                  v-show="form.show_option"
+                  v-model="dataModel.custom_message"
+                  :counter="128"
+                  :rules="form.custom_message.validator"
+                  :label="$t(`item['` + form.custom_message.label + `']`)"
+                  :placeholder="form.custom_message.placeholder"
+                  variant="outlined"
+                ></v-text-field>
+                <v-text-field
+                  v-show="form.show_option"
+                  v-model="dataModel.channel"
+                  :counter="60"
+                  :rules="form.channel.validator"
+                  :label="$t(`item['` + form.channel.label + `']`)"
+                  :placeholder="form.channel.placeholder"
+                  variant="outlined"
+                ></v-text-field>
+                <v-alert
+                  v-show="form.show_option"
+                  v-if="dataModel.channel != '' && dataModel.channel != null"
+                  density="compact"
+                  variant="outlined"
+                  type="error"
+                >
+                  {{ $t(`view.alert['The specific channel setting is ']`) }}
+                  <strong>{{ $t(`view.alert['deprecated']`) }}</strong>
+                  {{
+                    $t(
+                      `view.alert['... It is recommended to use the default channels.']`
+                    )
+                  }}
+                </v-alert>
+              </v-window-item>
+            </v-window>
+
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
               <v-btn
@@ -415,6 +463,7 @@ export default {
         webhook_url: '',
         custom_message: '',
         channel: '',
+        channel_id: '',
         updated_at: '',
       },
       table: {
@@ -448,6 +497,7 @@ export default {
       deleteDialog: false,
       editDialog: false,
       testDialog: false,
+      tab: 1,
     }
   },
   computed: {
@@ -545,6 +595,7 @@ export default {
           name: this.dataModel.name,
           notify_setting: JSON.stringify({
             webhook_url: this.dataModel.webhook_url,
+            channel_id: this.dataModel.channel_id,
             data: {
               channel: this.dataModel.channel,
               message: this.dataModel.custom_message,
@@ -575,6 +626,7 @@ export default {
         locale: this.$i18n.locale,
         custom_message: '',
         channel: '',
+        channel_id: '',
         updated_at: '',
       }
       this.form.valid = false
@@ -625,6 +677,9 @@ export default {
       if (this.dataModel.type === 'slack') {
         if (setting.webhook_url) {
           this.dataModel.webhook_url = setting.webhook_url
+        }
+        if (setting.channel_id) {
+          this.dataModel.channel_id = setting.channel_id
         }
         if (setting.locale) {
           this.dataModel.locale = setting.locale
