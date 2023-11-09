@@ -353,6 +353,14 @@ const en = {
         'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.',
       'Running ANALYZE will move to the alert screen.':
         'Running ANALYZE will move to the alert screen.',
+      'Please specify the channel ID for notifications.':
+        'Please specify the channel ID for notifications.',
+      '(You need to add the Slack App to the desired channel in advance.)':
+        '(You need to add the Slack App to the desired channel in advance.)',
+      'Please specify the Slack Webhook URL.':
+        'Please specify the Slack Webhook URL.',
+      '(You need to issue the URL in advance.)':
+        '(You need to issue the URL in advance.)',
     },
     report: {
       'All Data Source': 'All Data Source',

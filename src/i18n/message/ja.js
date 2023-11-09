@@ -351,6 +351,14 @@ const ja = {
         'ルール条件を確認したい場合は、ANALYZEボタンで関連するFindingを見ることができます。',
       'Running ANALYZE will move to the alert screen.':
         'ANALYZEを実行するとアラート画面に移動します。',
+      'Please specify the channel ID for notifications.':
+        '通知先のチャンネルIDを指定してください。',
+      '(You need to add the Slack App to the desired channel in advance.)':
+        '(事前にSlack Appを対象のチャンネルに追加する必要があります。)',
+      'Please specify the Slack Webhook URL.':
+        'SlackのWebhookURLを指定してください。',
+      '(You need to issue the URL in advance.)':
+        '(事前にURLを発行する必要があります。)',
     },
     report: {
       'All Data Source': '全データソース',
