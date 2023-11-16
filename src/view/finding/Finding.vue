@@ -1431,7 +1431,7 @@ export default {
           finding_id: id,
           pend_user_id: pend.pend_user_id ? pend.pend_user_id : 0,
           note: pend.note ? pend.note : '',
-          expired_at: pend.expired_at ? pend.expired_at : 0,
+          expired_at: pend.expired_at ? pend.expired_at : null,
           false_positive: pend.false_positive,
         },
       }
@@ -1820,6 +1820,11 @@ export default {
       this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
     getPendExpiredSecound(expiredAt) {
+      const parsedDate = Date.parse(expiredAt)
+      if (!isNaN(parsedDate)) {
+        console.log(parsedDate)
+        return parsedDate / 1000
+      }
       const nowUnix = Math.floor(Date.now() / 1000)
       const oneDaySec = 86400
       switch (expiredAt) {
@@ -2105,11 +2110,15 @@ export default {
       this.aiFetchController.abort() // Abort the fetch request
     },
     assignPendModel() {
+      let expired_at = null
+      if (this.findingModel.pendModel.expired_at) {
+        expired_at = this.formatTime(this.findingModel.pendModel.expired_at)
+      }
       this.pendModel = {
         finding_id: this.findingModel.finding_id,
         pend_user_id: this.findingModel.pendModel.pend_user_id,
         note: this.findingModel.pendModel.note,
-        expired_at: this.findingModel.pendModel.expired_at,
+        expired_at: expired_at,
       }
     },
 
