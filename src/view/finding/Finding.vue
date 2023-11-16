@@ -1755,7 +1755,6 @@ export default {
       this.pendModel.false_positive = false
       this.assignPendModel()
       this.pendDialog = true
-      console.log(this.pendModel)
     },
     handleArchiveItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
@@ -1822,7 +1821,6 @@ export default {
     getPendExpiredSecound(expiredAt) {
       const parsedDate = Date.parse(expiredAt)
       if (!isNaN(parsedDate)) {
-        console.log(parsedDate)
         return parsedDate / 1000
       }
       const nowUnix = Math.floor(Date.now() / 1000)
