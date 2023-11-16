@@ -551,7 +551,7 @@
 
           <template v-if="findingModel.status != 'ACTIVE'">
             <v-row dense class="mx-4">
-              <v-col v-if="findingModel.pend_note != ''" cols="8">
+              <v-col v-if="findingModel.pendModel.note != ''" cols="8">
                 <v-list-item-subtitle>
                   <v-icon left>mdi-check-circle-outline</v-icon>
                   {{ $t(`view.finding['ARCHIVE']`) }}
@@ -564,13 +564,13 @@
                     variant="outlined"
                   >
                     <p>
-                      {{ findingModel.pend_note }}
+                      {{ findingModel.pendModel.note }}
                     </p>
                   </v-alert>
                 </v-list-item-title>
               </v-col>
               <v-col
-                v-if="findingModel.pend_expired != 0"
+                v-if="findingModel.pendModel.expired_at != 0"
                 cols="3"
                 class="mx-4"
               >
@@ -579,7 +579,9 @@
                   {{ $t(`item['Expired At']`) }}
                 </v-list-item-subtitle>
                 <v-list-item-title class="mt-4">
-                  <v-chip>{{ formatTime(findingModel.pend_expired) }}</v-chip>
+                  <v-chip>{{
+                    formatTime(findingModel.pendModel.expired_at)
+                  }}</v-chip>
                 </v-list-item-title>
               </v-col>
             </v-row>
@@ -1425,8 +1427,13 @@ export default {
         data: finding.data,
         updated_at: finding.updated_at,
         created_at: finding.created_at,
-        pend_note: pend.note ? pend.note : '',
-        pend_expired: pend.expired_at ? pend.expired_at : 0,
+        pendModel: {
+          finding_id: id,
+          pend_user_id: pend.pend_user_id ? pend.pend_user_id : 0,
+          note: pend.note ? pend.note : '',
+          expired_at: pend.expired_at ? pend.expired_at : 0,
+          false_positive: pend.false_positive,
+        },
       }
     },
     clearList() {
@@ -1739,21 +1746,20 @@ export default {
       this.pendAll = false
       this.isArchived = true
       this.pendModel.false_positive = false
+      this.assignPendModel()
       this.pendDialog = true
     },
     handlePendButtonClick() {
       this.pendAll = false
       this.isArchived = false
       this.pendModel.false_positive = false
+      this.assignPendModel()
       this.pendDialog = true
+      console.log(this.pendModel)
     },
     handleArchiveItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
-      this.pendModel = {
-        finding_id: this.findingModel.finding_id,
-        note: '',
-        expired_at: null,
-      }
+      this.assignPendModel()
       this.pendAll = false
       this.isArchived = true
       this.pendDialog = true
@@ -1761,7 +1767,7 @@ export default {
     handlePendItem(row) {
       this.findingModel = Object.assign(this.findingModel, row.value)
       this.pendAll = false
-      this.pendModel.note = ''
+      this.assignPendModel()
       this.isArchived = false
       this.pendDialog = true
     },
@@ -1769,7 +1775,7 @@ export default {
       this.loading = true
       const pendReason = this.getPendReason(this.pendModel.false_positive)
       await this.putPendFinding(
-        this.findingModel.finding_id,
+        this.pendModel.finding_id,
         this.pendModel.note,
         pendReason,
         this.getPendExpiredSecound(this.pendModel.expired_at)
@@ -2097,6 +2103,14 @@ export default {
     },
     async abortAIFetching() {
       this.aiFetchController.abort() // Abort the fetch request
+    },
+    assignPendModel() {
+      this.pendModel = {
+        finding_id: this.findingModel.finding_id,
+        pend_user_id: this.findingModel.pendModel.pend_user_id,
+        note: this.findingModel.pendModel.note,
+        expired_at: this.findingModel.pendModel.expired_at,
+      }
     },
 
     // finish
