@@ -569,11 +569,16 @@
                   </v-alert>
                 </v-list-item-title>
               </v-col>
-              <v-col
-                v-if="findingModel.pendModel.expired_at != 0"
-                cols="3"
-                class="mx-4"
-              >
+              <v-col v-if="findingModel.pendModel.pend_user" cols="2">
+                <v-list-item-subtitle>
+                  <v-icon left>mdi-account-outline</v-icon>
+                  {{ $t(`item['Archived By']`) }}
+                </v-list-item-subtitle>
+                <v-list-item-title class="mt-4" align="center">
+                  <v-chip>{{ findingModel.pendModel.pend_user }}</v-chip>
+                </v-list-item-title>
+              </v-col>
+              <v-col v-if="findingModel.pendModel.expired_at" cols="2">
                 <v-list-item-subtitle>
                   <v-icon left>mdi-clock-outline</v-icon>
                   {{ $t(`item['Expired At']`) }}
@@ -1430,6 +1435,9 @@ export default {
         pendModel: {
           finding_id: id,
           pend_user_id: pend.pend_user_id ? pend.pend_user_id : 0,
+          pend_user: pend.pend_user_id
+            ? await this.getPendUser(pend.pend_user_id)
+            : '',
           note: pend.note ? pend.note : '',
           expired_at: pend.expired_at ? pend.expired_at : null,
           false_positive: pend.false_positive,
@@ -2118,6 +2126,10 @@ export default {
         note: this.findingModel.pendModel.note,
         expired_at: expired_at,
       }
+    },
+    async getPendUser(userID) {
+      const user = await this.getUserAPI(userID)
+      return user.name
     },
 
     // finish

@@ -159,6 +159,7 @@ const en = {
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT Reration ID',
     Passed: 'Passed',
+    'Archived By': 'Archived By',
     PersonalAccessToken: 'PersonalAccessToken',
     Policies: 'Policies',
     'Policy Name': 'Policy Name',
