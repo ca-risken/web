@@ -572,7 +572,7 @@
               <v-col v-if="findingModel.pendModel.pend_user" cols="2">
                 <v-list-item-subtitle>
                   <v-icon left>mdi-account-outline</v-icon>
-                  {{ $t(`item['Pend By']`) }}
+                  {{ $t(`item['Archived By']`) }}
                 </v-list-item-subtitle>
                 <v-list-item-title class="mt-4" align="center">
                   <v-chip>{{ findingModel.pendModel.pend_user }}</v-chip>

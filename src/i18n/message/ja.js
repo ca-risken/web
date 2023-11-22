@@ -159,7 +159,7 @@ const ja = {
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT関連ID',
     Passed: '経過日数',
-    'Pend By': 'Pendしたユーザー',
+    'Archived By': 'Archiveしたユーザー',
     PersonalAccessToken: 'パーソナルアクセストークン',
     Policies: 'ポリシー設定',
     'Policy Name': 'ポリシー名',
