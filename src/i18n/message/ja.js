@@ -1,6 +1,7 @@
 const ja = {
   btn: {
     SIGNIN: 'サインイン',
+    REQUEST: '権限をリクエストする',
     HOME: 'ホーム',
     CANCEL: 'キャンセル',
     'EDIT PROJECT': 'プロジェクト編集',
@@ -259,12 +260,13 @@ const ja = {
     'Do you really want to detach this?': '設定解除しますか?',
     'Do you want to send a test notification?':
       'テスト通知を送信してよろしいですか?',
+    'REQUEST COMPLETED': 'アクセス権を管理者にリクエストしました。',
   },
   error: {
     'Sorry, Please access again after a while.':
       '申し訳ありません。しばらく経ってからアクセスしてください。',
     'Sorry, access denied or time out your session... Please retry after signin.':
-      '申し訳ありません。アクセス権限エラーまたはセッション有効期限が切れました。お手数ですがサインインし直してからアクセスしてください。',
+      'このプロジェクトへのアクセス権がないか、セッションが期限切れです。アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
     'Sorry, page not found': 'ページが見つかりませんでした。',
   },
   view: {

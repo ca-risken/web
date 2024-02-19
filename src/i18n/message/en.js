@@ -1,6 +1,7 @@
 const en = {
   btn: {
     SIGNIN: 'SIGNIN',
+    REQUEST: 'REQUEST AUTHORIZATION',
     HOME: 'HOME',
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',

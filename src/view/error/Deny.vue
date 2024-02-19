@@ -12,22 +12,31 @@
             }}
           </h2>
           <div>
-            <v-btn color="primary" @click="goHome">{{
-              $t(`btn['SIGNIN']`)
+            <v-btn color="primary" @click="requestAuthorization">{{
+              $t(`btn['REQUEST']`)
             }}</v-btn>
           </div>
         </div>
       </v-layout>
     </v-container>
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 
 <script>
+import mixin from '@/mixin'
+import alert from '@/mixin/api/alert'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'ErrorDeny',
+  mixins: [mixin, alert],
+  components: {
+    BottomSnackBar,
+  },
   methods: {
-    goHome() {
-      this.$router.push({ path: '/' })
+    requestAuthorization() {
+      // const alerts = await this.testAlertNotification();
+      this.$refs.snackbar.notifySuccess('request succeed')
     },
   },
 }
