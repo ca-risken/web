@@ -275,6 +275,19 @@ const alert = {
         })
     },
 
+    async submitAlertNotification(msg) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        user_id: store.state.user.user_id,
+        message: msg,
+      }
+      await this.$axios
+        .post('/alert/send-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
     // Analyze
     async analyzeAlert(alert_condition_id) {
       const cond_ids = [alert_condition_id]

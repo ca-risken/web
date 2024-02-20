@@ -25,6 +25,7 @@
 
 <script>
 import mixin from '@/mixin'
+import store from '@/store'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
@@ -35,8 +36,31 @@ export default {
   },
   methods: {
     requestAuthorization() {
-      // const alerts = await this.testAlertNotification();
+      this.submitRequest();
       this.$refs.snackbar.notifySuccess('request succeed')
+    },
+
+    async submitRequest() {
+      const msg = `${store.state.user.name}さんが
+      あなたのプロジェクト${store.state.project.name}への権限を申請しました。
+      問題なければ次のリンクから${store.state.user.name}さんを追加してください。`
+      await this.submitAlertNotification(msg).catch(
+        (err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        }
+      )
+      this.finishSuccess('Success: Send Authorization request.')
+    },
+
+    async finishSuccess(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifySuccess(msg)
+    },
+
+    async finishError(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifyError(msg)
     },
   },
 }
