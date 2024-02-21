@@ -275,14 +275,13 @@ const alert = {
         })
     },
 
-    async submitAlertNotification(msg) {
+    async requestAuthzAlertNotification(user_id) {
       const param = {
         project_id: this.getCurrentProjectID(),
-        user_id: store.state.user.user_id,
-        message: msg,
+        user_id: user_id,
       }
       await this.$axios
-        .post('/alert/send-notification/', param)
+        .post('/alert/request-authz-notification/', param)
         .catch((err) => {
           return Promise.reject(err)
         })

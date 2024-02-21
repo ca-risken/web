@@ -36,15 +36,12 @@ export default {
   },
   methods: {
     requestAuthorization() {
-      this.submitRequest();
+      this.submitRequest()
       this.$refs.snackbar.notifySuccess('request succeed')
     },
 
     async submitRequest() {
-      const msg = `${store.state.user.name}さんが
-      あなたのプロジェクト${store.state.project.name}への権限を申請しました。
-      問題なければ次のリンクから${store.state.user.name}さんを追加してください。`
-      await this.submitAlertNotification(msg).catch(
+      await this.requestAuthzAlertNotification(store.state.user.name).catch(
         (err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
