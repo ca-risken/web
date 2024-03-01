@@ -275,13 +275,13 @@ const alert = {
         })
     },
 
-    async requestAuthzAlertNotification(user_id) {
+    async requestProjectRoleAlertNotification(user_id) {
       const param = {
         project_id: this.getCurrentProjectID(),
         user_id: user_id,
       }
       await this.$axios
-        .post('/alert/request-authz-notification/', param)
+        .post('/alert/request-project-role-notification/', param)
         .catch((err) => {
           return Promise.reject(err)
         })

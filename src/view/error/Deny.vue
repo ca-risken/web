@@ -12,9 +12,12 @@
             }}
           </h2>
           <div>
-            <v-btn color="primary" @click="requestAuthorization">{{
-              $t(`btn['REQUEST']`)
-            }}</v-btn>
+            <v-btn
+              color="primary"
+              @click="requestProjectRole"
+              :loading="loading"
+              >{{ $t(`btn['REQUEST']`) }}</v-btn
+            >
           </div>
         </div>
       </v-layout>
@@ -25,7 +28,7 @@
 
 <script>
 import mixin from '@/mixin'
-import store from '@/store'
+// import store from '@/store'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
@@ -34,30 +37,37 @@ export default {
   components: {
     BottomSnackBar,
   },
+  data() {
+    return {
+      loading: false,
+    }
+  },
   methods: {
-    requestAuthorization() {
+    requestProjectRole() {
+      this.loading = true
       this.submitRequest()
-      this.$refs.snackbar.notifySuccess('request succeed')
     },
 
     async submitRequest() {
-      await this.requestAuthzAlertNotification(store.state.user.name).catch(
-        (err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        }
-      )
-      this.finishSuccess('Success: Send Authorization request.')
+      await this.requestProjectRoleAlertNotification(
+        store.state.user.user_id
+      ).catch((err) => {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishSuccess('Success: Request Project Role.')
     },
 
     async finishSuccess(msg) {
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 5000))
       this.$refs.snackbar.notifySuccess(msg)
+      this.loading = false
     },
 
     async finishError(msg) {
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 5000))
       this.$refs.snackbar.notifyError(msg)
+      this.loading = false
     },
   },
 }
