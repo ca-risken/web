@@ -16,7 +16,7 @@
               color="primary"
               @click="requestProjectRole"
               :loading="loading"
-              >{{ $t(`btn['REQUEST']`) }}</v-btn
+              >{{ $t(`btn['REQUEST PROJECT ROLE']`) }}</v-btn
             >
           </div>
         </div>
@@ -28,7 +28,7 @@
 
 <script>
 import mixin from '@/mixin'
-// import store from '@/store'
+import store from '@/store'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {

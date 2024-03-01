@@ -1,7 +1,7 @@
 const ja = {
   btn: {
     SIGNIN: 'サインイン',
-    REQUEST: '権限をリクエストする',
+    'REQUEST PROJECT ROLE': '権限をリクエストする',
     HOME: 'ホーム',
     CANCEL: 'キャンセル',
     'EDIT PROJECT': 'プロジェクト編集',
