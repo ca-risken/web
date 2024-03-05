@@ -261,7 +261,7 @@ const en = {
     'Do you really want to detach this?': 'Do you really want to detach this?',
     'Do you want to send a test notification?':
       'Do you want to send a test notification?',
-    'REQUEST COMPLETED': 'REQUEST COMPLETED',
+    'REQUEST PROJECT ROLE COMPLETED': 'REQUEST PROJECT ROLE COMPLETED',
   },
   error: {
     'Sorry, Please access again after a while.':

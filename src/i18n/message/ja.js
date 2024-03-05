@@ -260,13 +260,13 @@ const ja = {
     'Do you really want to detach this?': '設定解除しますか?',
     'Do you want to send a test notification?':
       'テスト通知を送信してよろしいですか?',
-    'REQUEST COMPLETED': 'アクセス権を管理者にリクエストしました。',
+    'REQUEST PROJECT ROLE COMPLETED': 'プロジェクトへのアクセス権を管理者にリクエストしました。',
   },
   error: {
     'Sorry, Please access again after a while.':
       '申し訳ありません。しばらく経ってからアクセスしてください。',
-    'Sorry, access denied or time out your session... Please retry after signin.':
-      'このプロジェクトへのアクセス権がないか、セッションが期限切れです。アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
+    'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
+      '申し訳ありません。このプロジェクトへのアクセスが拒否されたか、セッションが期限切れです。アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
     'Sorry, page not found': 'ページが見つかりませんでした。',
   },
   view: {
