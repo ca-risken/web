@@ -266,8 +266,8 @@ const en = {
   error: {
     'Sorry, Please access again after a while.':
       'Sorry, The server is under heavy load... Please access again after a while.',
-    'Sorry, access denied or time out your session... Please retry after signin.':
-      'Sorry, access denied or time out your session... Please retry after signin.',
+    'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
+      'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.',
     'Sorry, page not found': 'Sorry, page not found',
   },
   view: {
