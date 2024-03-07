@@ -7,7 +7,7 @@
           <h2 class="my-3 text-h5">
             {{
               $t(
-                `error['Sorry, access denied or time out your session... Please retry after signin.']`
+                `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
               )
             }}
           </h2>
