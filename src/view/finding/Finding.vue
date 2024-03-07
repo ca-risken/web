@@ -1545,26 +1545,15 @@ export default {
       this.recommendModel = await this.getRecommend(
         this.findingModel.finding_id
       )
-      this.orverrideRecommend()
+      this.overrideRecommend()
       this.viewDialog = true
       await this.getAISummaryContent()
     },
-    orverrideRecommend() {
-      if (!this.recommendModel) {
-        this.recommendModel = {
-          recommend_id: '',
-          finding_id: '',
-          data_source: '',
-          type: '',
-          risk: '',
-          recommendation: '',
-        }
-        return
-      }
+    overrideRecommend() {
       const d = JSON.parse(this.findingModel.data)
       switch (this.findingModel.data_source) {
         case 'google:scc':
-          if (d.source_properties.Recommendation) {
+          if (d.source_properties && d.source_properties.Recommendation) {
             this.recommendModel.recommendation =
               d.source_properties.Recommendation
           }
