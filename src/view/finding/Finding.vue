@@ -1550,6 +1550,17 @@ export default {
       await this.getAISummaryContent()
     },
     orverrideRecommend() {
+      if (!this.recommendModel) {
+        this.recommendModel = {
+          recommend_id: '',
+          finding_id: '',
+          data_source: '',
+          type: '',
+          risk: '',
+          recommendation: '',
+        }
+        return
+      }
       const d = JSON.parse(this.findingModel.data)
       switch (this.findingModel.data_source) {
         case 'google:scc':
