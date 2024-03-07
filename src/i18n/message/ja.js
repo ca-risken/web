@@ -260,7 +260,8 @@ const ja = {
     'Do you really want to detach this?': '設定解除しますか?',
     'Do you want to send a test notification?':
       'テスト通知を送信してよろしいですか?',
-    'REQUEST PROJECT ROLE COMPLETED': 'プロジェクトへのアクセス権を管理者にリクエストしました。',
+    'REQUEST PROJECT ROLE COMPLETED':
+      'プロジェクトへのアクセス権を管理者にリクエストしました。',
   },
   error: {
     'Sorry, Please access again after a while.':
