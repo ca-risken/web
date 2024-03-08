@@ -1,26 +1,28 @@
 <template>
   <div class="exception">
     <v-container fluid fill-height>
-      <v-layout>
-        <div class="text-md-center">
-          <h1>403</h1>
-          <h2 class="my-3 text-h5">
-            {{
-              $t(
-                `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
-              )
-            }}
-          </h2>
-          <div>
-            <v-btn
-              color="primary"
-              @click="requestProjectRole"
-              :loading="loading"
-              >{{ $t(`btn['REQUEST PROJECT ROLE']`) }}</v-btn
-            >
-          </div>
-        </div>
-      </v-layout>
+      <div class="text-md-center">
+        <h1>403</h1>
+        <h2 class="my-3 text-h5">
+          {{
+            $t(
+              `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
+            )
+          }}
+        </h2>
+      </div>
+      <div class="text-md-center">
+        <v-btn
+          class="mt-3 mr-4"
+          color="blue-darken-1"
+          @click="requestProjectRole"
+          :loading="loading"
+          >{{ $t(`btn['REQUEST PROJECT ROLE']`) }}</v-btn
+        >
+        <v-btn class="mt-3 mr-4" color="primary" @click="goHome">{{
+          $t(`btn['HOME']`)
+        }}</v-btn>
+      </div>
     </v-container>
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -68,6 +70,10 @@ export default {
       await new Promise((resolve) => setTimeout(resolve, 5000))
       this.$refs.snackbar.notifyError(msg)
       this.loading = false
+    },
+
+    goHome() {
+      this.$router.push({ path: '/' })
     },
   },
 }
