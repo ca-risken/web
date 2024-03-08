@@ -275,6 +275,18 @@ const alert = {
         })
     },
 
+    async requestProjectRoleAlertNotification(user_id) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        user_id: user_id,
+      }
+      await this.$axios
+        .post('/alert/request-project-role-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
     // Analyze
     async analyzeAlert(alert_condition_id) {
       const cond_ids = [alert_condition_id]

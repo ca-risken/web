@@ -1,6 +1,7 @@
 const en = {
   btn: {
     SIGNIN: 'SIGNIN',
+    'REQUEST PROJECT ROLE': 'REQUEST PROJECT ROLE',
     HOME: 'HOME',
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',
@@ -260,12 +261,13 @@ const en = {
     'Do you really want to detach this?': 'Do you really want to detach this?',
     'Do you want to send a test notification?':
       'Do you want to send a test notification?',
+    'REQUEST PROJECT ROLE COMPLETED': 'REQUEST PROJECT ROLE COMPLETED',
   },
   error: {
     'Sorry, Please access again after a while.':
       'Sorry, The server is under heavy load... Please access again after a while.',
-    'Sorry, access denied or time out your session... Please retry after signin.':
-      'Sorry, access denied or time out your session... Please retry after signin.',
+    'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
+      'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.',
     'Sorry, page not found': 'Sorry, page not found',
   },
   view: {
