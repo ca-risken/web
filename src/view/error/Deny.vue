@@ -3,7 +3,7 @@
     <v-container fluid fill-height>
       <div class="text-md-center">
         <h1>403</h1>
-        <h2 class="my-3 text-h5">
+        <h2 class="my-3 text-h5" style="white-space: pre-line">
           {{
             $t(
               `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
@@ -13,13 +13,14 @@
       </div>
       <div class="text-md-center">
         <v-btn
-          class="mt-3 mr-4"
+          class="mt-3"
           color="blue-darken-1"
           @click="requestProjectRole"
           :loading="loading"
           >{{ $t(`btn['REQUEST PROJECT ROLE']`) }}</v-btn
         >
-        <v-btn class="mt-3 mr-4" color="primary" @click="goHome">{{
+        <v-spacer></v-spacer>
+        <v-btn class="mt-3" color="primary" @click="goHome">{{
           $t(`btn['HOME']`)
         }}</v-btn>
       </div>

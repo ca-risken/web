@@ -267,7 +267,7 @@ const ja = {
     'Sorry, Please access again after a while.':
       '申し訳ありません。しばらく経ってからアクセスしてください。',
     'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
-      '申し訳ありません。このプロジェクトへのアクセスが拒否されたか、セッションが期限切れです。アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
+      '申し訳ありません。このプロジェクトへのアクセスが拒否されたか、セッションが期限切れです。\n アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
     'Sorry, page not found': 'ページが見つかりませんでした。',
   },
   view: {
