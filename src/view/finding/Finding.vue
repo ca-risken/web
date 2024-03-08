@@ -1368,6 +1368,8 @@ export default {
       let label = ''
       if (this.isArchived) {
         label = 'ARCHIVE'
+      } else if (this.pendModel.expired_at === 'No expiration') {
+        label = 'ARCHIVE'
       } else {
         label = 'PEND'
       }
