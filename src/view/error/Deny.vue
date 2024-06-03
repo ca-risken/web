@@ -4,11 +4,22 @@
       <div class="text-md-center">
         <h1>403</h1>
         <h2 class="my-3 text-h5" style="white-space: pre-line">
-          {{
-            $t(
-              `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
-            )
-          }}
+          <div v-if="noProject">
+            {{ $t(`error['Project not selected.']`) }}
+            <br />
+            {{
+              $t(
+                `error['Click 🅿 on the menu bar on the screen and select a project.']`
+              )
+            }}
+          </div>
+          <div v-else>
+            {{
+              $t(
+                `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
+              )
+            }}
+          </div>
         </h2>
       </div>
       <div class="text-md-center">
@@ -43,6 +54,12 @@ export default {
   data() {
     return {
       loading: false,
+      noProject: false,
+    }
+  },
+  mounted() {
+    if (!this.$store.state.project.project_id) {
+      this.noProject = true
     }
   },
   methods: {

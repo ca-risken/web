@@ -269,6 +269,9 @@ const en = {
     'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
       'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.',
     'Sorry, page not found': 'Sorry, page not found',
+    'Project not selected.': 'Project not selected.',
+    'Click 🅿 on the menu bar on the screen and select a project.':
+      'Click 🅿 on the menu bar on the screen and select a project.',
   },
   view: {
     dashboard: {
