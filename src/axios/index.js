@@ -46,18 +46,18 @@ axios.interceptors.response.use(
     const status = error.response.status
     if (status === 303) {
       console.log('303')
-      router.push({ path: '/' })
+      router.push({ path: '/', query: router.currentRoute.value.query })
     } else if (status === 401) {
       console.log('401 Authn error')
       router.push({
         path: '/iam/profile',
-        query: { url: router.currentRoute.value.fullPath },
+        query: router.currentRoute.value.query,
       })
     } else if (status === 403) {
       console.log('403 Authz error')
       router.push({
         path: '/403',
-        query: { url: router.currentRoute.value.fullPath },
+        query: router.currentRoute.value.query,
       })
     }
     return Promise.reject(error)

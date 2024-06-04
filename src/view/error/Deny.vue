@@ -4,22 +4,11 @@
       <div class="text-md-center">
         <h1>403</h1>
         <h2 class="my-3 text-h5" style="white-space: pre-line">
-          <div v-if="noProject">
-            {{ $t(`error['Project not selected.']`) }}
-            <br />
-            {{
-              $t(
-                `error['Click 🅿 on the menu bar on the screen and select a project.']`
-              )
-            }}
-          </div>
-          <div v-else>
-            {{
-              $t(
-                `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
-              )
-            }}
-          </div>
+          {{
+            $t(
+              `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
+            )
+          }}
         </h2>
       </div>
       <div class="text-md-center">
@@ -54,12 +43,6 @@ export default {
   data() {
     return {
       loading: false,
-      noProject: false,
-    }
-  },
-  mounted() {
-    if (!this.$store.state.project.project_id) {
-      this.noProject = true
     }
   },
   methods: {
@@ -69,8 +52,10 @@ export default {
     },
 
     async submitRequest() {
+      const project_id = Number(this.$route.query.project_id)
       await this.requestProjectRoleAlertNotification(
-        store.state.user.user_id
+        store.state.user.user_id,
+        project_id
       ).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
