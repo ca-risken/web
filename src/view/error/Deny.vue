@@ -52,8 +52,23 @@ export default {
     },
 
     async submitRequest() {
+      let project_id = undefined
+      if (this.$route.query.project_id) {
+        project_id = Number(this.$route.query.project_id)
+      } else if (this.$store.state.project.project_id) {
+        project_id = this.$store.state.project.project_id
+      }
+      if (!project_id) {
+        this.finishError(
+          this.$t(
+            `error['Project not selected. Click [P] on the menu bar on the screen and select a project.']`
+          )
+        )
+        return
+      }
       await this.requestProjectRoleAlertNotification(
-        store.state.user.user_id
+        store.state.user.user_id,
+        project_id
       ).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)

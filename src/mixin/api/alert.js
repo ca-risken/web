@@ -275,9 +275,9 @@ const alert = {
         })
     },
 
-    async requestProjectRoleAlertNotification(user_id) {
+    async requestProjectRoleAlertNotification(user_id, project_id) {
       const param = {
-        project_id: this.getCurrentProjectID(),
+        project_id: project_id,
         user_id: user_id,
       }
       await this.$axios
