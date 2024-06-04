@@ -269,6 +269,8 @@ const ja = {
     'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
       '申し訳ありません。このプロジェクトへのアクセスが拒否されたか、セッションが期限切れです。\n アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
     'Sorry, page not found': 'ページが見つかりませんでした。',
+    'Project not selected. Click [P] on the menu bar on the screen and select a project.':
+      'プロジェクトが未選択です。画面上のメニューバーから[P]をクリックし、プロジェクトを選択してください。',
   },
   view: {
     dashboard: {
