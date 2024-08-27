@@ -244,7 +244,7 @@ export default {
           icon: 'mdi-logout',
           href: '#',
           title: 'Signout',
-          click: this.handleLogut,
+          click: this.handleSignout,
         },
       ],
       isAdmin: false,
@@ -398,7 +398,7 @@ export default {
         icon: 'mdi-logout',
         href: '#',
         title: 'Signout',
-        click: this.handleLogut,
+        click: this.handleSignout,
       })
       return menu
     },
@@ -418,7 +418,7 @@ export default {
       this.$i18n.locale = item.value
       store.commit('updateLocale', locale)
     },
-    async handleLogut() {
+    async handleSignout() {
       await this.signout()
       this.$router.push('/auth/signin/')
     },
