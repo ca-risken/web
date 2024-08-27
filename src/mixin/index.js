@@ -184,6 +184,10 @@ let mixin = {
       }
       return userID
     },
+    async signout() {
+      await this.signoutAPI()
+      this.$router.push('/auth/signin/')
+    },
     reload: function () {
       this.$router.go({
         path: this.$router.currentRoute.value.path,

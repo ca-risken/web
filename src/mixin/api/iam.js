@@ -3,15 +3,6 @@ const iam = {
     return {}
   },
   methods: {
-    async signinAPI() {
-      const res = await this.$axios.get('/signin/').catch((err) => {
-        return Promise.reject(err)
-      })
-      if (!res.data.user_id) {
-        return
-      }
-      return res.data.user_id
-    },
     // User API
     async isAdminAPI(userID) {
       const res = await this.$axios

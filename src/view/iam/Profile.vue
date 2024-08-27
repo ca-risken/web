@@ -61,10 +61,11 @@
 import store from '@/store'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 export default {
   name: 'UserProfile',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, signin],
   components: {
     BottomSnackBar,
   },
