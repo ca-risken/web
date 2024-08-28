@@ -199,6 +199,7 @@ import Util from '@/util'
 import store from '@/store'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
@@ -207,7 +208,7 @@ export default {
     BottomSnackBar,
     VDataTable,
   },
-  mixins: [mixin, project, iam],
+  mixins: [mixin, project, iam, signin],
   data() {
     return {
       loading: false,
@@ -243,7 +244,7 @@ export default {
           icon: 'mdi-logout',
           href: '#',
           title: 'Signout',
-          click: this.handleLogut,
+          click: this.handleSignout,
         },
       ],
       isAdmin: false,
@@ -397,7 +398,7 @@ export default {
         icon: 'mdi-logout',
         href: '#',
         title: 'Signout',
-        click: this.handleLogut,
+        click: this.handleSignout,
       })
       return menu
     },
@@ -417,7 +418,8 @@ export default {
       this.$i18n.locale = item.value
       store.commit('updateLocale', locale)
     },
-    handleLogut() {
+    async handleSignout() {
+      await this.signout()
       this.$router.push('/auth/signin/')
     },
     handleAccountSetting() {
