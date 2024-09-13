@@ -7,7 +7,7 @@ import { md } from 'vuetify/iconsets/md'
 const riskenLightTheme = {
   dark: false,
   colors: {
-    primary: '#546E7A',
+    primary: '#B0BEC5',
     secondary: '#A12900',
     accent: '#82B1FF',
     error: '#FF5252',
