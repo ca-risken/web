@@ -5,7 +5,7 @@
     v-model:mini-variant="mini"
     :width="drawerWidth"
   >
-    <v-toolbar color="primary-darken-2">
+    <v-toolbar color="primary">
       <div
         class="d-flex align-center justify-start"
         height="64"

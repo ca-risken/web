@@ -1,5 +1,10 @@
 <template>
-  <v-app-bar v-bind="$attrs" color="primary" extension-height="48" extended>
+  <v-app-bar
+    v-bind="$attrs"
+    color="primary-darken-2"
+    extension-height="48"
+    extended
+  >
     <template v-slot:prepend>
       <v-app-bar-nav-icon @click="handleDrawerToggle" />
     </template>
