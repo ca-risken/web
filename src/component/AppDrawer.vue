@@ -6,18 +6,22 @@
     :width="drawerWidth"
   >
     <v-toolbar color="primary-darken-2">
-      <v-img
-        :src="computeLogo"
-        alt="RISKEN"
-        width="48"
+      <div
+        class="d-flex align-center justify-start"
+        height="64"
         @click="toTop"
-        style="max-width: 30%"
-      />
-      <v-toolbar-title class="ml-0 pl-0" style="white-space: nowrap">
-        <span class="hidden-sm-and-down font-weight-bold text-h5" @click="toTop"
-          >RISKEN</span
-        >
-      </v-toolbar-title>
+        style="cursor: pointer; width: 100%"
+      >
+        <v-img
+          :src="computeLogo"
+          alt="RISKEN"
+          class="ma-2"
+          style="max-width: 20%"
+        />
+        <v-toolbar-title class="ml-2 pl-0">
+          <span class="font-weight-bold text-h5">RISKEN</span>
+        </v-toolbar-title>
+      </div>
     </v-toolbar>
     <v-list class="pa-0">
       <template v-for="(item, key) in computeMenu">
@@ -96,7 +100,7 @@ export default {
   data() {
     return {
       mini: false,
-      drawerWidth: 256,
+      drawerWidth: 260,
       drawer: true,
       scrollSettings: {
         maxScrollbarLength: 160,
