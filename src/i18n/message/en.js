@@ -50,6 +50,7 @@ const en = {
     Finding: 'Finding',
     Alert: 'Alert',
     AWS: 'AWS',
+    Azure: 'Azure',
     Google: 'Google',
     Diagnosis: 'Diagnosis',
     OSINT: 'OSINT',
@@ -69,6 +70,8 @@ const en = {
     Notification: 'Notification', // Alert
     AWS: 'AWS', // AWS
     'AWS DataSource': 'AWS DataSource', // AWS
+    Azure: 'Azure',
+    'Azure DataSource': 'Azure DataSource',
     GCP: 'GCP',
     'GCP DataSource': 'GCP DataSource',
     WPScan: 'WPScan', // Diagnosis
@@ -108,6 +111,7 @@ const en = {
     'Assume Role': 'Assume Role',
     'AWS ID': 'AWS ID',
     'AWS Account ID': 'AWS Account ID',
+    'Azure ID': 'Azure ID',
     'Base URL': 'Base URL',
     Created: 'Created',
     'Custom Message': 'Custom Message  (Optional)',
@@ -193,6 +197,7 @@ const en = {
     Severity: 'Severity',
     Status: 'Status',
     'Status Detail': 'Status Detail',
+    'Subscription ID': 'Subscription ID',
     'Sum Score': 'Sum Score',
     Tag: 'Tag',
     Tags: 'Tags',
@@ -401,6 +406,10 @@ const en = {
     },
     aws: {
       'No data ...': 'No data ...',
+    },
+    azure: {
+      'Register the verification code in the tag of your Azure subscrption with the key `risken`.':
+        'Register the verification code in the tag of your Azure subscrption with the key `risken`.',
     },
     osint: {
       'Activate DataSource': 'Activate DataSource',

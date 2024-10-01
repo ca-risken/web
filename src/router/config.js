@@ -209,6 +209,34 @@ export const appRoute = [
         ],
       },
       {
+        path: '/azure',
+        component: RouteWrapper,
+        redirect: '/azure/azure',
+        meta: {
+          title: 'Azure',
+          icon: 'mdi-microsoft-azure',
+          group: 'gooazuregle',
+        },
+        children: [
+          {
+            path: '/azure/azure',
+            name: 'Azure',
+            meta: {
+              title: 'Azure',
+            },
+            component: () => import('@/view/azure/Azure.vue'),
+          },
+          {
+            path: '/azure/azure-data-source',
+            name: 'Azure DataSource',
+            meta: {
+              title: 'Azure DataSource',
+            },
+            component: () => import('@/view/azure/DataSource.vue'),
+          },
+        ],
+      },
+      {
         path: '/diagnosis',
         component: RouteWrapper,
         redirect: '/diagnosis/wpscan',

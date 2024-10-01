@@ -50,6 +50,7 @@ const ja = {
     Finding: 'Finding',
     Alert: 'アラート',
     AWS: 'AWS',
+    Azure: 'Azure',
     Google: 'Google',
     Diagnosis: '診断',
     OSINT: 'OSINT',
@@ -70,6 +71,8 @@ const ja = {
     AWS: 'AWS',
     'AWS DataSource': 'AWSデータソース',
     GCP: 'GCP',
+    Azure: 'Azure',
+    'Azure DataSource': 'Azureデータソース',
     'GCP DataSource': 'GCPデータソース',
     WPScan: 'ワードプレス診断',
     Portscan: 'ポートスキャン',
@@ -108,6 +111,7 @@ const ja = {
     'Assume Role': 'Assume Role',
     'AWS ID': 'AWS ID',
     'AWS Account ID': 'AWSアカウントID',
+    'Azure ID': 'Azure ID',
     'Base URL': 'ベースURL',
     Created: '作成日時',
     'Custom Message': 'カスタムメッセージ（オプション）',
@@ -193,6 +197,7 @@ const ja = {
     Severity: '重大度',
     Status: 'ステータス',
     'Status Detail': 'ステータス詳細',
+    'Subscription ID': 'サブスクリプションID',
     'Sum Score': '合算スコア',
     Tag: 'タグ',
     Tags: 'タグ',
@@ -399,6 +404,10 @@ const ja = {
     },
     aws: {
       'No data ...': 'データがありません',
+    },
+    azure: {
+      'Register the verification code in the tag of your Azure subscrption with the key `risken`.':
+        'あなたのAzureサブスクリプションのタグに `risken` というキーで検証コードの値を登録してください',
     },
     osint: {
       'Activate DataSource': '登録時にDataSourceを有効化する',
