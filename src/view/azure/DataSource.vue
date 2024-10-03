@@ -798,7 +798,7 @@ export default {
         azure_data_source_id: this.azureDataSourceModel.azure_data_source_id,
         scan_only: false, // option
       }
-      await this.invokeScanAzure(param).catch((err) => {
+      await this.invokeScanAzureAPI(param).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
