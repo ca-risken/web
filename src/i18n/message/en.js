@@ -325,6 +325,7 @@ const en = {
           HighScore: 'HighScore',
           AWS: 'AWS',
           GCP: 'GCP',
+          Azure: 'Azure',
           SecretKey: 'SecretKey',
           WordPress: 'WordPress',
           IAM: 'IAM',

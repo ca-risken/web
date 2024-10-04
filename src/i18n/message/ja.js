@@ -324,6 +324,7 @@ const ja = {
           HighScore: '高スコア',
           AWS: 'AWS',
           GCP: 'GCP',
+          Azure: 'Azure',
           SecretKey: 'シークレットキー',
           WordPress: 'WordPress',
           IAM: 'IAM',
