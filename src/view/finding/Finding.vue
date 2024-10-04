@@ -1214,6 +1214,15 @@ export default {
           tooltip: '',
         },
         {
+          label: 'Azure',
+          search_condition: {
+            status: 1,
+            scoreFrom: 0.5,
+            dataSource: ['azure:'],
+          },
+          tooltip: '',
+        },
+        {
           label: 'SecretKey',
           search_condition: {
             status: 1,
@@ -2184,54 +2193,69 @@ export default {
     cursor: pointer;
     user-select: none;
   }
+
   .jv-button {
     color: #49b3ff;
   }
+
   .jv-key {
     color: rgb(181, 216, 55);
   }
+
   .jv-link {
     color: #068cca;
   }
+
   .jv-item {
     &.jv-array {
       color: #eee;
     }
+
     &.jv-boolean {
       color: #b3e5fc;
     }
+
     &.jv-function {
       color: #068cca;
     }
+
     &.jv-number {
       color: #42b983;
     }
+
     &.jv-number-float {
       color: #42b983;
     }
+
     &.jv-number-integer {
       color: #42b983;
     }
+
     &.jv-object {
       color: #eee;
     }
+
     &.jv-undefined {
       color: #e08331;
     }
+
     &.jv-string {
       color: #eee;
       word-break: break-word;
       white-space: normal;
     }
   }
+
   .jv-code {
     padding: 1px;
     line-height: 2rem;
+
     .jv-toggle {
       &:before {
         padding: 0px 2px;
         border-radius: 2px;
       }
+
       &:hover {
         &:before {
           background: #eee;
@@ -2240,10 +2264,12 @@ export default {
     }
   }
 }
+
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
 }
+
 .markdown {
   ul,
   ol {
@@ -2251,10 +2277,12 @@ export default {
     margin-top: -20px;
     margin-bottom: -20px;
   }
+
   li {
     margin-top: -5px;
     margin-bottom: -5px;
   }
+
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
