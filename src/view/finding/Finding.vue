@@ -660,6 +660,40 @@
             </v-col>
           </v-row>
 
+          <v-row class="mx-2 my-0">
+            <v-col cols="11 py-0 dense-list">
+              <v-list-item-subtitle>
+                <v-icon left>mdi-link-variant</v-icon>
+                URL
+              </v-list-item-subtitle>
+              <v-list class="py-0 dense-list">
+                <v-list-item
+                  v-for="(urlItem, index) in findingModel.urls"
+                  :key="index"
+                  :href="urlItem.url"
+                  target="_blank"
+                  rel="noopener"
+                  class="my-0 py-0"
+                  density="compact"
+                >
+                  <v-list-item-content class="text-truncate">
+                    <span class="d-flex">
+                      <v-icon size="small" color="grey-darken-2" class="mx-2"
+                        >mdi-open-in-new</v-icon
+                      >
+                      <span class="text-grey-darken-2"
+                        >{{ urlItem.label }}:</span
+                      >
+                      <span class="ml-2 font-italic text-truncate url-link">{{
+                        urlItem.url
+                      }}</span>
+                    </span>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-col>
+          </v-row>
+
           <v-row class="ma-2">
             <v-col cols="12">
               <v-list-item-subtitle>
@@ -679,7 +713,10 @@
                   <json-viewer
                     :value="parseFindingData(findingModel.data)"
                     :expand-depth="5"
-                    preview-mode
+                    :sort="false"
+                    :copyable="true"
+                    :show-array-index="false"
+                    :preview-mode="false"
                     theme="finding-json-theme"
                   ></json-viewer>
                 </v-card-text>
@@ -1163,6 +1200,7 @@ export default {
         updated_at: '',
         new_tag: '',
         pend_note: '',
+        urls: [],
       },
       viewDialog: false,
       tagDialog: false,
@@ -1553,6 +1591,9 @@ export default {
     },
     async handleViewItem(item) {
       this.findingModel = Object.assign(this.findingModel, item.value)
+      this.findingModel.urls = await this.getUrlsFromJson(
+        this.findingModel.data
+      )
       this.recommendModel = await this.getRecommend(
         this.findingModel.finding_id
       )
@@ -2170,6 +2211,58 @@ export default {
       }
       return JSON.parse(v)
     },
+    toPascalCase(str) {
+      return str
+        .split(/[._]/)
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join('')
+    },
+    getUrlsFromJson(data) {
+      if (!data) {
+        return []
+      }
+
+      try {
+        const jsonData = JSON.parse(data)
+        const urlMap = new Map()
+
+        const findUrls = (obj, parentKey = '') => {
+          if (!obj) return
+
+          if (typeof obj === 'object') {
+            for (const [key, value] of Object.entries(obj)) {
+              if (typeof value === 'string') {
+                const extractedUrls = value.match(/https?:\/\/[^\s"<>)]+/g)
+                if (extractedUrls) {
+                  extractedUrls.forEach((url) => {
+                    if (
+                      !urlMap.has(url) ||
+                      parentKey.length + key.length < urlMap.get(url).length
+                    ) {
+                      urlMap.set(url, key)
+                    }
+                  })
+                }
+              }
+              if (value && typeof value === 'object') {
+                findUrls(value, `${parentKey}${key}.`)
+              }
+            }
+          }
+        }
+
+        findUrls(jsonData)
+        return Array.from(urlMap).map(([url, label]) => ({
+          url,
+          label: this.toPascalCase(label),
+        }))
+      } catch (e) {
+        console.error('Error parsing JSON:', e)
+        return []
+      }
+    },
   },
 }
 </script>
@@ -2287,5 +2380,10 @@ export default {
     white-space: pre-wrap;
     word-wrap: break-word;
   }
+}
+
+.url-link {
+  color: #068cca;
+  cursor: pointer;
 }
 </style>
