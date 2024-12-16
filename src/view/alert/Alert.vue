@@ -400,7 +400,8 @@ export default {
       ]
     },
   },
-  mounted() {
+  async mounted() {
+    await this.reSign()
     this.UpdateAlertFirstViewedAt()
     this.handleRefleshList()
   },
@@ -554,8 +555,6 @@ export default {
       this.alertModel = {}
       this.alertModel = Object.assign(this.alertModel, item.value)
     },
-
-    // finish
 
     // finish process
     async finishSuccess(msg) {

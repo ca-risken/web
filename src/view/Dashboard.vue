@@ -140,13 +140,12 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
-import signin from '@/mixin/api/signin'
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic.vue'
 import MiniStatistic from '@/component/widget/statistic/MiniStatistic.vue'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic.vue'
 export default {
   name: 'PageDashboard',
-  mixins: [mixin, finding, alert, iam, signin],
+  mixins: [mixin, finding, alert, iam],
   components: {
     StatusStatistic,
     MiniStatistic,
@@ -221,7 +220,6 @@ export default {
     }
   },
   async mounted() {
-    await this.signinUser()
     if (!this.$store.state.project.project_id) {
       return false
     }
