@@ -1429,19 +1429,16 @@ export default {
     },
   },
   async mounted() {
-    try {
-      this.isInitializing = true
-      await this.reSign()
-      this.findingHistory = this.getSearchHistory()
-      await Promise.all([
-        this.UpdateAlertFirstViewedAt(),
-        this.getTag(),
-        this.listResourceNameForCombobox(),
-      ])
-      await this.refleshList(true)
-    } finally {
-      this.isInitializing = false
-    }
+    this.isInitializing = true
+    await this.reSign()
+    this.findingHistory = this.getSearchHistory()
+    await Promise.all([
+      this.UpdateAlertFirstViewedAt(),
+      this.getTag(),
+      this.listResourceNameForCombobox(),
+    ])
+    await this.refleshList(true)
+    this.isInitializing = false
   },
   methods: {
     async refleshList(parse) {
