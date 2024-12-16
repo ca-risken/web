@@ -271,8 +271,8 @@ const en = {
   error: {
     'Sorry, Please access again after a while.':
       'Sorry, The server is under heavy load... Please access again after a while.',
-    'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
-      'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.',
+    'Session expired. Please return to the HOME screen and try accessing again. If this is your first time accessing the project, please REQUEST PROJECT ROLE with the administrator.':
+      'Session expired. Please return to the HOME screen and try accessing again.\n If this is your first time accessing the project, please `REQUEST PROJECT ROLE` from the administrator.',
     'Sorry, page not found': 'Sorry, page not found',
     'Project not selected. Click [P] on the menu bar on the screen and select a project.':
       'Project not selected. Click [P] on the menu bar on the screen and select a project.',
@@ -333,6 +333,7 @@ const en = {
         },
         tooltip: {
           ALL: 'Search all Findings',
+          Azure: 'Search for Azure-related Findings',
           HighScore: 'Search high scores Findings',
           AWS: 'Search for AWS-related Findings',
           GCP: 'Search for GCP-related Findings',

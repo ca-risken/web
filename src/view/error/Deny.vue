@@ -6,23 +6,27 @@
         <h2 class="my-3 text-h5" style="white-space: pre-line">
           {{
             $t(
-              `error['Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.']`
+              `error['Session expired. Please return to the HOME screen and try accessing again. If this is your first time accessing the project, please REQUEST PROJECT ROLE with the administrator.']`
             )
           }}
         </h2>
       </div>
       <div class="text-md-center">
-        <v-btn
-          class="mt-3"
-          color="blue-darken-1"
-          @click="requestProjectRole"
-          :loading="loading"
-          >{{ $t(`btn['REQUEST PROJECT ROLE']`) }}</v-btn
-        >
-        <v-spacer></v-spacer>
-        <v-btn class="mt-3" color="primary" @click="goHome">{{
-          $t(`btn['HOME']`)
-        }}</v-btn>
+        <div>
+          <v-btn class="mt-3" color="primary" @click="goHome">{{
+            $t(`btn['HOME']`)
+          }}</v-btn>
+        </div>
+        <div>
+          <v-btn
+            class="mt-3"
+            color="blue-darken-1"
+            @click="requestProjectRole"
+            :loading="loading"
+            >{{ $t(`btn['REQUEST PROJECT ROLE']`) }}</v-btn
+          >
+        </div>
+        <v-spacer />
       </div>
     </v-container>
     <bottom-snack-bar ref="snackbar" />

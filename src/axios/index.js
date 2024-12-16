@@ -23,7 +23,7 @@ axios.interceptors.request.use(
     })
   },
   (error) => {
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 
@@ -34,10 +34,21 @@ axios.interceptors.response.use(
   },
   (error) => {
     PENDING_REQUESTS = Math.max(0, PENDING_REQUESTS - 1)
+    // Timeout
     if (error.code && error.code === 'ECONNABORTED') {
-      // timeout
-      console.log(error)
+      console.log('Timeout error:', error)
       router.push({ path: '/timeout' })
+      return Promise.reject(error)
+    }
+    // Cancel
+    if (Axios.isCancel(error)) {
+      console.log('Request canceled:', error.message)
+      return Promise.reject(error)
+    }
+    // Network error
+    if (!error.response) {
+      console.log('Network error:', error)
+      return Promise.reject(error)
     }
 
     if (!error.response.status) {
@@ -45,16 +56,16 @@ axios.interceptors.response.use(
     }
     const status = error.response.status
     if (status === 303) {
-      console.log('303')
+      console.log('303 Redirect')
       router.push({ path: '/', query: router.currentRoute.value.query })
     } else if (status === 401) {
-      console.log('401 Authn error')
+      console.log('401 Unauthorized')
       router.push({
         path: '/iam/profile',
         query: router.currentRoute.value.query,
       })
     } else if (status === 403) {
-      console.log('403 Authz error')
+      console.log('403 Forbidden')
       router.push({
         path: '/403',
         query: router.currentRoute.value.query,

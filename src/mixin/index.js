@@ -189,6 +189,15 @@ let mixin = {
       await this.signoutAPI()
       this.$router.push('/auth/signin/')
     },
+    async reSign() {
+      const xsrfToken = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('XSRF-TOKEN='))
+      if (xsrfToken) {
+        return Promise.resolve()
+      }
+      return this.signinUser()
+    },
     reload: function () {
       this.$router.go({
         path: this.$router.currentRoute.value.path,

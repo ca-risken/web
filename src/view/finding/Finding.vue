@@ -1136,6 +1136,7 @@ import store from '@/store'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
+import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonViewer from 'vue-json-viewer'
@@ -1146,7 +1147,7 @@ import 'highlight.js/styles/monokai.css'
 
 export default {
   name: 'FindingList',
-  mixins: [mixin, finding, alert, iam],
+  mixins: [mixin, finding, alert, iam, signin],
   components: {
     BottomSnackBar,
     ClipBoard,
@@ -1319,6 +1320,7 @@ export default {
       aiAnswer: '',
       aiFetchProgress: false,
       aiFetchController: new AbortController(),
+      isInitializing: true,
     }
   },
   filters: {},
@@ -1427,19 +1429,27 @@ export default {
     },
   },
   async mounted() {
-    this.UpdateAlertFirstViewedAt()
+    this.isInitializing = true
+    await this.reSign()
     this.findingHistory = this.getSearchHistory()
-    this.getTag()
-    this.listResourceNameForCombobox()
-    this.refleshList(true)
+    await Promise.all([
+      this.UpdateAlertFirstViewedAt(),
+      this.getTag(),
+      this.listResourceNameForCombobox(),
+    ])
+    await this.refleshList(true)
+    this.isInitializing = false
   },
   methods: {
-    refleshList(parse) {
+    async refleshList(parse) {
       this.table.options.page = 1
       this.table.total = 0
-      this.loadList(parse)
+      await this.loadList(parse)
     },
     updateOptions(options) {
+      if (this.isInitializing) {
+        return
+      }
       this.table.options.page = options.page
       this.table.options.itemsPerPage = options.itemsPerPage
       this.loadList(true)

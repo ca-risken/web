@@ -271,8 +271,8 @@ const ja = {
   error: {
     'Sorry, Please access again after a while.':
       '申し訳ありません。しばらく経ってからアクセスしてください。',
-    'Sorry, access denied or time out your session... Please request access rights to the administrator if necessary.':
-      '申し訳ありません。このプロジェクトへのアクセスが拒否されたか、セッションが期限切れです。\n アクセスが必要な場合には管理者にアクセス権をリクエストしてください。',
+    'Session expired. Please return to the HOME screen and try accessing again. If this is your first time accessing the project, please REQUEST PROJECT ROLE with the administrator.':
+      'セッションが切れました。ホーム画面へ戻って再度アクセスしてください。\nもし、初めてプロジェクトにアクセスする場合は、管理者に権限をリクエストしてください。',
     'Sorry, page not found': 'ページが見つかりませんでした。',
     'Project not selected. Click [P] on the menu bar on the screen and select a project.':
       'プロジェクトが未選択です。画面上のメニューバーから[P]をクリックし、プロジェクトを選択してください。',
@@ -332,6 +332,7 @@ const ja = {
         },
         tooltip: {
           ALL: '全てのFindingを検索します',
+          Azure: 'Azure関連のFindingを検索します',
           HighScore: '高スコアを検索します',
           AWS: 'AWS関連のFindingを検索します',
           GCP: 'GCP関連のFindingを検索します',
