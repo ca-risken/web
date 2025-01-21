@@ -176,6 +176,23 @@
                   placeholder="Cxxxxx"
                   variant="outlined"
                 ></v-text-field>
+                <v-expansion-panels>
+                  <v-expansion-panel>
+                    <v-expansion-panel-title>
+                      {{ $t(`view.alert['Show options']`) }}
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text>
+                      <v-text-field
+                        v-model="dataModel.custom_message"
+                        :counter="500"
+                        :rules="form.custom_message.validator"
+                        :label="$t(`item['` + form.custom_message.label + `']`)"
+                        :placeholder="form.custom_message.placeholder"
+                        variant="outlined"
+                      ></v-text-field>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
               </v-window-item>
 
               <v-window-item :value="2">
@@ -217,44 +234,46 @@
                     {{ formatSmartMaskString(dataModel.masked_webhook_url) }}
                   </p>
                 </v-alert>
-                <v-checkbox
-                  v-model="form.show_option"
-                  :label="$t(`view.alert['Show options']`)"
-                />
 
-                <v-text-field
-                  v-show="form.show_option"
-                  v-model="dataModel.custom_message"
-                  :counter="128"
-                  :rules="form.custom_message.validator"
-                  :label="$t(`item['` + form.custom_message.label + `']`)"
-                  :placeholder="form.custom_message.placeholder"
-                  variant="outlined"
-                ></v-text-field>
-                <v-text-field
-                  v-show="form.show_option"
-                  v-model="dataModel.channel"
-                  :counter="60"
-                  :rules="form.channel.validator"
-                  :label="$t(`item['` + form.channel.label + `']`)"
-                  :placeholder="form.channel.placeholder"
-                  variant="outlined"
-                ></v-text-field>
-                <v-alert
-                  v-show="form.show_option"
-                  v-if="dataModel.channel != '' && dataModel.channel != null"
-                  density="compact"
-                  variant="outlined"
-                  type="error"
-                >
-                  {{ $t(`view.alert['The specific channel setting is ']`) }}
-                  <strong>{{ $t(`view.alert['deprecated']`) }}</strong>
-                  {{
-                    $t(
-                      `view.alert['... It is recommended to use the default channels.']`
-                    )
-                  }}
-                </v-alert>
+                <v-expansion-panels>
+                  <v-expansion-panel>
+                    <v-expansion-panel-title>
+                      {{ $t(`view.alert['Show options']`) }}
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text>
+                      <v-text-field
+                        v-model="dataModel.custom_message"
+                        :counter="500"
+                        :rules="form.custom_message.validator"
+                        :label="$t(`item['` + form.custom_message.label + `']`)"
+                        :placeholder="form.custom_message.placeholder"
+                        variant="outlined"
+                      ></v-text-field>
+                      <v-text-field
+                        v-model="dataModel.channel"
+                        :counter="60"
+                        :rules="form.channel.validator"
+                        :label="$t(`item['` + form.channel.label + `']`)"
+                        :placeholder="form.channel.placeholder"
+                        variant="outlined"
+                      ></v-text-field>
+                      <v-alert
+                        v-if="dataModel.channel != '' && dataModel.channel != null"
+                        density="compact"
+                        variant="outlined"
+                        type="error"
+                      >
+                        {{ $t(`view.alert['The specific channel setting is ']`) }}
+                        <strong>{{ $t(`view.alert['deprecated']`) }}</strong>
+                        {{
+                          $t(
+                            `view.alert['... It is recommended to use the default channels.']`
+                          )
+                        }}
+                      </v-alert>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
               </v-window-item>
             </v-window>
 
@@ -405,7 +424,6 @@ export default {
       form: {
         new: false,
         valid: false,
-        show_option: false,
         notification_id: { label: 'ID', placeholder: '-' },
         name: {
           label: 'Name',
