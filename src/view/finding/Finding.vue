@@ -649,7 +649,7 @@
                   class="ma-6 px-12"
                 ></v-progress-circular>
                 <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <Markdown
+                  <MarkdownDisplay
                     breaks
                     linkify
                     class="markdown"
@@ -705,22 +705,7 @@
                   :text="pretty(findingModel.data)"
                 />
               </v-list-item-subtitle>
-              <v-card dark color="grey-darken-3" class="ma-4">
-                <v-card-text
-                  class="title font-weight-bold"
-                  density="comfortable"
-                >
-                  <json-viewer
-                    :value="parseFindingData(findingModel.data)"
-                    :expand-depth="5"
-                    :sort="false"
-                    :copyable="true"
-                    :show-array-index="false"
-                    :preview-mode="false"
-                    theme="finding-json-theme"
-                  ></json-viewer>
-                </v-card-text>
-              </v-card>
+              <json-view :jsonData="findingModel.data" />
             </v-col>
           </v-row>
           <v-row class="ma-2" v-if="getExternalLink(findingModel.data)">
@@ -1099,7 +1084,7 @@
                   class="ma-6 px-12"
                 ></v-progress-circular>
                 <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <Markdown
+                  <MarkdownDisplay
                     breaks
                     linkify
                     class="markdown"
@@ -1139,11 +1124,11 @@ import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
-import JsonViewer from 'vue-json-viewer'
 import AutoLink from '@/component/text/AutoLink.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import Markdown from 'vue3-markdown-it'
+import MarkdownDisplay from '@/component/text/Markdown.vue'
 import 'highlight.js/styles/monokai.css'
+import JsonView from '@/component/text/JsonView.vue'
 
 export default {
   name: 'FindingList',
@@ -1151,10 +1136,10 @@ export default {
   components: {
     BottomSnackBar,
     ClipBoard,
-    JsonViewer,
     AutoLink,
     VDataTableServer,
-    Markdown,
+    MarkdownDisplay,
+    JsonView,
   },
   data() {
     return {
@@ -2215,12 +2200,6 @@ export default {
         this.handleSearch()
       }
     },
-    parseFindingData(v) {
-      if (!v) {
-        return {}
-      }
-      return JSON.parse(v)
-    },
     toPascalCase(str) {
       return str
         .split(/[._]/)
@@ -2278,118 +2257,9 @@ export default {
 </script>
 
 <style lang="scss">
-.finding-json-theme {
-  background: #424242;
-  white-space: nowrap;
-  color: #eee;
-  font-size: 18px;
-
-  .jv-ellipsis {
-    color: #eee;
-    background-color: #424242;
-    display: inline-block;
-    line-height: 0.9;
-    font-size: 0.9em;
-    padding: 0px 4px 2px 4px;
-    border-radius: 3px;
-    vertical-align: 2px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .jv-button {
-    color: #49b3ff;
-  }
-
-  .jv-key {
-    color: rgb(181, 216, 55);
-  }
-
-  .jv-link {
-    color: #068cca;
-  }
-
-  .jv-item {
-    &.jv-array {
-      color: #eee;
-    }
-
-    &.jv-boolean {
-      color: #b3e5fc;
-    }
-
-    &.jv-function {
-      color: #068cca;
-    }
-
-    &.jv-number {
-      color: #42b983;
-    }
-
-    &.jv-number-float {
-      color: #42b983;
-    }
-
-    &.jv-number-integer {
-      color: #42b983;
-    }
-
-    &.jv-object {
-      color: #eee;
-    }
-
-    &.jv-undefined {
-      color: #e08331;
-    }
-
-    &.jv-string {
-      color: #eee;
-      word-break: break-word;
-      white-space: normal;
-    }
-  }
-
-  .jv-code {
-    padding: 1px;
-    line-height: 2rem;
-
-    .jv-toggle {
-      &:before {
-        padding: 0px 2px;
-        border-radius: 2px;
-      }
-
-      &:hover {
-        &:before {
-          background: #eee;
-        }
-      }
-    }
-  }
-}
-
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
-}
-
-.markdown {
-  ul,
-  ol {
-    padding-left: 20px;
-    margin-top: -20px;
-    margin-bottom: -20px;
-  }
-
-  li {
-    margin-top: -5px;
-    margin-bottom: -5px;
-  }
-
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
 }
 
 .url-link {
