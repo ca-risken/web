@@ -632,31 +632,7 @@
           </v-row>
           <v-row>
             <v-col cols="12">
-              <v-alert
-                :title="$t(`view.finding['Generative AI Title']`)"
-                icon="$success"
-                variant="tonal"
-                border="end"
-                border-color="indigo-darken-4"
-                class="my-4 pl-6 pr-8"
-              >
-                <v-progress-circular
-                  v-if="loading"
-                  indeterminate
-                  :size="40"
-                  width="4"
-                  color="green-darken-2"
-                  class="ma-6 px-12"
-                ></v-progress-circular>
-                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <MarkdownDisplay
-                    breaks
-                    linkify
-                    class="markdown"
-                    :source="aiAnswer"
-                  />
-                </v-card-text>
-              </v-alert>
+              <AIPanel :loading="loading" :ai-answer="aiAnswer" />
             </v-col>
           </v-row>
 
@@ -1052,63 +1028,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="aiDialog" max-width="60%">
-      <v-card>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-list-item prepend-icon="mdi-chat">
-                <v-list-item class="px-0 pt-10 ma-0">
-                  {{ $t(`view.finding['GenerativeAI Question-1']`) }}<br />
-                  {{ $t(`view.finding['GenerativeAI Question-2']`) }}<br />
-                </v-list-item>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-alert
-                :title="$t(`view.finding['Generative AI Title']`)"
-                icon="$success"
-                variant="tonal"
-                border="end"
-                border-color="indigo-darken-4"
-                class="my-4 pl-6 pr-8"
-              >
-                <v-progress-circular
-                  v-if="loading"
-                  indeterminate
-                  :size="40"
-                  width="4"
-                  color="green-darken-2"
-                  class="ma-6 px-12"
-                ></v-progress-circular>
-                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <MarkdownDisplay
-                    breaks
-                    linkify
-                    class="markdown"
-                    :source="aiAnswer"
-                  />
-                </v-card-text>
-              </v-alert>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="aiDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
 
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -1126,9 +1046,9 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import AutoLink from '@/component/text/AutoLink.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import MarkdownDisplay from '@/component/text/Markdown.vue'
-import 'highlight.js/styles/monokai.css'
 import JsonView from '@/component/text/JsonView.vue'
+import AIDialog from '@/component/dialog/AI.vue'
+import AIPanel from '@/component/text/AIPanel.vue'
 
 export default {
   name: 'FindingList',
@@ -1138,8 +1058,9 @@ export default {
     ClipBoard,
     AutoLink,
     VDataTableServer,
-    MarkdownDisplay,
     JsonView,
+    AIDialog,
+    AIPanel,
   },
   data() {
     return {

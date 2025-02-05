@@ -312,10 +312,6 @@ const ja = {
       recalculated: 'スコアが再計算',
       ' against the Resource Name Base Score. The score can be adjusted according to the actual risk of each resource.':
         'されます.（各リソースの実際のリスクに応じてスコア調整が可能です）',
-      'Generative AI Title': '生成AIの要約',
-      'GenerativeAI Question-1':
-        'クラウド環境で以下のセキュリティの問題を検知しました。日本語で内容を要約してください。',
-      'GenerativeAI Question-2': 'また、問題の対処方法もあれば含めてください。',
       'False Positive': 'Findingが誤検知の場合にチェックしてください',
       SearchHistory: '検索履歴',
       PopularSearch: {
@@ -342,6 +338,12 @@ const ja = {
           PublicFacing: 'インターネットに公開されているリソースを検索します',
         },
       },
+    },
+    ai: {
+      'Generative AI Title': '生成AIの要約',
+      'GenerativeAI Question-1':
+        'クラウド環境で以下のセキュリティの問題を検知しました。日本語で内容を要約してください。',
+      'GenerativeAI Question-2': 'また、問題の対処方法もあれば含めてください。',
     },
     alert: {
       'Active Only': 'アクティブのみ',
