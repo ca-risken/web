@@ -746,42 +746,11 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="tagDialog" max-width="400px">
-      <v-card>
-        <v-card-title>
-          <span class="mx-4">New tag</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="findingModel.new_tag"
-            label="tag"
-            placeholder="key:value"
-            variant="outlined"
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="tagDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="blue-darken-1"
-            text
-            variant="outlined"
-            :loading="loading"
-            @click="handleNewTagSubmit"
-          >
-            {{ $t(`btn['TAG']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+    <TagDialog
+      v-model="tagDialog"
+      :loading="loading"
+      @submit="handleNewTagSubmit"
+    />
     <DeleteDialog
       v-model="deleteDialog"
       :finding-model="findingModel"
@@ -823,6 +792,7 @@ import AIPanel from '@/component/text/AIPanel.vue'
 import RecommendDialog from '@/component/dialog/finding/Recommend.vue'
 import PendDialog from '@/component/dialog/finding/Pend.vue'
 import DeleteDialog from '@/component/dialog/finding/Delete.vue'
+import TagDialog from '@/component/dialog/finding/Tag.vue'
 
 export default {
   name: 'FindingList',
@@ -837,6 +807,7 @@ export default {
     RecommendDialog,
     PendDialog,
     DeleteDialog,
+    TagDialog,
   },
   data() {
     return {
@@ -1426,21 +1397,19 @@ export default {
       })
     },
     handleNewTag() {
-      this.findingModel.new_tag = '' // clear
       this.tagDialog = true
     },
-    async handleNewTagSubmit() {
+    async handleNewTagSubmit(newTag) {
       this.loading = true
-      if (this.findingModel.finding_id && this.findingModel.new_tag) {
+      if (this.findingModel.finding_id && newTag) {
         await this.tagFinding(
           this.findingModel.finding_id,
-          this.findingModel.new_tag
+          newTag
         )
         this.finishSuccess(
-          'Success: New Tag `' + this.findingModel.new_tag + '`.'
+          'Success: New Tag `' + newTag + '`.'
         )
       }
-      this.tagDialog = false
       this.loading = false
     },
     async handleUntag(item) {
