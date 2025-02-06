@@ -841,94 +841,20 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="pendDialog" max-width="40%">
-      <v-card>
-        <v-card-title class="text-h5">
-          <span class="mx-4">
-            {{ $t(pendDialogTitle) }}
-          </span>
-        </v-card-title>
-        <v-card-text>
-          <v-checkbox
-            v-model="pendModel.false_positive"
-            hide-details
-            :label="$t(`view.finding['False Positive']`)"
-          ></v-checkbox>
-          <v-list two-line>
-            <v-list-item prepend-icon="mdi-identifier">
-              <v-list-item-title v-if="pendAll">
-                {{ table.selected.length }} findings selected...
-              </v-list-item-title>
-              <v-list-item-title v-else>
-                {{ findingModel.finding_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Finding ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item prepend-icon="mdi-image-text">
-              <v-textarea
-                variant="outlined"
-                clearable
-                clear-icon="mdi-close-circle"
-                v-model="pendModel.note"
-                :label="pendDialogNoteLabel"
-              ></v-textarea>
-            </v-list-item>
-            <v-list-item
-              v-if="!isArchived"
-              prepend-icon="mdi-clock-time-eight-outline"
-            >
-              <v-combobox
-                variant="outlined"
-                density="compact"
-                hide-no-data
-                hide-details
-                clearable
-                bg-color="white"
-                v-model="pendModel.expired_at"
-                :loading="loading"
-                :label="$t(`item['Expired At']`)"
-                :items="pendExpiredItems"
-              />
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="pendDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="red-darken-1"
-            v-if="pendAll"
-            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
-            variant="outlined"
-            :loading="loading"
-            @click="handlePendSelectedSubmit"
-          />
-          <v-btn
-            color="red-darken-1"
-            v-else
-            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
-            variant="outlined"
-            :loading="loading"
-            @click="handlePendItemSubmit"
-          />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <RecommendDialog
       v-model="recommendDialog"
       :recommend-model="recommendModel"
     />
     <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
+    <PendDialog
+      v-model="pendDialog"
+      :finding-id="findingModel.finding_id"
+      :selected-count="table.selected.length"
+      :is-archived="isArchived"
+      :pend-all="pendAll"
+      :loading="loading"
+      @submit="handlePendSubmit"
+    />
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -947,7 +873,8 @@ import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import JsonView from '@/component/text/JsonView.vue'
 import AIDialog from '@/component/dialog/AI.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
-import RecommendDialog from '@/component/dialog/Recommend.vue'
+import RecommendDialog from '@/component/dialog/finding/Recommend.vue'
+import PendDialog from '@/component/dialog/finding/Pend.vue'
 
 export default {
   name: 'FindingList',
@@ -960,6 +887,7 @@ export default {
     AIDialog,
     AIPanel,
     RecommendDialog,
+    PendDialog,
   },
   data() {
     return {
@@ -1645,20 +1573,39 @@ export default {
       this.isArchived = false
       this.pendDialog = true
     },
-    async handlePendItemSubmit(isArchived) {
+    async handlePendSubmit(pendModel) {
       this.loading = true
-      const pendReason = this.getPendReason(this.pendModel.false_positive)
-      await this.putPendFinding(
-        this.pendModel.finding_id,
-        this.pendModel.note,
-        pendReason,
-        this.getPendExpiredSecound(this.pendModel.expired_at)
-      )
-      if (isArchived) {
-        this.finishSuccess('Success: Archived.')
-        return
+      const pendReason = this.getPendReason(pendModel.false_positive)
+      if (this.pendAll) {
+        const count = this.table.selected.length
+        this.table.selected.forEach(async (item) => {
+          if (!item.finding_id) return
+          await this.putPendFinding(
+            item.finding_id,
+            pendModel.note,
+            pendReason,
+            this.getPendExpiredSecound(pendModel.expired_at)
+          )
+        })
+        this.table.selected = []
+        if (this.isArchived) {
+          this.finishSuccess('Success: Archived ' + count + ' findings.')
+          return
+        }
+        this.finishSuccess('Success: Pend ' + count + ' findings.')
+      } else {
+        await this.putPendFinding(
+          pendModel.finding_id,
+          pendModel.note,
+          pendReason,
+          this.getPendExpiredSecound(pendModel.expired_at)
+        )
+        if (this.isArchived) {
+          this.finishSuccess('Success: Archived.')
+          return
+        }
+        this.finishSuccess('Success: Pending.')
       }
-      this.finishSuccess('Success: Pending.')
     },
     async handleArchiveSelected() {
       this.pendAll = true
@@ -1672,26 +1619,6 @@ export default {
       this.pendModel.note = ''
       this.isArchived = false
       this.pendDialog = true
-    },
-    async handlePendSelectedSubmit(isArchived) {
-      this.loading = true
-      const count = this.table.selected.length
-      const pendReason = this.getPendReason(this.pendModel.false_positive)
-      this.table.selected.forEach(async (item) => {
-        if (!item.finding_id) return
-        await this.putPendFinding(
-          item.finding_id,
-          this.pendModel.note,
-          pendReason,
-          this.getPendExpiredSecound(this.pendModel.expired_at)
-        )
-      })
-      this.table.selected = []
-      if (isArchived) {
-        this.finishSuccess('Success: Archived ' + count + ' findings.')
-        return
-      }
-      this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
     getPendExpiredSecound(expiredAt) {
       const parsedDate = Date.parse(expiredAt)
