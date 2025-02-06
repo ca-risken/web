@@ -156,7 +156,8 @@ export default {
         ...this.pendModel,
         finding_id: this.findingId,
       })
-      this.close()
+      this.resetForm()
+      this.$emit('update:modelValue', false)
     },
     resetForm() {
       this.pendModel = {

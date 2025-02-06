@@ -62,7 +62,8 @@ export default {
     },
     handleSubmit() {
       this.$emit('submit', this.tagModel.new_tag)
-      this.close()
+      this.resetForm()
+      this.$emit('update:modelValue', false)
     },
     resetForm() {
       this.tagModel.new_tag = ''

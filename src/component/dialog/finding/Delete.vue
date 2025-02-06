@@ -85,7 +85,7 @@ export default {
     },
     handleSubmit() {
       this.$emit('submit', this.findingModel.finding_id)
-      this.close()
+      this.$emit('update:modelValue', false)
     },
   },
 }
