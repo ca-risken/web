@@ -258,12 +258,16 @@
                         variant="outlined"
                       ></v-text-field>
                       <v-alert
-                        v-if="dataModel.channel != '' && dataModel.channel != null"
+                        v-if="
+                          dataModel.channel != '' && dataModel.channel != null
+                        "
                         density="compact"
                         variant="outlined"
                         type="error"
                       >
-                        {{ $t(`view.alert['The specific channel setting is ']`) }}
+                        {{
+                          $t(`view.alert['The specific channel setting is ']`)
+                        }}
                         <strong>{{ $t(`view.alert['deprecated']`) }}</strong>
                         {{
                           $t(

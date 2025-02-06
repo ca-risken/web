@@ -360,771 +360,45 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="viewDialog" max-width="70%">
-      <v-card>
-        <v-toolbar>
-          <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
-          <v-spacer />
-          <v-btn
-            v-if="canAttackFlowAnalyze(findingModel.resource_name)"
-            color="blue-grey"
-            variant="outlined"
-            style="text-transform: none"
-            class="mx-2"
-            :to="{
-              path: '/analysis/attack-flow/',
-              query: { resource_name: findingModel.resource_name },
-            }"
-          >
-            <template v-slot:prepend>
-              <v-icon color="success">mdi-sitemap-outline</v-icon>
-            </template>
-            {{ $t(`action['Analyze Attack Flow']`) }}
-          </v-btn>
+    <FindingDetailDialog
+      v-model="viewDialog"
+      :finding-model="findingModel"
+      :recommend-model="recommendModel"
+      :loading="loading"
+      :ai-answer="aiAnswer"
+      @generative-ai="handleGenerativeAI"
+      @recommend="handleRecommendItem"
+      @archive="handleArchiveButtonClick"
+      @pend="handlePendButtonClick"
+      @new-tag="handleNewTag"
+      @untag="handleUntag"
+    />
 
-          <v-btn
-            color="blue-grey"
-            variant="outlined"
-            style="text-transform: none"
-            @click="handleGenerativeAI"
-          >
-            <template v-slot:prepend>
-              <v-icon color="purple">mdi-forum-outline</v-icon>
-            </template>
-            {{ $t(`btn['Summarize with Generative AI']`) }}
-          </v-btn>
-        </v-toolbar>
-        <v-container fluid>
-          <v-row dense class="mx-2">
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-subtitle>
-                  <v-icon
-                    size="large"
-                    color="black"
-                    left
-                    icon="mdi-identifier"
-                  />
-                  Finding ID
-                  <clip-board
-                    size="large"
-                    name="Finding ID"
-                    :text="String(findingModel.finding_id)"
-                  />
-                </v-list-item-subtitle>
-                <v-list-item-title class="text-h5">
-                  {{ findingModel.finding_id }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-            <v-col cols="3">
-              <v-list-item two-line>
-                <v-list-item-subtitle>
-                  <v-icon
-                    left
-                    :color="getDataSourceIconColor(findingModel.data_source)"
-                  >
-                    {{ getDataSourceIcon(findingModel.data_source) }}
-                  </v-icon>
-                  {{ $t(`item['Data Source']`) }}
-                  <clip-board
-                    size="large"
-                    :name="$t(`item['Data Source']`)"
-                    :text="findingModel.data_source"
-                  />
-                </v-list-item-subtitle>
-                <v-list-item-title class="text-h5">
-                  {{ findingModel.data_source }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-            <v-col cols="6">
-              <v-list-item two-line>
-                <v-list-item-subtitle>
-                  <v-icon left>mdi-file-find-outline</v-icon>
-                  {{ $t(`item['Resource Name']`) }}
-                  <clip-board
-                    size="large"
-                    :name="$t(`item['Resource Name']`)"
-                    :text="findingModel.resource_name"
-                  />
-                </v-list-item-subtitle>
-                <v-list-item-title class="text-h5">
-                  {{ findingModel.resource_name }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row dense class="mx-2">
-            <v-col cols="12">
-              <v-list-item two-line>
-                <v-list-item-subtitle>
-                  <v-icon left>mdi-image-text</v-icon>
-                  {{ $t(`item['Description']`) }}
-                  <clip-board
-                    size="large"
-                    :name="$t(`item['Description']`)"
-                    :text="findingModel.description"
-                  />
-                </v-list-item-subtitle>
-                <v-list-item-title class="text-h5">
-                  {{ findingModel.description }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-          </v-row>
-
-          <v-row dense class="mx-2">
-            <v-col cols="2">
-              <v-list-item two-line>
-                <v-list-item-subtitle>
-                  <v-icon :color="getColorByScore(findingModel.score)"
-                    >mdi-scoreboard</v-icon
-                  >
-                  {{ $t(`item['Score']`) }}
-                </v-list-item-subtitle>
-                <v-list-item-title class="text-h5">
-                  <v-chip
-                    variant="flat"
-                    :color="getColorByScore(findingModel.score)"
-                    >{{ formatScore(findingModel.score) }}</v-chip
-                  >
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-            <v-col cols="2">
-              <v-list-item two-line>
-                <v-list-item-subtitle>
-                  <v-icon>mdi-scoreboard</v-icon>
-                  {{ $t(`item['Original Score']`) }}
-                </v-list-item-subtitle>
-                <v-list-item-title class="text-h5">
-                  {{ findingModel.original_score }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-            <v-col cols="4" v-if="recommendModel.recommend_id">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-run</v-icon>
-                {{ $t(`item['Recommend']`) }}
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-btn
-                  text
-                  variant="outlined"
-                  color="purple-darken-2"
-                  class="ma-1"
-                  :loading="loading"
-                  @click="handleRecommendItem"
-                >
-                  {{ $t(`btn['Recommendation']`) }}
-                </v-btn>
-              </v-list-item-title>
-            </v-col>
-            <v-col cols="4">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-gesture-tap</v-icon>
-                {{ $t(`item['Action']`) }}
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-btn
-                  color="red-darken-1"
-                  text
-                  variant="outlined"
-                  class="ma-1"
-                  @click="handleArchiveButtonClick"
-                >
-                  {{ $t(`btn['ARCHIVE']`) }}
-                </v-btn>
-                <v-btn
-                  color="red-darken-1"
-                  text
-                  variant="outlined"
-                  class="ma-1"
-                  @click="handlePendButtonClick"
-                >
-                  {{ $t(`btn['PEND']`) }}
-                </v-btn>
-              </v-list-item-title>
-            </v-col>
-          </v-row>
-
-          <template v-if="findingModel.status != 'ACTIVE'">
-            <v-row dense class="mx-4">
-              <v-col v-if="findingModel.pendModel.note != ''" cols="8">
-                <v-list-item-subtitle>
-                  <v-icon left>mdi-check-circle-outline</v-icon>
-                  {{ $t(`view.finding['ARCHIVE']`) }}
-                </v-list-item-subtitle>
-                <v-list-item-title>
-                  <v-alert
-                    border="start"
-                    border-color="warning"
-                    type="warning"
-                    variant="outlined"
-                  >
-                    <p>
-                      {{ findingModel.pendModel.note }}
-                    </p>
-                  </v-alert>
-                </v-list-item-title>
-              </v-col>
-              <v-col v-if="findingModel.pendModel.pend_user" cols="2">
-                <v-list-item-subtitle>
-                  <v-icon left>mdi-account-outline</v-icon>
-                  {{ $t(`item['Archived By']`) }}
-                </v-list-item-subtitle>
-                <v-list-item-title class="mt-4" align="center">
-                  <v-chip>{{ findingModel.pendModel.pend_user }}</v-chip>
-                </v-list-item-title>
-              </v-col>
-              <v-col v-if="findingModel.pendModel.expired_at" cols="2">
-                <v-list-item-subtitle>
-                  <v-icon left>mdi-clock-outline</v-icon>
-                  {{ $t(`item['Expired At']`) }}
-                </v-list-item-subtitle>
-                <v-list-item-title class="mt-4">
-                  <v-chip>{{
-                    formatTime(findingModel.pendModel.expired_at)
-                  }}</v-chip>
-                </v-list-item-title>
-              </v-col>
-            </v-row>
-          </template>
-
-          <v-row dense class="mx-4">
-            <v-col cols="12">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-label</v-icon>
-                {{ $t(`item['Tag']`) }}
-                <v-btn
-                  text
-                  variant="outlined"
-                  color="black-lighten-1"
-                  class="ma-4"
-                  :loading="loading"
-                  @click="handleNewTag"
-                >
-                  {{ $t(`btn['NEW TAG']`) }}
-                </v-btn>
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-chip
-                  v-for="tag in findingModel.tags"
-                  :key="tag.finding_tag_id"
-                  @click:close.stop.prevent="handleUntag(tag)"
-                  class="mx-1"
-                  closable
-                  link
-                  :to="{
-                    path: '/finding/finding/',
-                    query: { tag: tag.tag, from_score: 0 },
-                  }"
-                  target="_blank"
-                  rel="noopener"
-                  risken-action-name="search-finding-by-tag-from-finding"
-                >
-                  {{ tag.tag }}
-                  <v-icon class="ml-1" color="grey">mdi-open-in-new</v-icon>
-                </v-chip>
-              </v-list-item-title>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-alert
-                :title="$t(`view.finding['Generative AI Title']`)"
-                icon="$success"
-                variant="tonal"
-                border="end"
-                border-color="indigo-darken-4"
-                class="my-4 pl-6 pr-8"
-              >
-                <v-progress-circular
-                  v-if="loading"
-                  indeterminate
-                  :size="40"
-                  width="4"
-                  color="green-darken-2"
-                  class="ma-6 px-12"
-                ></v-progress-circular>
-                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <Markdown
-                    breaks
-                    linkify
-                    class="markdown"
-                    :source="aiAnswer"
-                  />
-                </v-card-text>
-              </v-alert>
-            </v-col>
-          </v-row>
-
-          <v-row class="mx-2 my-0">
-            <v-col cols="11 py-0 dense-list">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-link-variant</v-icon>
-                URL
-              </v-list-item-subtitle>
-              <v-list class="py-0 dense-list">
-                <v-list-item
-                  v-for="(urlItem, index) in findingModel.urls"
-                  :key="index"
-                  :href="urlItem.url"
-                  target="_blank"
-                  rel="noopener"
-                  class="my-0 py-0"
-                  density="compact"
-                >
-                  <v-list-item-content class="text-truncate">
-                    <span class="d-flex">
-                      <v-icon size="small" color="grey-darken-2" class="mx-2"
-                        >mdi-open-in-new</v-icon
-                      >
-                      <span class="text-grey-darken-2"
-                        >{{ urlItem.label }}:</span
-                      >
-                      <span class="ml-2 font-italic text-truncate url-link">{{
-                        urlItem.url
-                      }}</span>
-                    </span>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-col>
-          </v-row>
-
-          <v-row class="ma-2">
-            <v-col cols="12">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-code-json</v-icon>
-                JSON Data
-                <clip-board
-                  size="large"
-                  name="JSON Data"
-                  :text="pretty(findingModel.data)"
-                />
-              </v-list-item-subtitle>
-              <v-card dark color="grey-darken-3" class="ma-4">
-                <v-card-text
-                  class="title font-weight-bold"
-                  density="comfortable"
-                >
-                  <json-viewer
-                    :value="parseFindingData(findingModel.data)"
-                    :expand-depth="5"
-                    :sort="false"
-                    :copyable="true"
-                    :show-array-index="false"
-                    :preview-mode="false"
-                    theme="finding-json-theme"
-                  ></json-viewer>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-row class="ma-2" v-if="getExternalLink(findingModel.data)">
-            <v-col cols="12">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-link</v-icon>
-                {{ $t(`item['External Link']`) }}
-              </v-list-item-subtitle>
-              <a :href="getExternalLink(findingModel.data)" target="blank_">{{
-                getExternalLink(findingModel.data)
-              }}</a>
-            </v-col>
-          </v-row>
-          <v-row class="ma-2">
-            <v-col cols="4">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-clock-outline</v-icon>
-                {{ $t(`item['Created']`) }}
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-chip>{{ formatTime(findingModel.created_at) }}</v-chip>
-              </v-list-item-title>
-            </v-col>
-            <v-col cols="4">
-              <v-list-item-subtitle>
-                <v-icon left>mdi-clock-outline</v-icon>
-                {{ $t(`item['Updated']`) }}
-              </v-list-item-subtitle>
-              <v-list-item-title>
-                <v-chip>{{ formatTime(findingModel.updated_at) }}</v-chip>
-              </v-list-item-title>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="red-darken-1"
-            text
-            variant="outlined"
-            @click="handleArchiveButtonClick"
-          >
-            {{ $t(`btn['ARCHIVE']`) }}
-          </v-btn>
-          <v-btn
-            color="red-darken-1"
-            text
-            variant="outlined"
-            @click="handlePendButtonClick"
-          >
-            {{ $t(`btn['PEND']`) }}
-          </v-btn>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="viewDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="tagDialog" max-width="400px">
-      <v-card>
-        <v-card-title>
-          <span class="mx-4">New tag</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="findingModel.new_tag"
-            label="tag"
-            placeholder="key:value"
-            variant="outlined"
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="tagDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="blue-darken-1"
-            text
-            variant="outlined"
-            :loading="loading"
-            @click="handleNewTagSubmit"
-          >
-            {{ $t(`btn['TAG']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="deleteDialog" max-width="40%">
-      <v-card>
-        <v-card-title class="text-h5">
-          <span class="mx-4">
-            {{ $t(`message['Do you really want to delete this?']`) }}
-          </span>
-        </v-card-title>
-        <v-list two-line>
-          <v-list-item>
-            <template v-slot:prepend>
-              <v-icon size="large" icon="mdi-identifier" />
-            </template>
-            <v-list-item-title>
-              {{ findingModel.finding_id }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['Finding ID']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-file-find-outline">
-            <v-list-item-title>
-              {{ findingModel.resource_name }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['Resource Name']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-image-text">
-            <v-list-item-title style="white-space: pre-wrap">
-              {{ findingModel.description }}
-            </v-list-item-title>
-            <v-list-item-subtitle>{{
-              $t(`item['Description']`)
-            }}</v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="deleteDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="red-darken-1"
-            text
-            variant="outlined"
-            :loading="loading"
-            @click="handleDeleteSubmit"
-          >
-            {{ $t(`btn['DELETE']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="pendDialog" max-width="40%">
-      <v-card>
-        <v-card-title class="text-h5">
-          <span class="mx-4">
-            {{ $t(pendDialogTitle) }}
-          </span>
-        </v-card-title>
-        <v-card-text>
-          <v-checkbox
-            v-model="pendModel.false_positive"
-            hide-details
-            :label="$t(`view.finding['False Positive']`)"
-          ></v-checkbox>
-          <v-list two-line>
-            <v-list-item prepend-icon="mdi-identifier">
-              <v-list-item-title v-if="pendAll">
-                {{ table.selected.length }} findings selected...
-              </v-list-item-title>
-              <v-list-item-title v-else>
-                {{ findingModel.finding_id }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t(`item['Finding ID']`) }}
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item prepend-icon="mdi-image-text">
-              <v-textarea
-                variant="outlined"
-                clearable
-                clear-icon="mdi-close-circle"
-                v-model="pendModel.note"
-                :label="pendDialogNoteLabel"
-              ></v-textarea>
-            </v-list-item>
-            <v-list-item
-              v-if="!isArchived"
-              prepend-icon="mdi-clock-time-eight-outline"
-            >
-              <v-combobox
-                variant="outlined"
-                density="compact"
-                hide-no-data
-                hide-details
-                clearable
-                bg-color="white"
-                v-model="pendModel.expired_at"
-                :loading="loading"
-                :label="$t(`item['Expired At']`)"
-                :items="pendExpiredItems"
-              />
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="pendDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="red-darken-1"
-            v-if="pendAll"
-            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
-            variant="outlined"
-            :loading="loading"
-            @click="handlePendSelectedSubmit"
-          />
-          <v-btn
-            color="red-darken-1"
-            v-else
-            :text="$t(`btn['` + pendDialogSubmitButtonText + `']`)"
-            variant="outlined"
-            :loading="loading"
-            @click="handlePendItemSubmit"
-          />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="recommendDialog" max-width="60%">
-      <v-card>
-        <v-container>
-          <v-row>
-            <v-col cols="9">
-              <v-card-title class="text-h5">
-                <span class="mx-4">
-                  {{ $t(`item['Recommendation']`) }}
-                </span>
-              </v-card-title>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="4">
-              <v-list-item prepend-icon="mdi-identifier">
-                <v-list-item-title>
-                  {{ recommendModel.recommend_id }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ $t(`item['Recommend ID']`) }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-            <v-col cols="4">
-              <v-list-item prepend-icon="mdi-identifier">
-                <v-list-item-title>
-                  {{ recommendModel.finding_id }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ $t(`item['Finding ID']`) }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="6">
-              <v-list-item prepend-icon="mdi-tag-multiple">
-                <v-list-item-title>
-                  {{ recommendModel.type }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ $t(`item['Type']`) }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-            <v-col cols="6">
-              <v-list-item
-                :prepend-icon="getDataSourceIcon(recommendModel.data_source)"
-              >
-                <v-list-item-title>
-                  {{ recommendModel.data_source }}
-                </v-list-item-title>
-                <v-list-item-subtitle>{{
-                  $t(`item['Data Source']`)
-                }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-list-item prepend-icon="mdi-comment-alert-outline">
-                <v-list-item class="pa-0 ma-0 wrap">
-                  <auto-link :text="recommendModel.risk" />
-                </v-list-item>
-                <v-list-item-subtitle>{{
-                  $t(`item['Risk']`)
-                }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="12">
-              <v-alert
-                type="info"
-                icon="mdi-run"
-                color="purple-lighten-2"
-                prominent
-                variant="outlined"
-                border="start"
-                border-color="purple-lighten-2"
-                class="mb-4 mt-4 pa-6 font-weight-medium wrap"
-              >
-                <auto-link :text="recommendModel.recommendation" />
-              </v-alert>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="recommendDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="aiDialog" max-width="60%">
-      <v-card>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-list-item prepend-icon="mdi-chat">
-                <v-list-item class="px-0 pt-10 ma-0">
-                  {{ $t(`view.finding['GenerativeAI Question-1']`) }}<br />
-                  {{ $t(`view.finding['GenerativeAI Question-2']`) }}<br />
-                </v-list-item>
-              </v-list-item>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-alert
-                :title="$t(`view.finding['Generative AI Title']`)"
-                icon="$success"
-                variant="tonal"
-                border="end"
-                border-color="indigo-darken-4"
-                class="my-4 pl-6 pr-8"
-              >
-                <v-progress-circular
-                  v-if="loading"
-                  indeterminate
-                  :size="40"
-                  width="4"
-                  color="green-darken-2"
-                  class="ma-6 px-12"
-                ></v-progress-circular>
-                <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-                  <Markdown
-                    breaks
-                    linkify
-                    class="markdown"
-                    :source="aiAnswer"
-                  />
-                </v-card-text>
-              </v-alert>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="aiDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+    <FindingTagDialog
+      v-model="tagDialog"
+      :loading="loading"
+      @submit="handleNewTagSubmit"
+    />
+    <FindingDeleteDialog
+      v-model="deleteDialog"
+      :finding-model="findingModel"
+      :loading="loading"
+      @submit="handleDeleteSubmit"
+    />
+    <FindingPendDialog
+      v-model="pendDialog"
+      :finding-id="findingModel.finding_id"
+      :selected-count="table.selected.length"
+      :is-archived="isArchived"
+      :pend-all="pendAll"
+      :loading="loading"
+      @submit="handlePendSubmit"
+    />
+    <FindingRecommendDialog
+      v-model="recommendDialog"
+      :recommend-model="recommendModel"
+    />
+    <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -1138,23 +412,26 @@ import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
-import JsonViewer from 'vue-json-viewer'
-import AutoLink from '@/component/text/AutoLink.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import Markdown from 'vue3-markdown-it'
-import 'highlight.js/styles/monokai.css'
+import AIDialog from '@/component/dialog/AI.vue'
+import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
+import FindingPendDialog from '@/component/dialog/finding/Pend.vue'
+import FindingDeleteDialog from '@/component/dialog/finding/Delete.vue'
+import FindingTagDialog from '@/component/dialog/finding/Tag.vue'
+import FindingDetailDialog from '@/component/dialog/finding/Detail.vue'
 
 export default {
   name: 'FindingList',
   mixins: [mixin, finding, alert, iam, signin],
   components: {
     BottomSnackBar,
-    ClipBoard,
-    JsonViewer,
-    AutoLink,
     VDataTableServer,
-    Markdown,
+    AIDialog,
+    FindingRecommendDialog,
+    FindingPendDialog,
+    FindingDeleteDialog,
+    FindingTagDialog,
+    FindingDetailDialog,
   },
   data() {
     return {
@@ -1166,7 +443,6 @@ export default {
         dataSource: [],
         resourceName: [],
         tag: [],
-        // score: [0.0, 1.0],
         scoreFrom: 0.5,
         scoreTo: 1.0,
         tab: 0,
@@ -1584,16 +860,6 @@ export default {
       })
       return list
     },
-    getExternalLink(data) {
-      if (!data) {
-        return ''
-      }
-      const jsonData = JSON.parse(JSON.stringify(JSON.parse(data), null, 2))
-      if (jsonData.external_link) {
-        return jsonData.external_link
-      }
-      return ''
-    },
 
     // handler
     async handleRowClick(event, findings) {
@@ -1744,21 +1010,14 @@ export default {
       })
     },
     handleNewTag() {
-      this.findingModel.new_tag = '' // clear
       this.tagDialog = true
     },
-    async handleNewTagSubmit() {
+    async handleNewTagSubmit(newTag) {
       this.loading = true
-      if (this.findingModel.finding_id && this.findingModel.new_tag) {
-        await this.tagFinding(
-          this.findingModel.finding_id,
-          this.findingModel.new_tag
-        )
-        this.finishSuccess(
-          'Success: New Tag `' + this.findingModel.new_tag + '`.'
-        )
+      if (this.findingModel.finding_id && newTag) {
+        await this.tagFinding(this.findingModel.finding_id, newTag)
+        this.finishSuccess('Success: New Tag `' + newTag + '`.')
       }
-      this.tagDialog = false
       this.loading = false
     },
     async handleUntag(item) {
@@ -1840,20 +1099,39 @@ export default {
       this.isArchived = false
       this.pendDialog = true
     },
-    async handlePendItemSubmit(isArchived) {
+    async handlePendSubmit(pendModel) {
       this.loading = true
-      const pendReason = this.getPendReason(this.pendModel.false_positive)
-      await this.putPendFinding(
-        this.pendModel.finding_id,
-        this.pendModel.note,
-        pendReason,
-        this.getPendExpiredSecound(this.pendModel.expired_at)
-      )
-      if (isArchived) {
-        this.finishSuccess('Success: Archived.')
-        return
+      const pendReason = this.getPendReason(pendModel.false_positive)
+      if (this.pendAll) {
+        const count = this.table.selected.length
+        this.table.selected.forEach(async (item) => {
+          if (!item.finding_id) return
+          await this.putPendFinding(
+            item.finding_id,
+            pendModel.note,
+            pendReason,
+            this.getPendExpiredSecound(pendModel.expired_at)
+          )
+        })
+        this.table.selected = []
+        if (this.isArchived) {
+          this.finishSuccess('Success: Archived ' + count + ' findings.')
+          return
+        }
+        this.finishSuccess('Success: Pend ' + count + ' findings.')
+      } else {
+        await this.putPendFinding(
+          pendModel.finding_id,
+          pendModel.note,
+          pendReason,
+          this.getPendExpiredSecound(pendModel.expired_at)
+        )
+        if (this.isArchived) {
+          this.finishSuccess('Success: Archived.')
+          return
+        }
+        this.finishSuccess('Success: Pending.')
       }
-      this.finishSuccess('Success: Pending.')
     },
     async handleArchiveSelected() {
       this.pendAll = true
@@ -1867,26 +1145,6 @@ export default {
       this.pendModel.note = ''
       this.isArchived = false
       this.pendDialog = true
-    },
-    async handlePendSelectedSubmit(isArchived) {
-      this.loading = true
-      const count = this.table.selected.length
-      const pendReason = this.getPendReason(this.pendModel.false_positive)
-      this.table.selected.forEach(async (item) => {
-        if (!item.finding_id) return
-        await this.putPendFinding(
-          item.finding_id,
-          this.pendModel.note,
-          pendReason,
-          this.getPendExpiredSecound(this.pendModel.expired_at)
-        )
-      })
-      this.table.selected = []
-      if (isArchived) {
-        this.finishSuccess('Success: Archived ' + count + ' findings.')
-        return
-      }
-      this.finishSuccess('Success: Pend ' + count + ' findings.')
     },
     getPendExpiredSecound(expiredAt) {
       const parsedDate = Date.parse(expiredAt)
@@ -2215,12 +1473,6 @@ export default {
         this.handleSearch()
       }
     },
-    parseFindingData(v) {
-      if (!v) {
-        return {}
-      }
-      return JSON.parse(v)
-    },
     toPascalCase(str) {
       return str
         .split(/[._]/)
@@ -2278,122 +1530,8 @@ export default {
 </script>
 
 <style lang="scss">
-.finding-json-theme {
-  background: #424242;
-  white-space: nowrap;
-  color: #eee;
-  font-size: 18px;
-
-  .jv-ellipsis {
-    color: #eee;
-    background-color: #424242;
-    display: inline-block;
-    line-height: 0.9;
-    font-size: 0.9em;
-    padding: 0px 4px 2px 4px;
-    border-radius: 3px;
-    vertical-align: 2px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .jv-button {
-    color: #49b3ff;
-  }
-
-  .jv-key {
-    color: rgb(181, 216, 55);
-  }
-
-  .jv-link {
-    color: #068cca;
-  }
-
-  .jv-item {
-    &.jv-array {
-      color: #eee;
-    }
-
-    &.jv-boolean {
-      color: #b3e5fc;
-    }
-
-    &.jv-function {
-      color: #068cca;
-    }
-
-    &.jv-number {
-      color: #42b983;
-    }
-
-    &.jv-number-float {
-      color: #42b983;
-    }
-
-    &.jv-number-integer {
-      color: #42b983;
-    }
-
-    &.jv-object {
-      color: #eee;
-    }
-
-    &.jv-undefined {
-      color: #e08331;
-    }
-
-    &.jv-string {
-      color: #eee;
-      word-break: break-word;
-      white-space: normal;
-    }
-  }
-
-  .jv-code {
-    padding: 1px;
-    line-height: 2rem;
-
-    .jv-toggle {
-      &:before {
-        padding: 0px 2px;
-        border-radius: 2px;
-      }
-
-      &:hover {
-        &:before {
-          background: #eee;
-        }
-      }
-    }
-  }
-}
-
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
-}
-
-.markdown {
-  ul,
-  ol {
-    padding-left: 20px;
-    margin-top: -20px;
-    margin-bottom: -20px;
-  }
-
-  li {
-    margin-top: -5px;
-    margin-bottom: -5px;
-  }
-
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-}
-
-.url-link {
-  color: #068cca;
-  cursor: pointer;
 }
 </style>
