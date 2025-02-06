@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model="internalDialog" max-width="40%">
+  <v-dialog
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    max-width="40%"
+  >
     <v-card>
       <v-card-title class="text-h5">
         <span class="mx-4">
@@ -75,19 +79,9 @@ export default {
       default: false,
     },
   },
-  computed: {
-    internalDialog: {
-      get() {
-        return this.modelValue
-      },
-      set(val) {
-        this.$emit('update:modelValue', val)
-      },
-    },
-  },
   methods: {
     close() {
-      this.internalDialog = false
+      this.$emit('update:modelValue', false)
     },
     handleSubmit() {
       this.$emit('submit', this.findingModel.finding_id)

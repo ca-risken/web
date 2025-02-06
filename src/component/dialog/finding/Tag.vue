@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model="internalDialog" max-width="400px">
+  <v-dialog
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    max-width="400px"
+  >
     <v-card>
       <v-card-title>
         <span class="mx-4">{{ $t(`btn['NEW TAG']`) }}</span>
@@ -51,19 +55,9 @@ export default {
       },
     }
   },
-  computed: {
-    internalDialog: {
-      get() {
-        return this.modelValue
-      },
-      set(val) {
-        this.$emit('update:modelValue', val)
-      },
-    },
-  },
   methods: {
     close() {
-      this.internalDialog = false
+      this.$emit('update:modelValue', false)
       this.resetForm()
     },
     handleSubmit() {

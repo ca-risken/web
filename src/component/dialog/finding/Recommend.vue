@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model="internalDialog" max-width="60%">
+  <v-dialog
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    max-width="60%"
+  >
     <v-card>
       <v-container>
         <v-row>
@@ -126,19 +130,9 @@ export default {
       }),
     },
   },
-  computed: {
-    internalDialog: {
-      get() {
-        return this.modelValue
-      },
-      set(val) {
-        this.$emit('update:modelValue', val)
-      },
-    },
-  },
   methods: {
     close() {
-      this.internalDialog = false
+      this.$emit('update:modelValue', false)
     },
   },
 }
