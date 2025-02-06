@@ -782,70 +782,12 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="40%">
-      <v-card>
-        <v-card-title class="text-h5">
-          <span class="mx-4">
-            {{ $t(`message['Do you really want to delete this?']`) }}
-          </span>
-        </v-card-title>
-        <v-list two-line>
-          <v-list-item>
-            <template v-slot:prepend>
-              <v-icon size="large" icon="mdi-identifier" />
-            </template>
-            <v-list-item-title>
-              {{ findingModel.finding_id }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['Finding ID']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-file-find-outline">
-            <v-list-item-title>
-              {{ findingModel.resource_name }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['Resource Name']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-image-text">
-            <v-list-item-title style="white-space: pre-wrap">
-              {{ findingModel.description }}
-            </v-list-item-title>
-            <v-list-item-subtitle>{{
-              $t(`item['Description']`)
-            }}</v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="deleteDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="red-darken-1"
-            text
-            variant="outlined"
-            :loading="loading"
-            @click="handleDeleteSubmit"
-          >
-            {{ $t(`btn['DELETE']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <RecommendDialog
-      v-model="recommendDialog"
-      :recommend-model="recommendModel"
+    <DeleteDialog
+      v-model="deleteDialog"
+      :finding-model="findingModel"
+      :loading="loading"
+      @submit="handleDeleteSubmit"
     />
-    <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
     <PendDialog
       v-model="pendDialog"
       :finding-id="findingModel.finding_id"
@@ -855,6 +797,11 @@
       :loading="loading"
       @submit="handlePendSubmit"
     />
+    <RecommendDialog
+      v-model="recommendDialog"
+      :recommend-model="recommendModel"
+    />
+    <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -875,6 +822,7 @@ import AIDialog from '@/component/dialog/AI.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
 import RecommendDialog from '@/component/dialog/finding/Recommend.vue'
 import PendDialog from '@/component/dialog/finding/Pend.vue'
+import DeleteDialog from '@/component/dialog/finding/Delete.vue'
 
 export default {
   name: 'FindingList',
@@ -888,6 +836,7 @@ export default {
     AIPanel,
     RecommendDialog,
     PendDialog,
+    DeleteDialog,
   },
   data() {
     return {
