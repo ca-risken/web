@@ -37,12 +37,7 @@
       </v-list>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          text
-          variant="outlined"
-          color="grey-darken-1"
-          @click="close"
-        >
+        <v-btn text variant="outlined" color="grey-darken-1" @click="close">
           {{ $t(`btn['CANCEL']`) }}
         </v-btn>
         <v-btn
@@ -100,4 +95,4 @@ export default {
     },
   },
 }
-</script> 
+</script>

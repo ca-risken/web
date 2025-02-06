@@ -366,12 +366,7 @@
         >
           {{ $t(`btn['PEND']`) }}
         </v-btn>
-        <v-btn
-          text
-          variant="outlined"
-          color="grey-darken-1"
-          @click="close"
-        >
+        <v-btn text variant="outlined" color="grey-darken-1" @click="close">
           {{ $t(`btn['CANCEL']`) }}
         </v-btn>
       </v-card-actions>
@@ -485,4 +480,4 @@ export default {
     min-height: 32px;
   }
 }
-</style> 
+</style>

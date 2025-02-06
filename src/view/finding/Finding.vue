@@ -443,7 +443,6 @@ export default {
         dataSource: [],
         resourceName: [],
         tag: [],
-        // score: [0.0, 1.0],
         scoreFrom: 0.5,
         scoreTo: 1.0,
         tab: 0,
@@ -861,16 +860,6 @@ export default {
       })
       return list
     },
-    getExternalLink(data) {
-      if (!data) {
-        return ''
-      }
-      const jsonData = JSON.parse(JSON.stringify(JSON.parse(data), null, 2))
-      if (jsonData.external_link) {
-        return jsonData.external_link
-      }
-      return ''
-    },
 
     // handler
     async handleRowClick(event, findings) {
@@ -1026,13 +1015,8 @@ export default {
     async handleNewTagSubmit(newTag) {
       this.loading = true
       if (this.findingModel.finding_id && newTag) {
-        await this.tagFinding(
-          this.findingModel.finding_id,
-          newTag
-        )
-        this.finishSuccess(
-          'Success: New Tag `' + newTag + '`.'
-        )
+        await this.tagFinding(this.findingModel.finding_id, newTag)
+        this.finishSuccess('Success: New Tag `' + newTag + '`.')
       }
       this.loading = false
     },
@@ -1549,10 +1533,5 @@ export default {
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
-}
-
-.url-link {
-  color: #068cca;
-  cursor: pointer;
 }
 </style>
