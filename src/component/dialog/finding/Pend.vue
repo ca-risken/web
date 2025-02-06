@@ -75,7 +75,7 @@
 
 <script>
 export default {
-  name: 'PendDialog',
+  name: 'FindingPendDialog',
   props: {
     modelValue: {
       type: Boolean,

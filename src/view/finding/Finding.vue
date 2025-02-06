@@ -360,7 +360,7 @@
       </v-row>
     </v-container>
 
-    <FindingDetail
+    <FindingDetailDialog
       v-model="viewDialog"
       :finding-model="findingModel"
       :recommend-model="recommendModel"
@@ -374,18 +374,18 @@
       @untag="handleUntag"
     />
 
-    <TagDialog
+    <FindingTagDialog
       v-model="tagDialog"
       :loading="loading"
       @submit="handleNewTagSubmit"
     />
-    <DeleteDialog
+    <FindingDeleteDialog
       v-model="deleteDialog"
       :finding-model="findingModel"
       :loading="loading"
       @submit="handleDeleteSubmit"
     />
-    <PendDialog
+    <FindingPendDialog
       v-model="pendDialog"
       :finding-id="findingModel.finding_id"
       :selected-count="table.selected.length"
@@ -394,7 +394,7 @@
       :loading="loading"
       @submit="handlePendSubmit"
     />
-    <RecommendDialog
+    <FindingRecommendDialog
       v-model="recommendDialog"
       :recommend-model="recommendModel"
     />
@@ -414,11 +414,11 @@ import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import AIDialog from '@/component/dialog/AI.vue'
-import RecommendDialog from '@/component/dialog/finding/Recommend.vue'
-import PendDialog from '@/component/dialog/finding/Pend.vue'
-import DeleteDialog from '@/component/dialog/finding/Delete.vue'
-import TagDialog from '@/component/dialog/finding/Tag.vue'
-import FindingDetail from '@/component/dialog/finding/FindingDetail.vue'
+import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
+import FindingPendDialog from '@/component/dialog/finding/Pend.vue'
+import FindingDeleteDialog from '@/component/dialog/finding/Delete.vue'
+import FindingTagDialog from '@/component/dialog/finding/Tag.vue'
+import FindingDetailDialog from '@/component/dialog/finding/Detail.vue'
 
 export default {
   name: 'FindingList',
@@ -427,11 +427,11 @@ export default {
     BottomSnackBar,
     VDataTableServer,
     AIDialog,
-    RecommendDialog,
-    PendDialog,
-    DeleteDialog,
-    TagDialog,
-    FindingDetail,
+    FindingRecommendDialog,
+    FindingPendDialog,
+    FindingDeleteDialog,
+    FindingTagDialog,
+    FindingDetailDialog,
   },
   data() {
     return {

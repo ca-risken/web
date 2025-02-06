@@ -37,7 +37,7 @@
 
 <script>
 export default {
-  name: 'TagDialog',
+  name: 'FindingTagDialog',
   props: {
     modelValue: {
       type: Boolean,

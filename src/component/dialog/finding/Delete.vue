@@ -60,7 +60,7 @@
 
 <script>
 export default {
-  name: 'DeleteDialog',
+  name: 'FindingDeleteDialog',
   props: {
     modelValue: {
       type: Boolean,

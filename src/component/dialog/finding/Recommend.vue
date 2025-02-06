@@ -108,7 +108,7 @@ import mixin from '@/mixin'
 import AutoLink from '@/component/text/AutoLink.vue'
 
 export default {
-  name: 'RecommendDialog',
+  name: 'FindingRecommendDialog',
   components: {
     AutoLink,
   },

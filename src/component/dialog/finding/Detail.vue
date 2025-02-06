@@ -385,7 +385,7 @@ import JsonView from '@/component/text/JsonView.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
 
 export default {
-  name: 'FindingDetail',
+  name: 'FindingDetailDialog',
   components: {
     ClipBoard,
     JsonView,
