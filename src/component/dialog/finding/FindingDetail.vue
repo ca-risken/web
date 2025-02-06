@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model="internalDialog" max-width="70%">
+  <v-dialog
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    max-width="70%"
+  >
     <v-card>
       <v-toolbar>
         <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
@@ -411,14 +415,6 @@ export default {
     },
   },
   computed: {
-    internalDialog: {
-      get() {
-        return this.modelValue
-      },
-      set(val) {
-        this.$emit('update:modelValue', val)
-      },
-    },
     formatScore() {
       return (score) => {
         if (!Number.isInteger(score)) {
@@ -430,7 +426,7 @@ export default {
   },
   methods: {
     close() {
-      this.internalDialog = false
+      this.$emit('update:modelValue', false)
     },
     handleGenerativeAI() {
       this.$emit('generative-ai')
