@@ -222,10 +222,10 @@ export default {
       this.$emit('update:modelValue', false)
     },
     getScoreColor(score) {
-      return score >= 0 ? 'grey-darken-1' : 'red-darken-1'
+      return score >= 0 ? 'grey-darken-1' : 'teal-darken-1'
     },
     getScoreTextColor(score) {
-      return score >= 0 ? 'grey-lighten-2' : 'red-lighten-2'
+      return score >= 0 ? 'grey-lighten-2' : 'teal-lighten-2'
     },
   },
   computed: {
