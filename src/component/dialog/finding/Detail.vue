@@ -125,6 +125,8 @@
                 <v-chip
                   variant="flat"
                   :color="getColorByScore(findingModel.score)"
+                  @click="handleTriageClick"
+                  style="cursor: pointer"
                   >{{ formatScore(findingModel.score) }}</v-chip
                 >
               </v-list-item-title>
@@ -376,6 +378,8 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <FindingTriageDialog v-model="triageDialog" :triage-data="getTriageData" />
 </template>
 
 <script>
@@ -383,6 +387,7 @@ import mixin from '@/mixin'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonView from '@/component/text/JsonView.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
+import FindingTriageDialog from '@/component/dialog/finding/Triage.vue'
 
 export default {
   name: 'FindingDetailDialog',
@@ -390,6 +395,7 @@ export default {
     ClipBoard,
     JsonView,
     AIPanel,
+    FindingTriageDialog,
   },
   mixins: [mixin],
   props: {
@@ -414,6 +420,11 @@ export default {
       default: '',
     },
   },
+  data() {
+    return {
+      triageDialog: false,
+    }
+  },
   computed: {
     formatScore() {
       return (score) => {
@@ -421,6 +432,17 @@ export default {
           return score
         }
         return score.toFixed(2)
+      }
+    },
+    getTriageData() {
+      if (!this.findingModel.data) {
+        return {}
+      }
+      try {
+        const data = JSON.parse(this.findingModel.data)
+        return data.risken_triage?.assessment || {}
+      } catch (e) {
+        return {}
       }
     },
   },
@@ -455,6 +477,9 @@ export default {
         return jsonData.external_link
       }
       return ''
+    },
+    handleTriageClick() {
+      this.triageDialog = true
     },
   },
 }

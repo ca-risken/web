@@ -419,6 +419,29 @@ const ja = {
     code: {
       'Repository List': 'リポジトリ一覧',
     },
+    triage: {
+      description:
+        'トリアージ評価はSSVC 2.0の以下のディシジョンツリーに基づいています',
+      decision_model: 'Deployer意思決定モデル',
+      items: {
+        exploitation: {
+          title: 'Exploitation',
+          description: '脆弱性の悪用',
+        },
+        system_exposure: {
+          title: 'System Exposure',
+          description: 'システムの露出',
+        },
+        utility: {
+          title: 'Utility',
+          description: '攻撃者にとっての有用性',
+        },
+        human_impact: {
+          title: 'Human Impact',
+          description: '安全性、ビジネス影響',
+        },
+      },
+    },
   },
 }
 export default ja
