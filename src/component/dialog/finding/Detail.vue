@@ -479,9 +479,7 @@ export default {
       return ''
     },
     handleTriageClick() {
-      if (this.getTriageData && Object.keys(this.getTriageData).length > 0) {
-        this.triageDialog = true
-      }
+      this.triageDialog = true
     },
   },
 }
