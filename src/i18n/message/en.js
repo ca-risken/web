@@ -422,7 +422,7 @@ const en = {
       'Repository List': 'Repository List',
     },
     triage: {
-      description: 'Triage evaluation is based on {0} {1}',
+      description: 'Triage evaluation is based on SSVC 2.0 Decision Tree',
       decision_model: 'Deployer Decision Model',
       items: {
         exploitation: {

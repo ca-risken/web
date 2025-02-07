@@ -420,7 +420,7 @@ const ja = {
       'Repository List': 'リポジトリ一覧',
     },
     triage: {
-      description: 'トリアージ評価は {0} の {1} に基づいています',
+      description: 'トリアージ評価はSSVC 2.0の以下のディシジョンツリーに基づいています',
       decision_model: 'Deployer意思決定モデル',
       items: {
         exploitation: {

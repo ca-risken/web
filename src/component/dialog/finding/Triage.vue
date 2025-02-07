@@ -9,7 +9,14 @@
         <span>Auto Triage</span>
       </v-card-title>
       <v-card-text>
-        <p class="mb-6 text-subtitle-2" v-html="$t('view.triage.description', ['SSVC 2.0', '<a href=\'https://certcc.github.io/SSVC/howto/deployer_tree/?h=deployer#deployer-decision-points\' target=\'_blank\'>' + $t('view.triage.decision_model') + '</a>'])">
+        <p class="mb-6 text-subtitle-2">
+          {{ $t('view.triage.description') }}<br />
+          <a
+            href="https://certcc.github.io/SSVC/howto/deployer_tree/?h=deployer#deployer-decision-points"
+            target="_blank"
+            rel="noopener"
+            class="mt-2 d-block"
+          >{{ $t('view.triage.decision_model') }}</a>
         </p>
 
         <v-timeline side="end" align="start" class="mr-16 pt-6">
