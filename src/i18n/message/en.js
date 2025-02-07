@@ -427,21 +427,21 @@ const en = {
       items: {
         exploitation: {
           title: 'Exploitation',
-          description: 'Vulnerability exploitation potential'
+          description: 'Vulnerability exploitation potential',
         },
         system_exposure: {
           title: 'System Exposure',
-          description: 'Level of system exposure'
+          description: 'Level of system exposure',
         },
         utility: {
           title: 'Utility',
-          description: 'Usefulness for attackers'
+          description: 'Usefulness for attackers',
         },
         human_impact: {
           title: 'Human Impact',
-          description: 'Safety and business impact'
-        }
-      }
+          description: 'Safety and business impact',
+        },
+      },
     },
   },
 }

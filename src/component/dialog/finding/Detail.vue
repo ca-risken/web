@@ -379,10 +379,7 @@
     </v-card>
   </v-dialog>
 
-  <FindingTriageDialog
-    v-model="triageDialog"
-    :triage-data="getTriageData"
-  />
+  <FindingTriageDialog v-model="triageDialog" :triage-data="getTriageData" />
 </template>
 
 <script>

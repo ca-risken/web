@@ -16,18 +16,23 @@
             target="_blank"
             rel="noopener"
             class="mt-2 d-block"
-          >{{ $t('view.triage.decision_model') }}</a>
+            >{{ $t('view.triage.decision_model') }}</a
+          >
         </p>
 
         <v-timeline side="end" align="start" class="mr-16 pt-6">
           <v-timeline-item
-            :dot-color="getScoreTextColor(normalizedTriageData.exploitation.score)"
+            :dot-color="
+              getScoreTextColor(normalizedTriageData.exploitation.score)
+            "
             size="small"
             class="pb-2"
           >
             <template v-slot:opposite>
               <div class="text-right">
-                <div class="text-subtitle-1 font-weight-bold text-grey-darken-3">
+                <div
+                  class="text-subtitle-1 font-weight-bold text-grey-darken-3"
+                >
                   {{ $t('view.triage.items.exploitation.title') }}
                 </div>
                 <div class="text-caption">
@@ -41,25 +46,35 @@
                   <v-chip
                     density="comfortable"
                     class="mr-2 text-body-1 font-weight-medium"
-                    :color="getScoreColor(normalizedTriageData.exploitation.score)"
-                    :text-color="getScoreTextColor(normalizedTriageData.exploitation.score)"
+                    :color="
+                      getScoreColor(normalizedTriageData.exploitation.score)
+                    "
+                    :text-color="
+                      getScoreTextColor(normalizedTriageData.exploitation.score)
+                    "
                   >
                     {{ normalizedTriageData.exploitation.score }}
                   </v-chip>
-                  <span class="text-body-2">{{ normalizedTriageData.exploitation.result }}</span>
+                  <span class="text-body-2">{{
+                    normalizedTriageData.exploitation.result
+                  }}</span>
                 </div>
               </v-card-text>
             </v-card>
           </v-timeline-item>
 
           <v-timeline-item
-            :dot-color="getScoreTextColor(normalizedTriageData.system_exposure.score)"
+            :dot-color="
+              getScoreTextColor(normalizedTriageData.system_exposure.score)
+            "
             size="small"
             class="pb-2"
           >
             <template v-slot:opposite>
               <div class="text-right">
-                <div class="text-subtitle-1 font-weight-bold text-grey-darken-3">
+                <div
+                  class="text-subtitle-1 font-weight-bold text-grey-darken-3"
+                >
                   {{ $t('view.triage.items.system_exposure.title') }}
                 </div>
                 <div class="text-caption">
@@ -73,12 +88,20 @@
                   <v-chip
                     density="comfortable"
                     class="mr-2 text-body-1 font-weight-medium"
-                    :color="getScoreColor(normalizedTriageData.system_exposure.score)"
-                    :text-color="getScoreTextColor(normalizedTriageData.system_exposure.score)"
+                    :color="
+                      getScoreColor(normalizedTriageData.system_exposure.score)
+                    "
+                    :text-color="
+                      getScoreTextColor(
+                        normalizedTriageData.system_exposure.score
+                      )
+                    "
                   >
                     {{ normalizedTriageData.system_exposure.score }}
                   </v-chip>
-                  <span class="text-body-2">{{ normalizedTriageData.system_exposure.result }}</span>
+                  <span class="text-body-2">{{
+                    normalizedTriageData.system_exposure.result
+                  }}</span>
                 </div>
               </v-card-text>
             </v-card>
@@ -91,7 +114,9 @@
           >
             <template v-slot:opposite>
               <div class="text-right">
-                <div class="text-subtitle-1 font-weight-bold text-grey-darken-3">
+                <div
+                  class="text-subtitle-1 font-weight-bold text-grey-darken-3"
+                >
                   {{ $t('view.triage.items.utility.title') }}
                 </div>
                 <div class="text-caption">
@@ -106,24 +131,32 @@
                     density="comfortable"
                     class="mr-2 text-body-1 font-weight-medium"
                     :color="getScoreColor(normalizedTriageData.utility.score)"
-                    :text-color="getScoreTextColor(normalizedTriageData.utility.score)"
+                    :text-color="
+                      getScoreTextColor(normalizedTriageData.utility.score)
+                    "
                   >
                     {{ normalizedTriageData.utility.score }}
                   </v-chip>
-                  <span class="text-body-2">{{ normalizedTriageData.utility.result }}</span>
+                  <span class="text-body-2">{{
+                    normalizedTriageData.utility.result
+                  }}</span>
                 </div>
               </v-card-text>
             </v-card>
           </v-timeline-item>
 
           <v-timeline-item
-            :dot-color="getScoreTextColor(normalizedTriageData.human_impact.score)"
+            :dot-color="
+              getScoreTextColor(normalizedTriageData.human_impact.score)
+            "
             size="small"
             class="pb-2"
           >
             <template v-slot:opposite>
               <div class="text-right">
-                <div class="text-subtitle-1 font-weight-bold text-grey-darken-3">
+                <div
+                  class="text-subtitle-1 font-weight-bold text-grey-darken-3"
+                >
                   {{ $t('view.triage.items.human_impact.title') }}
                 </div>
                 <div class="text-caption">
@@ -137,12 +170,18 @@
                   <v-chip
                     density="comfortable"
                     class="mr-2 text-body-1 font-weight-medium"
-                    :color="getScoreColor(normalizedTriageData.human_impact.score)"
-                    :text-color="getScoreTextColor(normalizedTriageData.human_impact.score)"
+                    :color="
+                      getScoreColor(normalizedTriageData.human_impact.score)
+                    "
+                    :text-color="
+                      getScoreTextColor(normalizedTriageData.human_impact.score)
+                    "
                   >
                     {{ normalizedTriageData.human_impact.score }}
                   </v-chip>
-                  <span class="text-body-2">{{ normalizedTriageData.human_impact.result }}</span>
+                  <span class="text-body-2">{{
+                    normalizedTriageData.human_impact.result
+                  }}</span>
                 </div>
               </v-card-text>
             </v-card>
@@ -193,27 +232,27 @@ export default {
     normalizedTriageData() {
       const defaultValue = {
         score: 0,
-        result: 'UNKNOWN'
+        result: 'UNKNOWN',
       }
       return {
         exploitation: {
           ...defaultValue,
-          ...this.triageData.exploitation
+          ...this.triageData.exploitation,
         },
         system_exposure: {
           ...defaultValue,
-          ...this.triageData.system_exposure
+          ...this.triageData.system_exposure,
         },
         utility: {
           ...defaultValue,
-          ...this.triageData.utility
+          ...this.triageData.utility,
         },
         human_impact: {
           ...defaultValue,
-          ...this.triageData.human_impact
-        }
+          ...this.triageData.human_impact,
+        },
       }
-    }
+    },
   },
 }
 </script>
@@ -222,4 +261,4 @@ export default {
 :deep(.v-timeline-divider__line) {
   border-left-color: rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>
