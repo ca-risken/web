@@ -6,7 +6,7 @@
   >
     <v-card class="py-2">
       <v-card-title class="text-h5 font-weight-bold">
-        <span>{{ $t('view.triage.title') }}</span>
+        <span>Auto Triage</span>
       </v-card-title>
       <v-card-text>
         <p class="mb-6 text-subtitle-2" v-html="$t('view.triage.description', ['SSVC 2.0', '<a href=\'https://certcc.github.io/SSVC/howto/deployer_tree/?h=deployer#deployer-decision-points\' target=\'_blank\'>' + $t('view.triage.decision_model') + '</a>'])">

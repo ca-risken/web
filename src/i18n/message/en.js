@@ -422,7 +422,6 @@ const en = {
       'Repository List': 'Repository List',
     },
     triage: {
-      title: 'Auto Triage',
       description: 'Triage evaluation is based on {0} {1}',
       decision_model: 'Deployer Decision Model',
       items: {

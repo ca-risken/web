@@ -420,7 +420,6 @@ const ja = {
       'Repository List': 'リポジトリ一覧',
     },
     triage: {
-      title: '自動トリアージ',
       description: 'トリアージ評価は {0} の {1} に基づいています',
       decision_model: 'Deployer意思決定モデル',
       items: {
