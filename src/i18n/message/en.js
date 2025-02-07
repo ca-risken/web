@@ -421,6 +421,29 @@ const en = {
     code: {
       'Repository List': 'Repository List',
     },
+    triage: {
+      title: 'Auto Triage',
+      description: 'Triage evaluation is based on {0} {1}',
+      decision_model: 'Deployer Decision Model',
+      items: {
+        exploitation: {
+          title: 'Exploitation',
+          description: 'Vulnerability exploitation potential'
+        },
+        system_exposure: {
+          title: 'System Exposure',
+          description: 'Level of system exposure'
+        },
+        utility: {
+          title: 'Utility',
+          description: 'Usefulness for attackers'
+        },
+        human_impact: {
+          title: 'Human Impact',
+          description: 'Safety and business impact'
+        }
+      }
+    },
   },
 }
 export default en
