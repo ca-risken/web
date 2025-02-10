@@ -6,7 +6,8 @@
   >
     <v-card>
       <v-toolbar>
-        <v-card-title>{{ $t(`submenu['Finding']`) }}</v-card-title>
+        <copy-link :url="getPageUrl" />
+        <v-card-title class="mx-0 px-0">{{ $t(`submenu['Finding']`) }}</v-card-title>
         <v-spacer />
         <v-btn
           v-if="canAttackFlowAnalyze(findingModel.resource_name)"
@@ -388,6 +389,7 @@ import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonView from '@/component/text/JsonView.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
 import FindingTriageDialog from '@/component/dialog/finding/Triage.vue'
+import CopyLink from '@/component/link/CopyLink.vue'
 
 export default {
   name: 'FindingDetailDialog',
@@ -396,6 +398,7 @@ export default {
     JsonView,
     AIPanel,
     FindingTriageDialog,
+    CopyLink,
   },
   mixins: [mixin],
   props: {
@@ -444,6 +447,10 @@ export default {
       } catch (e) {
         return {}
       }
+    },
+    getPageUrl() {
+      const baseUrl = window.location.origin
+      return `${baseUrl}/finding/finding?from_score=0&status=0&project_id=${this.$route.query.project_id}&finding_id=${this.findingModel.finding_id}`
     },
   },
   methods: {
