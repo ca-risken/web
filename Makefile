@@ -65,7 +65,7 @@ lint:
 	yarn lint
 
 .PHONY: run
-run: clean install lint
+run: clean install fmt lint
 	yarn serve
 
 .PHONY: clean

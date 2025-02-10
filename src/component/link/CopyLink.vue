@@ -7,12 +7,7 @@
       @click="copyToClipboard"
     >
       <v-icon class="mx-0" color="grey-darken-2">mdi-link-variant</v-icon>
-      <v-tooltip
-        activator="parent"
-        location="bottom"
-      >
-        Copy Link
-      </v-tooltip>
+      <v-tooltip activator="parent" location="bottom"> Copy Link </v-tooltip>
     </v-btn>
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -39,4 +34,4 @@ export default {
     },
   },
 }
-</script> 
+</script>

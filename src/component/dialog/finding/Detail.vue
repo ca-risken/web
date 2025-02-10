@@ -7,7 +7,9 @@
     <v-card>
       <v-toolbar>
         <copy-link :url="getPageUrl" />
-        <v-card-title class="mx-0 px-0">{{ $t(`submenu['Finding']`) }}</v-card-title>
+        <v-card-title class="mx-0 px-0">{{
+          $t(`submenu['Finding']`)
+        }}</v-card-title>
         <v-spacer />
         <v-btn
           v-if="canAttackFlowAnalyze(findingModel.resource_name)"
