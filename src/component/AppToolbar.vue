@@ -59,7 +59,7 @@
     <v-menu location="bottom" class="elevation-1" transition="scale-transition">
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" variant="text">
-          <v-icon icon="mdi-open-in-new" size="x-large"></v-icon>
+          <v-icon icon="mdi-link-variant" size="x-large"></v-icon>
           <span class="ml-2"> {{ $t(`item['Link']`) }} </span>
         </v-btn>
       </template>
