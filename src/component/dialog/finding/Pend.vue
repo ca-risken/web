@@ -17,7 +17,7 @@
           :label="$t(`view.finding['False Positive']`)"
         ></v-checkbox>
         <v-list two-line>
-          <v-list-item prepend-icon="mdi-identifier">
+          <v-list-item prepend-icon="mdi-identifier" class="my-2">
             <v-list-item-title v-if="pendAll">
               {{ selectedCount }} findings selected...
             </v-list-item-title>
@@ -28,19 +28,7 @@
               {{ $t(`item['Finding ID']`) }}
             </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item prepend-icon="mdi-image-text">
-            <v-textarea
-              variant="outlined"
-              clearable
-              clear-icon="mdi-close-circle"
-              v-model="pendModel.note"
-              :label="pendDialogNoteLabel"
-            ></v-textarea>
-          </v-list-item>
-          <v-list-item
-            v-if="!isArchived"
-            prepend-icon="mdi-clock-time-eight-outline"
-          >
+          <v-list-item prepend-icon="mdi-clock-time-eight-outline" class="my-2">
             <v-combobox
               variant="outlined"
               density="compact"
@@ -50,11 +38,26 @@
               bg-color="white"
               v-model="pendModel.expired_at"
               :loading="loading"
-              :label="$t(`item['Expired At']`)"
               :items="pendExpiredItems"
             />
+            <v-list-item-subtitle>
+              {{ $t(`item['Expired At']`) }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
+
+        <v-list-item-subtitle>
+          <v-icon left>mdi-note-edit-outline</v-icon>
+          Note
+        </v-list-item-subtitle>
+        <v-textarea
+          class="mt-4"
+          variant="outlined"
+          clearable
+          clear-icon="mdi-close-circle"
+          v-model="pendModel.note"
+          :label="pendDialogNoteLabel"
+        ></v-textarea>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

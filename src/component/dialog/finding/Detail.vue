@@ -193,8 +193,8 @@
         </v-row>
 
         <template v-if="findingModel.status != 'ACTIVE'">
-          <v-row dense class="mx-4">
-            <v-col v-if="findingModel.pendModel.note != ''" cols="8">
+          <v-row v-if="findingModel.pendModel.note != ''" class="mx-4">
+            <v-col cols="12">
               <v-list-item-subtitle>
                 <v-icon left>mdi-check-circle-outline</v-icon>
                 {{ $t(`view.finding['ARCHIVE']`) }}
@@ -206,27 +206,31 @@
                   type="warning"
                   variant="outlined"
                 >
-                  <p>
-                    {{ findingModel.pendModel.note }}
-                  </p>
+                  <Markdown
+                    breaks
+                    linkify
+                    :source="findingModel.pendModel.note"
+                  />
                 </v-alert>
               </v-list-item-title>
             </v-col>
-            <v-col v-if="findingModel.pendModel.pend_user" cols="2">
+          </v-row>
+          <v-row v-if="findingModel.pendModel.pend_user" class="mx-4 my-1">
+            <v-col cols="3">
               <v-list-item-subtitle>
                 <v-icon left>mdi-account-outline</v-icon>
                 {{ $t(`item['Archived By']`) }}
               </v-list-item-subtitle>
-              <v-list-item-title class="mt-4" align="center">
+              <v-list-item-title align="center">
                 <v-chip>{{ findingModel.pendModel.pend_user }}</v-chip>
               </v-list-item-title>
             </v-col>
-            <v-col v-if="findingModel.pendModel.expired_at" cols="2">
+            <v-col v-if="findingModel.pendModel.expired_at" cols="3">
               <v-list-item-subtitle>
                 <v-icon left>mdi-clock-outline</v-icon>
                 {{ $t(`item['Expired At']`) }}
               </v-list-item-subtitle>
-              <v-list-item-title class="mt-4">
+              <v-list-item-title>
                 <v-chip>{{
                   formatTime(findingModel.pendModel.expired_at)
                 }}</v-chip>
@@ -392,6 +396,7 @@ import JsonView from '@/component/text/JsonView.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
 import FindingTriageDialog from '@/component/dialog/finding/Triage.vue'
 import CopyLink from '@/component/link/CopyLink.vue'
+import Markdown from '@/component/text/Markdown.vue'
 
 export default {
   name: 'FindingDetailDialog',
@@ -401,6 +406,7 @@ export default {
     AIPanel,
     FindingTriageDialog,
     CopyLink,
+    Markdown,
   },
   mixins: [mixin],
   props: {
