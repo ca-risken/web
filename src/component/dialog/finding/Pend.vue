@@ -28,7 +28,11 @@
               {{ $t(`item['Finding ID']`) }}
             </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item prepend-icon="mdi-clock-time-eight-outline" class="my-2">
+          <v-list-item
+            v-if="!isArchived"
+            prepend-icon="mdi-clock-time-eight-outline"
+            class="my-2"
+          >
             <v-combobox
               variant="outlined"
               density="compact"
