@@ -120,6 +120,25 @@
                         :disabled="isReadOnly"
                       ></v-text-field>
                     </v-col>
+                    <v-col cols="4" class="mb-0 pb-0">
+                      <v-text-field
+                        density="compact"
+                        v-model="gitHubSetting.repository_pattern"
+                        :counter="128"
+                        :rules="gitHubForm.repository_pattern.validator"
+                        :label="
+                          $t(
+                            `item['` +
+                              gitHubForm.repository_pattern.label +
+                              `']`
+                          )
+                        "
+                        :placeholder="
+                          gitHubForm.repository_pattern.placeholder
+                        "
+                        :disabled="isReadOnly"
+                      ></v-text-field>
+                    </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="3">
