@@ -133,9 +133,7 @@
                               `']`
                           )
                         "
-                        :placeholder="
-                          gitHubForm.repository_pattern.placeholder
-                        "
+                        :placeholder="gitHubForm.repository_pattern.placeholder"
                         :disabled="isReadOnly"
                       ></v-text-field>
                     </v-col>
@@ -1166,6 +1164,7 @@ export default {
         target_resource: this.gitHubSetting.target_resource,
         github_user: this.gitHubSetting.github_user,
         personal_access_token: this.gitHubSetting.personal_access_token,
+        repository_pattern: this.gitHubSetting.repository_pattern,
       }
       const gitHubSetting = await this.putGitHubSettingAPI(
         github_setting

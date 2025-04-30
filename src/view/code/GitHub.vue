@@ -264,6 +264,7 @@ export default {
         github_user: '',
         personal_access_token: '',
         updated_at: '',
+        repository_pattern: '',
         gitleaksSetting: {
           repository_pattern: '',
           scan_public: '',
@@ -450,6 +451,7 @@ export default {
           base_url: github_setting.base_url,
           type_text: this.getGitHubTypeText(github_setting.type),
           target_resource: github_setting.target_resource,
+          repository_pattern: github_setting.repository_pattern,
           github_user: github_setting.github_user,
           personal_access_token: github_setting.personal_access_token,
           updated_at: github_setting.updated_at,
