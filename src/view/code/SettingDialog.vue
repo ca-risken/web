@@ -567,6 +567,33 @@
                     ></v-switch>
                   </v-col>
                 </v-row>
+                <v-card variant="flat" class="mb-4" v-if="isEnabledDependency">
+                  <v-card-text class="pb-0">
+                    <v-form v-model="dependencyForm.valid" ref="formDependency">
+                      <v-row>
+                        <v-col cols="4" class="mb-0 pb-0">
+                          <v-text-field
+                            density="compact"
+                            v-model="dependencySetting.repository_pattern"
+                            :counter="128"
+                            :rules="dependencyForm.repository_pattern.validator"
+                            :label="
+                              $t(
+                                `item['` +
+                                  dependencyForm.repository_pattern.label +
+                                  `']`
+                              )
+                            "
+                            :placeholder="
+                              dependencyForm.repository_pattern.placeholder
+                            "
+                            :disabled="isReadOnly"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </v-card-text>
+                </v-card>
               </v-card-text>
               <v-card-actions>
                 <v-row class="text-right mx-2">
@@ -1076,6 +1103,19 @@ export default {
           validator: [],
         },
       },
+      dependencyForm: {
+        valid: false,
+        repository_pattern: {
+          label: 'RepositoryPattern',
+          placeholder: '-',
+          validator: [
+            (v) =>
+              !v ||
+              v.length <= 128 ||
+              'RepositoryPattern must be less than 128 characters',
+          ],
+        },
+      },
       codeScanForm: {
         valid: false,
         repository_pattern: {
@@ -1213,6 +1253,7 @@ export default {
         github_setting_id: gitHubSettingID,
         code_data_source_id: this.dependency_datasource_id,
         project_id: this.getCurrentProjectID(),
+        repository_pattern: this.dependencySetting.repository_pattern,
         status: 2, // CONFIGURED
         status_detail:
           'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),

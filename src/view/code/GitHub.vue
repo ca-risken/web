@@ -275,6 +275,7 @@ export default {
           updated_at: '',
         },
         dependencySetting: {
+          repository_pattern: '',
           status: '',
           status_detail: '',
           scan_at: '',
@@ -479,6 +480,8 @@ export default {
               github_setting.dependency_setting.github_setting_id,
             code_data_source_id:
               github_setting.dependency_setting.code_data_source_id,
+            repository_pattern:
+              github_setting.dependency_setting.repository_pattern,
             status: github_setting.dependency_setting.status,
             status_detail: github_setting.dependency_setting.status_detail,
             scan_at: github_setting.dependency_setting.scan_at,
