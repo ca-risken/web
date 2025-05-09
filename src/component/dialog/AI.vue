@@ -50,6 +50,7 @@
           <v-col cols="10" sm="11">
             <v-textarea
               v-model="userInput"
+              :loading="loading"
               :label="$t(`view.ai['Type your message...']`)"
               variant="solo"
               rows="1"
@@ -63,6 +64,7 @@
               icon
               color="cyan-darken-1"
               @click="sendMessage(userInput)"
+              :loading="loading"
               :disabled="!userInput.trim() || loading"
             >
               <v-icon color="cyan-lighten-4">mdi-send</v-icon>
@@ -126,27 +128,30 @@ export default {
       }
       event.preventDefault()
       this.sendMessage(this.userInput)
+      this.userInput = ''
     },
     async sendMessage(userMessageText) {
       if (!userMessageText || !userMessageText.trim() || this.loading) return
       this.loading = true
       try {
-        const chatHistory = this.messages
-
-        // Call API
-        const answer = await this.chatAI(userMessageText, chatHistory)
+        // Shallow copy
+        const historyForAPI = [...this.messages]
         this.messages.push({
           role: this.RoleUser,
           content: userMessageText,
         })
+
+        const answer = await this.chatAI(userMessageText, historyForAPI)
         this.messages.push({
           role: this.RoleAI,
           content: answer,
         })
-
-        this.userInput = ''
       } catch (error) {
         console.error(error)
+        this.messages.push({
+          role: this.RoleAI,
+          content: 'An error occurred. Please try again.',
+        })
       } finally {
         this.loading = false
       }
