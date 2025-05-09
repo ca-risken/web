@@ -7,6 +7,7 @@ import vuetify from '@/plugin/vuetify'
 import interval from '@/plugin/interval'
 import i18n from '@/i18n'
 import { datadogRum } from '@datadog/browser-rum'
+import 'highlight.js/styles/default.css'
 
 // RUM
 if (
