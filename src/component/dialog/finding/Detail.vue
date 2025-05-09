@@ -37,7 +37,7 @@
           <template v-slot:prepend>
             <v-icon color="purple">mdi-forum-outline</v-icon>
           </template>
-          {{ $t(`btn['Summarize with Generative AI']`) }}
+          {{ $t(`btn['Chat with AI']`) }}
         </v-btn>
       </v-toolbar>
       <v-container fluid>

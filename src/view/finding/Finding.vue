@@ -398,7 +398,7 @@
       v-model="recommendDialog"
       :recommend-model="recommendModel"
     />
-    <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
+    <AIDialog v-model="aiDialog" :initialContext="aiChatContext" />
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -594,6 +594,8 @@ export default {
       findingHistory: [],
       aiDialog: false,
       aiAnswer: '',
+      aiChatContext: '',
+      aiLoading: false,
       aiFetchProgress: false,
       aiFetchController: new AbortController(),
       isInitializing: true,
@@ -875,7 +877,9 @@ export default {
       )
       this.overrideRecommend()
       this.viewDialog = true
+      this.aiLoading = true
       await this.getAISummaryContent()
+      this.aiLoading = false
     },
     overrideRecommend() {
       const d = JSON.parse(this.findingModel.data)
@@ -1212,8 +1216,23 @@ export default {
 
     // GenerativeAI
     async handleGenerativeAI() {
+      this.aiChatContext = 'Detected the following finding data:\n\n'
+      this.aiChatContext += JSON.stringify(this.findingModel)
+      this.aiChatContext += '\n\nAI Summary:\n'
+      if (this.aiLoading) {
+        await new Promise((resolve) => {
+          const checkLoading = () => {
+            if (!this.aiLoading) {
+              resolve()
+            } else {
+              setTimeout(checkLoading, 100)
+            }
+          }
+          checkLoading()
+        })
+      }
+      this.aiChatContext += this.aiAnswer
       this.aiDialog = true
-      this.getAISummaryContent()
     },
 
     // CSV

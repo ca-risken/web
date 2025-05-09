@@ -23,7 +23,7 @@ const ja = {
     'NEW WORD': '新規キーワード',
     TAG: 'タグ',
     SCAN: 'スキャン',
-    'Summarize with Generative AI': '生成AIに要約してもらう',
+    'Chat with AI': 'AI チャット',
     'FULL SCAN': 'フルスキャン',
     'SHOW SCAN RESULT': 'スキャン結果を見る',
     ATTACH: '有効化',
@@ -341,9 +341,9 @@ const ja = {
     },
     ai: {
       'Generative AI Title': '生成AIの要約',
-      'GenerativeAI Question-1':
-        'クラウド環境で以下のセキュリティの問題を検知しました。日本語で内容を要約してください。',
-      'GenerativeAI Question-2': 'また、問題の対処方法もあれば含めてください。',
+      'Chat Title': 'AI チャット',
+      'Chat Greeting': 'こんにちは✋️ RISKEN AIです。何でも聞いてください！',
+      'Type your message...': 'メッセージを入力してください...',
     },
     alert: {
       'Active Only': 'アクティブのみ',

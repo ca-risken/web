@@ -23,7 +23,7 @@ const en = {
     'NEW WORD': 'NEW WORD',
     TAG: 'TAG',
     SCAN: 'SCAN',
-    'Summarize with Generative AI': 'Summarize with Generative AI',
+    'Chat with AI': 'Chat with AI',
     'FULL SCAN': 'FULL SCAN',
     'SHOW SCAN RESULT': 'SHOW SCAN RESULT',
     ATTACH: 'ATTACH',
@@ -341,10 +341,9 @@ const en = {
     },
     ai: {
       'Generative AI Title': 'Generative AI Summary',
-      'GenerativeAI Question-1':
-        'I have detected the following security issue in my cloud environment. Please summarize the contents.',
-      'GenerativeAI Question-2':
-        'Also, please include any ways to address the issue.',
+      'Chat Title': 'Chat with AI',
+      'Chat Greeting': 'Hello✋️ I am Risken AI. How can I help you today?',
+      'Type your message...': 'Type your message...',
     },
     alert: {
       'Active Only': 'Active Only',
