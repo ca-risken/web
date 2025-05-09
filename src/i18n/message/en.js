@@ -342,7 +342,7 @@ const en = {
     ai: {
       'Generative AI Title': 'Generative AI Summary',
       'Chat Title': 'Chat with AI',
-      'Chat Greeting': 'Hello✋️ I am Risken AI. How can I help you today?',
+      'Chat Greeting': 'Hello✋️ I am RISKEN AI. How can I help you today?',
       'Type your message...': 'Type your message...',
     },
     alert: {
