@@ -20,9 +20,9 @@
                 v-for="(msg, index) in messages"
                 v-show="!msg.hidden"
                 :key="index"
-                :prepend-icon="msg.role === this.RoleAI && 'mdi-robot-excited'"
+                :prepend-icon="msg.role === this.RoleAI && 'mdi-robot-outline'"
                 :append-icon="
-                  msg.role === this.RoleUser && 'mdi-account-circle'
+                  msg.role === this.RoleUser && 'mdi-emoticon-outline'
                 "
                 :class="[
                   'my-4',
