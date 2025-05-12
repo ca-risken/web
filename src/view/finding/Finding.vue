@@ -366,7 +366,6 @@
       :recommend-model="recommendModel"
       :loading="loading"
       :ai-answer="aiAnswer"
-      @generative-ai="handleGenerativeAI"
       @recommend="handleRecommendItem"
       @archive="handleArchiveButtonClick"
       @pend="handlePendButtonClick"
@@ -398,7 +397,6 @@
       v-model="recommendDialog"
       :recommend-model="recommendModel"
     />
-    <AIDialog v-model="aiDialog" :initialContext="aiChatContext" />
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -413,7 +411,6 @@ import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import AIDialog from '@/component/dialog/AI.vue'
 import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
 import FindingPendDialog from '@/component/dialog/finding/Pend.vue'
 import FindingDeleteDialog from '@/component/dialog/finding/Delete.vue'
@@ -426,7 +423,6 @@ export default {
   components: {
     BottomSnackBar,
     VDataTableServer,
-    AIDialog,
     FindingRecommendDialog,
     FindingPendDialog,
     FindingDeleteDialog,
@@ -592,9 +588,7 @@ export default {
         items: [],
       },
       findingHistory: [],
-      aiDialog: false,
       aiAnswer: '',
-      aiChatContext: '',
       aiLoading: false,
       aiFetchProgress: false,
       aiFetchController: new AbortController(),
@@ -1212,27 +1206,6 @@ export default {
         default:
           this.searchModel.tab = 0
       }
-    },
-
-    // GenerativeAI
-    async handleGenerativeAI() {
-      this.aiChatContext = 'Detected the following finding data:\n\n'
-      this.aiChatContext += JSON.stringify(this.findingModel)
-      this.aiChatContext += '\n\nAI Summary:\n'
-      if (this.aiLoading) {
-        await new Promise((resolve) => {
-          const checkLoading = () => {
-            if (!this.aiLoading) {
-              resolve()
-            } else {
-              setTimeout(checkLoading, 100)
-            }
-          }
-          checkLoading()
-        })
-      }
-      this.aiChatContext += this.aiAnswer
-      this.aiDialog = true
     },
 
     // CSV
