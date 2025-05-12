@@ -2,7 +2,10 @@
   <v-dialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
+    @click:outside="handleClickOutside"
     max-width="70%"
+    persistent
+    :retain-focus="false"
   >
     <v-card>
       <v-toolbar>
@@ -29,15 +32,13 @@
         </v-btn>
 
         <v-btn
-          color="blue-grey"
-          variant="outlined"
-          style="text-transform: none"
-          @click="handleGenerativeAI"
+          icon
+          color="grey-darken-1"
+          @click="close"
+          size="x-small"
+          variant="tonal"
         >
-          <template v-slot:prepend>
-            <v-icon color="purple">mdi-forum-outline</v-icon>
-          </template>
-          {{ $t(`btn['Summarize with Generative AI']`) }}
+          <v-icon color="grey-darken-1">mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
       <v-container fluid>
@@ -164,8 +165,10 @@
               </v-btn>
             </v-list-item-title>
           </v-col>
-          <v-col cols="4">
-            <v-list-item-subtitle>
+        </v-row>
+        <v-row dense class="ma-2">
+          <v-col cols="8">
+            <v-list-item-subtitle class="my-1">
               <v-icon left>mdi-gesture-tap</v-icon>
               {{ $t(`item['Action']`) }}
             </v-list-item-subtitle>
@@ -174,7 +177,7 @@
                 color="red-darken-1"
                 text
                 variant="outlined"
-                class="ma-1"
+                class="mx-2"
                 @click="handleArchiveButtonClick"
               >
                 {{ $t(`btn['ARCHIVE']`) }}
@@ -183,10 +186,22 @@
                 color="red-darken-1"
                 text
                 variant="outlined"
-                class="ma-1"
+                class="mx-2"
                 @click="handlePendButtonClick"
               >
                 {{ $t(`btn['PEND']`) }}
+              </v-btn>
+              <v-btn
+                color="blue-grey"
+                variant="outlined"
+                style="text-transform: none"
+                class="mx-2"
+                @click="handleGenerativeAI"
+              >
+                <template v-slot:prepend>
+                  <v-icon color="purple">mdi-forum-outline</v-icon>
+                </template>
+                {{ $t(`btn['Chat with AI']`) }}
               </v-btn>
             </v-list-item-title>
           </v-col>
@@ -465,8 +480,15 @@ export default {
     close() {
       this.$emit('update:modelValue', false)
     },
-    handleGenerativeAI() {
-      this.$emit('generative-ai')
+    async handleGenerativeAI() {
+      const context =
+        'Detected the following finding data:\n\n' +
+        '\n\n## Finding Data:\n' +
+        JSON.stringify(this.findingModel, null, 2) +
+        '\n\n## AI Summary:\n' +
+        this.aiAnswer
+
+      this.$root.$refs.aiChatRef.open(context)
     },
     handleRecommendItem() {
       this.$emit('recommend')
@@ -495,6 +517,17 @@ export default {
     },
     handleTriageClick() {
       this.triageDialog = true
+    },
+    handleClickOutside(event) {
+      const chatEl = document.getElementById('ai-chat-window')
+      if (
+        chatEl &&
+        (event.target === chatEl || chatEl.contains(event.target))
+      ) {
+        this.$emit('update:modelValue', true)
+        return
+      }
+      this.$emit('update:modelValue', false)
     },
   },
 }

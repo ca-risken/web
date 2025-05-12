@@ -366,7 +366,6 @@
       :recommend-model="recommendModel"
       :loading="loading"
       :ai-answer="aiAnswer"
-      @generative-ai="handleGenerativeAI"
       @recommend="handleRecommendItem"
       @archive="handleArchiveButtonClick"
       @pend="handlePendButtonClick"
@@ -398,7 +397,6 @@
       v-model="recommendDialog"
       :recommend-model="recommendModel"
     />
-    <AIDialog v-model="aiDialog" :loading="loading" :ai-answer="aiAnswer" />
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -413,7 +411,6 @@ import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import AIDialog from '@/component/dialog/AI.vue'
 import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
 import FindingPendDialog from '@/component/dialog/finding/Pend.vue'
 import FindingDeleteDialog from '@/component/dialog/finding/Delete.vue'
@@ -426,7 +423,6 @@ export default {
   components: {
     BottomSnackBar,
     VDataTableServer,
-    AIDialog,
     FindingRecommendDialog,
     FindingPendDialog,
     FindingDeleteDialog,
@@ -592,8 +588,8 @@ export default {
         items: [],
       },
       findingHistory: [],
-      aiDialog: false,
       aiAnswer: '',
+      aiLoading: false,
       aiFetchProgress: false,
       aiFetchController: new AbortController(),
       isInitializing: true,
@@ -875,7 +871,9 @@ export default {
       )
       this.overrideRecommend()
       this.viewDialog = true
+      this.aiLoading = true
       await this.getAISummaryContent()
+      this.aiLoading = false
     },
     overrideRecommend() {
       const d = JSON.parse(this.findingModel.data)
@@ -1208,12 +1206,6 @@ export default {
         default:
           this.searchModel.tab = 0
       }
-    },
-
-    // GenerativeAI
-    async handleGenerativeAI() {
-      this.aiDialog = true
-      this.getAISummaryContent()
     },
 
     // CSV

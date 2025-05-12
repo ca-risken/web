@@ -24,11 +24,14 @@
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
+    <AIChat ref="aiChatRef" />
   </v-app>
 </template>
 
 <script>
+import AIChat from '@/component/widget/chat/AI.vue'
 export default {
+  components: { AIChat },
   data() {
     return {
       rightDrawer: false,
@@ -37,10 +40,20 @@ export default {
         text: '',
         color: '',
       },
+      showChat: false,
+      initialContext: '',
     }
   },
   mounted() {},
   created() {},
+  methods: {
+    open(context) {
+      if (context) {
+        this.initialContext = context
+      }
+      this.showChat = true
+    },
+  },
 }
 </script>
 
