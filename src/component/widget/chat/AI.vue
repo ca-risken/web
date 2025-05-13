@@ -37,15 +37,35 @@
           <v-btn
             icon
             variant="tonal"
+            v-show="!minimized"
+            @click="minimized = true"
+            size="x-small"
+            class="mx-1"
+          >
+            <v-icon color="grey-darken-1">mdi-window-minimize</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            variant="tonal"
+            v-show="minimized"
+            @click="minimized = false"
+            size="x-small"
+            class="mx-1"
+          >
+            <v-icon color="grey-darken-1">mdi-window-restore</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            variant="tonal"
             @click="showChat = false"
-            class="ma-0 pa-0"
+            class="mx-1"
             size="x-small"
           >
             <v-icon color="grey-darken-1">mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-divider />
-        <v-card-text class="pa-3">
+        <v-card-text v-show="!minimized" class="pa-3">
           <v-container class="pa-0">
             <v-row class="chat-messages-container mt-1 mb-1">
               <v-col cols="12" class="pa-0">
@@ -158,6 +178,7 @@ export default {
       messages: [],
       loading: false,
       initialContext: '',
+      minimized: false,
     }
   },
   methods: {
