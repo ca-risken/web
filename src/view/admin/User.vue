@@ -237,6 +237,12 @@ import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
+
+const ADMIN_STATUS = {
+  ENABLED: true,
+  DISABLED: false,
+}
+
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
@@ -269,9 +275,17 @@ export default {
         updated_at: '',
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: [{ key: 'user_id', order: 'asc' }] },
+        options: {
+          page: 1,
+          itemsPerPage: 10,
+          sortBy: [{ key: 'user_id', order: 'asc' }],
+        },
         actions: [
-          { text: 'Disable Admin', icon: 'mdi-delete', click: this.handleDisableAdmin },
+          {
+            text: 'Disable Admin',
+            icon: 'mdi-delete',
+            click: this.handleDisableAdmin,
+          },
         ],
         total: 0,
         footer: {
@@ -366,14 +380,14 @@ export default {
           userNames.push(item.name)
         })
       )
-      
+
       // Sort items by user_id in ascending order
       items.sort((a, b) => {
         if (a.user_id < b.user_id) return -1
         if (a.user_id > b.user_id) return 1
         return 0
       })
-      
+
       this.table.items = items
       this.userIDList = userIDs.sort()
       this.userNameList = userNames.sort()
@@ -425,14 +439,14 @@ export default {
       this.inviteUserDialog = true
     },
     handleEditSubmit() {
-      this.putItem(true)
+      this.putItem(ADMIN_STATUS.ENABLED)
     },
     handleDisableAdmin(item) {
       this.assignDataModel(item.value)
       this.disableAdminDialog = true
     },
     async handleDisableAdminSubmit() {
-      this.putItem(false)
+      this.putItem(ADMIN_STATUS.DISABLED)
     },
     handleSearch() {
       let searchCond = ''
