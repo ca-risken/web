@@ -255,6 +255,7 @@ const en = {
     'View Finding': 'View Finding',
     'View Item': 'View Item',
     'Test Notification': 'Test Notification',
+    Disable: 'Disable',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
@@ -267,6 +268,8 @@ const en = {
     'Do you want to send a test notification?':
       'Do you want to send a test notification?',
     'REQUEST PROJECT ROLE COMPLETED': 'REQUEST PROJECT ROLE COMPLETED',
+    'Do you want to disable system admin?':
+      'Do you want to disable system admin?',
   },
   error: {
     'Sorry, Please access again after a while.':

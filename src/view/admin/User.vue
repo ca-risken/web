@@ -84,13 +84,6 @@
                     <v-img src="/static/avatar/default.png" alt="avatar" />
                   </v-avatar>
                 </template>
-                <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip
-                    :color="getColorByCount(item.value.role_cnt)"
-                    variant="flat"
-                    >{{ item.value.role_cnt }}</v-chip
-                  >
-                </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
@@ -106,9 +99,9 @@
                         @click="action.click(item)"
                         :prepend-icon="action.icon"
                       >
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
+                        <v-list-item-title>
+                          {{ $t(`action['` + action.text + `']`) }}
+                        </v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -161,92 +154,7 @@
             filled
             disabled
           ></v-text-field>
-          <!-- Role List -->
           <div v-show="userModel.user_id">
-            <v-toolbar flat color="white" v-show="userModel.user_id">
-              <v-toolbar-title class="grey--text text--darken-4">
-                <v-icon large>mdi-alpha-r-circle</v-icon>
-                <span class="mx-4">
-                  {{ $t(`submenu['Role']`) }}
-                </span>
-              </v-toolbar-title>
-              <v-text-field
-                text
-                solo
-                flat
-                prepend-icon="mdi-magnify"
-                placeholder="Type something"
-                v-model="roleTable.search"
-                hide-details
-                class="hidden-sm-and-down"
-              />
-              <v-btn icon>
-                <v-icon>mdi-filter</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-divider></v-divider>
-
-            <v-data-table
-              v-model="roleTable.selected"
-              :search="roleTable.search"
-              :headers="roleHeaders"
-              :footer-props="roleTable.footer"
-              :items="roleTable.items"
-              v-model:options="roleTable.options"
-              :loading="loading"
-              :sort-by="roleTable.options.sortBy"
-              :page="roleTable.options.page"
-              :items-per-page="roleTable.options.itemsPerPage"
-              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
-              :showCurrentPage="roleTable.footer.showCurrentPage"
-              locale="ja-jp"
-              loading-text="Loading..."
-              no-data-text="No data."
-              class="elevation-1"
-              item-key="role_id"
-              show-select
-            >
-              <template v-slot:[`item.action_ptn`]="{ item }">
-                <v-card
-                  label
-                  outliend
-                  elevation="0"
-                  color="red-lighten-5"
-                  class="my-1"
-                >
-                  <v-card-text class="font-weight-bold">
-                    {{ item.value.action_ptn }}
-                  </v-card-text>
-                </v-card>
-              </template>
-              <template v-slot:[`item.resource_ptn`]="{ item }">
-                <v-card
-                  label
-                  outliend
-                  elevation="0"
-                  color="red-lighten-5"
-                  class="my-1"
-                >
-                  <v-card-text class="font-weight-bold">
-                    {{ item.value.resource_ptn }}
-                  </v-card-text>
-                </v-card>
-              </template>
-            </v-data-table>
-
-            <v-divider class="mt-3 mb-3"></v-divider>
-            <v-alert
-              v-if="roleTable.selected.length == 0"
-              density="compact"
-              variant="outlined"
-              type="error"
-            >
-              {{
-                $t(
-                  `view.iam['Please select one or more roles. If you do not select any role, the user will be ']`
-                )
-              }}
-            </v-alert>
             <v-card-actions>
               <v-spacer />
               <v-btn
@@ -270,6 +178,56 @@
       </v-card>
     </v-dialog>
 
+    <!-- Disable Dialog -->
+    <v-dialog v-model="deleteDialog" max-width="40%">
+      <v-card>
+        <v-card-title>
+          <span class="mx-4 text-h5">
+            {{ $t(`message['Do you want to disable system admin?']`) }}
+          </span>
+        </v-card-title>
+
+        <v-list two-line>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ userModel.user_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
+          </v-list-item>
+
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ userModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Name']`) }}
+            </v-list-item-subtitle>
+          </v-list-item>
+        </v-list>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="outlined"
+            color="grey-darken-1"
+            @click="disableDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            variant="outlined"
+            color="red-darken-1"
+            :loading="loading"
+            @click="handleDisableSubmit"
+          >
+            {{ $t(`btn['DISABLE']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -279,14 +237,13 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     UserList,
-    VDataTable,
     VDataTableServer,
   },
   data() {
@@ -310,14 +267,12 @@ export default {
       userModel: {
         user_id: '',
         name: '',
-        role_cnt: 0,
-        roles: '',
         updated_at: '',
       },
       table: {
         options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
         actions: [
-          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEdit },
+          { text: 'Disable', icon: 'mdi-delete', click: this.handleDisable },
         ],
         total: 0,
         footer: {
@@ -330,17 +285,6 @@ export default {
       deleteDialog: false,
       editDialog: false,
       userDialog: false,
-      roleTable: {
-        selected: [],
-        search: '',
-        options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
-        total: 0,
-        footer: {
-          itemsPerPageOptions: [{ value: 5, title: '5' }],
-          showCurrentPage: true,
-        },
-        items: [],
-      },
     }
   },
   computed: {
@@ -366,12 +310,6 @@ export default {
           key: 'name',
         },
         {
-          title: this.$i18n.t('item["Roles"]'),
-          align: 'center',
-          sortable: false,
-          key: 'role_cnt',
-        },
-        {
           title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
@@ -382,22 +320,6 @@ export default {
           align: 'center',
           sortable: false,
           key: 'action',
-        },
-      ]
-    },
-    roleHeaders() {
-      return [
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          sortable: true,
-          key: 'role_id',
-        },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          sortable: true,
-          key: 'name',
         },
       ]
     },
@@ -435,18 +357,10 @@ export default {
             this.clearList()
             return Promise.reject(err)
           })
-          const roles = await this.listAdminRoleAPI('&user_id=' + id).catch(
-            (err) => {
-              this.clearList()
-              return Promise.reject(err)
-            }
-          )
           const item = {
             user_id: user.user_id,
             name: user.name,
             updated_at: user.updated_at,
-            role_cnt: roles.length,
-            roles: roles,
           }
           items.push(item)
           userIDs.push(item.user_id)
@@ -464,66 +378,22 @@ export default {
       this.table.items = []
       this.userNameList = []
     },
-    async loadRoleList() {
-      this.loading = true
-      this.clearRoleList()
-      const roles = await this.listAdminRoleAPI('').catch((err) => {
-        return Promise.reject(err)
-      })
 
-      roles.forEach(async (id) => {
-        const role = await this.getAdminRoleAPI(id).catch((err) => {
+    async putItem(is_admin) {
+      this.loading = true
+      await this.updateUserAdminAPI(this.userModel.user_id, is_admin).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
           return Promise.reject(err)
-        })
-        this.roleTable.items.push(role)
-
-        if (this.userModel.roles.indexOf(role.role_id) !== -1) {
-          this.roleTable.selected.push(role)
         }
-      })
-      this.loading = false
-    },
-    clearRoleList() {
-      this.roleTable.items = []
-      this.roleTable.selected = []
-    },
-
-    async putItem() {
-      this.loading = true
-      // Attach/Detach roles
-      this.roleTable.items.forEach(async (item) => {
-        let attachRole = false
-        this.roleTable.selected.some((selected) => {
-          if (item.role_id === selected.role_id) {
-            attachRole = true
-            return true
-          }
-        })
-        if (attachRole) {
-          await this.attachAdminRoleAPI(
-            this.userModel.user_id,
-            item.role_id
-          ).catch((err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          })
-        } else {
-          await this.detachAdminRoleAPI(
-            this.userModel.user_id,
-            item.role_id
-          ).catch((err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          })
-        }
-      })
-
+      )
       this.finishUpdated('Success: Updated role.')
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
+      this.deleteDialog = false
       this.editDialog = false
       this.handleSearch()
     },
@@ -537,15 +407,9 @@ export default {
       this.userModel = {
         user_id: '',
         name: '',
-        role_cnt: 0,
-        roles: '',
         updated_at: '',
       }
-      this.loadRoleList()
       this.editDialog = true
-    },
-    handleRowClick(event, users) {
-      this.handleEdit(users.item)
     },
     handleEdit(item) {
       this.userForm.clickNew = false
@@ -554,7 +418,14 @@ export default {
       this.editDialog = true
     },
     handleEditSubmit() {
-      this.putItem()
+      this.putItem(true)
+    },
+    handleDelete(item) {
+      this.assignDataModel(item.value)
+      this.deleteDialog = true    
+    },
+    async handleDeleteSubmit() {
+      this.putItem(false)
     },
     handleSearch() {
       let searchCond = ''
@@ -572,12 +443,10 @@ export default {
       this.refleshList('')
     },
     assignDataModel(item) {
-      this.awsuserModelModel = {
-        user_id: '',
-        name: '',
-        role_cnt: 0,
-        roles: '',
-        updated_at: '',
+      this.userModel = {
+        user_id: item.user_id || '',
+        name: item.name || '',
+        updated_at: item.updated_at || '',
       }
       this.userModel = Object.assign(this.userModel, item)
     },
