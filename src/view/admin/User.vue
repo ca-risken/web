@@ -76,7 +76,6 @@
                 no-data-text="No data."
                 class="elevation-1"
                 item-key="user_id"
-                @click:row="handleRowClick"
                 @update:options="updateOptions"
               >
                 <template v-slot:[`item.avator`]>
@@ -113,8 +112,8 @@
       </v-row>
     </v-container>
 
-    <!-- Edit Dialog -->
-    <v-dialog v-model="editDialog" max-width="40%">
+    <!-- Invite User Dialog -->
+    <v-dialog v-model="inviteUserDialog" max-width="40%">
       <v-card>
         <v-card-title>
           <v-icon large>mdi-account-multiple</v-icon>
@@ -160,7 +159,7 @@
               <v-btn
                 variant="outlined"
                 color="grey-darken-1"
-                @click="editDialog = false"
+                @click="inviteUserDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
@@ -178,12 +177,12 @@
       </v-card>
     </v-dialog>
 
-    <!-- Disable Dialog -->
-    <v-dialog v-model="deleteDialog" max-width="40%">
+    <!-- Disable Admin Dialog -->
+    <v-dialog v-model="disableAdminDialog" max-width="40%">
       <v-card>
         <v-card-title>
           <span class="mx-4 text-h5">
-            {{ $t(`message['Do you want to disable system admin?']`) }}
+            {{ $t(`message['Do you want to disable admin?']`) }}
           </span>
         </v-card-title>
 
@@ -212,7 +211,7 @@
           <v-btn
             variant="outlined"
             color="grey-darken-1"
-            @click="disableDialog = false"
+            @click="disableAdminDialog = false"
           >
             {{ $t(`btn['CANCEL']`) }}
           </v-btn>
@@ -220,7 +219,7 @@
             variant="outlined"
             color="red-darken-1"
             :loading="loading"
-            @click="handleDisableSubmit"
+            @click="handleDisableAdminSubmit"
           >
             {{ $t(`btn['DISABLE']`) }}
           </v-btn>
@@ -270,9 +269,9 @@ export default {
         updated_at: '',
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: [{ key: 'user_id', order: 'asc' }] },
         actions: [
-          { text: 'Disable', icon: 'mdi-delete', click: this.handleDisable },
+          { text: 'Disable Admin', icon: 'mdi-delete', click: this.handleDisableAdmin },
         ],
         total: 0,
         footer: {
@@ -282,8 +281,8 @@ export default {
         items: [],
       },
       users: [],
-      deleteDialog: false,
-      editDialog: false,
+      disableAdminDialog: false,
+      inviteUserDialog: false,
       userDialog: false,
     }
   },
@@ -367,9 +366,17 @@ export default {
           userNames.push(item.name)
         })
       )
+      
+      // Sort items by user_id in ascending order
+      items.sort((a, b) => {
+        if (a.user_id < b.user_id) return -1
+        if (a.user_id > b.user_id) return 1
+        return 0
+      })
+      
       this.table.items = items
-      this.userIDList = userIDs
-      this.userNameList = userNames
+      this.userIDList = userIDs.sort()
+      this.userNameList = userNames.sort()
       this.loading = false
     },
     clearList() {
@@ -393,8 +400,8 @@ export default {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
-      this.deleteDialog = false
-      this.editDialog = false
+      this.disableAdminDialog = false
+      this.inviteUserDialog = false
       this.handleSearch()
     },
 
@@ -409,22 +416,22 @@ export default {
         name: '',
         updated_at: '',
       }
-      this.editDialog = true
+      this.inviteUserDialog = true
     },
     handleEdit(item) {
       this.userForm.clickNew = false
       this.assignDataModel(item.value)
       this.loadRoleList()
-      this.editDialog = true
+      this.inviteUserDialog = true
     },
     handleEditSubmit() {
       this.putItem(true)
     },
-    handleDelete(item) {
+    handleDisableAdmin(item) {
       this.assignDataModel(item.value)
-      this.deleteDialog = true    
+      this.disableAdminDialog = true
     },
-    async handleDeleteSubmit() {
+    async handleDisableAdminSubmit() {
       this.putItem(false)
     },
     handleSearch() {
