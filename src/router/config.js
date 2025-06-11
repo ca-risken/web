@@ -438,6 +438,43 @@ export const appRoute = [
         ],
       },
       {
+        path: '/organization/',
+        component: RouteWrapper,
+        redirect: '/organization/list',
+        meta: {
+          title: 'Organization',
+          icon: 'mdi-account-group',
+          group: 'organization',
+        },
+        children: [
+          {
+            path: '/organization/list',
+            name: 'OrganizationList',
+            meta: {
+              title: 'OrganizationList',
+            },
+            component: () => import('@/view/organization/List.vue'),
+          },
+          {
+            path: '/organization/project',
+            name: 'OrganizationProject',
+            meta: {
+              title: 'OrganizationProject',
+            },
+            component: () => import('@/view/organization/Project.vue'),
+          },
+          {
+            path: '/organization/setting',
+            name: 'OrganizationSetting',
+            meta: {
+              title: 'OrganizationSetting',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/organization/Setting.vue'),
+          },
+        ],
+      },
+      {
         path: '/admin',
         component: RouteWrapper,
         redirect: '/admin/menu',

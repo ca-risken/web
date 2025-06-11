@@ -11,6 +11,8 @@ const store = createStore({
     return {
       user: {},
       project: {},
+      organization: {},
+      mode: 'project', // 'project' or 'organization'
       interval: {},
       locale: {},
       findingHistory: [],
@@ -22,6 +24,12 @@ const store = createStore({
     },
     updateProject: (state, payload) => {
       state.project = payload
+    },
+    updateOrganization: (state, payload) => {
+      state.organization = payload
+    },
+    updateMode: (state, payload) => {
+      state.mode = payload
     },
     updateInterval: (state, payload) => {
       state.interval = payload

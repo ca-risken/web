@@ -1,7 +1,7 @@
 <template>
   <v-app-bar
     v-bind="$attrs"
-    color="primary-darken-2"
+    :color="toolbarColor"
     extension-height="48"
     extended
   >
@@ -15,18 +15,18 @@
         transition="scale-transition"
       >
         <template v-slot:activator="{ props }">
-          <!-- Project -->
+          <!-- Organization or Project based on mode -->
           <v-btn
             v-bind="props"
             variant="text"
             class="pa-0 ml-4"
             style="text-transform: none"
             height="42"
-            @click="handleSearchProject"
+            @click="handleSearchEntity"
           >
-            <v-icon size="42">mdi-alpha-p-box</v-icon>
+            <v-icon size="42">{{ currentModeIcon }}</v-icon>
             <span class="text-h5 mx-4 font-weight-black">
-              {{ projectName }}
+              {{ currentEntityName }}
             </span>
           </v-btn>
         </template>
@@ -195,6 +195,87 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- Organization dialog -->
+  <v-dialog
+    max-width="64%"
+    v-model="organizationDialog"
+    @click:outside="organizationDialog = false"
+  >
+    <v-card>
+      <v-card-title>
+        <v-row>
+          <v-col cols="auto">
+            <span class="mx-2"> Organization </span>
+          </v-col>
+          <v-col>
+            <v-text-field
+              variant="outlined"
+              clearable
+              density="compact"
+              prepend-icon="mdi-magnify"
+              placeholder="Type something..."
+              v-model="organizationTable.search"
+              hide-details
+              class="hidden-sm-and-down"
+            />
+          </v-col>
+        </v-row>
+      </v-card-title>
+      <v-divider />
+      <v-card-text class="pa-0">
+        <v-data-table
+          :search="organizationTable.search"
+          :headers="organizationHeaders"
+          :items="organizationTable.item"
+          item-key="organization_id"
+          :items-per-page="organizationTable.options.itemsPerPage"
+          :page="organizationTable.options.page"
+          :loading="loading"
+          :items-per-page-options="organizationTable.footer.itemsPerPageOptions"
+          :show-current-page="organizationTable.footer.showCurrentPage"
+          locale="ja-jp"
+          loading-text="Loading..."
+          no-data-text="No data."
+          class="elevation-1"
+          hide-default-footer
+          :custom-filter="customFilter"
+          @click:row="handleOrganizationClick"
+        >
+          <template v-slot:[`item.description`]="{ item }">
+            <span class="text-truncate d-inline-block" style="max-width: 200px">
+              {{ item.value.description }}
+            </span>
+          </template>
+        </v-data-table>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          variant="outlined"
+          color="info"
+          v-if="currentOrganizationID"
+          @click="handleSettingOrganization"
+        >
+          {{ $t(`btn['EDIT ORGANIZATION']`) }}
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          variant="outlined"
+          color="grey-en-1"
+          @click="organizationDialog = false"
+        >
+          {{ $t(`btn['CANCEL']`) }}
+        </v-btn>
+        <v-btn
+          variant="outlined"
+          color="success"
+          @click="handleNewOrganization"
+        >
+          {{ $t(`btn['CREATE NEW ORGANIZATION']`) }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
@@ -232,28 +313,20 @@ export default {
         { text: 'English', value: 'en' },
         { text: '日本語', value: 'ja' },
       ],
-      myMenu: [
-        {
-          icon: 'mdi-account-circle',
-          href: '#',
-          title: 'Account',
-          click: this.handleAccountSetting,
-        },
-        {
-          icon: 'mdi-alpha-p-box',
-          href: '#',
-          title: 'My Project',
-          click: this.handleProjectSetting,
-        },
-        {
-          icon: 'mdi-logout',
-          href: '#',
-          title: 'Signout',
-          click: this.handleSignout,
-        },
-      ],
+      myMenu: [],
       isAdmin: false,
       staticRoutes: staticRoutes,
+      organizationDialog: false,
+      organizationTable: {
+        search: '',
+        options: { page: 1, itemsPerPage: 10, sortBy: ['organization_id'] },
+        footer: {
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
+          showCurrentPage: true,
+        },
+        item: [],
+      },
+      currentOrganizationID: '',
     }
   },
   computed: {
@@ -283,7 +356,17 @@ export default {
       ]
     },
     toolbarColor() {
-      return this.$vuetify.options.extra.mainNav
+      try {
+        // Organization Modeの場合は補色を使用（彩度を抑えた色）
+        if (this.isOrganizationMode) {
+          return 'brown-darken-1'
+        }
+        // Project Modeの場合は通常の色を使用
+        return 'primary-darken-2'
+      } catch (error) {
+        console.error('Error in toolbarColor:', error)
+        return 'primary-darken-2'
+      }
     },
     breadcrumbs() {
       const { matched } = this.$route
@@ -302,6 +385,52 @@ export default {
     },
     projectName: () => {
       return store.state.project.name
+    },
+    organizationName: () => {
+      return store.state.organization.name || 'Select Organization'
+    },
+    currentMode() {
+      return store.state.mode
+    },
+    isProjectMode() {
+      return this.currentMode === 'project'
+    },
+    isOrganizationMode() {
+      return this.currentMode === 'organization'
+    },
+    currentModeIcon() {
+      return this.isProjectMode ? 'mdi-alpha-p-box' : 'mdi-alpha-o-box'
+    },
+    currentEntityName() {
+      return this.isProjectMode ? this.projectName : this.organizationName
+    },
+    currentDialog() {
+      return this.isProjectMode ? this.projectDialog : this.organizationDialog
+    },
+    organizationHeaders() {
+      return [
+        {
+          title: this.$i18n.t('item["ID"]'),
+          align: 'start',
+          width: '5%',
+          sortable: true,
+          key: 'organization_id',
+        },
+        {
+          title: this.$i18n.t('item["Name"]'),
+          align: 'start',
+          width: '25%',
+          sortable: true,
+          key: 'name',
+        },
+        {
+          title: this.$i18n.t('item["Description"]'),
+          align: 'start',
+          width: '70%',
+          sortable: true,
+          key: 'description',
+        },
+      ]
     },
   },
   async mounted() {
@@ -334,6 +463,26 @@ export default {
         text: this.getLocaleText(browserLocale),
       })
     }
+
+    this.currentOrganizationID = store.state.organization.organization_id
+
+    // Initialize organization if not set
+    if (!store.state.organization.organization_id) {
+      store.commit('updateOrganization', {
+        organization_id: 1,
+        name: 'Sample Organization 1',
+        description: 'This is a sample organization description 1.',
+      })
+    }
+
+    // Initialize project if not set
+    if (!store.state.project.project_id) {
+      store.commit('updateProject', {
+        project_id: 1,
+        name: 'Sample Project 1',
+        tag: [],
+      })
+    }
   },
   methods: {
     customFilter(value, search) {
@@ -363,7 +512,27 @@ export default {
     clearProjectList() {
       this.projectTable.item = []
     },
-
+    async listOrganization() {
+      this.clearOrganizationList()
+      // TODO: Implement organization API calls
+      // For now, use mock data
+      this.organizationTable.item = [
+        {
+          organization_id: 1,
+          name: 'Sample Organization 1',
+          description: 'This is a sample organization description 1.',
+        },
+        {
+          organization_id: 2,
+          name: 'Sample Organization 2',
+          description: 'This is a sample organization description 2.',
+        },
+      ]
+      this.loading = false
+    },
+    clearOrganizationList() {
+      this.organizationTable.item = []
+    },
     getLocaleText(locale) {
       if (typeof locale !== 'string' || locale === '') return '?'
       switch (locale.toLowerCase()) {
@@ -375,7 +544,6 @@ export default {
           return '?'
       }
     },
-
     async getMenu() {
       let menu = [
         {
@@ -385,10 +553,18 @@ export default {
           click: this.handleAccountSetting,
         },
         {
-          icon: 'mdi-alpha-p-box',
+          icon: this.isOrganizationMode ? 'mdi-alpha-o-box' : 'mdi-alpha-p-box',
           href: '#',
-          title: 'My Project',
-          click: this.handleProjectSetting,
+          title: this.isOrganizationMode ? 'My Organization' : 'My Project',
+          click: this.isOrganizationMode
+            ? this.handleOrganizationSetting
+            : this.handleProjectSetting,
+        },
+        {
+          icon: this.isOrganizationMode ? 'mdi-alpha-p-box' : 'mdi-alpha-o-box',
+          href: '#',
+          title: this.isOrganizationMode ? 'Project Mode' : 'Organization Mode',
+          click: this.handleModeToggle,
         },
       ]
       if (this.isAdmin) {
@@ -407,7 +583,6 @@ export default {
       })
       return menu
     },
-
     // handler
     handleDrawerToggle() {
       this.$emit('side-icon-click')
@@ -429,6 +604,9 @@ export default {
     },
     handleAccountSetting() {
       this.$router.push('/iam/profile/')
+    },
+    handleOrganizationSetting() {
+      this.$router.push('/organization/setting/')
     },
     handleProjectSetting() {
       this.$router.push('/project/setting/')
@@ -457,11 +635,69 @@ export default {
       this.projectDialog = true
       this.listProject()
     },
+    handleSearchEntity() {
+      this.loading = true
+      if (this.isProjectMode) {
+        this.projectDialog = true
+        this.listProject()
+      } else {
+        this.organizationDialog = true
+        this.listOrganization()
+      }
+    },
     async setProjectQueryParam(project_id) {
       let query = await Object.assign({}, this.$router.query)
       // delete query["project_id"]
       query.project_id = project_id
       await this.$router.push({ query: query })
+    },
+    async handleOrganizationClick(event, organization) {
+      await this.setOrganizationQueryParam(
+        organization.item.value.organization_id
+      )
+      await store.commit('updateOrganization', organization.item.value)
+      this.reload()
+    },
+    handleNewOrganization() {
+      this.$router.push('/organization/setting?new=true')
+      this.organizationDialog = false
+    },
+    handleSettingOrganization() {
+      this.$router.push('/organization/setting/')
+      this.organizationDialog = false
+    },
+    async setOrganizationQueryParam(organization_id) {
+      let query = await Object.assign({}, this.$router.query)
+      // delete query["organization_id"]
+      query.organization_id = organization_id
+      await this.$router.push({ query: query })
+    },
+    reload() {
+      this.loading = true
+      this.listProject()
+      this.listOrganization()
+    },
+    async handleModeToggle() {
+      try {
+        console.log('Mode toggle started')
+        const newMode = this.isProjectMode ? 'organization' : 'project'
+        console.log('Switching to mode:', newMode)
+        
+        store.commit('updateMode', newMode)
+        this.myMenu = await this.getMenu() // Refresh menu
+        
+        // DOM更新を待ってからナビゲーション
+        await this.$nextTick()
+        
+        console.log('Navigating to dashboard...')
+        // モード切り替え時は必ずDashboardに戻る
+        await this.$router.push('/dashboard')
+        console.log('Navigation completed')
+      } catch (error) {
+        console.error('Error in handleModeToggle:', error)
+        // エラーが発生してもDashboardに移動を試行
+        this.$router.push('/dashboard')
+      }
     },
   },
 }

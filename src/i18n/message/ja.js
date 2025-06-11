@@ -6,6 +6,8 @@ const ja = {
     CANCEL: 'キャンセル',
     'EDIT PROJECT': 'プロジェクト編集',
     'CREATE NEW PROJECT': '新規プロジェクト作成',
+    'EDIT ORGANIZATION': 'Organization編集',
+    'CREATE NEW ORGANIZATION': '新規Organization作成',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: '追加',
     ARCHIVE: 'アーカイブ',
@@ -41,6 +43,7 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
+    SEARCH: '検索',
   },
   menu: {
     Home: 'ホーム',
@@ -58,6 +61,9 @@ const ja = {
     IAM: 'IAM',
     Analysis: '分析',
     Admin: '管理者',
+    Organization: 'Organization',
+    'Project Mode': 'プロジェクトモード',
+    'Organization Mode': 'Organizationモード',
   },
   submenu: {
     Dashboard: 'ダッシュボード',
@@ -91,6 +97,9 @@ const ja = {
     ReportFinding: 'Findingレポート',
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
+    OrganizationSetting: 'Organization設定',
+    OrganizationList: 'Organization一覧',
+    OrganizationProject: 'プロジェクト一覧',
     Profile: 'プロフィール',
     Menu: 'メニュー',
     'Admin User': '管理者ユーザ',
@@ -219,6 +228,7 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
+    'My Organization': 'My Organization',
   },
   version: {
     version: 'バージョン',
@@ -392,7 +402,7 @@ const ja = {
         '一つ以上のロールを選択してください。何もロールを選択しない場合、対象ユーザはこのプロジェクトから',
       removed: '削除',
       'from the project.': 'されます.',
-      'Make sure to copy your access token now. You won’t be able to see it again!':
+      'Make sure to copy your access token now. You wont be able to see it again!':
         'アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.',
       'No users found for your search condition.':
         '検索した条件でユーザーが見つかりませんでした。',
