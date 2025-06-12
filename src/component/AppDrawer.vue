@@ -45,7 +45,7 @@
               :to="sub.path"
               :title="$t(`submenu['` + sub.meta.title + `']`)"
               :prepend-icon="sub.meta.icon"
-              v-show="!sub.meta.hiddenInMenu"
+              v-show="!sub.meta.hiddenInMenu && isSubMenuItemVisible(sub)"
             ></v-list-item>
           </v-list-group>
         </template>
@@ -171,6 +171,14 @@ export default {
 
       // Project Modeの場合、Organizationメニューを除外
       return item.meta.title !== 'Organization'
+    },
+    isSubMenuItemVisible(sub) {
+      // Organization Modeの場合、AccessTokenとUser Reservationを除外
+      if (this.isOrganizationMode) {
+        const forbiddenTitles = ['AccessToken', 'User Reservation']
+        return !forbiddenTitles.includes(sub.meta.title)
+      }
+      return true
     },
   },
 }

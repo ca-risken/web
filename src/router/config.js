@@ -448,14 +448,6 @@ export const appRoute = [
         },
         children: [
           {
-            path: '/organization/list',
-            name: 'OrganizationList',
-            meta: {
-              title: 'OrganizationList',
-            },
-            component: () => import('@/view/organization/List.vue'),
-          },
-          {
             path: '/organization/project',
             name: 'OrganizationProject',
             meta: {

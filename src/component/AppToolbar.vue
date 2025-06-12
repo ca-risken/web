@@ -682,13 +682,13 @@ export default {
         console.log('Mode toggle started')
         const newMode = this.isProjectMode ? 'organization' : 'project'
         console.log('Switching to mode:', newMode)
-        
+
         store.commit('updateMode', newMode)
         this.myMenu = await this.getMenu() // Refresh menu
-        
+
         // DOM更新を待ってからナビゲーション
         await this.$nextTick()
-        
+
         console.log('Navigating to dashboard...')
         // モード切り替え時は必ずDashboardに戻る
         await this.$router.push('/dashboard')
