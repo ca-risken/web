@@ -122,17 +122,8 @@ export default {
     },
     computeMenu() {
       const allMenus = routes[0].children
-
-      // Organization Modeの場合、特定のメニューのみ表示
-      if (this.isOrganizationMode) {
-        const allowedMenuTitles = ['Dashboard', 'IAM', 'Organization']
-        return allMenus.filter((menu) =>
-          allowedMenuTitles.includes(menu.meta.title)
-        )
-      }
-
-      // Project Modeの場合、Organizationメニューを除外
-      return allMenus.filter((menu) => menu.meta.title !== 'Organization')
+      // isMenuItemVisibleを使ってフィルタリング
+      return allMenus.filter(menu => this.isMenuItemVisible(menu))
     },
     drawerToolbarColor() {
       try {

@@ -440,7 +440,7 @@ export const appRoute = [
       {
         path: '/organization/',
         component: RouteWrapper,
-        redirect: '/organization/list',
+        redirect: '/organization/setting',
         meta: {
           title: 'Organization',
           icon: 'mdi-account-group',
@@ -460,7 +460,6 @@ export const appRoute = [
             name: 'OrganizationSetting',
             meta: {
               title: 'OrganizationSetting',
-              hiddenInMenu: true,
             },
             component: () => import('@/view/organization/Setting.vue'),
           },
