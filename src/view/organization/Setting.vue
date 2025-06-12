@@ -198,7 +198,7 @@ export default {
     },
 
     handleBack() {
-      this.$router.push('/organization/list/')
+      this.$router.push('/dashboard')
     },
   },
 }
