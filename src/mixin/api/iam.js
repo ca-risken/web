@@ -45,6 +45,18 @@ const iam = {
         })
       return res.data.data.user
     },
+    async updateUserAdminAPI(userID, isAdmin) {
+      const param = {
+        user_id: userID,
+        is_admin: isAdmin,
+      }
+      const res = await this.$axios
+        .post('/admin/update-user-admin/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res.data.data.user
+    },
 
     // Role API
     async listRoleAPI(searchCond) {
@@ -62,17 +74,6 @@ const iam = {
       }
       return res.data.data.role_id
     },
-    async listAdminRoleAPI(name) {
-      const res = await this.$axios
-        .get('/admin/list-admin-role/?name=' + name)
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      if (!res.data.data.role_id) {
-        return []
-      }
-      return res.data.data.role_id
-    },
     async getRoleAPI(roleID) {
       const res = await this.$axios
         .get(
@@ -81,14 +82,6 @@ const iam = {
             '&role_id=' +
             roleID
         )
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      return res.data.data.role
-    },
-    async getAdminRoleAPI(roleID) {
-      const res = await this.$axios
-        .get('/admin/get-admin-role/?role_id=' + roleID)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -122,18 +115,6 @@ const iam = {
         })
       return res
     },
-    async attachAdminRoleAPI(userID, roleID) {
-      const param = {
-        user_id: userID,
-        role_id: roleID,
-      }
-      const res = await this.$axios
-        .post('/admin/attach-admin-role/', param)
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      return res
-    },
     async detachRoleAPI(userID, roleID) {
       const param = {
         project_id: this.getCurrentProjectID(),
@@ -142,18 +123,6 @@ const iam = {
       }
       const res = await this.$axios
         .post('/iam/detach-role/', param)
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      return res
-    },
-    async detachAdminRoleAPI(userID, roleID) {
-      const param = {
-        user_id: userID,
-        role_id: roleID,
-      }
-      const res = await this.$axios
-        .post('/admin/detach-admin-role/', param)
         .catch((err) => {
           return Promise.reject(err)
         })
