@@ -265,6 +265,7 @@ const ja = {
     'View Finding': '詳細を見る',
     'View Item': '詳細を見る',
     'Test Notification': '通知のテスト',
+    'Disable Admin': '管理者権限を無効化する',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
@@ -277,6 +278,7 @@ const ja = {
       'テスト通知を送信してよろしいですか?',
     'REQUEST PROJECT ROLE COMPLETED':
       'プロジェクトへのアクセス権を管理者にリクエストしました。',
+    'Do you want to disable admin?': '本当に無効化しますか？',
   },
   error: {
     'Sorry, Please access again after a while.':
