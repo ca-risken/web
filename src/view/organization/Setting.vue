@@ -82,11 +82,13 @@
 
 <script>
 import mixin from '@/mixin'
+import organization from '@/mixin/api/organization'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import store from '@/store'
 
 export default {
   name: 'OrganizationSetting',
-  mixins: [mixin],
+  mixins: [mixin, organization],
   components: {
     BottomSnackBar,
   },
@@ -117,11 +119,54 @@ export default {
     isNewMode() {
       return this.$route.query.new === 'true'
     },
+    isEditMode() {
+      return (
+        !this.isNewMode &&
+        (this.organizationId || store.state.organization.organization_id)
+      )
+    },
     organizationId() {
       return this.$route.query.id
     },
+    currentOrganization() {
+      return store.state.organization
+    },
+  },
+  watch: {
+    // Watch for organization changes in store
+    currentOrganization: {
+      handler(newOrganization, oldOrganization) {
+        console.log('Organization changed in store:', {
+          newOrganization,
+          oldOrganization,
+        })
+
+        // Only update if we're in edit mode and organization actually changed
+        if (
+          !this.isNewMode &&
+          newOrganization &&
+          (!oldOrganization ||
+            newOrganization.organization_id !== oldOrganization.organization_id)
+        ) {
+          console.log('Updating form with new organization data')
+          this.organizationModel = {
+            organization_id: newOrganization.organization_id,
+            name: newOrganization.name || '',
+            description: newOrganization.description || '',
+          }
+        }
+      },
+      deep: true,
+      immediate: false,
+    },
   },
   mounted() {
+    console.log('Organization Setting mounted:', {
+      isNewMode: this.isNewMode,
+      organizationId: this.organizationId,
+      storeOrganization: store.state.organization,
+    })
+
     if (this.isNewMode) {
       this.initializeNewOrganization()
     } else if (this.organizationId) {
@@ -151,11 +196,24 @@ export default {
             description: `This is organization ${id} description.`,
           }
         } else {
-          // Default organization (for backward compatibility)
-          this.organizationModel = {
-            organization_id: 1,
-            name: 'Sample Organization',
-            description: 'This is a sample organization description.',
+          // Load current organization from store for editing
+          const currentOrganization = store.state.organization
+          if (currentOrganization && currentOrganization.organization_id) {
+            this.organizationModel = {
+              organization_id: currentOrganization.organization_id,
+              name: currentOrganization.name || '',
+              description: currentOrganization.description || '',
+            }
+          } else {
+            // Fallback if no organization in store
+            this.organizationModel = {
+              organization_id: null,
+              name: '',
+              description: '',
+            }
+            this.$refs.snackbar.notifyWarning(
+              'No organization selected for editing'
+            )
           }
         }
       } catch (err) {
@@ -175,19 +233,51 @@ export default {
       this.loading = true
       try {
         if (this.isNewMode) {
-          // TODO: Implement organization create API
-          await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
-          this.$refs.snackbar.notifySuccess('Organization created successfully')
+          // Check user state
+          if (!store.state.user) {
+            this.$refs.snackbar.notifyError('Error: Try again after signin.')
+            this.loading = false
+            return
+          }
+          // Call createOrganizationAPI from mixin
+          const organization = await this.createOrganizationAPI(
+            this.organizationModel.name,
+            this.organizationModel.description
+          ).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            this.loading = false
+            return Promise.reject(err)
+          })
+          if (!organization.organization_id) {
+            this.$refs.snackbar.notifyError('Failed to get new organization.')
+          }
+          store.commit('updateOrganization', organization)
+          store.commit('updateMode', 'organization')
+          this.$refs.snackbar.notifySuccess(
+            'Success: Created new organization.'
+          )
+          setTimeout(() => {
+            this.$router.push('/organization/list')
+          }, 1000)
         } else {
           // TODO: Implement organization update API
           await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
-          this.$refs.snackbar.notifySuccess('Organization updated successfully')
-        }
 
-        // Navigate back to list after successful save
-        setTimeout(() => {
-          this.handleBack()
-        }, 1000)
+          // Update organization in store with new values
+          const updatedOrganization = {
+            organization_id: this.organizationModel.organization_id,
+            name: this.organizationModel.name,
+            description: this.organizationModel.description,
+          }
+          store.commit('updateOrganization', updatedOrganization)
+
+          this.$refs.snackbar.notifySuccess('Organization updated successfully')
+
+          // Navigate back to list after successful update (not for new organization)
+          setTimeout(() => {
+            this.handleBack()
+          }, 1000)
+        }
       } catch (err) {
         this.$refs.snackbar.notifyError(
           err.response?.data || 'Failed to save organization'

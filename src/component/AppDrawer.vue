@@ -35,7 +35,7 @@
             <template v-slot:activator="{ props }">
               <v-list-item
                 v-bind="props"
-                :title="$t(`menu['` + item.meta.title + `']`)"
+                :title="getMenuTitle(item.meta.title)"
                 :prepend-icon="item.meta.icon"
               ></v-list-item>
             </template>
@@ -55,7 +55,7 @@
             :to="item.path"
             v-show="!item.meta.hiddenInMenu && isMenuItemVisible(item)"
             :prepend-icon="item.meta.icon"
-            :title="$t(`menu['` + item.meta.title + `']`)"
+            :title="getMenuTitle(item.meta.title)"
           >
           </v-list-item>
         </template>
@@ -123,13 +123,13 @@ export default {
     computeMenu() {
       const allMenus = routes[0].children
       // isMenuItemVisibleを使ってフィルタリング
-      return allMenus.filter(menu => this.isMenuItemVisible(menu))
+      return allMenus.filter((menu) => this.isMenuItemVisible(menu))
     },
     drawerToolbarColor() {
       try {
         // Organization Modeの場合は補色を使用（彩度を抑えた色）
         if (this.isOrganizationMode) {
-          return 'brown'
+          return 'light-blue'
         }
         return 'primary'
       } catch (error) {
@@ -153,23 +153,41 @@ export default {
     toTop() {
       this.$router.push('/')
     },
+    getMenuTitle(menuTitle) {
+      // Organization Modeの場合、IAMをOrg IAMに変更
+      if (this.isOrganizationMode && menuTitle === 'IAM') {
+        return 'Org IAM'
+      }
+      // 通常の翻訳を使用
+      return this.$t(`menu['` + menuTitle + `']`)
+    },
     isMenuItemVisible(item) {
-      // Organization Modeの場合、特定のメニューのみ表示
+      // Organization Modeの場合、特定のメニューのみ表示（Dashboardは除外）
       if (this.isOrganizationMode) {
-        const allowedMenuTitles = ['Dashboard', 'IAM', 'Organization']
+        const allowedMenuTitles = ['IAM', 'Organization']
         return allowedMenuTitles.includes(item.meta.title)
       }
 
-      // Project Modeの場合、Organizationメニューを除外
-      return item.meta.title !== 'Organization'
+      // Project Modeの場合、すべてのメニューを表示（Organizationメニューも含む）
+      return true
     },
     isSubMenuItemVisible(sub) {
-      // Organization Modeの場合、AccessTokenとUser Reservationを除外
+      // Organization Modeの場合、AccessToken、User Reservation、OrganizationListを除外
       if (this.isOrganizationMode) {
-        const forbiddenTitles = ['AccessToken', 'User Reservation']
+        const forbiddenTitles = [
+          'AccessToken',
+          'User Reservation',
+          'OrganizationList',
+        ]
         return !forbiddenTitles.includes(sub.meta.title)
       }
-      return true
+
+      // Project Modeの場合、Organization設定を除外
+      const projectModeForbiddenTitles = [
+        'OrganizationSetting',
+        'OrganizationProject',
+      ]
+      return !projectModeForbiddenTitles.includes(sub.meta.title)
     },
   },
 }

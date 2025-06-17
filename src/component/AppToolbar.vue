@@ -287,6 +287,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
+import organization from '@/mixin/api/organization'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AppToolbar',
@@ -294,7 +295,7 @@ export default {
     BottomSnackBar,
     VDataTable,
   },
-  mixins: [mixin, project, iam, signin],
+  mixins: [mixin, project, iam, signin, organization],
   data() {
     return {
       loading: false,
@@ -359,7 +360,7 @@ export default {
       try {
         // Organization Modeの場合は補色を使用（彩度を抑えた色）
         if (this.isOrganizationMode) {
-          return 'brown-darken-1'
+          return 'light-blue-darken-2'
         }
         // Project Modeの場合は通常の色を使用
         return 'primary-darken-2'
@@ -514,21 +515,23 @@ export default {
     },
     async listOrganization() {
       this.clearOrganizationList()
-      // TODO: Implement organization API calls
-      // For now, use mock data
-      this.organizationTable.item = [
-        {
-          organization_id: 1,
-          name: 'Sample Organization 1',
-          description: 'This is a sample organization description 1.',
-        },
-        {
-          organization_id: 2,
-          name: 'Sample Organization 2',
-          description: 'This is a sample organization description 2.',
-        },
-      ]
-      this.loading = false
+      try {
+        let listOrganizationParam = '?user_id=' + store.state.user.user_id
+        if (this.isAdmin) {
+          listOrganizationParam = ''
+        }
+        this.organizationTable.item = await this.ListOrganizationAPI(
+          listOrganizationParam
+        )
+      } catch (err) {
+        this.$refs.snackbar.notifyError(
+          err.response?.data || 'Failed to load organizations'
+        )
+        // Fallback to empty array on error
+        this.organizationTable.item = []
+      } finally {
+        this.loading = false
+      }
     },
     clearOrganizationList() {
       this.organizationTable.item = []
@@ -618,8 +621,13 @@ export default {
       this.$router.go(-1)
     },
     async handleProjectClick(event, project) {
+      console.log('Project clicked:', project.item.value)
+      console.log('Setting project ID to:', project.item.value.project_id)
+      
       await this.setProjectQueryParam(project.item.value.project_id)
       await store.commit('updateProject', project.item.value)
+      
+      console.log('Project updated in store:', store.state.project)
       this.reload()
     },
     handleNewProject() {
@@ -646,17 +654,34 @@ export default {
       }
     },
     async setProjectQueryParam(project_id) {
-      let query = await Object.assign({}, this.$router.query)
+      console.log('Setting project query param to:', project_id)
+      let query = await Object.assign({}, this.$route.query)
       // delete query["project_id"]
       query.project_id = project_id
+      console.log('New query object:', query)
       await this.$router.push({ query: query })
     },
     async handleOrganizationClick(event, organization) {
+      console.log('Organization click:', organization.item.value)
+
       await this.setOrganizationQueryParam(
         organization.item.value.organization_id
       )
       await store.commit('updateOrganization', organization.item.value)
-      this.reload()
+
+      // Close the organization dialog
+      this.organizationDialog = false
+
+      // Navigate to organization project list and reload
+      console.log(
+        'Navigating to organization/project after organization switch'
+      )
+      await this.$router.push('/organization/project')
+
+      // Force a full page reload to ensure all components are updated
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
     },
     handleNewOrganization() {
       this.$router.push('/organization/setting?new=true')
@@ -689,14 +714,23 @@ export default {
         // DOM更新を待ってからナビゲーション
         await this.$nextTick()
 
-        console.log('Navigating to dashboard...')
-        // モード切り替え時は必ずDashboardに戻る
-        await this.$router.push('/dashboard')
+        // モードに応じて適切なページに遷移
+        if (newMode === 'organization') {
+          console.log('Navigating to organization/project...')
+          await this.$router.push('/organization/project')
+        } else {
+          console.log('Navigating to dashboard...')
+          await this.$router.push('/dashboard')
+        }
         console.log('Navigation completed')
       } catch (error) {
         console.error('Error in handleModeToggle:', error)
-        // エラーが発生してもDashboardに移動を試行
-        this.$router.push('/dashboard')
+        // エラーが発生した場合の適切な遷移
+        if (store.state.mode === 'organization') {
+          this.$router.push('/organization/project')
+        } else {
+          this.$router.push('/dashboard')
+        }
       }
     },
   },

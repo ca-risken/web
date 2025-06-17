@@ -30,6 +30,8 @@ router.beforeEach(async (to, from, next) => {
     project_id != current_project_id
   ) {
     // Change project
+    console.log(`Changing project from ${current_project_id} to ${project_id}`)
+    
     const admin = await axios
       .get('/iam/is-admin/?user_id=' + user_id)
       .catch((err) => {
@@ -44,14 +46,15 @@ router.beforeEach(async (to, from, next) => {
       handleAPIError(err)
       return
     })
-    if (res.data.data.project) {
-      await store.commit('updateProject', res.data.data.project[0])
-      let query = Object.assign({}, to.query)
-      query.project_id = store.state.project.project_id
-      router.push({ query: query }) // Edit query parameter
-      router.go({ path: to.currentRoute })
+    if (res.data.data.project && res.data.data.project.length > 0) {
+      // Find the specific project by ID instead of always using the first one
+      const targetProject = res.data.data.project.find(p => p.project_id == project_id) || res.data.data.project[0]
+      console.log('Setting project to:', targetProject)
+      await store.commit('updateProject', targetProject)
       next()
       return
+    } else {
+      console.warn('No project found for ID:', project_id)
     }
   }
   if (!to.query.project_id && current_project_id && current_project_id != '') {

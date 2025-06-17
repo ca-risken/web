@@ -91,6 +91,11 @@ const en = {
     ReportFinding: 'Report Finding', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
+    OrganizationSetting: 'Organization Setting',
+    OrganizationInvitation: 'Invitation List',
+    OrganizationInviteProject: 'Invite Projects',
+    OrganizationList: 'Organization List',
+    OrganizationProject: 'Project List',
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
@@ -219,6 +224,8 @@ const en = {
     'WPScan Random User Agent': 'Use a random user-agent for each scan',
     'WPScan WP Content Dir':
       'The wp-content directory if custom or not detected, such as "wp-content"',
+    Project: 'Project',
+    Organization: 'Organization',
   },
   version: {
     version: 'version',
@@ -256,6 +263,7 @@ const en = {
     'View Item': 'View Item',
     'Test Notification': 'Test Notification',
     'Disable Admin': 'Disable Admin',
+    'Delete Invitation': 'Delete Invitation',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',

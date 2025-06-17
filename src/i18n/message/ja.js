@@ -98,6 +98,8 @@ const ja = {
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
     OrganizationSetting: 'Organization設定',
+    OrganizationInvitation: '招待一覧',
+    OrganizationInviteProject: 'プロジェクト招待',
     OrganizationList: 'Organization一覧',
     OrganizationProject: 'プロジェクト一覧',
     Profile: 'プロフィール',
@@ -229,6 +231,8 @@ const ja = {
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
     'My Organization': 'My Organization',
+    Project: 'プロジェクト',
+    Organization: 'Organization',
   },
   version: {
     version: 'バージョン',
@@ -266,6 +270,7 @@ const ja = {
     'View Item': '詳細を見る',
     'Test Notification': '通知のテスト',
     'Disable Admin': '管理者権限を無効化する',
+    'Delete Invitation': '招待を削除する',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
