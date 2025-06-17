@@ -31,7 +31,7 @@ router.beforeEach(async (to, from, next) => {
   ) {
     // Change project
     console.log(`Changing project from ${current_project_id} to ${project_id}`)
-    
+
     const admin = await axios
       .get('/iam/is-admin/?user_id=' + user_id)
       .catch((err) => {
@@ -48,7 +48,9 @@ router.beforeEach(async (to, from, next) => {
     })
     if (res.data.data.project && res.data.data.project.length > 0) {
       // Find the specific project by ID instead of always using the first one
-      const targetProject = res.data.data.project.find(p => p.project_id == project_id) || res.data.data.project[0]
+      const targetProject =
+        res.data.data.project.find((p) => p.project_id == project_id) ||
+        res.data.data.project[0]
       console.log('Setting project to:', targetProject)
       await store.commit('updateProject', targetProject)
       next()
