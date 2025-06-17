@@ -62,8 +62,6 @@ const ja = {
     Analysis: '分析',
     Admin: '管理者',
     Organization: 'Organization',
-    'Project Mode': 'プロジェクトモード',
-    'Organization Mode': 'Organizationモード',
   },
   submenu: {
     Dashboard: 'ダッシュボード',
@@ -230,7 +228,6 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
-    'My Organization': 'My Organization',
     Project: 'プロジェクト',
     Organization: 'Organization',
   },
@@ -271,6 +268,8 @@ const ja = {
     'Test Notification': '通知のテスト',
     'Disable Admin': '管理者権限を無効化する',
     'Delete Invitation': '招待を削除する',
+    'Accept Invitation': '招待を承認する',
+    'Reject Invitation': '招待を拒否する',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',

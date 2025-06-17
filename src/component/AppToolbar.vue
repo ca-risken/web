@@ -621,13 +621,8 @@ export default {
       this.$router.go(-1)
     },
     async handleProjectClick(event, project) {
-      console.log('Project clicked:', project.item.value)
-      console.log('Setting project ID to:', project.item.value.project_id)
-      
       await this.setProjectQueryParam(project.item.value.project_id)
       await store.commit('updateProject', project.item.value)
-      
-      console.log('Project updated in store:', store.state.project)
       this.reload()
     },
     handleNewProject() {
@@ -654,11 +649,9 @@ export default {
       }
     },
     async setProjectQueryParam(project_id) {
-      console.log('Setting project query param to:', project_id)
-      let query = await Object.assign({}, this.$route.query)
+      let query = await Object.assign({}, this.$router.query)
       // delete query["project_id"]
       query.project_id = project_id
-      console.log('New query object:', query)
       await this.$router.push({ query: query })
     },
     async handleOrganizationClick(event, organization) {

@@ -185,25 +185,18 @@ export default {
   methods: {
     async refleshList(organizationName) {
       try {
-        // Get current project from store
         const currentProjectID = this.getCurrentProjectID()
         if (!currentProjectID) {
           this.clearList()
           return
         }
-
-        // Use listProjectOrganizationInvitationAPI to get project's organization invitations
         const invitations = await this.listProjectOrganizationInvitationAPI(currentProjectID)
-
         if (!invitations || invitations.length === 0) {
           this.clearList()
           return
         }
-
-        // Filter by organization name if provided
         let filteredInvitations = invitations
         if (organizationName) {
-          // We'll need to get organization details first to filter by name
           const invitationDetails = await Promise.all(
             invitations.map(async (invitation) => {
               try {
@@ -226,7 +219,6 @@ export default {
             invitation.organizationName.toLowerCase().includes(organizationName.toLowerCase())
           )
         }
-
         this.table.total = filteredInvitations.length
         this.invitations = filteredInvitations
         this.loadList()
@@ -249,7 +241,6 @@ export default {
         items = await Promise.all(
           invitations.map(async (invitation) => {
             try {
-              // Get organization information using organization_id
               const organizations = await this.ListOrganizationAPI(`?organization_id=${invitation.organization_id}`)
               const organization = organizations && organizations.length > 0 ? organizations[0] : null
               
@@ -277,15 +268,8 @@ export default {
             }
           })
         )
-
         this.table.items = items
-        this.organizationNameList = [...new Set(organizationNames)] // Remove duplicates
-        
-        // Debug: Log the first item structure
-        if (items.length > 0) {
-          console.log('First table item structure:', items[0])
-          console.log('First table item status:', items[0].status)
-        }
+        this.organizationNameList = [...new Set(organizationNames)]
       } catch (err) {
         console.error('Error loading organization invitation list:', err)
         this.table.items = []
@@ -303,11 +287,7 @@ export default {
     },
 
     getStatusText(status) {
-      console.log('getStatusText called with status:', status, 'type:', typeof status)
-      
-      // Convert string to number if needed
       const numStatus = typeof status === 'string' ? parseInt(status) : status
-      
       switch (numStatus) {
         case 1:
           return 'PENDING'
@@ -322,9 +302,7 @@ export default {
     },
 
     getStatusColor(status) {
-      // Convert string to number if needed
       const numStatus = typeof status === 'string' ? parseInt(status) : status
-      
       switch (numStatus) {
         case 1:
           return 'orange'
@@ -344,19 +322,15 @@ export default {
 
       try {
         this.loading = true
-        
-        // Get current project from store
         const currentProjectID = this.getCurrentProjectID()
         if (!currentProjectID) {
           this.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
           return
         }
-
-        // Call ReplyOrganizationInvitation API with status=2 (ACCEPTED)
         await this.ReplyOrganizationInvitationAPI(
           item.organization_id,
           currentProjectID,
-          2 // ACCEPTED status
+          2 
         )
 
         this.$refs.snackbar.notifySuccess(
@@ -383,25 +357,22 @@ export default {
       try {
         this.loading = true
         
-        // Get current project from store
         const currentProjectID = this.getCurrentProjectID()
         if (!currentProjectID) {
           this.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
           return
         }
 
-        // Call ReplyOrganizationInvitation API with status=3 (REJECTED)
         await this.ReplyOrganizationInvitationAPI(
           item.organization_id,
           currentProjectID,
-          3 // REJECTED status
+          3 
         )
 
         this.$refs.snackbar.notifySuccess(
           `組織「${item.name}」の招待を拒否しました`
         )
         
-        // Refresh the invitation list to show updated data
         this.handleSearch()
       } catch (err) {
         console.error('Error rejecting invitation:', err)

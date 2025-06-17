@@ -208,20 +208,15 @@ export default {
       }
 
       try {
-        // Use ListOrganizationInvitationAPI with organization_id
         const invitations = await this.ListOrganizationInvitationAPI(
           currentOrganization.organization_id
         )
-
         if (!invitations || invitations.length === 0) {
           this.clearList()
           return
         }
-
-        // Filter by project name if provided
         let filteredInvitations = invitations
         if (projectName) {
-          // We'll need to get project details first to filter by name
           const projectDetails = await Promise.all(
             invitations.map(async (invitation) => {
               try {
@@ -240,12 +235,10 @@ export default {
               }
             })
           )
-          
           filteredInvitations = projectDetails.filter(invitation =>
             invitation.projectName.toLowerCase().includes(projectName.toLowerCase())
           )
         }
-
         this.table.total = filteredInvitations.length
         this.projects = filteredInvitations
         this.loadList()
@@ -268,11 +261,9 @@ export default {
         items = await Promise.all(
           invitations.map(async (invitation) => {
             try {
-              // Get project information using project_id
               const projectParam = `?project_id=${invitation.project_id}`
               const projects = await this.listProjectAPI(projectParam)
               const project = projects && projects.length > 0 ? projects[0] : null
-              
               const item = {
                 project_id: invitation.project_id,
                 name: project ? project.name : `Project ${invitation.project_id}`,
@@ -281,8 +272,6 @@ export default {
                 created_at: invitation.created_at,
                 updated_at: invitation.updated_at,
               }
-              
-              console.log(`Project ${invitation.project_id} status:`, invitation.status, 'type:', typeof invitation.status)
               projectNames.push(item.name)
               return item
             } catch (err) {
@@ -303,13 +292,7 @@ export default {
         )
 
         this.table.items = items
-        this.projectNameList = [...new Set(projectNames)] // Remove duplicates
-        
-        // Debug: Log the first item structure
-        if (items.length > 0) {
-          console.log('First table item structure:', items[0])
-          console.log('First table item status:', items[0].status)
-        }
+        this.projectNameList = [...new Set(projectNames)]
       } catch (err) {
         console.error('Error loading project list:', err)
         this.table.items = []
@@ -327,11 +310,7 @@ export default {
     },
 
     getStatusText(status) {
-      console.log('getStatusText called with status:', status, 'type:', typeof status)
-      
-      // Convert string to number if needed
       const numStatus = typeof status === 'string' ? parseInt(status) : status
-      
       switch (numStatus) {
         case 1:
           return 'PENDING'
@@ -344,11 +323,8 @@ export default {
           return 'UNKNOWN'
       }
     },
-
     getStatusColor(status) {
-      // Convert string to number if needed
       const numStatus = typeof status === 'string' ? parseInt(status) : status
-      
       switch (numStatus) {
         case 1:
           return 'orange'
@@ -360,33 +336,24 @@ export default {
           return 'grey'
       }
     },
-
     async handleDeleteInvitation(item) {
       if (!confirm(`プロジェクト「${item.name}」の招待を削除しますか？`)) {
         return
       }
-
       try {
         this.loading = true
-        
-        // Get current organization from store
         const currentOrganization = this.$store.state.organization
         if (!currentOrganization || !currentOrganization.organization_id) {
           this.$refs.snackbar.notifyError('No organization selected')
           return
         }
-
-        // Call DeleteOrganizationInvitation API
         await this.DeleteOrganizationInvitationAPI(
           currentOrganization.organization_id,
           item.project_id
         )
-
         this.$refs.snackbar.notifySuccess(
           `プロジェクト「${item.name}」の招待を削除しました`
         )
-        
-        // Refresh the project list to show updated data
         this.handleSearch()
       } catch (err) {
         console.error('Error deleting invitation:', err)
@@ -419,26 +386,19 @@ export default {
 
       try {
         this.loading = true
-        
-        // Get current organization from store
         const currentOrganization = this.$store.state.organization
         if (!currentOrganization || !currentOrganization.organization_id) {
           this.$refs.snackbar.notifyError('No organization selected')
           return
         }
-
-        // Call PutOrganizationInvitation API with status='pending'
         await this.PutOrganizationInvitationAPI(
           currentOrganization.organization_id,
           project.project_id,
-          'pending'
+          1
         )
-
         this.$refs.snackbar.notifySuccess(
           `Organization invitation sent to project: ${project.name}`
         )
-        
-        // Refresh the project list to show updated data
         this.handleSearch()
       } catch (err) {
         this.$refs.snackbar.notifyError(

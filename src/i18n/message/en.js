@@ -6,6 +6,8 @@ const en = {
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',
     'CREATE NEW PROJECT': 'CREATE NEW PROJECT',
+    'EDIT ORGANIZATION': 'EDIT ORGANIZATION',
+    'CREATE NEW ORGANIZATION': 'CREATE NEW ORGANIZATION',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
     ARCHIVE: 'ARCHIVE',
@@ -41,6 +43,7 @@ const en = {
     Recommendation: 'Recommendation',
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
+    SEARCH: 'SEARCH',
   },
   menu: {
     Home: 'Home',
@@ -58,6 +61,7 @@ const en = {
     IAM: 'IAM',
     Analysis: 'Analysis',
     Admin: 'Admin',
+    Organization: 'Organization',
   },
   submenu: {
     Dashboard: 'Dashboard',
@@ -264,6 +268,8 @@ const en = {
     'Test Notification': 'Test Notification',
     'Disable Admin': 'Disable Admin',
     'Delete Invitation': 'Delete Invitation',
+    'Accept Invitation': 'Accept Invitation',
+    'Reject Invitation': 'Reject Invitation',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',

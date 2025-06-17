@@ -122,12 +122,10 @@ export default {
     },
     computeMenu() {
       const allMenus = routes[0].children
-      // isMenuItemVisibleを使ってフィルタリング
       return allMenus.filter((menu) => this.isMenuItemVisible(menu))
     },
     drawerToolbarColor() {
       try {
-        // Organization Modeの場合は補色を使用（彩度を抑えた色）
         if (this.isOrganizationMode) {
           return 'light-blue'
         }
@@ -154,25 +152,20 @@ export default {
       this.$router.push('/')
     },
     getMenuTitle(menuTitle) {
-      // Organization Modeの場合、IAMをOrg IAMに変更
       if (this.isOrganizationMode && menuTitle === 'IAM') {
         return 'Org IAM'
       }
-      // 通常の翻訳を使用
       return this.$t(`menu['` + menuTitle + `']`)
     },
     isMenuItemVisible(item) {
-      // Organization Modeの場合、特定のメニューのみ表示（Dashboardは除外）
       if (this.isOrganizationMode) {
         const allowedMenuTitles = ['IAM', 'Organization']
         return allowedMenuTitles.includes(item.meta.title)
       }
 
-      // Project Modeの場合、すべてのメニューを表示（Organizationメニューも含む）
       return true
     },
     isSubMenuItemVisible(sub) {
-      // Organization Modeの場合、AccessToken、User Reservation、OrganizationListを除外
       if (this.isOrganizationMode) {
         const forbiddenTitles = [
           'AccessToken',
@@ -181,8 +174,6 @@ export default {
         ]
         return !forbiddenTitles.includes(sub.meta.title)
       }
-
-      // Project Modeの場合、Organization設定を除外
       const projectModeForbiddenTitles = [
         'OrganizationSetting',
         'OrganizationProject',
