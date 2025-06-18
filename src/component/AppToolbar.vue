@@ -469,20 +469,34 @@ export default {
 
     // Initialize organization if not set
     if (!store.state.organization.organization_id) {
-      store.commit('updateOrganization', {
-        organization_id: 1,
-        name: 'Sample Organization 1',
-        description: 'This is a sample organization description 1.',
-      })
+      // Check if organization_id is in query params
+      const queryOrganizationId = this.$route.query.organization_id
+      if (queryOrganizationId) {
+        // Let the router navigation guard handle organization loading
+        console.log('Organization ID found in query params:', queryOrganizationId)
+      } else {
+        store.commit('updateOrganization', {
+          organization_id: 1,
+          name: 'Sample Organization 1',
+          description: 'This is a sample organization description 1.',
+        })
+      }
     }
 
     // Initialize project if not set
     if (!store.state.project.project_id) {
-      store.commit('updateProject', {
-        project_id: 1,
-        name: 'Sample Project 1',
-        tag: [],
-      })
+      // Check if project_id is in query params
+      const queryProjectId = this.$route.query.project_id
+      if (queryProjectId) {
+        // Let the router navigation guard handle project loading
+        console.log('Project ID found in query params:', queryProjectId)
+      } else {
+        store.commit('updateProject', {
+          project_id: 1,
+          name: 'Sample Project 1',
+          tag: [],
+        })
+      }
     }
   },
   methods: {
@@ -649,27 +663,26 @@ export default {
       }
     },
     async setProjectQueryParam(project_id) {
-      let query = await Object.assign({}, this.$router.query)
-      // delete query["project_id"]
-      query.project_id = project_id
+      // Only keep project_id, remove all other mode-specific parameters
+      const query = { project_id: project_id }
       await this.$router.push({ query: query })
     },
     async handleOrganizationClick(event, organization) {
       console.log('Organization click:', organization.item.value)
 
-      await this.setOrganizationQueryParam(
-        organization.item.value.organization_id
-      )
       await store.commit('updateOrganization', organization.item.value)
 
       // Close the organization dialog
       this.organizationDialog = false
 
-      // Navigate to organization project list and reload
+      // Navigate to organization project list with organization_id parameter
       console.log(
         'Navigating to organization/project after organization switch'
       )
-      await this.$router.push('/organization/project')
+      await this.$router.push({
+        path: '/organization/project',
+        query: { organization_id: organization.item.value.organization_id }
+      })
 
       // Force a full page reload to ensure all components are updated
       setTimeout(() => {
@@ -685,9 +698,8 @@ export default {
       this.organizationDialog = false
     },
     async setOrganizationQueryParam(organization_id) {
-      let query = await Object.assign({}, this.$router.query)
-      // delete query["organization_id"]
-      query.organization_id = organization_id
+      // Only keep organization_id, remove all other mode-specific parameters
+      const query = { organization_id: organization_id }
       await this.$router.push({ query: query })
     },
     reload() {
@@ -707,13 +719,27 @@ export default {
         // DOM更新を待ってからナビゲーション
         await this.$nextTick()
 
+        // Clean up query parameters based on mode
+        let query = {}
+        if (newMode === 'organization') {
+          // Only keep organization_id, remove project_id
+          if (store.state.organization?.organization_id) {
+            query.organization_id = store.state.organization.organization_id
+          }
+        } else {
+          // Only keep project_id, remove organization_id
+          if (store.state.project?.project_id) {
+            query.project_id = store.state.project.project_id
+          }
+        }
+
         // モードに応じて適切なページに遷移
         if (newMode === 'organization') {
           console.log('Navigating to organization/project...')
-          await this.$router.push('/organization/project')
+          await this.$router.push({ path: '/organization/project', query: query })
         } else {
           console.log('Navigating to dashboard...')
-          await this.$router.push('/dashboard')
+          await this.$router.push({ path: '/dashboard', query: query })
         }
         console.log('Navigation completed')
       } catch (error) {

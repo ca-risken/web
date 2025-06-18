@@ -47,7 +47,7 @@ export default {
         searchPlaceholder: 'Filter for project name',
         showInviteButton: true,
         itemKey: 'project_id',
-        idKey: 'project_id'
+        idKey: 'project_id',
       },
       tableActions: [
         {
@@ -68,9 +68,9 @@ export default {
       return {
         items: this.table.items,
         total: this.table.total,
-        options: this.table.options
+        options: this.table.options,
       }
-    }
+    },
   },
   mounted() {
     this.refleshList('')
@@ -99,21 +99,26 @@ export default {
               try {
                 const projectParam = `?project_id=${invitation.project_id}`
                 const projects = await this.listProjectAPI(projectParam)
-                const project = projects && projects.length > 0 ? projects[0] : null
+                const project =
+                  projects && projects.length > 0 ? projects[0] : null
                 return {
                   ...invitation,
-                  projectName: project ? project.name : `Project ${invitation.project_id}`
+                  projectName: project
+                    ? project.name
+                    : `Project ${invitation.project_id}`,
                 }
               } catch (err) {
                 return {
                   ...invitation,
-                  projectName: `Project ${invitation.project_id}`
+                  projectName: `Project ${invitation.project_id}`,
                 }
               }
             })
           )
-          filteredInvitations = projectDetails.filter(invitation =>
-            invitation.projectName.toLowerCase().includes(projectName.toLowerCase())
+          filteredInvitations = projectDetails.filter((invitation) =>
+            invitation.projectName
+              .toLowerCase()
+              .includes(projectName.toLowerCase())
           )
         }
         this.table.total = filteredInvitations.length
@@ -122,7 +127,9 @@ export default {
       } catch (err) {
         console.error('Error loading organization invitations:', err)
         this.clearList()
-        this.$refs.invitationTable.$refs.snackbar?.notifyError('組織プロジェクトの読み込みに失敗しました')
+        this.$refs.invitationTable.$refs.snackbar?.notifyError(
+          '組織プロジェクトの読み込みに失敗しました'
+        )
       }
     },
 
@@ -131,7 +138,8 @@ export default {
       try {
         let items = []
         let projectNames = []
-        const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+        const from =
+          (this.table.options.page - 1) * this.table.options.itemsPerPage
         const to = from + this.table.options.itemsPerPage
         const invitations = this.projects.slice(from, to)
 
@@ -140,10 +148,13 @@ export default {
             try {
               const projectParam = `?project_id=${invitation.project_id}`
               const projects = await this.listProjectAPI(projectParam)
-              const project = projects && projects.length > 0 ? projects[0] : null
+              const project =
+                projects && projects.length > 0 ? projects[0] : null
               const item = {
                 project_id: invitation.project_id,
-                name: project ? project.name : `Project ${invitation.project_id}`,
+                name: project
+                  ? project.name
+                  : `Project ${invitation.project_id}`,
                 status: invitation.status,
                 organization_id: invitation.organization_id,
                 created_at: invitation.created_at,
@@ -152,7 +163,10 @@ export default {
               projectNames.push(item.name)
               return item
             } catch (err) {
-              console.error(`Error getting project info for ${invitation.project_id}:`, err)
+              console.error(
+                `Error getting project info for ${invitation.project_id}:`,
+                err
+              )
               const fallbackItem = {
                 project_id: invitation.project_id,
                 name: `Project ${invitation.project_id}`,
@@ -172,7 +186,9 @@ export default {
       } catch (err) {
         console.error('Error loading project list:', err)
         this.table.items = []
-        this.$refs.invitationTable.$refs.snackbar?.notifyError('プロジェクト一覧の読み込みに失敗しました')
+        this.$refs.invitationTable.$refs.snackbar?.notifyError(
+          'プロジェクト一覧の読み込みに失敗しました'
+        )
       } finally {
         this.loading = false
       }
@@ -193,7 +209,9 @@ export default {
         this.loading = true
         const currentOrganization = this.$store.state.organization
         if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.invitationTable.$refs.snackbar.notifyError('No organization selected')
+          this.$refs.invitationTable.$refs.snackbar.notifyError(
+            'No organization selected'
+          )
           return
         }
         await this.DeleteOrganizationInvitationAPI(
@@ -224,7 +242,7 @@ export default {
 
     async handleProjectDialogResponse(project) {
       this.projectDialog = false
-      
+
       if (!project.project_id) {
         return // User cancelled
       }
@@ -233,7 +251,9 @@ export default {
         this.loading = true
         const currentOrganization = this.$store.state.organization
         if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.invitationTable.$refs.snackbar.notifyError('No organization selected')
+          this.$refs.invitationTable.$refs.snackbar.notifyError(
+            'No organization selected'
+          )
           return
         }
         await this.PutOrganizationInvitationAPI(

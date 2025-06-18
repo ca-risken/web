@@ -37,7 +37,7 @@ export default {
         searchPlaceholder: 'Filter for organization name',
         showInviteButton: false,
         itemKey: 'organization_id',
-        idKey: 'organization_id'
+        idKey: 'organization_id',
       },
       tableActions: [
         {
@@ -63,9 +63,9 @@ export default {
       return {
         items: this.table.items,
         total: this.table.total,
-        options: this.table.options
+        options: this.table.options,
       }
-    }
+    },
   },
   mounted() {
     this.refleshList('')
@@ -149,7 +149,8 @@ export default {
       try {
         let items = []
         let organizationNames = []
-        const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+        const from =
+          (this.table.options.page - 1) * this.table.options.itemsPerPage
         const to = from + this.table.options.itemsPerPage
         const invitations = this.invitations.slice(from, to)
 
@@ -237,11 +238,13 @@ export default {
 
       try {
         this.loading = true
-        
+
         // Get current project from store
         const currentProjectID = this.getCurrentProjectID()
         if (!currentProjectID) {
-          this.$refs.invitationTable.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
+          this.$refs.invitationTable.$refs.snackbar.notifyError(
+            'プロジェクト情報が見つかりません'
+          )
           return
         }
 
@@ -255,7 +258,7 @@ export default {
         this.$refs.invitationTable.$refs.snackbar.notifySuccess(
           `組織「${item.name}」の招待を承認しました`
         )
-        
+
         // Refresh the invitation list to show updated data
         this.refleshList('')
       } catch (err) {
@@ -275,11 +278,13 @@ export default {
 
       try {
         this.loading = true
-        
+
         // Get current project from store
         const currentProjectID = this.getCurrentProjectID()
         if (!currentProjectID) {
-          this.$refs.invitationTable.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
+          this.$refs.invitationTable.$refs.snackbar.notifyError(
+            'プロジェクト情報が見つかりません'
+          )
           return
         }
 
@@ -293,7 +298,7 @@ export default {
         this.$refs.invitationTable.$refs.snackbar.notifySuccess(
           `組織「${item.name}」の招待を拒否しました`
         )
-        
+
         // Refresh the invitation list to show updated data
         this.refleshList('')
       } catch (err) {

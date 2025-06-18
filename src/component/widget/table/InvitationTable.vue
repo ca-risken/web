@@ -134,17 +134,17 @@ export default {
         searchPlaceholder: 'Filter for organization name',
         showInviteButton: false,
         itemKey: 'organization_id',
-        idKey: 'organization_id'
-      })
+        idKey: 'organization_id',
+      }),
     },
     actions: {
       type: Array,
       required: true,
-      default: () => []
+      default: () => [],
     },
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     tableData: {
       type: Object,
@@ -152,13 +152,13 @@ export default {
       default: () => ({
         items: [],
         total: 0,
-        options: { page: 1, itemsPerPage: 10, sortBy: [] }
-      })
+        options: { page: 1, itemsPerPage: 10, sortBy: [] },
+      }),
     },
     searchItems: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   emits: ['search', 'invite', 'update-options'],
   data() {
@@ -181,7 +181,10 @@ export default {
     headers() {
       return [
         {
-          title: this.config.idKey === 'project_id' ? 'Project ID' : 'Organization ID',
+          title:
+            this.config.idKey === 'project_id'
+              ? 'Project ID'
+              : 'Organization ID',
           align: 'start',
           sortable: false,
           key: this.config.idKey,
@@ -218,7 +221,7 @@ export default {
       handler(newActions) {
         this.table.actions = newActions
       },
-      immediate: true
+      immediate: true,
     },
     tableData: {
       handler(newData) {
@@ -227,8 +230,8 @@ export default {
         this.table.options = newData.options
       },
       deep: true,
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     handleSearch() {
@@ -239,7 +242,8 @@ export default {
       this.$emit('update-options', options)
     },
     getStatusText(status) {
-      const numStatus = typeof status === 'string' ? parseInt(status, 10) : status
+      const numStatus =
+        typeof status === 'string' ? parseInt(status, 10) : status
       switch (numStatus) {
         case 1:
           return 'PENDING'
@@ -248,7 +252,12 @@ export default {
         case 3:
           return 'REJECTED'
         default:
-          console.warn('Unknown status value:', status, 'converted to:', numStatus)
+          console.warn(
+            'Unknown status value:',
+            status,
+            'converted to:',
+            numStatus
+          )
           return 'UNKNOWN'
       }
     },
@@ -270,4 +279,4 @@ export default {
     },
   },
 }
-</script> 
+</script>

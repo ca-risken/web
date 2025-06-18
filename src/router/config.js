@@ -475,6 +475,42 @@ export const appRoute = [
         ],
       },
       {
+        path: '/organization-iam/',
+        component: RouteWrapper,
+        redirect: '/organization-iam/user',
+        meta: {
+          title: 'Organization IAM',
+          icon: 'mdi-account-multiple',
+          group: 'organization-iam',
+        },
+        children: [
+          {
+            path: '/organization-iam/user',
+            name: 'OrganizationUser',
+            meta: {
+              title: 'OrganizationUser',
+            },
+            component: () => import('@/view/organization/iam/User.vue'),
+          },
+          {
+            path: '/organization-iam/role',
+            name: 'OrganizationRole',
+            meta: {
+              title: 'OrganizationRole',
+            },
+            component: () => import('@/view/organization/iam/Role.vue'),
+          },
+          {
+            path: '/organization-iam/policy',
+            name: 'OrganizationPolicy',
+            meta: {
+              title: 'OrganizationPolicy',
+            },
+            component: () => import('@/view/organization/iam/Policy.vue'),
+          },
+        ],
+      },
+      {
         path: '/admin',
         component: RouteWrapper,
         redirect: '/admin/menu',
