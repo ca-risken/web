@@ -34,7 +34,9 @@ router.beforeEach(async (to, from, next) => {
     organization_id != current_organization_id
   ) {
     // Change organization
-    console.log(`Changing organization from ${current_organization_id} to ${organization_id}`)
+    console.log(
+      `Changing organization from ${current_organization_id} to ${organization_id}`
+    )
 
     const admin = await axios
       .get('/iam/is-admin/?user_id=' + user_id)
@@ -46,15 +48,18 @@ router.beforeEach(async (to, from, next) => {
     if (!admin.data.data.ok) {
       q += '&user_id=' + user_id
     }
-    const res = await axios.get('/organization/list-organization/?' + q).catch((err) => {
-      handleAPIError(err)
-      return
-    })
+    const res = await axios
+      .get('/organization/list-organization/?' + q)
+      .catch((err) => {
+        handleAPIError(err)
+        return
+      })
     if (res.data.data.organization && res.data.data.organization.length > 0) {
       // Find the specific organization by ID instead of always using the first one
       const targetOrganization =
-        res.data.data.organization.find((o) => o.organization_id == organization_id) ||
-        res.data.data.organization[0]
+        res.data.data.organization.find(
+          (o) => o.organization_id == organization_id
+        ) || res.data.data.organization[0]
       console.log('Setting organization to:', targetOrganization)
       await store.commit('updateOrganization', targetOrganization)
       next()
@@ -102,7 +107,12 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Force set organization_id parameter for organization routes
-  if (to.path.startsWith('/organization') && !to.query.organization_id && current_organization_id && current_organization_id != '') {
+  if (
+    to.path.startsWith('/organization') &&
+    !to.query.organization_id &&
+    current_organization_id &&
+    current_organization_id != ''
+  ) {
     let query = Object.assign({}, to.query)
     query.organization_id = current_organization_id
     next({ ...to, query })
@@ -110,13 +120,18 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Force set project_id parameter for non-organization routes
-  if (!to.path.startsWith('/organization') && !to.query.project_id && current_project_id && current_project_id != '') {
+  if (
+    !to.path.startsWith('/organization') &&
+    !to.query.project_id &&
+    current_project_id &&
+    current_project_id != ''
+  ) {
     let query = Object.assign({}, to.query)
     query.project_id = current_project_id
     next({ ...to, query })
     return
   }
-  
+
   next()
 })
 

@@ -401,22 +401,22 @@ export default {
   },
   methods: {
     async refleshList(policyName) {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      if (!currentOrganizationID) {
-        console.error('No current organization ID found')
-        this.clearList()
-        return
+      let searchCond = ''
+      if (policyName) {
+        searchCond += '&name=' + policyName
       }
 
-      const policyData = await this.listOrganizationPolicyAPI(currentOrganizationID).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
-      
+      const policyData = await this.listOrganizationPolicyAPI(searchCond).catch(
+        (err) => {
+          this.clearList()
+          return Promise.reject(err)
+        }
+      )
+
       console.log('Policy data received:', policyData)
       console.log('Policy data type:', typeof policyData)
       console.log('Policy data is array:', Array.isArray(policyData))
-      
+
       // Check if policyData is an array of IDs or objects
       let policyIDs = []
       if (Array.isArray(policyData)) {
@@ -425,9 +425,12 @@ export default {
           console.log('First item type:', typeof policyData[0])
           // If first element has policy_id, extract IDs
           if (typeof policyData[0] === 'object' && policyData[0].policy_id) {
-            policyIDs = policyData.map(policy => policy.policy_id)
+            policyIDs = policyData.map((policy) => policy.policy_id)
             console.log('Extracted policy IDs:', policyIDs)
-          } else if (typeof policyData[0] === 'string' || typeof policyData[0] === 'number') {
+          } else if (
+            typeof policyData[0] === 'string' ||
+            typeof policyData[0] === 'number'
+          ) {
             // Assume it's already an array of IDs
             policyIDs = policyData
             console.log('Using policy data as IDs:', policyIDs)
@@ -438,38 +441,25 @@ export default {
       } else if (policyData && typeof policyData === 'object') {
         // Handle case where API returns an object with policies array
         if (policyData.policies && Array.isArray(policyData.policies)) {
-          policyIDs = policyData.policies.map(policy => 
+          policyIDs = policyData.policies.map((policy) =>
             typeof policy === 'object' ? policy.policy_id : policy
           )
         } else if (policyData.data && Array.isArray(policyData.data)) {
-          policyIDs = policyData.data.map(policy => 
+          policyIDs = policyData.data.map((policy) =>
             typeof policy === 'object' ? policy.policy_id : policy
           )
         }
         console.log('Extracted from object structure:', policyIDs)
       }
-      
+
       if (policyIDs.length == 0) {
         this.clearList()
         return
       }
-      
-      // Filter by policy name if provided
-      if (policyName) {
-        const filteredPolicies = []
-        for (const id of policyIDs) {
-          const policy = await this.getOrganizationPolicyAPI(currentOrganizationID, id).catch(() => null)
-          if (policy && policy.name.toLowerCase().includes(policyName.toLowerCase())) {
-            filteredPolicies.push(id)
-          }
-        }
-        this.table.total = filteredPolicies.length
-        this.policies = filteredPolicies
-      } else {
-        this.table.total = policyIDs.length
-        this.policies = policyIDs
-      }
-      
+
+      this.table.total = policyIDs.length
+      this.policies = policyIDs
+
       this.loadList()
     },
 
@@ -477,32 +467,32 @@ export default {
       this.loading = true
       let items = []
       let policyNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.policies.slice(from, to)
-      
+
       items = await Promise.all(
         ids.map(async (id) => {
           return await this.getPolicy(id)
         })
       )
-      
+
       items.forEach((item) => {
         policyNames.push(item.name)
       })
-      
+
       this.table.items = items
       this.policyNameList = [...new Set(policyNames)]
       this.loading = false
     },
 
     async getPolicy(id) {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      const policy = await this.getOrganizationPolicyAPI(currentOrganizationID, id).catch((err) => {
+      const policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      
+
       return policy
     },
 
@@ -524,13 +514,10 @@ export default {
     },
 
     async putItem() {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      const param = {
-        organization_id: currentOrganizationID,
-        name: this.policyModel.name,
-        action_ptn: this.policyModel.action_ptn,
-      }
-      await this.putOrganizationPolicyAPI(currentOrganizationID, param.name, param.action_ptn).catch((err) => {
+      await this.putOrganizationPolicyAPI(
+        this.policyModel.name,
+        this.policyModel.action_ptn
+      ).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
@@ -603,4 +590,4 @@ export default {
     },
   },
 }
-</script> 
+</script>

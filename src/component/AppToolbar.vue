@@ -473,7 +473,10 @@ export default {
       const queryOrganizationId = this.$route.query.organization_id
       if (queryOrganizationId) {
         // Let the router navigation guard handle organization loading
-        console.log('Organization ID found in query params:', queryOrganizationId)
+        console.log(
+          'Organization ID found in query params:',
+          queryOrganizationId
+        )
       } else {
         store.commit('updateOrganization', {
           organization_id: 1,
@@ -681,7 +684,7 @@ export default {
       )
       await this.$router.push({
         path: '/organization/project',
-        query: { organization_id: organization.item.value.organization_id }
+        query: { organization_id: organization.item.value.organization_id },
       })
 
       // Force a full page reload to ensure all components are updated
@@ -736,7 +739,10 @@ export default {
         // モードに応じて適切なページに遷移
         if (newMode === 'organization') {
           console.log('Navigating to organization/project...')
-          await this.$router.push({ path: '/organization/project', query: query })
+          await this.$router.push({
+            path: '/organization/project',
+            query: query,
+          })
         } else {
           console.log('Navigating to dashboard...')
           await this.$router.push({ path: '/dashboard', query: query })

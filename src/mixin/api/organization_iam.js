@@ -5,24 +5,38 @@ const organization_iam = {
   methods: {
     getCurrentOrganizationID() {
       // Try to get organization ID from store first
-      let organizationId = this.$store.state.organization?.organization_id || null
-      
+      let organizationId =
+        this.$store.state.organization?.organization_id || null
+
       // If not found in store, try to get from route params
-      if (!organizationId && this.$route && this.$route.params && this.$route.params.organizationId) {
+      if (
+        !organizationId &&
+        this.$route &&
+        this.$route.params &&
+        this.$route.params.organizationId
+      ) {
         organizationId = this.$route.params.organizationId
       }
-      
+
       // If still not found, try to get from query params
-      if (!organizationId && this.$route && this.$route.query && this.$route.query.organization_id) {
+      if (
+        !organizationId &&
+        this.$route &&
+        this.$route.query &&
+        this.$route.query.organization_id
+      ) {
         organizationId = this.$route.query.organization_id
       }
-      
+
       return organizationId
     },
-    async listOrganizationRoleAPI(organization_id) {
-      const param = organization_id ? `?organization_id=${organization_id}` : ''
+    async listOrganizationRoleAPI(searchCond) {
       const res = await this.$axios
-        .get('/organization/list-organization-role' + param)
+        .get(
+          '/organization/list-organization-role/?organization_id=' +
+            this.getCurrentOrganizationID() +
+            searchCond
+        )
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -31,10 +45,13 @@ const organization_iam = {
       }
       return res.data.data.role_id
     },
-    async listOrganizationPolicyAPI(organization_id) {
-      const param = organization_id ? `?organization_id=${organization_id}` : ''
+    async listOrganizationPolicyAPI(searchCond) {
       const res = await this.$axios
-        .get('/organization/list-organization-policy' + param)
+        .get(
+          '/organization/list-organization-policy/?organization_id=' +
+            this.getCurrentOrganizationID() +
+            searchCond
+        )
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -43,13 +60,14 @@ const organization_iam = {
       }
       return res.data.data.policy_id
     },
-
-    async getOrganizationRoleAPI(organization_id, role_id) {
-      const param = organization_id
-        ? `?organization_id=${organization_id}&role_id=${role_id}`
-        : ''
+    async getOrganizationRoleAPI(role_id) {
       const res = await this.$axios
-        .get('/organization/get-organization-role' + param)
+        .get(
+          '/organization/get-organization-role/?organization_id=' +
+            this.getCurrentOrganizationID() +
+            '&role_id=' +
+            role_id
+        )
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -58,9 +76,9 @@ const organization_iam = {
       }
       return res.data.data.role
     },
-    async putOrganizationRoleAPI(organization_id, name) {
+    async putOrganizationRoleAPI(name) {
       const param = {
-        organization_id: organization_id,
+        organization_id: this.getCurrentOrganizationID(),
         name: name,
       }
       const res = await this.$axios
@@ -68,7 +86,7 @@ const organization_iam = {
         .catch((err) => {
           return Promise.reject(err)
         })
-      if (!res.data.data.policy) {
+      if (!res.data.data.role) {
         return []
       }
       return res.data.data.role
@@ -85,12 +103,14 @@ const organization_iam = {
         })
       return res.data.data.role
     },
-    async getOrganizationPolicyAPI(organization_id, policy_id) {
-      const param = organization_id
-        ? `?organization_id=${organization_id}&policy_id=${policy_id}`
-        : ''
+    async getOrganizationPolicyAPI(policy_id) {
       const res = await this.$axios
-        .get('/organization/get-organization-policy' + param)
+        .get(
+          '/organization/get-organization-policy/?organization_id=' +
+            this.getCurrentOrganizationID() +
+            '&policy_id=' +
+            policy_id
+        )
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -99,9 +119,9 @@ const organization_iam = {
       }
       return res.data.data.policy
     },
-    async putOrganizationPolicyAPI(organization_id, name, action_ptn) {
+    async putOrganizationPolicyAPI(name, action_ptn) {
       const param = {
-        organization_id: organization_id,
+        organization_id: this.getCurrentOrganizationID(),
         name: name,
         action_ptn: action_ptn,
       }

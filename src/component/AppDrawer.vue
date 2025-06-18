@@ -122,28 +122,32 @@ export default {
     },
     computeMenu() {
       const allMenus = routes[0].children
-      let filteredMenus = allMenus.filter((menu) => this.isMenuItemVisible(menu))
-      
+      let filteredMenus = allMenus.filter((menu) =>
+        this.isMenuItemVisible(menu)
+      )
+
       // Replace IAM menu with Organization IAM when in organization mode
       if (this.isOrganizationMode) {
         filteredMenus = filteredMenus.map((menu) => {
           if (menu.meta.title === 'IAM') {
             // Find the organization-iam menu
-            const orgIamMenu = allMenus.find(m => m.meta.group === 'organization-iam')
+            const orgIamMenu = allMenus.find(
+              (m) => m.meta.group === 'organization-iam'
+            )
             if (orgIamMenu) {
               return {
                 ...orgIamMenu,
                 meta: {
                   ...orgIamMenu.meta,
                   title: 'IAM', // Keep the title as 'IAM' for display purposes
-                }
+                },
               }
             }
           }
           return menu
         })
       }
-      
+
       return filteredMenus
     },
     drawerToolbarColor() {

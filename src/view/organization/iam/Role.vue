@@ -213,7 +213,6 @@
                   </v-card>
                 </template>
               </v-data-table>
-
             </template>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -446,9 +445,11 @@ export default {
   methods: {
     async checkAccessAndLoad() {
       const currentOrganizationID = this.getCurrentOrganizationID()
-      
+
       if (!currentOrganizationID) {
-        this.$refs.snackbar.notifyError('No organization selected. Please select an organization first.')
+        this.$refs.snackbar.notifyError(
+          'No organization selected. Please select an organization first.'
+        )
         this.$router.push('/organization/setting')
         return
       }
@@ -460,45 +461,60 @@ export default {
         this.refleshList('')
       } catch (err) {
         if (err.response?.status === 403) {
-          this.$refs.snackbar.notifyError('Access denied: You do not have permission to view organization roles. Please contact your administrator.')
+          this.$refs.snackbar.notifyError(
+            'Access denied: You do not have permission to view organization roles. Please contact your administrator.'
+          )
           this.$router.push('/organization/setting')
         } else if (err.response?.status === 401) {
-          this.$refs.snackbar.notifyError('Authentication failed. Please log in again.')
+          this.$refs.snackbar.notifyError(
+            'Authentication failed. Please log in again.'
+          )
           this.$router.push('/auth/signin')
         } else {
-          this.$refs.snackbar.notifyError(`Failed to load organization roles: ${err.response?.data || err.message}`)
+          this.$refs.snackbar.notifyError(
+            `Failed to load organization roles: ${
+              err.response?.data || err.message
+            }`
+          )
         }
       }
     },
 
     async refleshList(roleName) {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      if (!currentOrganizationID) {
-        console.error('No current organization ID found')
-        this.clearList()
-        return
+      let searchCond = ''
+      if (roleName) {
+        searchCond += '&name=' + roleName
       }
 
-      const roleData = await this.listOrganizationRoleAPI(currentOrganizationID).catch((err) => {
-        if (err.response?.status === 403) {
-          this.$refs.snackbar.notifyError('Access denied: You do not have permission to view organization roles.')
+      const roleData = await this.listOrganizationRoleAPI(searchCond).catch(
+        (err) => {
+          if (err.response?.status === 403) {
+            this.$refs.snackbar.notifyError(
+              'Access denied: You do not have permission to view organization roles.'
+            )
+            this.clearList()
+            return []
+          }
+
           this.clearList()
+          this.$refs.snackbar.notifyError(
+            err.response?.data || 'Failed to load roles'
+          )
           return []
         }
-        
-        this.clearList()
-        this.$refs.snackbar.notifyError(err.response?.data || 'Failed to load roles')
-        return []
-      })
-      
+      )
+
       // Check if roleData is an array of IDs or objects
       let roleIDs = []
       if (Array.isArray(roleData)) {
         if (roleData.length > 0) {
           // If first element has role_id, extract IDs
           if (typeof roleData[0] === 'object' && roleData[0].role_id) {
-            roleIDs = roleData.map(role => role.role_id)
-          } else if (typeof roleData[0] === 'string' || typeof roleData[0] === 'number') {
+            roleIDs = roleData.map((role) => role.role_id)
+          } else if (
+            typeof roleData[0] === 'string' ||
+            typeof roleData[0] === 'number'
+          ) {
             // Assume it's already an array of IDs
             roleIDs = roleData
           }
@@ -506,37 +522,24 @@ export default {
       } else if (roleData && typeof roleData === 'object') {
         // Handle case where API returns an object with roles array
         if (roleData.roles && Array.isArray(roleData.roles)) {
-          roleIDs = roleData.roles.map(role => 
+          roleIDs = roleData.roles.map((role) =>
             typeof role === 'object' ? role.role_id : role
           )
         } else if (roleData.data && Array.isArray(roleData.data)) {
-          roleIDs = roleData.data.map(role => 
+          roleIDs = roleData.data.map((role) =>
             typeof role === 'object' ? role.role_id : role
           )
         }
       }
-      
+
       if (roleIDs.length == 0) {
         this.clearList()
         return
       }
-      
-      // Filter by role name if provided
-      if (roleName) {
-        const filteredRoles = []
-        for (const id of roleIDs) {
-          const role = await this.getOrganizationRoleAPI(currentOrganizationID, id).catch(() => null)
-          if (role && role.name.toLowerCase().includes(roleName.toLowerCase())) {
-            filteredRoles.push(id)
-          }
-        }
-        this.table.total = filteredRoles.length
-        this.roles = filteredRoles
-      } else {
-        this.table.total = roleIDs.length
-        this.roles = roleIDs
-      }
-      
+
+      this.table.total = roleIDs.length
+      this.roles = roleIDs
+
       this.loadList()
     },
 
@@ -544,38 +547,38 @@ export default {
       this.loading = true
       let items = []
       let roleNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.roles.slice(from, to)
-      
+
       items = await Promise.all(
         ids.map(async (id) => {
           return await this.getRole(id)
         })
       )
-      
+
       // Filter out null items and collect names
-      items = items.filter(item => item !== null)
+      items = items.filter((item) => item !== null)
       items.forEach((item) => {
         if (item && item.name) {
           roleNames.push(item.name)
         }
       })
-      
+
       this.table.items = items
       this.roleNameList = [...new Set(roleNames)]
       this.loading = false
     },
 
     async getRole(id) {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      const role = await this.getOrganizationRoleAPI(currentOrganizationID, id).catch((err) => {
+      const role = await this.getOrganizationRoleAPI(id).catch((err) => {
         if (err.response?.status === 403) {
           return null
         }
         return null
       })
-      
+
       if (!role) {
         return {
           role_id: id,
@@ -585,47 +588,21 @@ export default {
           policies: [],
         }
       }
-      
-      // Get policies for this role using organization policy API
-      const policyData = await this.listOrganizationPolicyAPI(currentOrganizationID).catch(() => {
+
+      // Get policies attached to this role
+      const attachedPolicyIDs = await this.listOrganizationPolicyAPI(
+        '&role_id=' + id
+      ).catch(() => {
         // If policy API fails, just set policy count to 0
         return []
       })
-      
-      // Extract policy IDs from the response
-      let allPolicyIDs = []
-      if (Array.isArray(policyData)) {
-        if (policyData.length > 0) {
-          if (typeof policyData[0] === 'object' && policyData[0].policy_id) {
-            allPolicyIDs = policyData.map(policy => policy.policy_id)
-          } else if (typeof policyData[0] === 'string' || typeof policyData[0] === 'number') {
-            allPolicyIDs = policyData
-          }
-        }
-      } else if (policyData && typeof policyData === 'object') {
-        if (policyData.policies && Array.isArray(policyData.policies)) {
-          allPolicyIDs = policyData.policies.map(policy => 
-            typeof policy === 'object' ? policy.policy_id : policy
-          )
-        } else if (policyData.data && Array.isArray(policyData.data)) {
-          allPolicyIDs = policyData.data.map(policy => 
-            typeof policy === 'object' ? policy.policy_id : policy
-          )
-        }
-      }
 
-      // Filter policies that belong to this role
-      const rolePolicyIDs = role.policy_ids || []
-      const rolePolicies = allPolicyIDs.filter(policyId => 
-        rolePolicyIDs.includes(policyId)
-      )
-      
       const item = {
         role_id: role.role_id,
         name: role.name,
         updated_at: role.updated_at,
-        policy_cnt: rolePolicies.length,
-        policies: rolePolicies,
+        policy_cnt: attachedPolicyIDs.length,
+        policies: attachedPolicyIDs,
       }
       return item
     },
@@ -639,19 +616,21 @@ export default {
 
     async loadPolicyList() {
       this.loading = true
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      
+
       try {
-        const policyData = await this.listOrganizationPolicyAPI(currentOrganizationID)
-        
+        const policyData = await this.listOrganizationPolicyAPI('')
+
         // Extract policy IDs from the response
         let policyIDs = []
         if (Array.isArray(policyData)) {
           if (policyData.length > 0) {
             // If first element has policy_id, extract IDs
             if (typeof policyData[0] === 'object' && policyData[0].policy_id) {
-              policyIDs = policyData.map(policy => policy.policy_id)
-            } else if (typeof policyData[0] === 'string' || typeof policyData[0] === 'number') {
+              policyIDs = policyData.map((policy) => policy.policy_id)
+            } else if (
+              typeof policyData[0] === 'string' ||
+              typeof policyData[0] === 'number'
+            ) {
               // Assume it's already an array of IDs
               policyIDs = policyData
             }
@@ -659,40 +638,49 @@ export default {
         } else if (policyData && typeof policyData === 'object') {
           // Handle case where API returns an object with policies array
           if (policyData.policies && Array.isArray(policyData.policies)) {
-            policyIDs = policyData.policies.map(policy => 
+            policyIDs = policyData.policies.map((policy) =>
               typeof policy === 'object' ? policy.policy_id : policy
             )
           } else if (policyData.data && Array.isArray(policyData.data)) {
-            policyIDs = policyData.data.map(policy => 
+            policyIDs = policyData.data.map((policy) =>
               typeof policy === 'object' ? policy.policy_id : policy
             )
           }
         }
-        
+
         // Get detailed policy information
         let policyItems = []
         if (policyIDs.length > 0) {
           policyItems = await Promise.all(
             policyIDs.map(async (policyId) => {
-              const policyDetail = await this.getOrganizationPolicyAPI(currentOrganizationID, policyId).catch(() => {
+              const policyDetail = await this.getOrganizationPolicyAPI(
+                policyId
+              ).catch(() => {
                 return null
               })
               return policyDetail
             })
           )
-          
+
           // Filter out null items
-          policyItems = policyItems.filter(item => item !== null)
+          policyItems = policyItems.filter((item) => item !== null)
         }
-        
-        // Select policies that are currently attached to the role
-        this.policyTable.selected = policyItems.filter(policy => 
-          this.roleModel.policies && this.roleModel.policies.includes(policy.policy_id)
-        )
-        
+
         this.policyTable.items = policyItems
+
+        // Get policies currently attached to this role
+        const attachedPolicyIDs = await this.listOrganizationPolicyAPI(
+          '&role_id=' + this.roleModel.role_id
+        ).catch(() => [])
+
+        // Select policies that are currently attached to the role
+        this.policyTable.selected = policyItems.filter((policy) =>
+          attachedPolicyIDs.includes(policy.policy_id)
+        )
       } catch (err) {
-        this.$refs.snackbar.notifyError(err.response?.data || 'Failed to load policies')
+        this.$refs.snackbar.notifyError(
+          err.response?.data || 'Failed to load policies'
+        )
       } finally {
         this.loading = false
       }
@@ -709,46 +697,58 @@ export default {
     },
 
     async putItem() {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-      
       try {
         // Create or update role
-        await this.putOrganizationRoleAPI(currentOrganizationID, this.roleModel.name)
-        
+        await this.putOrganizationRoleAPI(this.roleModel.name)
+
         // If not a new role, update policy attachments
         if (!this.roleForm.newRole) {
-          // Get current policies attached to role  
-          const currentPolicyIds = this.roleModel.policies || []
-          
+          // Get current policies attached to role from API
+          const currentPolicyIds = await this.listOrganizationPolicyAPI(
+            '&role_id=' + this.roleModel.role_id
+          ).catch(() => [])
+
           // Get selected policy IDs
-          const selectedPolicyIds = this.policyTable.selected.map(policy => policy.policy_id)
-          
+          const selectedPolicyIds = this.policyTable.selected.map(
+            (policy) => policy.policy_id
+          )
+
           // Policies to attach (selected but not currently attached)
-          const policiesToAttach = selectedPolicyIds.filter(policyId => !currentPolicyIds.includes(policyId))
-          
+          const policiesToAttach = selectedPolicyIds.filter(
+            (policyId) => !currentPolicyIds.includes(policyId)
+          )
+
           // Policies to detach (currently attached but not selected)
-          const policiesToDetach = currentPolicyIds.filter(policyId => !selectedPolicyIds.includes(policyId))
-          
+          const policiesToDetach = currentPolicyIds.filter(
+            (policyId) => !selectedPolicyIds.includes(policyId)
+          )
+
           // Attach new policies
           for (const policyId of policiesToAttach) {
-            await this.attachOrganizationPolicyAPI(this.roleModel.role_id, policyId)
+            await this.attachOrganizationPolicyAPI(
+              this.roleModel.role_id,
+              policyId
+            )
           }
-          
+
           // Detach removed policies
           for (const policyId of policiesToDetach) {
-            await this.detachOrganizationPolicyAPI(policyId, this.roleModel.role_id)
+            await this.detachOrganizationPolicyAPI(
+              policyId,
+              this.roleModel.role_id
+            )
           }
         }
-        
+
         this.$refs.snackbar.notifySuccess('Success: Updated role.')
         this.editDialog = false
         this.handleSearch()
       } catch (err) {
-        this.$refs.snackbar.notifyError(err.response?.data || 'Failed to update role')
+        this.$refs.snackbar.notifyError(
+          err.response?.data || 'Failed to update role'
+        )
       }
     },
-
-
 
     getColorByCount(count) {
       if (count === 0) return 'grey'
@@ -811,4 +811,4 @@ export default {
     },
   },
 }
-</script> 
+</script>

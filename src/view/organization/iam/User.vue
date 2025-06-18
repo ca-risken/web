@@ -200,13 +200,6 @@
               item-key="role_id"
               show-select
             >
-              <template v-slot:[`item.policy_cnt`]="{ item }">
-                <v-chip
-                  :color="getColorByCount(item.policy_cnt)"
-                  variant="flat"
-                  >{{ item.policy_cnt }}</v-chip
-                >
-              </template>
             </v-data-table>
 
             <v-divider class="mt-3 mb-3"></v-divider>
@@ -395,12 +388,6 @@ export default {
           sortable: true,
           key: 'name',
         },
-        {
-          title: this.$i18n.t('item["Policies"]'),
-          align: 'center',
-          sortable: true,
-          key: 'policy_cnt',
-        },
       ]
     },
   },
@@ -409,21 +396,21 @@ export default {
   },
   methods: {
     async refleshList(userName) {
-      let searchCond = '&organization_id=' + this.getCurrentOrganizationID()
+      let searchCond = ''
       if (userName) {
         searchCond += '&name=' + userName
       }
-      
+
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      
+
       if (userIDs.length == 0) {
         this.clearList()
         return
       }
-      
+
       this.table.total = userIDs.length
       this.users = userIDs
       this.loadList()
@@ -433,20 +420,21 @@ export default {
       this.loading = true
       let items = []
       let userNames = []
-      const from = (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
       const to = from + this.table.options.itemsPerPage
       const ids = this.users.slice(from, to)
-      
+
       items = await Promise.all(
         ids.map(async (id) => {
           return await this.getUser(id)
         })
       )
-      
+
       items.forEach((item) => {
         userNames.push(item.name)
       })
-      
+
       this.table.items = items
       this.userNameList = [...new Set(userNames)]
       this.loading = false
@@ -457,27 +445,26 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      
+
       // Get roles for this user in the current organization
-      const organizationId = this.getCurrentOrganizationID()
-      const roleIDs = await this.listOrganizationRoleAPI(organizationId).catch((err) => {
-        console.warn('Failed to get roles for organization:', organizationId, err)
+      const roleIDs = await this.listOrganizationRoleAPI(
+        '&user_id=' + id
+      ).catch((err) => {
+        console.warn('Failed to get roles for user:', id, err)
         return []
       })
-      
+
       // Get detailed role information for roles attached to this user
       const userRoles = []
       for (const roleId of roleIDs) {
         try {
-          const role = await this.getOrganizationRoleAPI(organizationId, roleId)
-          // Check if this role is attached to the user (this would need to be determined by API)
-          // For now, we'll assume all organization roles are available to the user
+          const role = await this.getOrganizationRoleAPI(roleId)
           userRoles.push(role)
         } catch (err) {
           console.warn('Failed to get role details:', roleId, err)
         }
       }
-      
+
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -523,35 +510,35 @@ export default {
       this.loading = true
       try {
         // Get all roles in the organization
-        const searchCond = '&organization_id=' + this.getCurrentOrganizationID()
-        const roleIDs = await this.listOrganizationRoleAPI(searchCond)
-        
-        // Get role details with policy count
+        const roleIDs = await this.listOrganizationRoleAPI('')
+
+        // Get role details
         const roles = await Promise.all(
           roleIDs.map(async (id) => {
             const role = await this.getOrganizationRoleAPI(id)
-            
-            // Get policy count for this role
-            const policySearchCond = '&organization_id=' + this.getCurrentOrganizationID() + '&role_id=' + id
-            const policies = await this.listOrganizationPolicyAPI(policySearchCond).catch(() => [])
-            
+
             return {
               role_id: role.role_id,
               name: role.name,
-              policy_cnt: policies.length,
             }
           })
         )
-        
+
         this.roleTable.items = roles
-        
+
         // Select roles that are currently attached to the user
-        this.roleTable.selected = roles.filter(role => 
-          this.userModel.roles && this.userModel.roles.some(userRole => userRole.role_id === role.role_id)
+        this.roleTable.selected = roles.filter(
+          (role) =>
+            this.userModel.roles &&
+            this.userModel.roles.some(
+              (userRole) => userRole.role_id === role.role_id
+            )
         )
       } catch (err) {
         console.error('Failed to load roles:', err)
-        this.$refs.snackbar.notifyError(err.response?.data?.message || 'Failed to load roles')
+        this.$refs.snackbar.notifyError(
+          err.response?.data?.message || 'Failed to load roles'
+        )
       } finally {
         this.loading = false
       }
@@ -561,41 +548,47 @@ export default {
       this.loading = true
       try {
         const userId = this.userModel.user_id
-        
+
         // Get current roles attached to user
-        const currentRoleIds = this.userModel.roles.map(role => role.role_id)
-        
+        const currentRoleIds = this.userModel.roles.map((role) => role.role_id)
+
         // Get selected role IDs
-        const selectedRoleIds = this.roleTable.selected.map(role => role.role_id)
-        
+        const selectedRoleIds = this.roleTable.selected.map(
+          (role) => role.role_id
+        )
+
         // Roles to attach (selected but not currently attached)
-        const rolesToAttach = selectedRoleIds.filter(roleId => !currentRoleIds.includes(roleId))
-        
+        const rolesToAttach = selectedRoleIds.filter(
+          (roleId) => !currentRoleIds.includes(roleId)
+        )
+
         // Roles to detach (currently attached but not selected)
-        const rolesToDetach = currentRoleIds.filter(roleId => !selectedRoleIds.includes(roleId))
-        
+        const rolesToDetach = currentRoleIds.filter(
+          (roleId) => !selectedRoleIds.includes(roleId)
+        )
+
         // Attach new roles
         for (const roleId of rolesToAttach) {
           await this.attachOrganizationRoleAPI(userId, roleId)
         }
-        
+
         // Detach removed roles
         for (const roleId of rolesToDetach) {
           await this.detachOrganizationRoleAPI(userId, roleId)
         }
-        
+
         this.$refs.snackbar.notifySuccess('User roles updated successfully')
         this.editDialog = false
         this.refleshList('')
       } catch (err) {
         console.error('Failed to update user roles:', err)
-        this.$refs.snackbar.notifyError(err.response?.data?.message || 'Failed to update user roles')
+        this.$refs.snackbar.notifyError(
+          err.response?.data?.message || 'Failed to update user roles'
+        )
       } finally {
         this.loading = false
       }
     },
-
-
 
     getColorByCount(count) {
       if (count === 0) return 'grey'
@@ -609,4 +602,4 @@ export default {
     },
   },
 }
-</script> 
+</script>
