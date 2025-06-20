@@ -75,13 +75,29 @@ export default {
   mounted() {
     this.refleshList('')
   },
+  watch: {
+    '$route.query.organization_id': {
+      handler(newOrganizationId, oldOrganizationId) {
+        if (newOrganizationId && newOrganizationId !== oldOrganizationId) {
+          console.log('Organization ID changed in route, refreshing list:', newOrganizationId)
+          this.refleshList('')
+        }
+      },
+      immediate: false
+    }
+  },
   methods: {
     async refleshList(projectName) {
-      // Get current organization from store
-      const currentOrganization = this.$store.state.organization
+      let currentOrganization = this.$store.state.organization
       if (!currentOrganization || !currentOrganization.organization_id) {
-        this.clearList()
-        return
+        const organizationId = this.$route.query.organization_id
+        
+        if (organizationId) {
+          currentOrganization = { organization_id: organizationId }
+        } else {
+          this.clearList()
+          return
+        }
       }
 
       try {
@@ -128,7 +144,7 @@ export default {
         console.error('Error loading organization invitations:', err)
         this.clearList()
         this.$refs.invitationTable.$refs.snackbar?.notifyError(
-          '組織プロジェクトの読み込みに失敗しました'
+          `組織プロジェクトの読み込みに失敗しました: ${err.response?.data?.message || err.message}`
         )
       }
     },

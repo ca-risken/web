@@ -58,10 +58,20 @@ const organization = {
       return res.data.data.organization_invitations
     },
     async PutOrganizationInvitationAPI(organization_id, project_id, status) {
+      let statusValue = status
+      if (typeof status === 'string') {
+        const statusMap = {
+          PENDING: 1,
+          ACCEPTED: 2,
+          REJECTED: 3,
+        }
+        statusValue = statusMap[status.toUpperCase()] || status
+      }
+
       const param = {
         organization_id: organization_id,
         project_id: project_id,
-        status: status,
+        status: statusValue,
       }
       const res = await this.$axios
         .post('/organization/put-organization-invitation', param)
@@ -85,10 +95,20 @@ const organization = {
     },
 
     async ReplyOrganizationInvitationAPI(organization_id, project_id, status) {
+      let statusValue = status
+      if (typeof status === 'string') {
+        const statusMap = {
+          PENDING: 1,
+          ACCEPTED: 2,
+          REJECTED: 3,
+        }
+        statusValue = statusMap[status.toUpperCase()] || status
+      }
+
       const param = {
         organization_id: organization_id,
         project_id: project_id,
-        status: status,
+        status: statusValue,
       }
       const res = await this.$axios
         .post('/project/reply-organization-invitation', param)

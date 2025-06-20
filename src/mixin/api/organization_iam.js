@@ -151,6 +151,7 @@ const organization_iam = {
       const param = {
         user_id: user_id,
         role_id: role_id,
+        organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
         .post('/organization/attach-organization-role', param)
@@ -166,6 +167,7 @@ const organization_iam = {
       const param = {
         user_id: user_id,
         role_id: role_id,
+        organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
         .post('/organization/detach-organization-role', param)
@@ -178,6 +180,7 @@ const organization_iam = {
       const param = {
         role_id: role_id,
         policy_id: policy_id,
+        organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
         .post('/organization/attach-organization-policy', param)
@@ -190,6 +193,7 @@ const organization_iam = {
       const param = {
         policy_id: policy_id,
         role_id: role_id,
+        organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
         .post('/organization/detach-organization-policy', param)

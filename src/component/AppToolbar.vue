@@ -686,11 +686,6 @@ export default {
         path: '/organization/project',
         query: { organization_id: organization.item.value.organization_id },
       })
-
-      // Force a full page reload to ensure all components are updated
-      setTimeout(() => {
-        window.location.reload()
-      }, 100)
     },
     handleNewOrganization() {
       this.$router.push('/organization/setting?new=true')
