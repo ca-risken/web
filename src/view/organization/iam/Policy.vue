@@ -19,10 +19,10 @@
               clearable
               density="compact"
               bg-color="white"
-              :label="$t(`item['` + searchForm.policyName.label + `']`)"
-              :placeholder="searchForm.policyName.placeholder"
-              :items="policyNameList"
-              v-model="searchModel.policyName"
+              :label="$t(`item['` + searchForm.name.label + `']`)"
+              :placeholder="searchForm.name.placeholder"
+              :items="nameList"
+              v-model="searchModel.name"
             />
           </v-col>
 
@@ -258,23 +258,21 @@
 <script>
 import mixin from '@/mixin'
 import organization_iam from '@/mixin/api/organization_iam'
+import list from '@/mixin/util/list'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import Util from '@/util'
 
 export default {
   name: 'OrganizationPolicyList',
-  mixins: [mixin, organization_iam],
+  mixins: [mixin, organization_iam, list],
   components: {
     BottomSnackBar,
     VDataTable,
   },
   data() {
     return {
-      loading: false,
-      searchModel: { policyName: null },
       searchForm: {
-        policyName: {
+        name: {
           label: 'Policy Name',
           placeholder: 'Filter for policy name',
         },
@@ -312,7 +310,6 @@ export default {
           ],
         },
       },
-      policyNameList: [],
       policyModel: {
         policy_id: '',
         name: '',
@@ -320,31 +317,16 @@ export default {
         resource_ptn: '.*', // fixed
         updated_at: '',
       },
-      table: {
-        options: {
-          page: 1,
-          itemsPerPage: 10,
-          sortBy: ['policy_id'],
-        },
-        actions: [
+      sortBy: ['policy_id'],
+      actions: [
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
           {
             text: 'Delete Item',
             icon: 'mdi-trash-can-outline',
             click: this.handleDeleteItem,
           },
-        ],
-        total: 0,
-        footer: {
-          itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
-        },
-        items: [],
-      },
-      policies: [],
+      ],
       deleteDialog: false,
-      editDialog: false,
     }
   },
   computed: {
@@ -376,12 +358,6 @@ export default {
           key: 'action_ptn',
         },
         {
-          title: this.$i18n.t('item["Resource Pattern"]'),
-          align: 'start',
-          sortable: false,
-          key: 'resource_ptn',
-        },
-        {
           title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
@@ -400,119 +376,16 @@ export default {
     this.refleshList('')
   },
   methods: {
-    async refleshList(policyName) {
-      let searchCond = ''
-      if (policyName) {
-        searchCond += '&name=' + policyName
-      }
-
-      const policyData = await this.listOrganizationPolicyAPI(searchCond).catch(
-        (err) => {
-          this.clearList()
-          return Promise.reject(err)
-        }
-      )
-
-      console.log('Policy data received:', policyData)
-      console.log('Policy data type:', typeof policyData)
-      console.log('Policy data is array:', Array.isArray(policyData))
-
-      // Check if policyData is an array of IDs or objects
-      let policyIDs = []
-      if (Array.isArray(policyData)) {
-        if (policyData.length > 0) {
-          console.log('First policy item:', policyData[0])
-          console.log('First item type:', typeof policyData[0])
-          // If first element has policy_id, extract IDs
-          if (typeof policyData[0] === 'object' && policyData[0].policy_id) {
-            policyIDs = policyData.map((policy) => policy.policy_id)
-            console.log('Extracted policy IDs:', policyIDs)
-          } else if (
-            typeof policyData[0] === 'string' ||
-            typeof policyData[0] === 'number'
-          ) {
-            // Assume it's already an array of IDs
-            policyIDs = policyData
-            console.log('Using policy data as IDs:', policyIDs)
-          } else {
-            console.warn('Unknown policy data structure:', policyData[0])
-          }
-        }
-      } else if (policyData && typeof policyData === 'object') {
-        // Handle case where API returns an object with policies array
-        if (policyData.policies && Array.isArray(policyData.policies)) {
-          policyIDs = policyData.policies.map((policy) =>
-            typeof policy === 'object' ? policy.policy_id : policy
-          )
-        } else if (policyData.data && Array.isArray(policyData.data)) {
-          policyIDs = policyData.data.map((policy) =>
-            typeof policy === 'object' ? policy.policy_id : policy
-          )
-        }
-        console.log('Extracted from object structure:', policyIDs)
-      }
-
-      if (policyIDs.length == 0) {
-        this.clearList()
-        return
-      }
-
-      this.table.total = policyIDs.length
-      this.policies = policyIDs
-
-      this.loadList()
-    },
-
-    async loadList() {
-      this.loading = true
-      let items = []
-      let policyNames = []
-      const from =
-        (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.policies.slice(from, to)
-
-      items = await Promise.all(
-        ids.map(async (id) => {
-          return await this.getPolicy(id)
-        })
-      )
-
-      items.forEach((item) => {
-        policyNames.push(item.name)
-      })
-
-      this.table.items = items
-      this.policyNameList = [...new Set(policyNames)]
-      this.loading = false
-    },
-
-    async getPolicy(id) {
+    async getItem(id) {
       const policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-
       return policy
     },
-
-    clearList() {
-      this.policies = []
-      this.table.total = 0
-      this.table.items = []
-      this.policyNameList = []
+    async listItem(searchCond) {
+      return await this.listOrganizationPolicyAPI(searchCond)
     },
-
-    async deleteItem(policyID) {
-      await this.deleteOrganizationPolicyAPI(policyID).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
-      this.deleteDialog = false
-      this.handleSearch()
-    },
-
     async putItem() {
       await this.putOrganizationPolicyAPI(
         this.policyModel.name,
@@ -525,17 +398,15 @@ export default {
       this.editDialog = false
       this.handleSearch()
     },
-
-    compilableRegexp(ptn) {
-      try {
-        new RegExp(ptn)
-      } catch (e) {
-        console.log('Regexp complie error: ' + e)
-        return false
-      }
-      return true
+    async deleteItem(policyID) {
+      await this.deleteOrganizationPolicyAPI(policyID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
+      this.deleteDialog = false
+      this.handleSearch(this.listOrganizationPolicyAPI)
     },
-
     handleNewItem() {
       this.policyModel = {
         policy_id: '',
@@ -547,33 +418,18 @@ export default {
       this.policyForm.newPolicy = true
       this.editDialog = true
     },
-
     handleRowClick(event, policies) {
       this.handleEditItem(policies.item)
     },
-
     handleEditItem(item) {
       this.assignDataModel(item.value)
       this.policyForm.newPolicy = false
       this.editDialog = true
     },
-
     handleDeleteItem(item) {
       this.assignDataModel(item.value)
       this.deleteDialog = true
     },
-
-    handleSearch() {
-      this.refleshList(this.searchModel.policyName)
-    },
-
-    updateOptions(options) {
-      console.log('Options updated:', options)
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
-    },
-
     assignDataModel(item) {
       this.policyModel = {
         policy_id: '',
@@ -584,9 +440,14 @@ export default {
       }
       this.policyModel = Object.assign(this.policyModel, item)
     },
-
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
+    compilableRegexp(ptn) {
+      try {
+        new RegExp(ptn)
+      } catch (e) {
+        console.log('Regexp complie error: ' + e)
+        return false
+      }
+      return true
     },
   },
 }

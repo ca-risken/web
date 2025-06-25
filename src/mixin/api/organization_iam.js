@@ -4,31 +4,10 @@ const organization_iam = {
   },
   methods: {
     getCurrentOrganizationID() {
-      // Try to get organization ID from store first
-      let organizationId =
-        this.$store.state.organization?.organization_id || null
-
-      // If not found in store, try to get from route params
-      if (
-        !organizationId &&
-        this.$route &&
-        this.$route.params &&
-        this.$route.params.organizationId
-      ) {
-        organizationId = this.$route.params.organizationId
-      }
-
-      // If still not found, try to get from query params
-      if (
-        !organizationId &&
-        this.$route &&
-        this.$route.query &&
-        this.$route.query.organization_id
-      ) {
-        organizationId = this.$route.query.organization_id
-      }
-
-      return organizationId
+        if (this.$store.state.organization.organization_id) {
+          return this.$store.state.organization.organization_id
+        }
+        return ''
     },
     async listOrganizationRoleAPI(searchCond) {
       const res = await this.$axios

@@ -20,9 +20,9 @@
               clearable
               bg-color="white"
               :label="$t(`item['User']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
+              :placeholder="searchForm.name.placeholder"
+              :items="nameList"
+              v-model="searchModel.name"
             />
           </v-col>
           <v-spacer />
@@ -54,7 +54,7 @@
                 :items-length="table.total"
                 :items="table.items"
                 :loading="loading"
-                :sort-by="table.options.sortBy"
+                :sort-by="sortBy"
                 :page="table.options.page"
                 :items-per-page="table.options.itemsPerPage"
                 :items-per-page-options="table.footer.itemsPerPageOptions"
@@ -97,7 +97,7 @@
                     </template>
                     <v-list class="pa-0" dense>
                       <v-list-item
-                        v-for="action in table.actions"
+                        v-for="action in actions"
                         :key="action.text"
                         @click="action.click(item.value)"
                         :prepend-icon="action.icon"
@@ -256,16 +256,16 @@
 </template>
 
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import organization_iam from '@/mixin/api/organization_iam'
 import iam from '@/mixin/api/iam'
+import list from '@/mixin/util/list'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 
 export default {
   name: 'OrganizationUser',
-  mixins: [mixin, organization_iam, iam],
+  mixins: [mixin, organization_iam, iam, list],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -273,35 +273,20 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      searchModel: {
-        userName: null,
-      },
       searchForm: {
-        userName: {
+        name: {
           label: 'User',
           placeholder: 'Filter for user name',
         },
       },
-      userNameList: [],
-      table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
-        actions: [
-          {
-            text: 'Edit Item',
-            icon: 'mdi-pencil',
-            click: this.handleEditRole,
-          },
-        ],
-        total: 0,
-        footer: {
-          itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
+      sortBy: ['user_id'],
+      actions: [
+        {
+          text: 'Edit Item',
+          icon: 'mdi-pencil',
+          click: this.handleEditRole,
         },
-        items: [],
-      },
-      users: [],
+      ],
       userModel: {
         user_id: '',
         name: '',
@@ -311,7 +296,6 @@ export default {
         reserved: false,
         updated_at: '',
       },
-      editDialog: false,
       roleTable: {
         selected: [],
         search: '',
@@ -395,66 +379,17 @@ export default {
     this.refleshList('')
   },
   methods: {
-    async refleshList(userName) {
-      let searchCond = ''
-      if (userName) {
-        searchCond += '&name=' + userName
-      }
-
-      const userIDs = await this.listUserAPI(searchCond).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
-
-      if (userIDs.length == 0) {
-        this.clearList()
-        return
-      }
-
-      this.table.total = userIDs.length
-      this.users = userIDs
-      this.loadList()
-    },
-
-    async loadList() {
-      this.loading = true
-      let items = []
-      let userNames = []
-      const from =
-        (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.users.slice(from, to)
-
-      items = await Promise.all(
-        ids.map(async (id) => {
-          return await this.getUser(id)
-        })
-      )
-
-      items.forEach((item) => {
-        userNames.push(item.name)
-      })
-
-      this.table.items = items
-      this.userNameList = [...new Set(userNames)]
-      this.loading = false
-    },
-
-    async getUser(id) {
+    async getItem(id) {
       const user = await this.getUserAPI(id).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-
-      // Get roles for this user in the current organization
       const roleIDs = await this.listOrganizationRoleAPI(
         '&user_id=' + id
       ).catch((err) => {
-        console.warn('Failed to get roles for user:', id, err)
-        return []
+        this.clearList()
+        return Promise.reject(err)
       })
-
-      // Get detailed role information for roles attached to this user
       const userRoles = []
       for (const roleId of roleIDs) {
         try {
@@ -476,36 +411,9 @@ export default {
       }
       return item
     },
-
-    clearList() {
-      this.users = []
-      this.table.total = 0
-      this.table.items = []
-      this.userNameList = []
+    async listItem(searchCond) {
+      return await this.listUserAPI(searchCond)
     },
-
-    handleSearch() {
-      this.refleshList(this.searchModel.userName)
-    },
-
-    updateOptions(options) {
-      console.log('Options updated:', options)
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
-    },
-
-    handleNewUser() {
-      // TODO: Implement new user invitation
-      this.$refs.snackbar.notifyInfo('New user invitation feature coming soon')
-    },
-
-    async handleEditRole(item) {
-      this.userModel = { ...item }
-      this.editDialog = true
-      await this.loadRoleList()
-    },
-
     async loadRoleList() {
       this.loading = true
       try {
@@ -543,7 +451,15 @@ export default {
         this.loading = false
       }
     },
-
+    handleNewUser() {
+      // TODO: Implement new user invitation
+      this.$refs.snackbar.notifyInfo('New user invitation feature coming soon')
+    },
+    async handleEditRole(item) {
+      this.userModel = { ...item }
+      this.editDialog = true
+      await this.loadRoleList()
+    },
     async handleEditSubmit() {
       this.loading = true
       try {
@@ -590,16 +506,6 @@ export default {
       }
     },
 
-    getColorByCount(count) {
-      if (count === 0) return 'grey'
-      if (count <= 2) return 'green'
-      if (count <= 5) return 'orange'
-      return 'red'
-    },
-
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
-    },
   },
 }
 </script>

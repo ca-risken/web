@@ -19,10 +19,10 @@
               density="compact"
               clearable
               bg-color="white"
-              :label="$t(`item['` + searchForm.roleName.label + `']`)"
-              :placeholder="searchForm.roleName.placeholder"
-              :items="roleNameList"
-              v-model="searchModel.roleName"
+              :label="$t(`item['` + searchForm.name.label + `']`)"
+              :placeholder="searchForm.name.placeholder"
+              :items="nameList"
+              v-model="searchModel.name"
             />
           </v-col>
 
@@ -294,21 +294,19 @@ import mixin from '@/mixin'
 import organization_iam from '@/mixin/api/organization_iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import Util from '@/util'
+import list from '@/mixin/util/list'
 
 export default {
   name: 'OrganizationRoleList',
-  mixins: [mixin, organization_iam],
+  mixins: [mixin, organization_iam, list],
   components: {
     BottomSnackBar,
     VDataTable,
   },
   data() {
     return {
-      loading: false,
-      searchModel: { roleName: null },
       searchForm: {
-        roleName: { label: 'Name', placeholder: 'Filter for role name' },
+        name: { label: 'Name', placeholder: 'Filter for role name' },
       },
       roleForm: {
         newRole: false,
@@ -323,8 +321,6 @@ export default {
           ],
         },
       },
-
-      roleNameList: [],
       roleModel: {
         role_id: '',
         name: '',
@@ -332,27 +328,16 @@ export default {
         policies: '',
         updated_at: '',
       },
-      table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['role_id'] },
-        actions: [
-          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
-          {
-            text: 'Delete Item',
-            icon: 'mdi-trash-can-outline',
-            click: this.handleDeleteItem,
-          },
-        ],
-        total: 0,
-        footer: {
-          itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
+      sortBy: ['role_id'],
+      actions: [
+        { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
+        {
+          text: 'Delete Item',
+          icon: 'mdi-trash-can-outline',
+          click: this.handleDeleteItem,
         },
-        items: [],
-      },
-      roles: [],
+      ],
       deleteDialog: false,
-      editDialog: false,
       policyTable: {
         selected: [],
         search: '',
@@ -439,164 +424,20 @@ export default {
     },
   },
   mounted() {
-    // Check if user has access to organization IAM
-    this.checkAccessAndLoad()
+    this.refleshList('')
   },
   methods: {
-    async checkAccessAndLoad() {
-      const currentOrganizationID = this.getCurrentOrganizationID()
-
-      if (!currentOrganizationID) {
-        this.$refs.snackbar.notifyError(
-          'No organization selected. Please select an organization first.'
-        )
-        this.$router.push('/organization/setting')
-        return
-      }
-
-      // Try to access the role list API to check permissions
-      try {
-        await this.listOrganizationRoleAPI(currentOrganizationID)
-        // If successful, load the data
-        this.refleshList('')
-      } catch (err) {
-        if (err.response?.status === 403) {
-          this.$refs.snackbar.notifyError(
-            'Access denied: You do not have permission to view organization roles. Please contact your administrator.'
-          )
-          this.$router.push('/organization/setting')
-        } else if (err.response?.status === 401) {
-          this.$refs.snackbar.notifyError(
-            'Authentication failed. Please log in again.'
-          )
-          this.$router.push('/auth/signin')
-        } else {
-          this.$refs.snackbar.notifyError(
-            `Failed to load organization roles: ${
-              err.response?.data || err.message
-            }`
-          )
-        }
-      }
-    },
-
-    async refleshList(roleName) {
-      let searchCond = ''
-      if (roleName) {
-        searchCond += '&name=' + roleName
-      }
-
-      const roleData = await this.listOrganizationRoleAPI(searchCond).catch(
-        (err) => {
-          if (err.response?.status === 403) {
-            this.$refs.snackbar.notifyError(
-              'Access denied: You do not have permission to view organization roles.'
-            )
-            this.clearList()
-            return []
-          }
-
-          this.clearList()
-          this.$refs.snackbar.notifyError(
-            err.response?.data || 'Failed to load roles'
-          )
-          return []
-        }
-      )
-
-      // Check if roleData is an array of IDs or objects
-      let roleIDs = []
-      if (Array.isArray(roleData)) {
-        if (roleData.length > 0) {
-          // If first element has role_id, extract IDs
-          if (typeof roleData[0] === 'object' && roleData[0].role_id) {
-            roleIDs = roleData.map((role) => role.role_id)
-          } else if (
-            typeof roleData[0] === 'string' ||
-            typeof roleData[0] === 'number'
-          ) {
-            // Assume it's already an array of IDs
-            roleIDs = roleData
-          }
-        }
-      } else if (roleData && typeof roleData === 'object') {
-        // Handle case where API returns an object with roles array
-        if (roleData.roles && Array.isArray(roleData.roles)) {
-          roleIDs = roleData.roles.map((role) =>
-            typeof role === 'object' ? role.role_id : role
-          )
-        } else if (roleData.data && Array.isArray(roleData.data)) {
-          roleIDs = roleData.data.map((role) =>
-            typeof role === 'object' ? role.role_id : role
-          )
-        }
-      }
-
-      if (roleIDs.length == 0) {
-        this.clearList()
-        return
-      }
-
-      this.table.total = roleIDs.length
-      this.roles = roleIDs
-
-      this.loadList()
-    },
-
-    async loadList() {
-      this.loading = true
-      let items = []
-      let roleNames = []
-      const from =
-        (this.table.options.page - 1) * this.table.options.itemsPerPage
-      const to = from + this.table.options.itemsPerPage
-      const ids = this.roles.slice(from, to)
-
-      items = await Promise.all(
-        ids.map(async (id) => {
-          return await this.getRole(id)
-        })
-      )
-
-      // Filter out null items and collect names
-      items = items.filter((item) => item !== null)
-      items.forEach((item) => {
-        if (item && item.name) {
-          roleNames.push(item.name)
-        }
-      })
-
-      this.table.items = items
-      this.roleNameList = [...new Set(roleNames)]
-      this.loading = false
-    },
-
-    async getRole(id) {
+    async getItem(id) {
       const role = await this.getOrganizationRoleAPI(id).catch((err) => {
-        if (err.response?.status === 403) {
-          return null
-        }
-        return null
+        this.clearList()
+        return Promise.reject(err)
       })
-
-      if (!role) {
-        return {
-          role_id: id,
-          name: 'Unknown Role',
-          updated_at: Date.now() / 1000,
-          policy_cnt: 0,
-          policies: [],
-        }
-      }
-
-      // Get policies attached to this role
       const attachedPolicyIDs = await this.listOrganizationPolicyAPI(
         '&role_id=' + id
-      ).catch(() => {
-        // If policy API fails, just set policy count to 0
-        return []
-      })
-
+      ).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      }) 
       const item = {
         role_id: role.role_id,
         name: role.name,
@@ -606,14 +447,9 @@ export default {
       }
       return item
     },
-
-    clearList() {
-      this.roles = []
-      this.table.total = 0
-      this.table.items = []
-      this.roleNameList = []
+    async listItem(searchCond) {
+      return await this.listOrganizationRoleAPI(searchCond)
     },
-
     async loadPolicyList() {
       this.loading = true
 
@@ -685,17 +521,6 @@ export default {
         this.loading = false
       }
     },
-
-    async deleteItem(roleID) {
-      await this.deleteOrganizationRoleAPI(roleID).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.$refs.snackbar.notifySuccess('Success: Deleting role.')
-      this.deleteDialog = false
-      this.handleSearch()
-    },
-
     async putItem() {
       try {
         // Create or update role
@@ -749,14 +574,15 @@ export default {
         )
       }
     },
-
-    getColorByCount(count) {
-      if (count === 0) return 'grey'
-      if (count <= 2) return 'green'
-      if (count <= 5) return 'orange'
-      return 'red'
+    async deleteItem(roleID) {
+      await this.deleteOrganizationRoleAPI(roleID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.$refs.snackbar.notifySuccess('Success: Deleting role.')
+      this.deleteDialog = false
+      this.handleSearch()
     },
-
     handleNewItem() {
       this.roleModel = {
         role_id: '',
@@ -768,33 +594,19 @@ export default {
       this.roleForm.newRole = true
       this.editDialog = true
     },
-
     handleRowClick(event, roles) {
       this.handleEditItem(roles.item)
     },
-
     handleEditItem(item) {
       this.assignDataModel(item.value)
       this.roleForm.newRole = false
       this.editDialog = true
       this.loadPolicyList()
     },
-
     handleDeleteItem(item) {
       this.assignDataModel(item.value)
       this.deleteDialog = true
     },
-
-    handleSearch() {
-      this.refleshList(this.searchModel.roleName)
-    },
-
-    updateOptions(options) {
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
-    },
-
     assignDataModel(item) {
       this.roleModel = {
         role_id: '',
@@ -804,10 +616,6 @@ export default {
         updated_at: '',
       }
       this.roleModel = Object.assign(this.roleModel, item)
-    },
-
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
     },
   },
 }
