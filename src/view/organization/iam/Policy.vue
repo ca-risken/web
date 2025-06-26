@@ -376,6 +376,16 @@ export default {
     this.refleshList('')
   },
   methods: {
+    assignDataModel(item) {
+      this.policyModel = {
+        policy_id: '',
+        name: '',
+        action_ptn: '',
+        resource_ptn: '.*',
+        updated_at: '',
+      }
+      this.policyModel = Object.assign(this.policyModel, item)
+    },
     async getItem(id) {
       const policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
         this.clearList()
@@ -398,14 +408,11 @@ export default {
       this.editDialog = false
       this.handleSearch()
     },
-    async deleteItem(policyID) {
-      await this.deleteOrganizationPolicyAPI(policyID).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
-      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
-      this.deleteDialog = false
-      this.handleSearch(this.listOrganizationPolicyAPI)
+    // edit policy form
+    handleEditItem(item) {
+      this.assignDataModel(item.value)
+      this.policyForm.newPolicy = false
+      this.editDialog = true
     },
     handleNewItem() {
       this.policyModel = {
@@ -421,25 +428,6 @@ export default {
     handleRowClick(event, policies) {
       this.handleEditItem(policies.item)
     },
-    handleEditItem(item) {
-      this.assignDataModel(item.value)
-      this.policyForm.newPolicy = false
-      this.editDialog = true
-    },
-    handleDeleteItem(item) {
-      this.assignDataModel(item.value)
-      this.deleteDialog = true
-    },
-    assignDataModel(item) {
-      this.policyModel = {
-        policy_id: '',
-        name: '',
-        action_ptn: '',
-        resource_ptn: '.*',
-        updated_at: '',
-      }
-      this.policyModel = Object.assign(this.policyModel, item)
-    },
     compilableRegexp(ptn) {
       try {
         new RegExp(ptn)
@@ -449,6 +437,21 @@ export default {
       }
       return true
     },
+    // delete policy form
+    handleDeleteItem(item) {
+      this.assignDataModel(item.value)
+      this.deleteDialog = true
+    },
+    async deleteItem(policyID) {
+      await this.deleteOrganizationPolicyAPI(policyID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
+      this.deleteDialog = false
+      this.handleSearch()
+    },
+
   },
 }
 </script>

@@ -168,10 +168,10 @@ const organization_iam = {
         })
       return res.data.data.role
     },
-    async detachOrganizationPolicyAPI(policy_id, role_id) {
+    async detachOrganizationPolicyAPI(role_id, policy_id) {
       const param = {
-        policy_id: policy_id,
         role_id: role_id,
+        policy_id: policy_id,
         organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios

@@ -230,7 +230,7 @@
                 variant="outlined"
                 color="green-darken-1"
                 :loading="loading"
-                @click="handleEditSubmit"
+                @click="putItem"
               >
                 {{ $t(`btn['SAVE']`) }}
               </v-btn>
@@ -414,45 +414,8 @@ export default {
     async listItem(searchCond) {
       return await this.listUserAPI(searchCond)
     },
-    async loadRoleList() {
-      this.loading = true
-      try {
-        // Get all roles in the organization
-        const roleIDs = await this.listOrganizationRoleAPI('')
-
-        // Get role details
-        const roles = await Promise.all(
-          roleIDs.map(async (id) => {
-            const role = await this.getOrganizationRoleAPI(id)
-
-            return {
-              role_id: role.role_id,
-              name: role.name,
-            }
-          })
-        )
-
-        this.roleTable.items = roles
-
-        // Select roles that are currently attached to the user
-        this.roleTable.selected = roles.filter(
-          (role) =>
-            this.userModel.roles &&
-            this.userModel.roles.some(
-              (userRole) => userRole.role_id === role.role_id
-            )
-        )
-      } catch (err) {
-        console.error('Failed to load roles:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data?.message || 'Failed to load roles'
-        )
-      } finally {
-        this.loading = false
-      }
-    },
+    // edit user form
     handleNewUser() {
-      // TODO: Implement new user invitation
       this.$refs.snackbar.notifyInfo('New user invitation feature coming soon')
     },
     async handleEditRole(item) {
@@ -460,52 +423,57 @@ export default {
       this.editDialog = true
       await this.loadRoleList()
     },
-    async handleEditSubmit() {
+   async loadRoleList() {
       this.loading = true
-      try {
-        const userId = this.userModel.user_id
-
-        // Get current roles attached to user
-        const currentRoleIds = this.userModel.roles.map((role) => role.role_id)
-
-        // Get selected role IDs
-        const selectedRoleIds = this.roleTable.selected.map(
-          (role) => role.role_id
-        )
-
-        // Roles to attach (selected but not currently attached)
-        const rolesToAttach = selectedRoleIds.filter(
-          (roleId) => !currentRoleIds.includes(roleId)
-        )
-
-        // Roles to detach (currently attached but not selected)
-        const rolesToDetach = currentRoleIds.filter(
-          (roleId) => !selectedRoleIds.includes(roleId)
-        )
-
-        // Attach new roles
-        for (const roleId of rolesToAttach) {
-          await this.attachOrganizationRoleAPI(userId, roleId)
+      this.clearRoleList()
+      const roles = await this.listOrganizationRoleAPI('').catch((err) => {
+        return Promise.reject(err)
+      })
+      roles.forEach(async (id) => {
+        const role = await this.getOrganizationRoleAPI(id).catch((err) => {
+          return Promise.reject(err)
+        })
+        this.roleTable.items.push(role)
+        if (this.userModel.roles.indexOf(role.role_id) !== -1) {
+          this.roleTable.selected.push(role)
         }
-
-        // Detach removed roles
-        for (const roleId of rolesToDetach) {
-          await this.detachOrganizationRoleAPI(userId, roleId)
-        }
-
-        this.$refs.snackbar.notifySuccess('User roles updated successfully')
-        this.editDialog = false
-        this.refleshList('')
-      } catch (err) {
-        console.error('Failed to update user roles:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data?.message || 'Failed to update user roles'
-        )
-      } finally {
-        this.loading = false
+      })
+      this.loading = false
+    },
+    clearRoleList() {
+      this.roleTable.items = []
+      this.roleTable.selected = []
+    },
+    async putItem() {
+      this.loading = true
+      const userId = this.userModel.user_id
+      const currentRoleIds = this.userModel.roles.map((role) => role.role_id)
+      const selectedRoleIds = this.roleTable.selected.map(
+        (role) => role.role_id
+      )
+      const rolesToAttach = selectedRoleIds.filter(
+        (roleId) => !currentRoleIds.includes(roleId)
+      )
+      const rolesToDetach = currentRoleIds.filter(
+        (roleId) => !selectedRoleIds.includes(roleId)
+      )
+      for (const roleId of rolesToAttach) {
+        await this.attachOrganizationRoleAPI(userId, roleId)
       }
+      for (const roleId of rolesToDetach) {
+        await this.detachOrganizationRoleAPI(userId, roleId)
+      }
+      this.finishUpdated('Success: Updated user roles.')
     },
 
+    async finishUpdated(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.loading = false
+      this.deleteDialog = false
+      this.editDialog = false
+      this.handleSearch()
+    },
   },
 }
 </script>

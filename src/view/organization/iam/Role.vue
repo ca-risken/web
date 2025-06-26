@@ -427,6 +427,16 @@ export default {
     this.refleshList('')
   },
   methods: {
+    assignDataModel(item) {
+      this.roleModel = {
+        role_id: '',
+        name: '',
+        policy_cnt: 0,
+        policies: [],
+        updated_at: '',
+      }
+      this.roleModel = Object.assign(this.roleModel, item)
+    },
     async getItem(id) {
       const role = await this.getOrganizationRoleAPI(id).catch((err) => {
         this.clearList()
@@ -452,127 +462,79 @@ export default {
     },
     async loadPolicyList() {
       this.loading = true
-
-      try {
-        const policyData = await this.listOrganizationPolicyAPI('')
-
-        // Extract policy IDs from the response
-        let policyIDs = []
-        if (Array.isArray(policyData)) {
-          if (policyData.length > 0) {
-            // If first element has policy_id, extract IDs
-            if (typeof policyData[0] === 'object' && policyData[0].policy_id) {
-              policyIDs = policyData.map((policy) => policy.policy_id)
-            } else if (
-              typeof policyData[0] === 'string' ||
-              typeof policyData[0] === 'number'
-            ) {
-              // Assume it's already an array of IDs
-              policyIDs = policyData
-            }
-          }
-        } else if (policyData && typeof policyData === 'object') {
-          // Handle case where API returns an object with policies array
-          if (policyData.policies && Array.isArray(policyData.policies)) {
-            policyIDs = policyData.policies.map((policy) =>
-              typeof policy === 'object' ? policy.policy_id : policy
-            )
-          } else if (policyData.data && Array.isArray(policyData.data)) {
-            policyIDs = policyData.data.map((policy) =>
-              typeof policy === 'object' ? policy.policy_id : policy
-            )
-          }
+      this.clearPolicyList()
+      const policies = await this.listOrganizationPolicyAPI('').catch((err) => {
+        return Promise.reject(err)
+      })
+      policies.forEach(async (id) => {
+        const policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
+          return Promise.reject(err)
+        })
+        this.policyTable.items.push(policy)
+        if (this.roleModel.policies.indexOf(policy.policy_id) !== -1) {
+          this.policyTable.selected.push(policy)
         }
-
-        // Get detailed policy information
-        let policyItems = []
-        if (policyIDs.length > 0) {
-          policyItems = await Promise.all(
-            policyIDs.map(async (policyId) => {
-              const policyDetail = await this.getOrganizationPolicyAPI(
-                policyId
-              ).catch(() => {
-                return null
-              })
-              return policyDetail
-            })
-          )
-
-          // Filter out null items
-          policyItems = policyItems.filter((item) => item !== null)
-        }
-
-        this.policyTable.items = policyItems
-
-        // Get policies currently attached to this role
-        const attachedPolicyIDs = await this.listOrganizationPolicyAPI(
-          '&role_id=' + this.roleModel.role_id
-        ).catch(() => [])
-
-        // Select policies that are currently attached to the role
-        this.policyTable.selected = policyItems.filter((policy) =>
-          attachedPolicyIDs.includes(policy.policy_id)
-        )
-      } catch (err) {
-        this.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to load policies'
-        )
-      } finally {
-        this.loading = false
-      }
+      })
+      this.loading = false
+    },
+    clearPolicyList() {
+      this.policyTable.items = []
+      this.policyTable.selected = []
     },
     async putItem() {
-      try {
-        // Create or update role
-        await this.putOrganizationRoleAPI(this.roleModel.name)
-
-        // If not a new role, update policy attachments
-        if (!this.roleForm.newRole) {
-          // Get current policies attached to role from API
-          const currentPolicyIds = await this.listOrganizationPolicyAPI(
-            '&role_id=' + this.roleModel.role_id
-          ).catch(() => [])
-
-          // Get selected policy IDs
-          const selectedPolicyIds = this.policyTable.selected.map(
-            (policy) => policy.policy_id
-          )
-
-          // Policies to attach (selected but not currently attached)
-          const policiesToAttach = selectedPolicyIds.filter(
-            (policyId) => !currentPolicyIds.includes(policyId)
-          )
-
-          // Policies to detach (currently attached but not selected)
-          const policiesToDetach = currentPolicyIds.filter(
-            (policyId) => !selectedPolicyIds.includes(policyId)
-          )
-
-          // Attach new policies
-          for (const policyId of policiesToAttach) {
-            await this.attachOrganizationPolicyAPI(
-              this.roleModel.role_id,
-              policyId
-            )
-          }
-
-          // Detach removed policies
-          for (const policyId of policiesToDetach) {
-            await this.detachOrganizationPolicyAPI(
-              policyId,
-              this.roleModel.role_id
-            )
-          }
-        }
-
-        this.$refs.snackbar.notifySuccess('Success: Updated role.')
-        this.editDialog = false
-        this.handleSearch()
-      } catch (err) {
-        this.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to update role'
+      this.loading = true
+      await this.putOrganizationRoleAPI(this.roleModel.name)
+      if (!this.roleForm.newRole) {
+        const roleId = this.roleModel.role_id
+        const currentPolicyIds = await this.listOrganizationPolicyAPI(
+          '&role_id=' + this.roleModel.role_id
+        ).catch(() => [])
+        const selectedPolicyIds = this.policyTable.selected.map(
+          (policy) => policy.policy_id
         )
+        const policiesToAttach = selectedPolicyIds.filter(
+          (policyId) => !currentPolicyIds.includes(policyId)
+        )
+        const policiesToDetach = currentPolicyIds.filter(
+          (policyId) => !selectedPolicyIds.includes(policyId)
+        )
+        for (const policyId of policiesToAttach) {
+          await this.attachOrganizationPolicyAPI(roleId, policyId)
+        }
+        for (const policyId of policiesToDetach) {
+          await this.detachOrganizationPolicyAPI(roleId, policyId)
+        }
       }
+      this.$refs.snackbar.notifySuccess('Success: Updated role.')
+      this.editDialog = false
+      this.loading = false
+      this.handleSearch()
+    },
+    handleEditItem(item) {
+      this.assignDataModel(item.value)
+      this.roleForm.newRole = false
+      this.editDialog = true
+      this.loadPolicyList()
+    },
+    handleNewItem() {
+      this.roleModel = {
+        role_id: '',
+        name: '',
+        policy_cnt: 0,
+        policies: [],
+        updated_at: '',
+      }
+      this.roleForm.newRole = true
+      this.editDialog = true
+    },
+    handleRowClick(event, roles) {
+      this.handleEditItem(roles.item)
+    },
+
+    // delete role form
+    handleDeleteItem(item) {
+      this.assignDataModel(item.value)
+      this.deleteDialog = true
     },
     async deleteItem(roleID) {
       await this.deleteOrganizationRoleAPI(roleID).catch((err) => {
@@ -583,40 +545,7 @@ export default {
       this.deleteDialog = false
       this.handleSearch()
     },
-    handleNewItem() {
-      this.roleModel = {
-        role_id: '',
-        name: '',
-        policy_cnt: 0,
-        policies: '',
-        updated_at: '',
-      }
-      this.roleForm.newRole = true
-      this.editDialog = true
-    },
-    handleRowClick(event, roles) {
-      this.handleEditItem(roles.item)
-    },
-    handleEditItem(item) {
-      this.assignDataModel(item.value)
-      this.roleForm.newRole = false
-      this.editDialog = true
-      this.loadPolicyList()
-    },
-    handleDeleteItem(item) {
-      this.assignDataModel(item.value)
-      this.deleteDialog = true
-    },
-    assignDataModel(item) {
-      this.roleModel = {
-        role_id: '',
-        name: '',
-        policy_cnt: 0,
-        policies: '',
-        updated_at: '',
-      }
-      this.roleModel = Object.assign(this.roleModel, item)
-    },
+
   },
 }
 </script>
