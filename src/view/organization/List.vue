@@ -5,7 +5,7 @@
       :actions="tableActions"
       :loading="loading"
       :table-data="tableData"
-      :search-items="organizationNameList"
+      :search-items="nameList"
       @search="handleSearch"
       @update-options="updateOptions"
       ref="invitationTable"
@@ -18,18 +18,16 @@ import mixin from '@/mixin'
 import organization from '@/mixin/api/organization'
 import project from '@/mixin/api/project'
 import InvitationTable from '@/component/widget/table/InvitationTable.vue'
+import list from '@/mixin/util/list'
 
 export default {
   name: 'OrganizationInvitationList',
-  mixins: [mixin, organization, project],
+  mixins: [mixin, organization, project, list],
   components: {
     InvitationTable,
   },
   data() {
     return {
-      loading: false,
-      invitations: [],
-      organizationNameList: [],
       tableConfig: {
         icon: 'mdi-email-multiple',
         titleKey: 'OrganizationInvitation',
@@ -51,11 +49,7 @@ export default {
           click: this.handleRejectInvitation,
         },
       ],
-      table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['organization_id'] },
-        total: 0,
-        items: [],
-      },
+      sortBy: ['organization_id']
     }
   },
   computed: {
@@ -71,164 +65,42 @@ export default {
     this.refleshList('')
   },
   methods: {
-    async refleshList(organizationName) {
-      try {
-        // Get current project from store
-        const currentProjectID = this.getCurrentProjectID()
-        if (!currentProjectID) {
-          console.error('No current project ID found')
-          return
-        }
-
-        console.log('Current project ID:', currentProjectID)
-
-        // Use listProjectOrganizationInvitationAPI to get project's organization invitations
-        const invitations = await this.listProjectOrganizationInvitationAPI(
-          currentProjectID
-        )
-
-        if (!invitations || invitations.length === 0) {
-          console.log('No invitations found')
-          this.invitations = []
-          this.loadList()
-          return
-        }
-
-        console.log('Raw invitations:', invitations)
-
-        // Filter by organization name if provided
-        let filteredInvitations = invitations
-        if (organizationName && organizationName.trim() !== '') {
-          // Get organization details for each invitation to enable filtering by organization name
-          const invitationDetails = await Promise.all(
-            invitations.map(async (invitation) => {
-              try {
-                const organizations = await this.ListOrganizationAPI(
-                  `?organization_id=${invitation.organization_id}`
-                )
-                const organization =
-                  organizations && organizations.length > 0
-                    ? organizations[0]
-                    : null
-                return {
-                  ...invitation,
-                  organizationName: organization
-                    ? organization.name
-                    : `Organization ${invitation.organization_id}`,
-                }
-              } catch (err) {
-                return {
-                  ...invitation,
-                  organizationName: `Organization ${invitation.organization_id}`,
-                }
-              }
-            })
+    async refleshList(name) {
+      let searchCond = ''
+      if (name) {
+        searchCond += `&name=${name}`
+      }
+      const invitations = await this.listProjectOrganizationInvitationAPI(searchCond)
+      if (!invitations || invitations.length === 0) {
+        this.clearList()
+        return
+      }
+      let invitationWithName = await Promise.all(
+        invitations.map(async (invitation) => {
+          const organizations = await this.ListOrganizationAPI(
+            `?organization_id=${invitation.organization_id}`
           )
-
-          filteredInvitations = invitationDetails.filter((invitation) =>
-            invitation.organizationName
-              .toLowerCase()
-              .includes(organizationName.toLowerCase())
-          )
-        }
-
-        console.log('Filtered invitations:', filteredInvitations)
-        this.invitations = filteredInvitations
-        this.table.total = filteredInvitations.length
-        this.loadList()
-      } catch (err) {
-        console.error('Error in refleshList:', err)
-        this.$refs.invitationTable.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to get organization invitation list'
+          return {
+            ...invitation,
+            name: organizations[0].name
+          }
+        })
+      )
+      if (name) {
+        invitationWithName = invitationWithName.filter((invitation) =>
+          invitation.name == name
         )
       }
+      this.entities = invitationWithName
+      this.loadList()
     },
 
-    async loadList() {
-      this.loading = true
-      try {
-        let items = []
-        let organizationNames = []
-        const from =
-          (this.table.options.page - 1) * this.table.options.itemsPerPage
-        const to = from + this.table.options.itemsPerPage
-        const invitations = this.invitations.slice(from, to)
-
-        if (invitations && invitations.length > 0) {
-          // Get organization information for each invitation
-          const organizationPromises = invitations.map(async (invitation) => {
-            try {
-              // Get organization information using organization_id
-              const organizations = await this.ListOrganizationAPI(
-                `?organization_id=${invitation.organization_id}`
-              )
-              const organization =
-                organizations && organizations.length > 0
-                  ? organizations[0]
-                  : null
-
-              const item = {
-                organization_id: invitation.organization_id,
-                name: organization
-                  ? organization.name
-                  : `Organization ${invitation.organization_id}`,
-                status: invitation.status,
-                created_at: invitation.created_at,
-                updated_at: invitation.updated_at,
-                project_id: invitation.project_id,
-              }
-
-              // Add to organization names list for combobox
-              if (organization && organization.name) {
-                organizationNames.push(organization.name)
-              }
-
-              return item
-            } catch (err) {
-              console.error(
-                `Error getting organization info for ${invitation.organization_id}:`,
-                err
-              )
-              const fallbackItem = {
-                organization_id: invitation.organization_id,
-                name: `Organization ${invitation.organization_id}`,
-                status: invitation.status,
-                created_at: invitation.created_at,
-                updated_at: invitation.updated_at,
-                project_id: invitation.project_id,
-              }
-              return fallbackItem
-            }
-          })
-
-          items = await Promise.all(organizationPromises)
-        }
-
-        console.log('Final items for table:', items)
-        console.log('Organization names for combobox:', organizationNames)
-
-        this.table.items = items
-        this.organizationNameList = [...new Set(organizationNames)]
-      } catch (err) {
-        console.error('Error in loadList:', err)
-        this.$refs.invitationTable.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to load organization list'
-        )
-      } finally {
-        this.loading = false
-      }
+    async getItem(item) {
+      return item
     },
 
     handleSearch(searchModel) {
-      console.log('Search triggered with:', searchModel)
       this.refleshList(searchModel || '')
-    },
-
-    updateOptions(options) {
-      console.log('Options updated:', options)
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
     },
 
     async handleAcceptInvitation(item) {

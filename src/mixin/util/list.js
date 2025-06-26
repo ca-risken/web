@@ -36,7 +36,6 @@ const list = {
           this.clearList()
           return
         }
-        this.table.total = entities.length
         this.entities = entities
         this.loadList()
     },
@@ -57,6 +56,7 @@ const list = {
         names.push(item.name)
       })
       this.table.items = items
+      this.table.total = items.length
       this.nameList = [...new Set(names)]
       this.loading = false
     },
@@ -72,7 +72,7 @@ const list = {
     updateOptions(options) {
         this.table.options.page = options.page
         this.table.options.itemsPerPage = options.itemsPerPage
-        this.loadList(this.getItem)
+        this.loadList()
     },
     formatTime(time) {
       return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')

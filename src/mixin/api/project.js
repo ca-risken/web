@@ -86,10 +86,11 @@ const project = {
         })
       return res
     },
-    async listProjectOrganizationInvitationAPI(project_id) {
-      const param = project_id ? `?project_id=${project_id}` : ''
+    async listProjectOrganizationInvitationAPI(searchCond) {
       const res = await this.$axios
-        .get('/project/list-organization-invitation' + param)
+        .get('/project/list-organization-invitation?project_id='
+          + this.getCurrentProjectID()
+          + searchCond)
         .catch((err) => {
           return Promise.reject(err)
         })

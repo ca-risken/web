@@ -5,7 +5,7 @@
       :actions="tableActions"
       :loading="loading"
       :table-data="tableData"
-      :search-items="projectNameList"
+      :search-items="nameList"
       @search="handleSearch"
       @invite="handleInviteProjects"
       @update-options="updateOptions"
@@ -22,6 +22,7 @@
 
 <script>
 import mixin from '@/mixin'
+import list from '@/mixin/util/list'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
 import InvitationTable from '@/component/widget/table/InvitationTable.vue'
@@ -29,17 +30,14 @@ import ProjectList from '@/component/widget/list/ProjectList.vue'
 
 export default {
   name: 'OrganizationProject',
-  mixins: [mixin, project, organization],
+  mixins: [mixin, project, organization, list],
   components: {
     InvitationTable,
     ProjectList,
   },
   data() {
     return {
-      loading: false,
       projectDialog: false,
-      projects: [],
-      projectNameList: [],
       tableConfig: {
         icon: 'mdi-alpha-p-box',
         titleKey: 'OrganizationProject',
@@ -56,11 +54,7 @@ export default {
           click: this.handleDeleteInvitation,
         },
       ],
-      table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
-        total: 0,
-        items: [],
-      },
+      sortBy: ['project_id'] 
     }
   },
   computed: {
@@ -87,134 +81,49 @@ export default {
     }
   },
   methods: {
-    async refleshList(projectName) {
-      let currentOrganization = this.$store.state.organization
-      if (!currentOrganization || !currentOrganization.organization_id) {
-        const organizationId = this.$route.query.organization_id
-        
-        if (organizationId) {
-          currentOrganization = { organization_id: organizationId }
-        } else {
-          this.clearList()
-          return
-        }
+    async refleshList(name) {
+      let searchCond = ''
+      if (name) {
+        searchCond += '&name=' + name
       }
-
-      try {
-        const invitations = await this.ListOrganizationInvitationAPI(
-          currentOrganization.organization_id
-        )
-        if (!invitations || invitations.length === 0) {
-          this.clearList()
-          return
-        }
-        let filteredInvitations = invitations
-        if (projectName) {
-          const projectDetails = await Promise.all(
-            invitations.map(async (invitation) => {
-              try {
-                const projectParam = `?project_id=${invitation.project_id}`
-                const projects = await this.listProjectAPI(projectParam)
-                const project =
-                  projects && projects.length > 0 ? projects[0] : null
-                return {
-                  ...invitation,
-                  projectName: project
-                    ? project.name
-                    : `Project ${invitation.project_id}`,
-                }
-              } catch (err) {
-                return {
-                  ...invitation,
-                  projectName: `Project ${invitation.project_id}`,
-                }
-              }
-            })
-          )
-          filteredInvitations = projectDetails.filter((invitation) =>
-            invitation.projectName
-              .toLowerCase()
-              .includes(projectName.toLowerCase())
-          )
-        }
-        this.table.total = filteredInvitations.length
-        this.projects = filteredInvitations
-        this.loadList()
-      } catch (err) {
-        console.error('Error loading organization invitations:', err)
+      const invitations = await this.listItem(searchCond)
+      if (!invitations || invitations.length === 0) {
         this.clearList()
-        this.$refs.invitationTable.$refs.snackbar?.notifyError(
-          `組織プロジェクトの読み込みに失敗しました: ${err.response?.data?.message || err.message}`
-        )
+        return
       }
+      let invitationsWithProjectName = await Promise.all(
+        invitations.map(async (invitation) => {
+          let searchCond = `?project_id=${invitation.project_id}`
+          const projects = await this.listProjectAPI(searchCond)
+          return {
+            ...invitation,
+            name: projects[0].name,
+          }
+        })
+      )
+      if(name) {
+        invitationsWithProjectName = invitationsWithProjectName.filter((invitation) => {
+          return name == invitation.name
+        })
+      }
+      this.entities = invitationsWithProjectName
+      this.loadList()
     },
 
-    async loadList() {
-      this.loading = true
-      try {
-        let items = []
-        let projectNames = []
-        const from =
-          (this.table.options.page - 1) * this.table.options.itemsPerPage
-        const to = from + this.table.options.itemsPerPage
-        const invitations = this.projects.slice(from, to)
-
-        items = await Promise.all(
-          invitations.map(async (invitation) => {
-            try {
-              const projectParam = `?project_id=${invitation.project_id}`
-              const projects = await this.listProjectAPI(projectParam)
-              const project =
-                projects && projects.length > 0 ? projects[0] : null
-              const item = {
-                project_id: invitation.project_id,
-                name: project
-                  ? project.name
-                  : `Project ${invitation.project_id}`,
-                status: invitation.status,
-                organization_id: invitation.organization_id,
-                created_at: invitation.created_at,
-                updated_at: invitation.updated_at,
-              }
-              projectNames.push(item.name)
-              return item
-            } catch (err) {
-              console.error(
-                `Error getting project info for ${invitation.project_id}:`,
-                err
-              )
-              const fallbackItem = {
-                project_id: invitation.project_id,
-                name: `Project ${invitation.project_id}`,
-                status: invitation.status,
-                organization_id: invitation.organization_id,
-                created_at: invitation.created_at,
-                updated_at: invitation.updated_at,
-              }
-              projectNames.push(fallbackItem.name)
-              return fallbackItem
-            }
-          })
-        )
-
-        this.table.items = items
-        this.projectNameList = [...new Set(projectNames)]
-      } catch (err) {
-        console.error('Error loading project list:', err)
-        this.table.items = []
-        this.$refs.invitationTable.$refs.snackbar?.notifyError(
-          'プロジェクト一覧の読み込みに失敗しました'
-        )
-      } finally {
-        this.loading = false
-      }
+    async getItem(item) {
+      return item
     },
 
-    clearList() {
-      this.projects = []
-      this.table.total = 0
-      this.table.items = []
-      this.projectNameList = []
+    async listItem(searchCond) {
+      return await this.ListOrganizationInvitationAPI(searchCond)
+    },
+
+    handleInviteProjects() {
+      this.projectDialog = true
+    },
+
+    handleSearch(searchModel) {
+      this.refleshList(searchModel || '')
     },
 
     async handleDeleteInvitation(item) {
@@ -246,14 +155,6 @@ export default {
       } finally {
         this.loading = false
       }
-    },
-
-    handleSearch(searchModel) {
-      this.refleshList(searchModel || '')
-    },
-
-    handleInviteProjects() {
-      this.projectDialog = true
     },
 
     async handleProjectDialogResponse(project) {
@@ -288,12 +189,6 @@ export default {
       } finally {
         this.loading = false
       }
-    },
-
-    updateOptions(options) {
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
     },
   },
 }

@@ -3,6 +3,12 @@ const organization = {
     return {}
   },
   methods: {
+    getCurrentOrganizationID() {
+      if (this.$store.state.organization.organization_id) {
+        return this.$store.state.organization.organization_id
+      }
+      return ''
+    },
     async createOrganizationAPI(name, description) {
       const param = {
         user_id: this.$store.state.user.user_id,
@@ -33,10 +39,13 @@ const organization = {
       }
       return res.data.data.organization
     },
-    async ListOrganizationInvitationAPI(organization_id) {
-      const param = organization_id ? `?organization_id=${organization_id}` : ''
+    async ListOrganizationInvitationAPI(searchCond) {
       const res = await this.$axios
-        .get('/organization/list-organization-invitation' + param)
+        .get(
+          '/organization/list-organization-invitation?organization_id=' + 
+           this.getCurrentOrganizationID() +
+           searchCond         
+        )
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -116,6 +125,25 @@ const organization = {
           return Promise.reject(err)
         })
       return res.data.data.organization_invitation
+    },
+    async ListProjectInOrganizationAPI(searchCond) {
+      const res = await this.$axios
+        .get('/organization/list-project-in-organization?organization_id=' + this.getCurrentOrganizationID())
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.project) {
+        return []
+      }
+      // 検索条件がある場合は、検索条件を適用。APIに実装がないので一時的な対応。
+      if (searchCond) {
+        const name = searchCond.slice(6)
+        res.data.data.project = res.data.data.project.filter((project) => {
+          return project.name == name
+        })
+      }
+      console.log(res.data.data.project)
+      return res.data.data.project
     },
   },
 }

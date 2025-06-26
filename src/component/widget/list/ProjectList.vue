@@ -49,7 +49,7 @@
           :loading="loading"
           :items-per-page-options="table.footer.itemsPerPageOptions"
           :items-per-page="table.options.itemsPerPage"
-          :sort-by="table.options.sortBy"
+          :sort-by="sortBy"
           :showCurrentPage="table.footer.showCurrentPage"
           locale="ja-jp"
           loading-text="Loading..."
@@ -103,7 +103,6 @@ export default {
       loading: false,
       searchModel: {
         projectName: null,
-        projectID: null,
       },
       searchForm: {
         projectID: {
@@ -119,7 +118,7 @@ export default {
         },
       },
       table: {
-        options: { page: 1, itemsPerPage: 20, sortBy: ['project_id'] },
+        options: { page: 1, itemsPerPage: 20 },
         total: 0,
         footer: {
           itemsPerPageOptions: [{ value: 20, title: '20' }],
@@ -158,16 +157,10 @@ export default {
     this.refleshList('')
   },
   methods: {
-    async refleshList(searchCond) {
+    async refleshList(name) {
       this.loading = true
       try {
-        console.log(
-          'ProjectList: Loading projects with searchCond:',
-          searchCond
-        )
-
-        // listProjectAPIは直接プロジェクトオブジェクトの配列を返す
-        const projects = await this.listProjectAPI(searchCond).catch((err) => {
+        const projects = await this.listProjectAPI(name).catch((err) => {
           console.error('ProjectList: API error:', err)
           return Promise.reject(err)
         })
@@ -204,7 +197,6 @@ export default {
 
         console.log('ProjectList: Final table items:', this.table.items)
       } catch (err) {
-        console.error('ProjectList: Error loading projects:', err)
         this.table.items = []
         this.table.total = 0
       } finally {
@@ -247,14 +239,7 @@ export default {
       this.$emit('handleProjectDialogResponse', item.value)
     },
     handleSearch() {
-      let searchCond = ''
-      if (this.searchModel.projectName) {
-        searchCond += '&name=' + this.searchModel.projectName
-      }
-      if (this.searchModel.projectID) {
-        searchCond += '&project_id=' + this.searchModel.projectID
-      }
-      this.refleshList(searchCond)
+      this.refleshList('&name=' + this.searchModel.projectName)
     },
     handleCancel() {
       this.$emit('handleProjectDialogResponse', { project_id: '', name: '' })
