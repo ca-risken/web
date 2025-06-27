@@ -149,13 +149,14 @@ import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
+import organization_base from '@/mixin/util/organization_base'
 export default {
   name: 'AppToolbar',
   components: {
     BottomSnackBar,
     EntitySelectDialog,
   },
-  mixins: [mixin, project, iam, signin, organization],
+  mixins: [mixin, project, iam, signin, organization, organization_base],
   data() {
     return {
       loading: false,
@@ -240,6 +241,7 @@ export default {
     this.myMenu = await this.getMenu()
 
     this.currentProjectID = store.state.project.project_id
+    this.currentOrganizationID = store.state.organization.organization_id
     const userLocale = store.state.locale
     const browserLocale = Util.getNavigatorLanguage()
     if (userLocale.lang && userLocale.text) {
@@ -252,43 +254,6 @@ export default {
         value: browserLocale,
         text: this.getLocaleText(browserLocale),
       })
-    }
-
-    this.currentOrganizationID = store.state.organization.organization_id
-
-    // Initialize organization if not set
-    if (!store.state.organization.organization_id) {
-      // Check if organization_id is in query params
-      const queryOrganizationId = this.$route.query.organization_id
-      if (queryOrganizationId) {
-        // Let the router navigation guard handle organization loading
-        console.log(
-          'Organization ID found in query params:',
-          queryOrganizationId
-        )
-      } else {
-        store.commit('updateOrganization', {
-          organization_id: 1,
-          name: 'Sample Organization 1',
-          description: 'This is a sample organization description 1.',
-        })
-      }
-    }
-
-    // Initialize project if not set
-    if (!store.state.project.project_id) {
-      // Check if project_id is in query params
-      const queryProjectId = this.$route.query.project_id
-      if (queryProjectId) {
-        // Let the router navigation guard handle project loading
-        console.log('Project ID found in query params:', queryProjectId)
-      } else {
-        store.commit('updateProject', {
-          project_id: 1,
-          name: 'Sample Project 1',
-          tag: [],
-        })
-      }
     }
   },
   methods: {
@@ -451,14 +416,7 @@ export default {
       await this.$router.push({ query: query })
     },
     async handleOrganizationSelected(organization) {
-      console.log('Organization selected:', organization)
-
       await store.commit('updateOrganization', organization)
-
-      // Navigate to organization project list with organization_id parameter
-      console.log(
-        'Navigating to organization/project after organization switch'
-      )
       await this.$router.push({
         path: '/organization/project',
         query: { organization_id: organization.organization_id },
@@ -474,11 +432,6 @@ export default {
       // Only keep organization_id, remove all other mode-specific parameters
       const query = { organization_id: organization_id }
       await this.$router.push({ query: query })
-    },
-    reload() {
-      this.loading = true
-      this.listProject()
-      this.listOrganization()
     },
     async handleModeToggle() {
       try {
