@@ -222,6 +222,7 @@ export default {
       return this.isProjectMode ? this.projectDialog : this.organizationDialog
     },
 
+
   },
   async mounted() {
     await this.signinUser()
@@ -441,24 +442,19 @@ export default {
         store.commit('updateMode', newMode)
         this.myMenu = await this.getMenu() // Refresh menu
 
-        // DOM更新を待ってからナビゲーション
         await this.$nextTick()
 
-        // Clean up query parameters based on mode
         let query = {}
         if (newMode === 'organization') {
-          // Only keep organization_id, remove project_id
           if (store.state.organization?.organization_id) {
             query.organization_id = store.state.organization.organization_id
           }
         } else {
-          // Only keep project_id, remove organization_id
           if (store.state.project?.project_id) {
             query.project_id = store.state.project.project_id
           }
         }
 
-        // モードに応じて適切なページに遷移
         if (newMode === 'organization') {
           console.log('Navigating to organization/project...')
           await this.$router.push({
