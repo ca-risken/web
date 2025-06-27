@@ -292,9 +292,10 @@ import iam from '@/mixin/api/iam'
 import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import EntitySearchForm from '@/component/widget/form/EntitySearchForm.vue'
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 import organization_iam from '../../mixin/api/organization_iam'
+import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
+import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+
 export default {
   name: 'UserManagement',
   mixins: [mixin, iam, organization_iam, organization_base],

@@ -22,6 +22,10 @@
         :show-create-button="true"
         button-size="default"
         create-button-icon="mdi-new-box"
+<<<<<<< HEAD
+=======
+        create-button-color="primary-darken-3"
+>>>>>>> origin/feature/use_components
         :search-form-config="{
           idField: searchForm.userID,
           nameField: searchForm.userName
@@ -29,6 +33,11 @@
         @search="handleSearch"
         @create="handleNew"
       />
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/feature/use_components
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -211,8 +220,13 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+<<<<<<< HEAD
 import EntitySearchForm from '@/component/widget/form/EntitySearchForm.vue'
+=======
+import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
+>>>>>>> origin/feature/use_components
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
+
 
 const ADMIN_STATUS = {
   ENABLED: true,
@@ -222,12 +236,21 @@ const ADMIN_STATUS = {
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
+<<<<<<< HEAD
   components: {
     BottomSnackBar,
     UserList,
     EntitySearchForm,
     VDataTableServer,
   },
+=======
+      components: {
+      BottomSnackBar,
+      UserList,
+      EntitySearchForm,
+      VDataTableServer,
+    },
+>>>>>>> origin/feature/use_components
   data() {
     return {
       loading: false,
