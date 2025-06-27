@@ -11,39 +11,32 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['User']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            size="large"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            size="large"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-        </v-row>
-      </v-form>
+      <entity-search-form
+        v-model="searchModel"
+        :id-field-items="[]"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="false"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName
+        }"
+      />
+
+      <!-- Action Buttons -->
+      <v-row dense justify="center" align-content="center">
+        <v-spacer />
+        <action-buttons
+          :loading="loading"
+          :show-action-button="true"
+          button-size="large"
+          action-button-icon="mdi-new-box"
+          action-button-color="primary-darken-3"
+          @search="handleSearch"
+          @action="handleNew"
+        />
+      </v-row>
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -116,7 +109,7 @@
       </v-row>
     </v-container>
 
-    <!-- Edit Dialog -->
+    <!-- Invite User Dialog -->
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
@@ -306,15 +299,19 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+import ActionButtons from '@/component/ActionButtons.vue'
 export default {
   name: 'UserManagement',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     UserList,
+    EntitySearchForm,
     VDataTable,
     VDataTableServer,
+    ActionButtons,
   },
   data() {
     return {
@@ -448,17 +445,17 @@ export default {
   methods: {
     async refleshList(userName, userID) {
       let searchCond = '&project_id=' + this.getCurrentProjectID()
-      if (userName) {
-        searchCond += '&name=' + userName
-      }
-      if (userID) {
-        searchCond += '&user_id=' + userID
-      }
+        if (userName) {
+          searchCond += '&name=' + userName
+        }
+        if (userID) {
+          searchCond += '&user_id=' + userID
+        }
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      this.userReserved = await this.listUserReserved(userName)
+        this.userReserved = await this.listUserReserved(userName)
       if (userIDs.length + this.userReserved.length == 0) {
         return
       }
@@ -509,9 +506,9 @@ export default {
         return Promise.reject(err)
       })
       const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+          this.clearList()
+          return Promise.reject(err)
+        })
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -558,8 +555,8 @@ export default {
       this.loading = true
       this.clearRoleList()
       const roles = await this.listRoleAPI('').catch((err) => {
-        return Promise.reject(err)
-      })
+          return Promise.reject(err)
+        })
       roles.forEach(async (id) => {
         const role = await this.getRoleAPI(id).catch((err) => {
           return Promise.reject(err)
@@ -597,19 +594,19 @@ export default {
           }
         })
         if (attachRole) {
-          await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
-            (err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            }
-          )
-        } else {
-          await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
-            (err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            }
-          )
+            await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
+              (err) => {
+                this.$refs.snackbar.notifyError(err.response.data)
+                return Promise.reject(err)
+              }
+            )
+          } else {
+            await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
+              (err) => {
+                this.$refs.snackbar.notifyError(err.response.data)
+                return Promise.reject(err)
+              }
+            )
         }
       })
     },

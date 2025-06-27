@@ -11,49 +11,32 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="4" sm="3" md="3">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.userID.label + `']`)"
-              :placeholder="searchForm.userID.placeholder"
-              :items="userIDList"
-              v-model="searchModel.userID"
-            />
-          </v-col>
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.userName.label + `']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-        </v-row>
-      </v-form>
+      <entity-search-form
+        v-model="searchModel"
+        :id-field-items="userIDList"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="true"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName
+        }"
+      />
+
+      <!-- Action Buttons -->
+      <v-row dense justify="center" align-content="center">
+        <v-spacer />
+        <action-buttons
+          :loading="loading"
+          :show-action-button="true"
+          button-size="default"
+          action-button-icon="mdi-new-box"
+          action-button-color="primary-darken-3"
+          @search="handleSearch"
+          @action="handleNew"
+        />
+      </v-row>
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -236,7 +219,9 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
+import ActionButtons from '@/component/ActionButtons.vue'
 
 const ADMIN_STATUS = {
   ENABLED: true,
@@ -249,7 +234,9 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
+    EntitySearchForm,
     VDataTableServer,
+    ActionButtons,
   },
   data() {
     return {
