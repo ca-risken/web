@@ -112,36 +112,36 @@
     </template>
   </v-app-bar>
 
-      <!-- Project dialog -->
-    <entity-select-dialog
-      v-model="projectDialog"
-      entity-type="project"
-      :items="projectTable.item"
-      :loading="loading"
-      :current-entity-id="currentProjectID"
-      :custom-filter="customFilter"
-      @item-selected="handleProjectSelected"
-      @edit-entity="handleSettingProject"
-      @create-entity="handleNewProject"
-    />
+  <!-- Project dialog -->
+  <entity-select-dialog
+    v-model="projectDialog"
+    entity-type="project"
+    :items="projectTable.item"
+    :loading="loading"
+    :current-entity-id="currentProjectID"
+    :custom-filter="customFilter"
+    @item-selected="handleProjectSelected"
+    @edit-entity="handleSettingProject"
+    @create-entity="handleNewProject"
+  />
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
-  import { staticRoutes } from '@/router/config'
-  import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-  import EntitySelectDialog from '@/component/dialog/EntitySelectDialog.vue'
-  import Util from '@/util'
-  import store from '@/store'
-  import mixin from '@/mixin'
-  import iam from '@/mixin/api/iam'
-  import signin from '@/mixin/api/signin'
-  import project from '@/mixin/api/project'
-  export default {
-    name: 'AppToolbar',
-    components: {
-      BottomSnackBar,
-      EntitySelectDialog,
-    },
+import { staticRoutes } from '@/router/config'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import EntitySelectDialog from '@/component/dialog/EntitySelectDialog.vue'
+import Util from '@/util'
+import store from '@/store'
+import mixin from '@/mixin'
+import iam from '@/mixin/api/iam'
+import signin from '@/mixin/api/signin'
+import project from '@/mixin/api/project'
+export default {
+  name: 'AppToolbar',
+  components: {
+    BottomSnackBar,
+    EntitySelectDialog,
+  },
   mixins: [mixin, project, iam, signin],
   data() {
     return {
@@ -179,7 +179,7 @@
       staticRoutes: staticRoutes,
     }
   },
-      computed: {
+  computed: {
     toolbarColor() {
       return this.$vuetify.options.extra.mainNav
     },
@@ -337,32 +337,31 @@
     handleGoBack() {
       this.$router.go(-1)
     },
-          async handleProjectSelected(project) {
-        await this.setProjectQueryParam(project.project_id)
-        await store.commit('updateProject', project)
-        this.reload()
-      },
-          handleNewProject() {
-        this.$router.push('/project/new')
-      },
-      handleSettingProject() {
-        this.$router.push('/project/setting/')
-      },
+    async handleProjectSelected(project) {
+      await this.setProjectQueryParam(project.project_id)
+      await store.commit('updateProject', project)
+      this.reload()
+    },
+    handleNewProject() {
+      this.$router.push('/project/new')
+    },
+    handleSettingProject() {
+      this.$router.push('/project/setting/')
+    },
     handleSearchProject() {
       this.loading = true
       this.projectDialog = true
       this.listProject()
     },
-          async setProjectQueryParam(project_id) {
-        let query = await Object.assign({}, this.$router.query)
-        // delete query["project_id"]
-        query.project_id = project_id
-        await this.$router.push({ query: query })
-      },
-      reload() {
-        this.loading = true
-        this.listProject()
-      },
+    async setProjectQueryParam(project_id) {
+      let query = await Object.assign({}, this.$router.query)
+      query.project_id = project_id
+      await this.$router.push({ query: query })
+    },
+    reload() {
+      this.loading = true
+      this.listProject()
+    },
   },
 }
 </script>

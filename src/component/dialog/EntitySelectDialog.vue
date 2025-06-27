@@ -1,9 +1,5 @@
 <template>
-  <v-dialog
-    max-width="64%"
-    v-model="dialog"
-    @click:outside="handleClose"
-  >
+  <v-dialog max-width="64%" v-model="dialog" @click:outside="handleClose">
     <v-card>
       <v-card-title>
         <v-row>
@@ -31,11 +27,11 @@
           :headers="headers"
           :items="items"
           :item-key="itemKey"
-          :items-per-page="itemsPerPage"
-          :page="page"
+          :items-per-page="options.itemsPerPage"
+          :page="options.page"
           :loading="loading"
-          :items-per-page-options="itemsPerPageOptions"
-          :show-current-page="showCurrentPage"
+          :items-per-page-options="footer.itemsPerPageOptions"
+          :show-current-page="footer.showCurrentPage"
           locale="ja-jp"
           loading-text="Loading..."
           no-data-text="No data."
@@ -45,7 +41,10 @@
           @click:row="handleItemClick"
         >
           <!-- Project specific slots -->
-          <template v-if="entityType === 'project'" v-slot:[`item.tag`]="{ item }">
+          <template
+            v-if="entityType === 'project'"
+            v-slot:[`item.tag`]="{ item }"
+          >
             <v-chip
               v-for="t in item.value.tag"
               :key="t.tag"
@@ -57,9 +56,12 @@
               {{ t.tag }}
             </v-chip>
           </template>
-          
+
           <!-- Organization specific slots -->
-          <template v-if="entityType === 'organization'" v-slot:[`item.description`]="{ item }">
+          <template
+            v-if="entityType === 'organization'"
+            v-slot:[`item.description`]="{ item }"
+          >
             <span class="text-truncate d-inline-block" style="max-width: 200px">
               {{ item.value.description }}
             </span>
@@ -76,18 +78,10 @@
           {{ editButtonText }}
         </v-btn>
         <v-spacer />
-        <v-btn
-          variant="outlined"
-          color="grey-en-1"
-          @click="handleClose"
-        >
+        <v-btn variant="outlined" color="grey-en-1" @click="handleClose">
           {{ $t(`btn['CANCEL']`) }}
         </v-btn>
-        <v-btn 
-          variant="outlined" 
-          color="success" 
-          @click="handleNew"
-        >
+        <v-btn variant="outlined" color="success" @click="handleNew">
           {{ createButtonText }}
         </v-btn>
       </v-card-actions>
@@ -122,7 +116,7 @@ export default {
       default: false,
     },
     currentEntityId: {
-      type: [String, Number],
+      type: String,
       default: null,
     },
     customFilter: {
@@ -133,10 +127,14 @@ export default {
   data() {
     return {
       searchText: '',
-      itemsPerPage: 10,
-      page: 1,
-      itemsPerPageOptions: [{ value: 10, title: '10' }],
-      showCurrentPage: true,
+      options: {
+        itemsPerPage: 10,
+        page: 1,
+      },
+      footer: {
+        itemsPerPageOptions: [{ value: 10, title: '10' }],
+        showCurrentPage: true,
+      },
     }
   },
   computed: {
@@ -206,13 +204,13 @@ export default {
       }
     },
     editButtonText() {
-      return this.entityType === 'project' 
-        ? this.$t(`btn['EDIT PROJECT']`) 
+      return this.entityType === 'project'
+        ? this.$t(`btn['EDIT PROJECT']`)
         : this.$t(`btn['EDIT ORGANIZATION']`)
     },
     createButtonText() {
-      return this.entityType === 'project' 
-        ? this.$t(`btn['CREATE NEW PROJECT']`) 
+      return this.entityType === 'project'
+        ? this.$t(`btn['CREATE NEW PROJECT']`)
         : this.$t(`btn['CREATE NEW ORGANIZATION']`)
     },
   },
@@ -237,5 +235,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style> 
+<style scoped></style>
