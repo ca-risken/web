@@ -358,10 +358,6 @@ export default {
       query.project_id = project_id
       await this.$router.push({ query: query })
     },
-    reload() {
-      this.loading = true
-      this.listProject()
-    },
   },
 }
 </script>
