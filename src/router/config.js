@@ -488,25 +488,25 @@ export const appRoute = [
             path: '/organization-iam/user',
             name: 'OrganizationUser',
             meta: {
-              title: 'OrganizationUser',
+              title: 'User',
             },
-            component: () => import('@/view/organization/iam/User.vue'),
+            component: () => import('@/view/iam/User.vue'),
           },
           {
             path: '/organization-iam/role',
             name: 'OrganizationRole',
             meta: {
-              title: 'OrganizationRole',
+              title: 'Role',
             },
-            component: () => import('@/view/organization/iam/Role.vue'),
+            component: () => import('@/view/iam/Role.vue'),
           },
           {
             path: '/organization-iam/policy',
             name: 'OrganizationPolicy',
             meta: {
-              title: 'OrganizationPolicy',
+              title: 'Policy',
             },
-            component: () => import('@/view/organization/iam/Policy.vue'),
+            component: () => import('@/view/iam/Policy.vue'),
           },
         ],
       },

@@ -30,12 +30,12 @@
             :model-value="item.meta.title"
             :prepend-icon="item.meta.icon"
             :key="key"
-            v-show="!item.hidden && isMenuItemVisible(item)"
+            v-show="!item.hidden"
           >
             <template v-slot:activator="{ props }">
               <v-list-item
                 v-bind="props"
-                :title="getMenuTitle(item.meta.title)"
+                :title="$t(`menu['` + item.meta.title + `']`)"
                 :prepend-icon="item.meta.icon"
               ></v-list-item>
             </template>
@@ -53,9 +53,9 @@
           <v-list-item
             :key="key"
             :to="item.path"
-            v-show="!item.meta.hiddenInMenu && isMenuItemVisible(item)"
+            v-show="!item.meta.hiddenInMenu"
             :prepend-icon="item.meta.icon"
-            :title="getMenuTitle(item.meta.title)"
+            :title="$t(`menu['` + item.meta.title + `']`)"
           >
           </v-list-item>
         </template>
@@ -120,46 +120,20 @@ export default {
     isOrganizationMode() {
       return this.currentMode === 'organization'
     },
+    drawerToolbarColor() {
+      return this.isOrganizationMode ? 'light-blue' : 'primary'
+    },
     computeMenu() {
       const allMenus = routes[0].children
-      let filteredMenus = allMenus.filter((menu) =>
-        this.isMenuItemVisible(menu)
-      )
-
-      // Replace IAM menu with Organization IAM when in organization mode
-      if (this.isOrganizationMode) {
-        filteredMenus = filteredMenus.map((menu) => {
-          if (menu.meta.title === 'IAM') {
-            // Find the organization-iam menu
-            const orgIamMenu = allMenus.find(
-              (m) => m.meta.group === 'organization-iam'
-            )
-            if (orgIamMenu) {
-              return {
-                ...orgIamMenu,
-                meta: {
-                  ...orgIamMenu.meta,
-                  title: 'IAM', // Keep the title as 'IAM' for display purposes
-                },
-              }
-            }
-          }
-          return menu
-        })
-      }
-
-      return filteredMenus
-    },
-    drawerToolbarColor() {
-      try {
+      let filteredMenus = allMenus.filter((menu) => {
         if (this.isOrganizationMode) {
-          return 'light-blue'
-        }
-        return 'primary'
-      } catch (error) {
-        console.error('Error in drawerToolbarColor:', error)
-        return 'primary'
-      }
+          const allowedMenuTitles = ['Organization', 'Organization IAM']
+          return allowedMenuTitles.includes(menu.meta.title)
+        } 
+        const forbiddenMenuTitles = ['Organization IAM']
+        return !forbiddenMenuTitles.includes(menu.meta.title)
+    })
+      return filteredMenus
     },
   },
   watch: {
@@ -177,39 +151,12 @@ export default {
     toTop() {
       this.$router.push('/')
     },
-    getMenuTitle(menuTitle) {
-      if (this.isOrganizationMode && menuTitle === 'IAM') {
-        return 'Org IAM'
-      }
-      return this.$t(`menu['` + menuTitle + `']`)
-    },
-    isMenuItemVisible(item) {
-      if (this.isOrganizationMode) {
-        const allowedMenuTitles = ['IAM', 'Organization']
-        return allowedMenuTitles.includes(item.meta.title)
-      }
-
-      // In project mode, hide organization-iam menu
-      if (item.meta.group === 'organization-iam') {
-        return false
-      }
-
-      return true
-    },
     isSubMenuItemVisible(sub) {
-      if (this.isOrganizationMode) {
-        const forbiddenTitles = [
-          'AccessToken',
-          'User Reservation',
-          'OrganizationList',
-        ]
-        return !forbiddenTitles.includes(sub.meta.title)
+      if (!this.isOrganizationMode) {
+        const projectModeForbiddenTitles = ['OrganizationSetting', 'OrganizationProject']
+        return !projectModeForbiddenTitles.includes(sub.meta.title)
       }
-      const projectModeForbiddenTitles = [
-        'OrganizationSetting',
-        'OrganizationProject',
-      ]
-      return !projectModeForbiddenTitles.includes(sub.meta.title)
+      return true
     },
   },
 }

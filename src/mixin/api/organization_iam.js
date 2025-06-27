@@ -3,12 +3,6 @@ const organization_iam = {
     return {}
   },
   methods: {
-    getCurrentOrganizationID() {
-        if (this.$store.state.organization.organization_id) {
-          return this.$store.state.organization.organization_id
-        }
-        return ''
-    },
     async listOrganizationRoleAPI(searchCond) {
       const res = await this.$axios
         .get(

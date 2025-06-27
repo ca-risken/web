@@ -257,11 +257,13 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import organization_iam from '../../mixin/api/organization_iam'
+import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'PolicyList',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, organization_iam, organization_base],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -396,12 +398,29 @@ export default {
   mounted() {
     this.refleshList('')
   },
+  watch: {
+    '$route.query.organization_id'() {
+      if (this.isOrganizationMode) {
+        this.editDialog = false
+        this.deleteDialog = false
+        this.refleshList('')
+      }
+    },
+  },
   methods: {
     async refleshList(searchCond) {
-      const policies = await this.listPolicyAPI(searchCond).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+      let policies
+      if (this.isOrganizationMode) {
+        policies = await this.listOrganizationPolicyAPI(searchCond).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      } else {
+        policies = await this.listPolicyAPI(searchCond).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      }
       this.table.total = policies.length
       this.policies = policies
       this.loadList()
@@ -412,10 +431,18 @@ export default {
       let policyNames = []
       await Promise.all(
         this.policies.map(async (id) => {
-          const policy = await this.getPolicyAPI(id).catch((err) => {
-            this.clearList()
-            return Promise.reject(err)
-          })
+          let policy
+          if (this.isOrganizationMode) {
+            policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
+          } else {
+            policy = await this.getPolicyAPI(id).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
+          }
           items.push(policy)
           policyNames.push(policy.name)
         })
@@ -431,28 +458,52 @@ export default {
       this.policyNameList = []
     },
     async deleteItem(policyID) {
-      await this.deletePolicyAPI(policyID).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
+      if (this.isOrganizationMode) {
+        await this.deleteOrganizationPolicyAPI(policyID).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        await this.deletePolicyAPI(policyID).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
       this.deleteDialog = false
       this.handleSearch()
     },
     async putItem() {
-      const param = {
-        project_id: this.getCurrentProjectID(),
-        policy: {
-          name: this.policyModel.name,
+      let param
+      if (this.isOrganizationMode) {
+        param = {
+          organization_id: this.getCurrentOrganizationID(),
+          policy: {
+            name: this.policyModel.name,
+            organization_id: this.getCurrentOrganizationID(),
+            action_ptn: this.policyModel.action_ptn,
+            resource_ptn: '.*', //this.policyModel.resource_ptn,
+          },
+        }
+        await this.putOrganizationPolicyAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        param = {
           project_id: this.getCurrentProjectID(),
-          action_ptn: this.policyModel.action_ptn,
-          resource_ptn: '.*', //this.policyModel.resource_ptn,
-        },
+          policy: {
+            name: this.policyModel.name,
+            project_id: this.getCurrentProjectID(),
+            action_ptn: this.policyModel.action_ptn,
+            resource_ptn: '.*', //this.policyModel.resource_ptn,
+          },
+        }
+        await this.putPolicyAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
       }
-      await this.putPolicyAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
       this.$refs.snackbar.notifySuccess('Success: Updated policy.')
       this.editDialog = false
       this.handleSearch()

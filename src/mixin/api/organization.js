@@ -3,12 +3,6 @@ const organization = {
     return {}
   },
   methods: {
-    getCurrentOrganizationID() {
-      if (this.$store.state.organization.organization_id) {
-        return this.$store.state.organization.organization_id
-      }
-      return ''
-    },
     async createOrganizationAPI(name, description) {
       const param = {
         user_id: this.$store.state.user.user_id,
