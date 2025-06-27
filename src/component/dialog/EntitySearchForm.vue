@@ -26,6 +26,27 @@
           />
         </v-col>
         <v-spacer />
+        
+        <!-- Search Button -->
+        <v-btn
+          class="mt-3 mr-4"
+          :size="buttonSize"
+          density="compact"
+          :loading="loading"
+          @click="handleSearch"
+          icon="mdi-magnify"
+        />
+        
+        <!-- Create/Action Button -->
+        <v-btn
+          v-if="showCreateButton"
+          class="mt-3 mr-4"
+          :color="createButtonColor"
+          :size="buttonSize"
+          density="compact"
+          @click="handleCreate"
+          :icon="createButtonIcon"
+        />
       </v-row>
     </v-form>
   </template>
@@ -34,12 +55,14 @@
   export default {
     name: 'EntitySearchForm',
     props: {
-      // Search model (v-model support)
       modelValue: {
         type: Object,
         required: true,
       },
-      // Items for combobox
+      loading: {
+        type: Boolean,
+        default: false,
+      },
       idFieldItems: {
         type: Array,
         default: () => [],
@@ -48,21 +71,34 @@
         type: Array,
         default: () => [],
       },
-      // Field keys for v-model binding
       idFieldKey: {
         type: String,
-        default: 'id', // ID field
+        default: 'id',
       },
       nameFieldKey: {
         type: String,
-        default: 'name', // Name field
+        default: 'name',
       },
-      // UI Configuration
       showIdField: {
         type: Boolean,
         default: true,
       },
-      // Form configuration
+      showCreateButton: {
+        type: Boolean,
+        default: true,
+      },
+      buttonSize: {
+        type: String,
+        default: 'large',
+      },
+      createButtonIcon: {
+        type: String,
+        default: 'mdi-new-box',
+      },
+      createButtonColor: {
+        type: String,
+        default: 'primary-darken-3',
+      },
       searchFormConfig: {
         type: Object,
         default: () => ({
@@ -85,7 +121,12 @@
       },
     },
     methods: {
-      // This component now only handles form fields, not buttons
+      handleSearch() {
+        this.$emit('search', this.searchModel)
+      },
+      handleCreate() {
+        this.$emit('create')
+      },
     },
   }
   </script>

@@ -13,30 +13,25 @@
       </v-row>
       <entity-search-form
         v-model="searchModel"
+        :loading="loading"
         :id-field-items="userIDList"
         :name-field-items="userNameList"
         id-field-key="userID"
         name-field-key="userName"
         :show-id-field="true"
+        :show-create-button="true"
+        button-size="default"
+        create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
         :search-form-config="{
           idField: searchForm.userID,
           nameField: searchForm.userName
         }"
+        @search="handleSearch"
+        @create="handleNew"
       />
 
-      <!-- Action Buttons -->
-      <v-row dense justify="center" align-content="center">
-        <v-spacer />
-        <action-buttons
-          :loading="loading"
-          :show-action-button="true"
-          button-size="default"
-          action-button-icon="mdi-new-box"
-          action-button-color="primary-darken-3"
-          @search="handleSearch"
-          @action="handleNew"
-        />
-      </v-row>
+
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -221,7 +216,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import ActionButtons from '@/component/ActionButtons.vue'
+
 
 const ADMIN_STATUS = {
   ENABLED: true,
@@ -231,13 +226,12 @@ const ADMIN_STATUS = {
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
-  components: {
-    BottomSnackBar,
-    UserList,
-    EntitySearchForm,
-    VDataTableServer,
-    ActionButtons,
-  },
+      components: {
+      BottomSnackBar,
+      UserList,
+      EntitySearchForm,
+      VDataTableServer,
+    },
   data() {
     return {
       loading: false,

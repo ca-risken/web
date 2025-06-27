@@ -13,30 +13,25 @@
       </v-row>
       <entity-search-form
         v-model="searchModel"
+        :loading="loading"
         :id-field-items="[]"
         :name-field-items="userNameList"
         id-field-key="userID"
         name-field-key="userName"
         :show-id-field="false"
+        :show-create-button="true"
+        button-size="large"
+        create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
         :search-form-config="{
           idField: searchForm.userID,
           nameField: searchForm.userName
         }"
+        @search="handleSearch"
+        @create="handleNew"
       />
 
-      <!-- Action Buttons -->
-      <v-row dense justify="center" align-content="center">
-        <v-spacer />
-        <action-buttons
-          :loading="loading"
-          :show-action-button="true"
-          button-size="large"
-          action-button-icon="mdi-new-box"
-          action-button-color="primary-darken-3"
-          @search="handleSearch"
-          @action="handleNew"
-        />
-      </v-row>
+
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -301,7 +296,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
-import ActionButtons from '@/component/ActionButtons.vue'
+
 export default {
   name: 'UserManagement',
   mixins: [mixin, iam],
@@ -309,9 +304,8 @@ export default {
     BottomSnackBar,
     UserList,
     EntitySearchForm,
-    VDataTable,
-    VDataTableServer,
-    ActionButtons,
+          VDataTable,
+      VDataTableServer,
   },
   data() {
     return {
