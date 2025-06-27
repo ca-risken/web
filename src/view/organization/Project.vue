@@ -105,7 +105,6 @@
 <script>
 import Util from '@/util'
 import mixin from '@/mixin'
-import list from '@/mixin/util/list'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
@@ -115,7 +114,7 @@ import organization_base from '@/mixin/util/organization_base'
 
 export default {
   name: 'OrganizationProject',
-  mixins: [mixin, project, organization, list, organization_base],
+  mixins: [mixin, project, organization, organization_base],
   components: {
     EntitySearchForm,
     BottomSnackBar,
@@ -125,6 +124,23 @@ export default {
     return {
       projectDialog: false,
       searchModel: { name: null },
+      loading: false,
+      entities: [],
+      nameList: [],
+      table: {
+        items: [],
+        total: 0,
+        options: {
+          page: 1,
+          itemsPerPage: 10,
+          sortBy: []
+        },
+        footer: {
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
+          showCurrentPage: true,
+        },
+      },
       tableConfig: {
         icon: 'mdi-alpha-p-box',
         titleKey: 'OrganizationProject',
@@ -195,33 +211,59 @@ export default {
     }
   },
   methods: {
+    // List management methods (replacing list.js mixin)
+    loadList() {
+      this.table.items = this.entities
+      this.table.total = this.entities.length
+      this.nameList = [...new Set(this.entities.map(item => item.name))]
+    },
+
+    clearList() {
+      this.entities = []
+      this.table.items = []
+      this.table.total = 0
+      this.nameList = []
+    },
+
+    formatTime(time) {
+      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
+    },
+
     async refleshList(name) {
-      let searchCond = ''
-      if (name) {
-        searchCond += '&name=' + name
-      }
-      const invitations = await this.listItem(searchCond)
-      if (!invitations || invitations.length === 0) {
+      this.loading = true
+      try {
+        let searchCond = ''
+        if (name) {
+          searchCond += '&name=' + name
+        }
+        const invitations = await this.listItem(searchCond)
+        if (!invitations || invitations.length === 0) {
+          this.clearList()
+          return
+        }
+        let invitationsWithProjectName = await Promise.all(
+          invitations.map(async (invitation) => {
+            let searchCond = `?project_id=${invitation.project_id}`
+            const projects = await this.listProjectAPI(searchCond)
+            return {
+              ...invitation,
+              name: projects[0].name,
+            }
+          })
+        )
+        if(name) {
+          invitationsWithProjectName = invitationsWithProjectName.filter((invitation) => {
+            return name == invitation.name
+          })
+        }
+        this.entities = invitationsWithProjectName
+        this.loadList()
+      } catch (error) {
+        console.error('Error loading list:', error)
         this.clearList()
-        return
+      } finally {
+        this.loading = false
       }
-      let invitationsWithProjectName = await Promise.all(
-        invitations.map(async (invitation) => {
-          let searchCond = `?project_id=${invitation.project_id}`
-          const projects = await this.listProjectAPI(searchCond)
-          return {
-            ...invitation,
-            name: projects[0].name,
-          }
-        })
-      )
-      if(name) {
-        invitationsWithProjectName = invitationsWithProjectName.filter((invitation) => {
-          return name == invitation.name
-        })
-      }
-      this.entities = invitationsWithProjectName
-      this.loadList()
     },
 
     async getItem(item) {
@@ -272,10 +314,6 @@ export default {
         default:
           return 'grey'
       }
-    },
-
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
     },
 
     async handleDeleteInvitation(item) {
