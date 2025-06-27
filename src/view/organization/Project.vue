@@ -1,16 +1,96 @@
 <template>
   <div>
-    <invitation-table
-      :config="tableConfig"
-      :actions="tableActions"
-      :loading="loading"
-      :table-data="tableData"
-      :search-items="nameList"
-      @search="handleSearch"
-      @invite="handleInviteProjects"
-      @update-options="updateOptions"
-      ref="invitationTable"
-    />
+    <v-container>
+      <v-row dense justify="center" align-content="center">
+        <v-col cols="12">
+          <v-toolbar color="background" flat>
+            <v-toolbar-title class="grey--text text--darken-4">
+              <v-icon large class="pr-2">{{ tableConfig.icon }}</v-icon>
+              {{ $t(`submenu['${tableConfig.titleKey}']`) }}
+            </v-toolbar-title>
+          </v-toolbar>
+        </v-col>
+      </v-row>
+
+      <!-- Search Form -->
+      <entity-search-form
+        v-model="searchModel"
+        :loading="loading"
+        :name-field-items="nameList"
+        :show-id-field="false"
+        :show-create-button="true"
+        :create-button-icon="'mdi-send'"
+        :search-form-config="{
+          nameField: { label: tableConfig.searchLabel, placeholder: tableConfig.searchPlaceholder }
+        }"
+        @search="handleSearch"
+        @create="handleInviteProjects"
+      />
+
+      <!-- Table -->
+      <v-row dense>
+        <v-col cols="12">
+          <v-card>
+            <v-divider></v-divider>
+            <v-card-text class="pa-0">
+              <v-data-table-server
+                :headers="headers"
+                :items-length="table.total"
+                :items="table.items"
+                :loading="loading"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :show-current-page="table.footer.showCurrentPage"
+                locale="ja-jp"
+                loading-text="Loading..."
+                no-data-text="No data."
+                class="elevation-1"
+                :item-key="tableConfig.itemKey"
+                @update:options="updateOptions"
+              >
+                <template v-slot:[`item.status`]="{ item }">
+                  <v-chip
+                    :color="getStatusColor(item.value.status)"
+                    variant="flat"
+                    size="small"
+                  >
+                    {{ getStatusText(item.value.status) }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.updated_at`]="{ item }">
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
+                </template>
+                <template v-slot:[`item.action`]="{ item }">
+                  <v-menu>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
+                    </template>
+                    <v-list class="pa-0" dense>
+                      <v-list-item
+                        v-for="action in tableActions"
+                        :key="action.text"
+                        @click="action.click(item.value)"
+                        :prepend-icon="action.icon"
+                      >
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </template>
+              </v-data-table-server>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <!-- Snackbar -->
+    <bottom-snack-bar ref="snackbar" />
 
     <!-- Project Selection Dialog -->
     <project-list
@@ -21,23 +101,28 @@
 </template>
 
 <script>
+import Util from '@/util'
 import mixin from '@/mixin'
 import list from '@/mixin/util/list'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
-import InvitationTable from '@/component/widget/table/InvitationTable.vue'
-import ProjectList from '@/component/widget/list/ProjectList.vue'
+import EntitySearchForm from '@/component/widget/form/EntitySearchForm.vue'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
+import organization_base from '@/mixin/util/organization_base'
 
 export default {
   name: 'OrganizationProject',
-  mixins: [mixin, project, organization, list],
+  mixins: [mixin, project, organization, list, organization_base],
   components: {
-    InvitationTable,
-    ProjectList,
+    EntitySearchForm,
+    BottomSnackBar,
+    VDataTableServer,
   },
   data() {
     return {
       projectDialog: false,
+      searchModel: { name: null },
       tableConfig: {
         icon: 'mdi-alpha-p-box',
         titleKey: 'OrganizationProject',
@@ -58,12 +143,39 @@ export default {
     }
   },
   computed: {
-    tableData() {
-      return {
-        items: this.table.items,
-        total: this.table.total,
-        options: this.table.options,
-      }
+    headers() {
+      return [
+        {
+          title: 'Project ID',
+          align: 'start',
+          sortable: false,
+          key: 'project_id',
+        },
+        {
+          title: this.$i18n.t('item["Name"]'),
+          align: 'start',
+          sortable: false,
+          key: 'name',
+        },
+        {
+          title: this.$i18n.t('item["Status"]'),
+          align: 'center',
+          sortable: false,
+          key: 'status',
+        },
+        {
+          title: this.$i18n.t('item["Updated"]'),
+          align: 'center',
+          sortable: false,
+          key: 'updated_at',
+        },
+        {
+          title: this.$i18n.t('item["Action"]'),
+          align: 'center',
+          sortable: false,
+          key: 'action',
+        },
+      ]
     },
   },
   mounted() {
@@ -123,7 +235,45 @@ export default {
     },
 
     handleSearch(searchModel) {
-      this.refleshList(searchModel || '')
+      const searchName = searchModel?.name || ''
+      this.refleshList(searchName)
+    },
+
+    updateOptions(options) {
+      this.table.options = options
+    },
+
+    getStatusText(status) {
+      const numStatus = typeof status === 'string' ? parseInt(status, 10) : status
+      switch (numStatus) {
+        case 1:
+          return 'PENDING'
+        case 2:
+          return 'ACCEPTED'
+        case 3:
+          return 'REJECTED'
+        default:
+          console.warn('Unknown status value:', status, 'converted to:', numStatus)
+          return 'UNKNOWN'
+      }
+    },
+
+    getStatusColor(status) {
+      const statusText = this.getStatusText(status)
+      switch (statusText) {
+        case 'PENDING':
+          return 'orange'
+        case 'ACCEPTED':
+          return 'green'
+        case 'REJECTED':
+          return 'red'
+        default:
+          return 'grey'
+      }
+    },
+
+    formatTime(time) {
+      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
     },
 
     async handleDeleteInvitation(item) {
@@ -134,24 +284,18 @@ export default {
         this.loading = true
         const currentOrganization = this.$store.state.organization
         if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.invitationTable.$refs.snackbar.notifyError(
-            'No organization selected'
-          )
+          this.$refs.snackbar.notifyError('No organization selected')
           return
         }
         await this.DeleteOrganizationInvitationAPI(
           currentOrganization.organization_id,
           item.project_id
         )
-        this.$refs.invitationTable.$refs.snackbar.notifySuccess(
-          `プロジェクト「${item.name}」の招待を削除しました`
-        )
-        this.handleSearch('')
+        this.$refs.snackbar.notifySuccess(`プロジェクト「${item.name}」の招待を削除しました`)
+        this.handleSearch(this.searchModel)
       } catch (err) {
         console.error('Error deleting invitation:', err)
-        this.$refs.invitationTable.$refs.snackbar.notifyError(
-          err.response?.data || '招待の削除に失敗しました'
-        )
+        this.$refs.snackbar.notifyError(err.response?.data || '招待の削除に失敗しました')
       } finally {
         this.loading = false
       }
@@ -168,9 +312,7 @@ export default {
         this.loading = true
         const currentOrganization = this.$store.state.organization
         if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.invitationTable.$refs.snackbar.notifyError(
-            'No organization selected'
-          )
+          this.$refs.snackbar.notifyError('No organization selected')
           return
         }
         await this.PutOrganizationInvitationAPI(
@@ -178,14 +320,10 @@ export default {
           project.project_id,
           1
         )
-        this.$refs.invitationTable.$refs.snackbar.notifySuccess(
-          `Organization invitation sent to project: ${project.name}`
-        )
-        this.handleSearch('')
+        this.$refs.snackbar.notifySuccess(`Organization invitation sent to project: ${project.name}`)
+        this.handleSearch(this.searchModel)
       } catch (err) {
-        this.$refs.invitationTable.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to send organization invitation'
-        )
+        this.$refs.snackbar.notifyError(err.response?.data || 'Failed to send organization invitation')
       } finally {
         this.loading = false
       }

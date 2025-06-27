@@ -11,49 +11,24 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['User']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            size="large"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            v-if="!isOrganizationMode"
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            size="large"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-          <v-btn
-            v-else
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            size="large"
-            density="compact"
-            @click="handleNewUser"
-            icon="mdi-plus"
-          />
-        </v-row>
-      </v-form>
+      <entity-search-form
+        v-model="searchModel"
+        :loading="loading"
+        :id-field-items="[]"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="false"
+        :show-create-button="true"
+        button-size="large"
+        create-button-icon="mdi-new-box"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName
+        }"
+        @search="handleSearch"
+        @create="handleNew"
+      />
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -126,7 +101,7 @@
       </v-row>
     </v-container>
 
-    <!-- Edit Dialog -->
+    <!-- Invite User Dialog -->
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
@@ -317,6 +292,7 @@ import iam from '@/mixin/api/iam'
 import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+import EntitySearchForm from '@/component/widget/form/EntitySearchForm.vue'
 import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 import organization_iam from '../../mixin/api/organization_iam'
 export default {
@@ -325,6 +301,7 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
+    EntitySearchForm,
     VDataTable,
     VDataTableServer,
   },
@@ -466,20 +443,7 @@ export default {
     },
   },
   methods: {
-    handleNewUser() {
-      this.userForm.clickNew = true
-      this.userModel = {
-        user_id: '',
-        name: '',
-        user_idp_key: '',
-        role_cnt: 0,
-        roles: '',
-        reserved: false,
-        updated_at: '',
-      }
-      this.loadRoleList()
-      this.editDialog = true
-    },
+
     async refleshList(userName, userID) {
       let searchCond = ''
       if (this.isOrganizationMode) {
