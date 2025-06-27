@@ -112,175 +112,36 @@
     </template>
   </v-app-bar>
 
-  <!-- Project dialog -->
-  <v-dialog
-    max-width="64%"
+  <!-- Entity Select Dialog -->
+  <entity-select-dialog
     v-model="projectDialog"
-    @click:outside="projectDialog = false"
-  >
-    <v-card>
-      <v-card-title>
-        <v-row>
-          <v-col cols="auto">
-            <span class="mx-2"> Project </span>
-          </v-col>
-          <v-col>
-            <v-text-field
-              variant="outlined"
-              clearable
-              density="compact"
-              prepend-icon="mdi-magnify"
-              placeholder="Type something..."
-              v-model="projectTable.search"
-              hide-details
-              class="hidden-sm-and-down"
-            />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-divider />
-      <v-card-text class="pa-0">
-        <v-data-table
-          :search="projectTable.search"
-          :headers="headers"
-          :items="projectTable.item"
-          item-key="project_id"
-          :items-per-page="projectTable.options.itemsPerPage"
-          :page="projectTable.options.page"
-          :loading="loading"
-          :items-per-page-options="projectTable.footer.itemsPerPageOptions"
-          :show-current-page="projectTable.footer.showCurrentPage"
-          locale="ja-jp"
-          loading-text="Loading..."
-          no-data-text="No data."
-          class="elevation-1"
-          hide-default-footer
-          :custom-filter="customFilter"
-          @click:row="handleProjectClick"
-        >
-          <template v-slot:[`item.tag`]="{ item }">
-            <v-chip
-              v-for="t in item.value.tag"
-              :key="t.tag"
-              :color="t.color"
-              variant="flat"
-              class="ma-1 text-white"
-              link
-            >
-              {{ t.tag }}
-            </v-chip>
-          </template>
-        </v-data-table>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          variant="outlined"
-          color="info"
-          v-if="currentProjectID"
-          @click="handleSettingProject"
-        >
-          {{ $t(`btn['EDIT PROJECT']`) }}
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          variant="outlined"
-          color="grey-en-1"
-          @click="projectDialog = false"
-        >
-          {{ $t(`btn['CANCEL']`) }}
-        </v-btn>
-        <v-btn variant="outlined" color="success" @click="handleNewProject">
-          {{ $t(`btn['CREATE NEW PROJECT']`) }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    entity-type="project"
+    :items="projectTable.item"
+    :loading="loading"
+    :current-entity-id="currentProjectID"
+    :custom-filter="customFilter"
+    @item-selected="handleProjectSelected"
+    @edit-entity="handleSettingProject"
+    @create-entity="handleNewProject"
+  />
 
-  <!-- Organization dialog -->
-  <v-dialog
-    max-width="64%"
+  <entity-select-dialog
     v-model="organizationDialog"
-    @click:outside="organizationDialog = false"
-  >
-    <v-card>
-      <v-card-title>
-        <v-row>
-          <v-col cols="auto">
-            <span class="mx-2"> Organization </span>
-          </v-col>
-          <v-col>
-            <v-text-field
-              variant="outlined"
-              clearable
-              density="compact"
-              prepend-icon="mdi-magnify"
-              placeholder="Type something..."
-              v-model="organizationTable.search"
-              hide-details
-              class="hidden-sm-and-down"
-            />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-divider />
-      <v-card-text class="pa-0">
-        <v-data-table
-          :search="organizationTable.search"
-          :headers="organizationHeaders"
-          :items="organizationTable.item"
-          item-key="organization_id"
-          :items-per-page="organizationTable.options.itemsPerPage"
-          :page="organizationTable.options.page"
-          :loading="loading"
-          :items-per-page-options="organizationTable.footer.itemsPerPageOptions"
-          :show-current-page="organizationTable.footer.showCurrentPage"
-          locale="ja-jp"
-          loading-text="Loading..."
-          no-data-text="No data."
-          class="elevation-1"
-          hide-default-footer
-          :custom-filter="customFilter"
-          @click:row="handleOrganizationClick"
-        >
-          <template v-slot:[`item.description`]="{ item }">
-            <span class="text-truncate d-inline-block" style="max-width: 200px">
-              {{ item.value.description }}
-            </span>
-          </template>
-        </v-data-table>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          variant="outlined"
-          color="info"
-          v-if="currentOrganizationID"
-          @click="handleSettingOrganization"
-        >
-          {{ $t(`btn['EDIT ORGANIZATION']`) }}
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          variant="outlined"
-          color="grey-en-1"
-          @click="organizationDialog = false"
-        >
-          {{ $t(`btn['CANCEL']`) }}
-        </v-btn>
-        <v-btn
-          variant="outlined"
-          color="success"
-          @click="handleNewOrganization"
-        >
-          {{ $t(`btn['CREATE NEW ORGANIZATION']`) }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    entity-type="organization"
+    :items="organizationTable.item"
+    :loading="loading"
+    :current-entity-id="currentOrganizationID"
+    :custom-filter="customFilter"
+    @item-selected="handleOrganizationSelected"
+    @edit-entity="handleSettingOrganization"
+    @create-entity="handleNewOrganization"
+  />
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
 import { staticRoutes } from '@/router/config'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import EntitySelectDialog from '@/component/dialog/EntitySelectDialog.vue'
 import Util from '@/util'
 import store from '@/store'
 import mixin from '@/mixin'
@@ -288,12 +149,11 @@ import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
-import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AppToolbar',
   components: {
     BottomSnackBar,
-    VDataTable,
+    EntitySelectDialog,
   },
   mixins: [mixin, project, iam, signin, organization],
   data() {
@@ -301,15 +161,14 @@ export default {
       loading: false,
       projectDialog: false,
       projectTable: {
-        search: '',
-        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
-        footer: {
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
-        },
         item: [],
       },
       currentProjectID: '',
+      organizationDialog: false,
+      organizationTable: {
+        item: [],
+      },
+      currentOrganizationID: '',
       availableLanguages: [
         { text: 'English', value: 'en' },
         { text: '日本語', value: 'ja' },
@@ -317,57 +176,11 @@ export default {
       myMenu: [],
       isAdmin: false,
       staticRoutes: staticRoutes,
-      organizationDialog: false,
-      organizationTable: {
-        search: '',
-        options: { page: 1, itemsPerPage: 10, sortBy: ['organization_id'] },
-        footer: {
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
-        },
-        item: [],
-      },
-      currentOrganizationID: '',
     }
   },
   computed: {
-    headers() {
-      return [
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          width: '5%',
-          sortable: true,
-          key: 'project_id',
-        },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          width: '25%',
-          sortable: true,
-          key: 'name',
-        },
-        {
-          title: this.$i18n.t('item["Tag"]'),
-          align: 'start',
-          width: '70%',
-          sortable: true,
-          key: 'tag',
-        },
-      ]
-    },
     toolbarColor() {
-      try {
-        // Organization Modeの場合は補色を使用（彩度を抑えた色）
-        if (this.isOrganizationMode) {
-          return 'light-blue-darken-2'
-        }
-        // Project Modeの場合は通常の色を使用
-        return 'primary-darken-2'
-      } catch (error) {
-        console.error('Error in toolbarColor:', error)
-        return 'primary-darken-2'
-      }
+      return this.isOrganizationMode ? 'light-blue-darken-2' : 'primary-darken-2'
     },
     breadcrumbs() {
       const { matched } = this.$route
@@ -408,31 +221,7 @@ export default {
     currentDialog() {
       return this.isProjectMode ? this.projectDialog : this.organizationDialog
     },
-    organizationHeaders() {
-      return [
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          width: '5%',
-          sortable: true,
-          key: 'organization_id',
-        },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          width: '25%',
-          sortable: true,
-          key: 'name',
-        },
-        {
-          title: this.$i18n.t('item["Description"]'),
-          align: 'start',
-          width: '70%',
-          sortable: true,
-          key: 'description',
-        },
-      ]
-    },
+
   },
   async mounted() {
     await this.signinUser()
@@ -532,23 +321,16 @@ export default {
     },
     async listOrganization() {
       this.clearOrganizationList()
-      try {
-        let listOrganizationParam = '?user_id=' + store.state.user.user_id
-        if (this.isAdmin) {
-          listOrganizationParam = ''
-        }
+      let listOrganizationParam = '?user_id=' + store.state.user.user_id
+      if (this.isAdmin) {
+        listOrganizationParam = ''
+      }
         this.organizationTable.item = await this.ListOrganizationAPI(
           listOrganizationParam
-        )
-      } catch (err) {
-        this.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to load organizations'
-        )
-        // Fallback to empty array on error
-        this.organizationTable.item = []
-      } finally {
-        this.loading = false
-      }
+      ).catch((err) => {
+        return Promise.reject(err)
+      })
+      this.loading = false
     },
     clearOrganizationList() {
       this.organizationTable.item = []
@@ -637,18 +419,16 @@ export default {
     handleGoBack() {
       this.$router.go(-1)
     },
-    async handleProjectClick(event, project) {
-      await this.setProjectQueryParam(project.item.value.project_id)
-      await store.commit('updateProject', project.item.value)
+    async handleProjectSelected(project) {
+      await this.setProjectQueryParam(project.project_id)
+      await store.commit('updateProject', project)
       this.reload()
     },
     handleNewProject() {
       this.$router.push('/project/new')
-      this.projectDialog = false
     },
     handleSettingProject() {
       this.$router.push('/project/setting/')
-      this.projectDialog = false
     },
     handleSearchProject() {
       this.loading = true
@@ -670,13 +450,10 @@ export default {
       const query = { project_id: project_id }
       await this.$router.push({ query: query })
     },
-    async handleOrganizationClick(event, organization) {
-      console.log('Organization click:', organization.item.value)
+    async handleOrganizationSelected(organization) {
+      console.log('Organization selected:', organization)
 
-      await store.commit('updateOrganization', organization.item.value)
-
-      // Close the organization dialog
-      this.organizationDialog = false
+      await store.commit('updateOrganization', organization)
 
       // Navigate to organization project list with organization_id parameter
       console.log(
@@ -684,16 +461,14 @@ export default {
       )
       await this.$router.push({
         path: '/organization/project',
-        query: { organization_id: organization.item.value.organization_id },
+        query: { organization_id: organization.organization_id },
       })
     },
     handleNewOrganization() {
       this.$router.push('/organization/setting?new=true')
-      this.organizationDialog = false
     },
     handleSettingOrganization() {
       this.$router.push('/organization/setting/')
-      this.organizationDialog = false
     },
     async setOrganizationQueryParam(organization_id) {
       // Only keep organization_id, remove all other mode-specific parameters
