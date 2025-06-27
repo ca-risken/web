@@ -112,119 +112,42 @@
     </template>
   </v-app-bar>
 
-  <!-- Project dialog -->
-  <v-dialog
-    max-width="64%"
-    v-model="projectDialog"
-    @click:outside="projectDialog = false"
-  >
-    <v-card>
-      <v-card-title>
-        <v-row>
-          <v-col cols="auto">
-            <span class="mx-2"> Project </span>
-          </v-col>
-          <v-col>
-            <v-text-field
-              variant="outlined"
-              clearable
-              density="compact"
-              prepend-icon="mdi-magnify"
-              placeholder="Type something..."
-              v-model="projectTable.search"
-              hide-details
-              class="hidden-sm-and-down"
-            />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-divider />
-      <v-card-text class="pa-0">
-        <v-data-table
-          :search="projectTable.search"
-          :headers="headers"
-          :items="projectTable.item"
-          item-key="project_id"
-          :items-per-page="projectTable.options.itemsPerPage"
-          :page="projectTable.options.page"
-          :loading="loading"
-          :items-per-page-options="projectTable.footer.itemsPerPageOptions"
-          :show-current-page="projectTable.footer.showCurrentPage"
-          locale="ja-jp"
-          loading-text="Loading..."
-          no-data-text="No data."
-          class="elevation-1"
-          hide-default-footer
-          :custom-filter="customFilter"
-          @click:row="handleProjectClick"
-        >
-          <template v-slot:[`item.tag`]="{ item }">
-            <v-chip
-              v-for="t in item.value.tag"
-              :key="t.tag"
-              :color="t.color"
-              variant="flat"
-              class="ma-1 text-white"
-              link
-            >
-              {{ t.tag }}
-            </v-chip>
-          </template>
-        </v-data-table>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          variant="outlined"
-          color="info"
-          v-if="currentProjectID"
-          @click="handleSettingProject"
-        >
-          {{ $t(`btn['EDIT PROJECT']`) }}
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          variant="outlined"
-          color="grey-en-1"
-          @click="projectDialog = false"
-        >
-          {{ $t(`btn['CANCEL']`) }}
-        </v-btn>
-        <v-btn variant="outlined" color="success" @click="handleNewProject">
-          {{ $t(`btn['CREATE NEW PROJECT']`) }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+      <!-- Project dialog -->
+    <entity-select-dialog
+      v-model="projectDialog"
+      entity-type="project"
+      :items="projectTable.item"
+      :loading="loading"
+      :current-entity-id="currentProjectID"
+      :custom-filter="customFilter"
+      @item-selected="handleProjectSelected"
+      @edit-entity="handleSettingProject"
+      @create-entity="handleNewProject"
+    />
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
-import { staticRoutes } from '@/router/config'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import Util from '@/util'
-import store from '@/store'
-import mixin from '@/mixin'
-import iam from '@/mixin/api/iam'
-import signin from '@/mixin/api/signin'
-import project from '@/mixin/api/project'
-import { VDataTable } from 'vuetify/labs/VDataTable'
-export default {
-  name: 'AppToolbar',
-  components: {
-    BottomSnackBar,
-    VDataTable,
-  },
+  import { staticRoutes } from '@/router/config'
+  import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+  import EntitySelectDialog from '@/component/dialog/EntitySelectDialog.vue'
+  import Util from '@/util'
+  import store from '@/store'
+  import mixin from '@/mixin'
+  import iam from '@/mixin/api/iam'
+  import signin from '@/mixin/api/signin'
+  import project from '@/mixin/api/project'
+  export default {
+    name: 'AppToolbar',
+    components: {
+      BottomSnackBar,
+      EntitySelectDialog,
+    },
   mixins: [mixin, project, iam, signin],
   data() {
     return {
       loading: false,
       projectDialog: false,
       projectTable: {
-        search: '',
-        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
-        footer: {
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
-        },
         item: [],
       },
       currentProjectID: '',
@@ -256,32 +179,7 @@ export default {
       staticRoutes: staticRoutes,
     }
   },
-  computed: {
-    headers() {
-      return [
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          width: '5%',
-          sortable: true,
-          key: 'project_id',
-        },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          width: '25%',
-          sortable: true,
-          key: 'name',
-        },
-        {
-          title: this.$i18n.t('item["Tag"]'),
-          align: 'start',
-          width: '70%',
-          sortable: true,
-          key: 'tag',
-        },
-      ]
-    },
+      computed: {
     toolbarColor() {
       return this.$vuetify.options.extra.mainNav
     },
@@ -439,30 +337,32 @@ export default {
     handleGoBack() {
       this.$router.go(-1)
     },
-    async handleProjectClick(event, project) {
-      await this.setProjectQueryParam(project.item.value.project_id)
-      await store.commit('updateProject', project.item.value)
-      this.reload()
-    },
-    handleNewProject() {
-      this.$router.push('/project/new')
-      this.projectDialog = false
-    },
-    handleSettingProject() {
-      this.$router.push('/project/setting/')
-      this.projectDialog = false
-    },
+          async handleProjectSelected(project) {
+        await this.setProjectQueryParam(project.project_id)
+        await store.commit('updateProject', project)
+        this.reload()
+      },
+          handleNewProject() {
+        this.$router.push('/project/new')
+      },
+      handleSettingProject() {
+        this.$router.push('/project/setting/')
+      },
     handleSearchProject() {
       this.loading = true
       this.projectDialog = true
       this.listProject()
     },
-    async setProjectQueryParam(project_id) {
-      let query = await Object.assign({}, this.$router.query)
-      // delete query["project_id"]
-      query.project_id = project_id
-      await this.$router.push({ query: query })
-    },
+          async setProjectQueryParam(project_id) {
+        let query = await Object.assign({}, this.$router.query)
+        // delete query["project_id"]
+        query.project_id = project_id
+        await this.$router.push({ query: query })
+      },
+      reload() {
+        this.loading = true
+        this.listProject()
+      },
   },
 }
 </script>
