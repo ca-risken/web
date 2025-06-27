@@ -112,7 +112,7 @@
     </template>
   </v-app-bar>
 
-  <!-- Entity Select Dialog -->
+  <!-- Project dialog -->
   <entity-select-dialog
     v-model="projectDialog"
     entity-type="project"
@@ -124,7 +124,6 @@
     @edit-entity="handleSettingProject"
     @create-entity="handleNewProject"
   />
-
   <entity-select-dialog
     v-model="organizationDialog"
     entity-type="organization"
@@ -446,8 +445,8 @@ export default {
       }
     },
     async setProjectQueryParam(project_id) {
-      // Only keep project_id, remove all other mode-specific parameters
-      const query = { project_id: project_id }
+      let query = await Object.assign({}, this.$router.query)
+      query.project_id = project_id
       await this.$router.push({ query: query })
     },
     async handleOrganizationSelected(organization) {
