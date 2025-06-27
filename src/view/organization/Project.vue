@@ -19,7 +19,9 @@
         :name-field-items="nameList"
         :show-id-field="false"
         :show-create-button="true"
-        :create-button-icon="'mdi-send'"
+        button-size="large"
+        create-button-icon="mdi-send"
+        create-button-color="primary-darken-3"
         :search-form-config="{
           nameField: { label: tableConfig.searchLabel, placeholder: tableConfig.searchPlaceholder }
         }"
@@ -106,7 +108,7 @@ import mixin from '@/mixin'
 import list from '@/mixin/util/list'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
-import EntitySearchForm from '@/component/widget/form/EntitySearchForm.vue'
+import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import organization_base from '@/mixin/util/organization_base'

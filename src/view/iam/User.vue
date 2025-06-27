@@ -22,6 +22,7 @@
         :show-create-button="true"
         button-size="large"
         create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
         :search-form-config="{
           idField: searchForm.userID,
           nameField: searchForm.userName
