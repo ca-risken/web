@@ -13,7 +13,11 @@
           v-model="searchModel[idFieldKey]"
         />
       </v-col>
-      <v-col :cols="showIdField ? 8 : 8" :sm="showIdField ? 4 : 4" :md="showIdField ? 4 : 4">
+      <v-col
+        :cols="showIdField ? 8 : 8"
+        :sm="showIdField ? 4 : 4"
+        :md="showIdField ? 4 : 4"
+      >
         <v-combobox
           variant="outlined"
           density="compact"
@@ -26,7 +30,7 @@
         />
       </v-col>
       <v-spacer />
-      
+
       <!-- Search Button -->
       <v-btn
         class="mt-3 mr-4"
@@ -36,7 +40,7 @@
         @click="handleSearch"
         icon="mdi-magnify"
       />
-      
+
       <!-- Create/Action Button -->
       <v-btn
         v-if="showCreateButton"
@@ -129,4 +133,5 @@ export default {
     },
   },
 }
-</script><style scoped></style>
+</script>
+<style scoped></style>

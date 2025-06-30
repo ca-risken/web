@@ -25,12 +25,11 @@
         create-button-color="primary-darken-3"
         :search-form-config="{
           idField: searchForm.userID,
-          nameField: searchForm.userName
+          nameField: searchForm.userName,
         }"
         @search="handleSearch"
         @create="handleNew"
       />
-
 
       <v-row dense>
         <v-col cols="12">
@@ -217,7 +216,6 @@ import UserList from '@/component/widget/list/UserList.vue'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 
-
 const ADMIN_STATUS = {
   ENABLED: true,
   DISABLED: false,
@@ -226,12 +224,12 @@ const ADMIN_STATUS = {
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
-      components: {
-      BottomSnackBar,
-      UserList,
-      EntitySearchForm,
-      VDataTableServer,
-    },
+  components: {
+    BottomSnackBar,
+    UserList,
+    EntitySearchForm,
+    VDataTableServer,
+  },
   data() {
     return {
       loading: false,

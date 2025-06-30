@@ -25,12 +25,11 @@
         create-button-color="primary-darken-3"
         :search-form-config="{
           idField: searchForm.userID,
-          nameField: searchForm.userName
+          nameField: searchForm.userName,
         }"
         @search="handleSearch"
         @create="handleNew"
       />
-
 
       <v-row dense>
         <v-col cols="12">

@@ -233,4 +233,5 @@ export default {
     },
   },
 }
-</script><style scoped></style>
+</script>
+<style scoped></style>
