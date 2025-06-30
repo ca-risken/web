@@ -31,67 +31,36 @@
         @create="handleNew"
       />
 
-      <v-row dense>
-        <v-col cols="12">
-          <v-card>
-            <v-divider></v-divider>
-            <v-card-text class="pa-0">
-              <entity-table
-                :table-data="tableData"
-                :loading="loading"
-                :headers="headers"
-                :actions="table.actions"
-                item-key="user_id"
-                @update-options="updateOptions"
-              >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-2">
-                    <v-img src="/static/avatar/default.png" alt="avatar" />
-                  </v-avatar>
-                </template>
-                <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip
-                    variant="flat"
-                    :color="getColorByCount(item.value.role_cnt)"
-                  >
-                    {{ item.value.role_cnt }}
-                  </v-chip>
-                </template>
-                <template v-slot:[`item.reserved`]="{ item }">
-                  <v-icon v-if="!item.value.reserved" color="success">
-                    mdi-check-circle
-                  </v-icon>
-                  <v-chip v-else color="grey" variant="flat">
-                    {{ $t("item['Reserved']") }}
-                  </v-chip>
-                </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
-                <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
-                    </template>
-                    <v-list class="pa-0" dense>
-                      <v-list-item
-                        v-for="action in table.actions"
-                        :key="action.text"
-                        @click="action.click(item)"
-                        :prepend-icon="action.icon"
-                      >
-                        <v-list-item-title>
-                          {{ $t(`action['` + action.text + `']`) }}
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </entity-table>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+      <entity-table
+        :table-data="tableData"
+        :loading="loading"
+        :headers="headers"
+        :actions="table.actions"
+        item-key="user_id"
+        @update-options="updateOptions"
+      >
+        <template v-slot:[`item.avator`]>
+          <v-avatar class="ma-2">
+            <v-img src="/static/avatar/default.png" alt="avatar" />
+          </v-avatar>
+        </template>
+        <template v-slot:[`item.role_cnt`]="{ item }">
+          <v-chip
+            variant="flat"
+            :color="getColorByCount(item.value.role_cnt)"
+          >
+            {{ item.value.role_cnt }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.reserved`]="{ item }">
+          <v-icon v-if="!item.value.reserved" color="success">
+            mdi-check-circle
+          </v-icon>
+          <v-chip v-else color="grey" variant="flat">
+            {{ $t("item['Reserved']") }}
+          </v-chip>
+        </template>
+      </entity-table>
     </v-container>
 
     <!-- Invite User Dialog -->
@@ -389,7 +358,6 @@ export default {
           sortable: false,
           key: 'name',
         },
-
         {
           title: this.$i18n.t('item["Status"]'),
           align: 'center',

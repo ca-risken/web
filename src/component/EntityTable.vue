@@ -22,27 +22,12 @@
             :item-key="itemKey"
             @update:options="updateOptions"
           >
-            <!-- Dynamic slots for custom column rendering -->
             <template
               v-for="(_, slot) in $slots"
               v-slot:[slot]="scope"
               :key="slot"
             >
               <slot :name="slot" v-bind="scope" />
-            </template>
-
-            <!-- Default status slot if not overridden -->
-            <template
-              v-if="!$slots['item.status']"
-              v-slot:[`item.status`]="{ item }"
-            >
-              <v-chip
-                :color="getStatusColor(item.value.status)"
-                variant="flat"
-                size="small"
-              >
-                {{ getStatusText(item.value.status) }}
-              </v-chip>
             </template>
 
             <!-- Default updated_at slot if not overridden -->
@@ -136,47 +121,8 @@ export default {
     updateOptions(options) {
       this.$emit('update-options', options)
     },
-    getStatusText(status) {
-      const numStatus =
-        typeof status === 'string' ? parseInt(status, 10) : status
-      switch (numStatus) {
-        case 1:
-          return 'PENDING'
-        case 2:
-          return 'ACCEPTED'
-        case 3:
-          return 'REJECTED'
-        default:
-          console.warn(
-            'Unknown status value:',
-            status,
-            'converted to:',
-            numStatus
-          )
-          return 'UNKNOWN'
-      }
-    },
-    getStatusColor(status) {
-      const statusText = this.getStatusText(status)
-      switch (statusText) {
-        case 'PENDING':
-          return 'orange'
-        case 'ACCEPTED':
-          return 'green'
-        case 'REJECTED':
-          return 'red'
-        default:
-          return 'grey'
-      }
-    },
     formatTime(time) {
       return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
-    },
-    getColorByCount(count) {
-      if (count === 0) return 'grey'
-      if (count <= 2) return 'green'
-      if (count <= 5) return 'orange'
-      return 'red'
     },
   },
 }
