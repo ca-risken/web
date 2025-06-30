@@ -492,12 +492,12 @@ export default {
               this.clearList()
               return Promise.reject(err)
             })
-            policies = await this.listOrganizationPolicyAPI('&role_id=' + id).catch(
-              (err) => {
-                this.clearList()
-                return Promise.reject(err)
-              }
-            )
+            policies = await this.listOrganizationPolicyAPI(
+              '&role_id=' + id
+            ).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
           } else {
             role = await this.getRoleAPI(id).catch((err) => {
               this.clearList()
@@ -535,7 +535,7 @@ export default {
     async loadPolicyList() {
       this.loading = true
       this.clearPolicyList()
-      
+
       let policies
       if (this.isOrganizationMode) {
         policies = await this.listOrganizationPolicyAPI('').catch((err) => {
@@ -546,7 +546,7 @@ export default {
           return Promise.reject(err)
         })
       }
-      
+
       policies.forEach(async (id) => {
         let policy
         if (this.isOrganizationMode) {
@@ -600,12 +600,13 @@ export default {
         })
         if (attachPolicy) {
           if (this.isOrganizationMode) {
-            this.attachOrganizationPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+            this.attachOrganizationPolicyAPI(
+              this.roleModel.role_id,
+              item.policy_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           } else {
             this.attachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
               (err) => {
@@ -616,12 +617,13 @@ export default {
           }
         } else {
           if (this.isOrganizationMode) {
-            this.detachOrganizationPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+            this.detachOrganizationPolicyAPI(
+              this.roleModel.role_id,
+              item.policy_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           } else {
             this.detachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
               (err) => {

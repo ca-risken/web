@@ -24,7 +24,7 @@
         create-button-icon="mdi-new-box"
         :search-form-config="{
           idField: searchForm.userID,
-          nameField: searchForm.userName
+          nameField: searchForm.userName,
         }"
         @search="handleSearch"
         @create="handleNew"
@@ -213,7 +213,6 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-
 
 const ADMIN_STATUS = {
   ENABLED: true,

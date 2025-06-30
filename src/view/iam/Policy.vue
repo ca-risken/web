@@ -411,10 +411,12 @@ export default {
     async refleshList(searchCond) {
       let policies
       if (this.isOrganizationMode) {
-        policies = await this.listOrganizationPolicyAPI(searchCond).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        policies = await this.listOrganizationPolicyAPI(searchCond).catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
       } else {
         policies = await this.listPolicyAPI(searchCond).catch((err) => {
           this.clearList()

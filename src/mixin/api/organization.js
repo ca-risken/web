@@ -36,9 +36,9 @@ const organization = {
     async ListOrganizationInvitationAPI(searchCond) {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-invitation?organization_id=' + 
-           this.getCurrentOrganizationID() +
-           searchCond         
+          '/organization/list-organization-invitation?organization_id=' +
+            this.getCurrentOrganizationID() +
+            searchCond
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -122,7 +122,10 @@ const organization = {
     },
     async ListProjectInOrganizationAPI(searchCond) {
       const res = await this.$axios
-        .get('/organization/list-project-in-organization?organization_id=' + this.getCurrentOrganizationID())
+        .get(
+          '/organization/list-project-in-organization?organization_id=' +
+            this.getCurrentOrganizationID()
+        )
         .catch((err) => {
           return Promise.reject(err)
         })

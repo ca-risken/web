@@ -129,10 +129,10 @@ export default {
         if (this.isOrganizationMode) {
           const allowedMenuTitles = ['Organization', 'Organization IAM']
           return allowedMenuTitles.includes(menu.meta.title)
-        } 
+        }
         const forbiddenMenuTitles = ['Organization IAM']
         return !forbiddenMenuTitles.includes(menu.meta.title)
-    })
+      })
       return filteredMenus
     },
   },
@@ -153,7 +153,10 @@ export default {
     },
     isSubMenuItemVisible(sub) {
       if (!this.isOrganizationMode) {
-        const projectModeForbiddenTitles = ['OrganizationSetting', 'OrganizationProject']
+        const projectModeForbiddenTitles = [
+          'OrganizationSetting',
+          'OrganizationProject',
+        ]
         return !projectModeForbiddenTitles.includes(sub.meta.title)
       }
       return true

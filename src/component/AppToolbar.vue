@@ -180,7 +180,9 @@ export default {
   },
   computed: {
     toolbarColor() {
-      return this.isOrganizationMode ? 'light-blue-darken-2' : 'primary-darken-2'
+      return this.isOrganizationMode
+        ? 'light-blue-darken-2'
+        : 'primary-darken-2'
     },
     breadcrumbs() {
       const { matched } = this.$route
@@ -221,8 +223,6 @@ export default {
     currentDialog() {
       return this.isProjectMode ? this.projectDialog : this.organizationDialog
     },
-
-
   },
   async mounted() {
     await this.signinUser()
@@ -290,8 +290,8 @@ export default {
       if (this.isAdmin) {
         listOrganizationParam = ''
       }
-        this.organizationTable.item = await this.ListOrganizationAPI(
-          listOrganizationParam
+      this.organizationTable.item = await this.ListOrganizationAPI(
+        listOrganizationParam
       ).catch((err) => {
         return Promise.reject(err)
       })

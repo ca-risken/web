@@ -88,9 +88,11 @@ const project = {
     },
     async listProjectOrganizationInvitationAPI(searchCond) {
       const res = await this.$axios
-        .get('/project/list-organization-invitation?project_id='
-          + this.getCurrentProjectID()
-          + searchCond)
+        .get(
+          '/project/list-organization-invitation?project_id=' +
+            this.getCurrentProjectID() +
+            searchCond
+        )
         .catch((err) => {
           return Promise.reject(err)
         })

@@ -20,7 +20,10 @@
         :show-id-field="false"
         :show-create-button="false"
         :search-form-config="{
-          nameField: { label: tableConfig.searchLabel, placeholder: tableConfig.searchPlaceholder }
+          nameField: {
+            label: tableConfig.searchLabel,
+            placeholder: tableConfig.searchPlaceholder,
+          },
         }"
         @search="handleSearch"
       />
@@ -121,7 +124,7 @@ export default {
         options: {
           page: 1,
           itemsPerPage: 10,
-          sortBy: []
+          sortBy: [],
         },
         footer: {
           itemsPerPageText: 'Rows/Page',
@@ -150,7 +153,7 @@ export default {
           click: this.handleRejectInvitation,
         },
       ],
-      sortBy: ['organization_id']
+      sortBy: ['organization_id'],
     }
   },
   computed: {
@@ -197,7 +200,7 @@ export default {
     loadList() {
       this.table.items = this.entities
       this.table.total = this.entities.length
-      this.nameList = [...new Set(this.entities.map(item => item.name))]
+      this.nameList = [...new Set(this.entities.map((item) => item.name))]
     },
 
     clearList() {
@@ -218,7 +221,9 @@ export default {
         if (name) {
           searchCond += `&name=${name}`
         }
-        const invitations = await this.listProjectOrganizationInvitationAPI(searchCond)
+        const invitations = await this.listProjectOrganizationInvitationAPI(
+          searchCond
+        )
         if (!invitations || invitations.length === 0) {
           this.clearList()
           return
@@ -230,13 +235,13 @@ export default {
             )
             return {
               ...invitation,
-              name: organizations[0].name
+              name: organizations[0].name,
             }
           })
         )
         if (name) {
-          invitationWithName = invitationWithName.filter((invitation) =>
-            invitation.name == name
+          invitationWithName = invitationWithName.filter(
+            (invitation) => invitation.name == name
           )
         }
         this.entities = invitationWithName
@@ -259,7 +264,8 @@ export default {
     },
 
     getStatusText(status) {
-      const numStatus = typeof status === 'string' ? parseInt(status, 10) : status
+      const numStatus =
+        typeof status === 'string' ? parseInt(status, 10) : status
       switch (numStatus) {
         case 1:
           return 'PENDING'
@@ -268,7 +274,12 @@ export default {
         case 3:
           return 'REJECTED'
         default:
-          console.warn('Unknown status value:', status, 'converted to:', numStatus)
+          console.warn(
+            'Unknown status value:',
+            status,
+            'converted to:',
+            numStatus
+          )
           return 'UNKNOWN'
       }
     },
@@ -309,13 +320,17 @@ export default {
           2 // ACCEPTED status
         )
 
-        this.$refs.snackbar.notifySuccess(`組織「${item.name}」の招待を承認しました`)
+        this.$refs.snackbar.notifySuccess(
+          `組織「${item.name}」の招待を承認しました`
+        )
 
         // Refresh the invitation list to show updated data
         this.handleSearch(this.searchModel)
       } catch (err) {
         console.error('Error accepting invitation:', err)
-        this.$refs.snackbar.notifyError(err.response?.data || '招待の承認に失敗しました')
+        this.$refs.snackbar.notifyError(
+          err.response?.data || '招待の承認に失敗しました'
+        )
       } finally {
         this.loading = false
       }
@@ -343,13 +358,17 @@ export default {
           3 // REJECTED status
         )
 
-        this.$refs.snackbar.notifySuccess(`組織「${item.name}」の招待を拒否しました`)
+        this.$refs.snackbar.notifySuccess(
+          `組織「${item.name}」の招待を拒否しました`
+        )
 
         // Refresh the invitation list to show updated data
         this.handleSearch(this.searchModel)
       } catch (err) {
         console.error('Error rejecting invitation:', err)
-        this.$refs.snackbar.notifyError(err.response?.data || '招待の拒否に失敗しました')
+        this.$refs.snackbar.notifyError(
+          err.response?.data || '招待の拒否に失敗しました'
+        )
       } finally {
         this.loading = false
       }

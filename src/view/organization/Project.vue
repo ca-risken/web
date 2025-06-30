@@ -23,7 +23,10 @@
         create-button-icon="mdi-send"
         create-button-color="primary-darken-3"
         :search-form-config="{
-          nameField: { label: tableConfig.searchLabel, placeholder: tableConfig.searchPlaceholder }
+          nameField: {
+            label: tableConfig.searchLabel,
+            placeholder: tableConfig.searchPlaceholder,
+          },
         }"
         @search="handleSearch"
         @create="handleInviteProjects"
@@ -127,7 +130,7 @@ export default {
         options: {
           page: 1,
           itemsPerPage: 10,
-          sortBy: []
+          sortBy: [],
         },
         footer: {
           itemsPerPageText: 'Rows/Page',
@@ -151,7 +154,7 @@ export default {
           click: this.handleDeleteInvitation,
         },
       ],
-      sortBy: ['project_id'] 
+      sortBy: ['project_id'],
     }
   },
   computed: {
@@ -197,19 +200,22 @@ export default {
     '$route.query.organization_id': {
       handler(newOrganizationId, oldOrganizationId) {
         if (newOrganizationId && newOrganizationId !== oldOrganizationId) {
-          console.log('Organization ID changed in route, refreshing list:', newOrganizationId)
+          console.log(
+            'Organization ID changed in route, refreshing list:',
+            newOrganizationId
+          )
           this.refleshList('')
         }
       },
-      immediate: false
-    }
+      immediate: false,
+    },
   },
   methods: {
     // List management methods (replacing list.js mixin)
     loadList() {
       this.table.items = this.entities
       this.table.total = this.entities.length
-      this.nameList = [...new Set(this.entities.map(item => item.name))]
+      this.nameList = [...new Set(this.entities.map((item) => item.name))]
     },
 
     clearList() {
@@ -245,10 +251,12 @@ export default {
             }
           })
         )
-        if(name) {
-          invitationsWithProjectName = invitationsWithProjectName.filter((invitation) => {
-            return name == invitation.name
-          })
+        if (name) {
+          invitationsWithProjectName = invitationsWithProjectName.filter(
+            (invitation) => {
+              return name == invitation.name
+            }
+          )
         }
         this.entities = invitationsWithProjectName
         this.loadList()
@@ -282,7 +290,8 @@ export default {
     },
 
     getStatusText(status) {
-      const numStatus = typeof status === 'string' ? parseInt(status, 10) : status
+      const numStatus =
+        typeof status === 'string' ? parseInt(status, 10) : status
       switch (numStatus) {
         case 1:
           return 'PENDING'
@@ -291,7 +300,12 @@ export default {
         case 3:
           return 'REJECTED'
         default:
-          console.warn('Unknown status value:', status, 'converted to:', numStatus)
+          console.warn(
+            'Unknown status value:',
+            status,
+            'converted to:',
+            numStatus
+          )
           return 'UNKNOWN'
       }
     },
@@ -325,11 +339,15 @@ export default {
           currentOrganization.organization_id,
           item.project_id
         )
-        this.$refs.snackbar.notifySuccess(`プロジェクト「${item.name}」の招待を削除しました`)
+        this.$refs.snackbar.notifySuccess(
+          `プロジェクト「${item.name}」の招待を削除しました`
+        )
         this.handleSearch(this.searchModel)
       } catch (err) {
         console.error('Error deleting invitation:', err)
-        this.$refs.snackbar.notifyError(err.response?.data || '招待の削除に失敗しました')
+        this.$refs.snackbar.notifyError(
+          err.response?.data || '招待の削除に失敗しました'
+        )
       } finally {
         this.loading = false
       }
@@ -354,10 +372,14 @@ export default {
           project.project_id,
           1
         )
-        this.$refs.snackbar.notifySuccess(`Organization invitation sent to project: ${project.name}`)
+        this.$refs.snackbar.notifySuccess(
+          `Organization invitation sent to project: ${project.name}`
+        )
         this.handleSearch(this.searchModel)
       } catch (err) {
-        this.$refs.snackbar.notifyError(err.response?.data || 'Failed to send organization invitation')
+        this.$refs.snackbar.notifyError(
+          err.response?.data || 'Failed to send organization invitation'
+        )
       } finally {
         this.loading = false
       }

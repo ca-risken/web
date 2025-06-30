@@ -1,21 +1,20 @@
 const organization_iam = {
-    data: () => {
-      return {}
+  data: () => {
+    return {}
+  },
+  computed: {
+    isOrganizationMode() {
+      return this.$store.state.mode === 'organization'
     },
-    computed: {
-        isOrganizationMode() {
-          return this.$store.state.mode === 'organization'
-        },
+  },
+  methods: {
+    getCurrentOrganizationID() {
+      if (this.$store.state.organization.organization_id) {
+        return this.$store.state.organization.organization_id
+      }
+      return ''
     },
-    methods: {
-        getCurrentOrganizationID() {
-            if (this.$store.state.organization.organization_id) {
-              return this.$store.state.organization.organization_id
-            }
-            return ''
-        },
-    },
-  }
-  
-  export default organization_iam
-  
+  },
+}
+
+export default organization_iam

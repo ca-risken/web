@@ -25,7 +25,7 @@
         create-button-color="primary-darken-3"
         :search-form-config="{
           idField: searchForm.userID,
-          nameField: searchForm.userName
+          nameField: searchForm.userName,
         }"
         @search="handleSearch"
         @create="handleNew"
@@ -445,7 +445,6 @@ export default {
     },
   },
   methods: {
-
     async refleshList(userName, userID) {
       let searchCond = ''
       if (this.isOrganizationMode) {
@@ -464,18 +463,18 @@ export default {
           searchCond += '&user_id=' + userID
         }
       }
-      
+
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      
+
       if (!this.isOrganizationMode) {
         this.userReserved = await this.listUserReserved(userName)
       } else {
         this.userReserved = []
       }
-      
+
       if (userIDs.length + this.userReserved.length == 0) {
         return
       }
@@ -525,20 +524,22 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      
+
       let roles
       if (this.isOrganizationMode) {
-        roles = await this.listOrganizationRoleAPI('&user_id=' + id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        roles = await this.listOrganizationRoleAPI('&user_id=' + id).catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
       } else {
         roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
           this.clearList()
           return Promise.reject(err)
         })
       }
-      
+
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -584,7 +585,7 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      
+
       let roles
       if (this.isOrganizationMode) {
         roles = await this.listOrganizationRoleAPI('').catch((err) => {
@@ -595,7 +596,7 @@ export default {
           return Promise.reject(err)
         })
       }
-      
+
       roles.forEach(async (id) => {
         let role
         if (this.isOrganizationMode) {
@@ -641,35 +642,39 @@ export default {
         })
         if (attachRole) {
           if (this.isOrganizationMode) {
-            await this.attachOrganizationRoleAPI(this.userModel.user_id, item.role_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+            await this.attachOrganizationRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           } else {
-            await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+            await this.attachRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           }
         } else {
           if (this.isOrganizationMode) {
-            await this.detachOrganizationRoleAPI(this.userModel.user_id, item.role_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+            await this.detachOrganizationRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           } else {
-            await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+            await this.detachRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           }
         }
       })
