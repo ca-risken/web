@@ -26,15 +26,65 @@
       />
 
       <!-- Table -->
-      <generic-data-table
-        :table-data="tableData"
-        :loading="loading"
-        :headers="headers"
-        :actions="tableActions"
-        :item-key="tableConfig.itemKey"
-        id-field-type="organization"
-        @update-options="updateOptions"
-      />
+      <v-row dense>
+        <v-col cols="12">
+          <v-card>
+            <v-divider></v-divider>
+            <v-card-text class="pa-0">
+              <v-data-table-server
+                :headers="headers"
+                :items-length="table.total"
+                :items="table.items"
+                :loading="loading"
+                :sort-by="table.options.sortBy"
+                :page="table.options.page"
+                :items-per-page="table.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                :items-per-page-text="table.footer.itemsPerPageText"
+                :show-current-page="table.footer.showCurrentPage"
+                locale="ja-jp"
+                loading-text="Loading..."
+                no-data-text="No data."
+                class="elevation-1"
+                :item-key="tableConfig.itemKey"
+                @update:options="updateOptions"
+              >
+                <template v-slot:[`item.status`]="{ item }">
+                  <v-chip
+                    :color="getStatusColor(item.value.status)"
+                    variant="flat"
+                    size="small"
+                  >
+                    {{ getStatusText(item.value.status) }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.updated_at`]="{ item }">
+                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
+                </template>
+                <template v-slot:[`item.action`]="{ item }">
+                  <v-menu>
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
+                    </template>
+                    <v-list class="pa-0" dense>
+                      <v-list-item
+                        v-for="action in tableActions"
+                        :key="action.text"
+                        @click="action.click(item.value)"
+                        :prepend-icon="action.icon"
+                      >
+                        <v-list-item-title>{{
+                          $t(`action['` + action.text + `']`)
+                        }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </template>
+              </v-data-table-server>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
 
     <!-- Snackbar -->
@@ -43,12 +93,13 @@
 </template>
 
 <script>
+import Util from '@/util'
 import mixin from '@/mixin'
 import organization from '@/mixin/api/organization'
 import project from '@/mixin/api/project'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import GenericDataTable from '@/component/widget/table/GenericDataTable.vue'
+import { VDataTableServer } from 'vuetify/labs/VDataTable'
 
 export default {
   name: 'OrganizationInvitationList',
@@ -56,7 +107,7 @@ export default {
   components: {
     EntitySearchForm,
     BottomSnackBar,
-    GenericDataTable,
+    VDataTableServer,
   },
   data() {
     return {
@@ -103,14 +154,6 @@ export default {
     }
   },
   computed: {
-    tableData() {
-      return {
-        items: this.table.items,
-        total: this.table.total,
-        options: this.table.options,
-        footer: this.table.footer,
-      }
-    },
     headers() {
       return [
         {
@@ -164,7 +207,9 @@ export default {
       this.nameList = []
     },
 
-
+    formatTime(time) {
+      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
+    },
 
     async refleshList(name) {
       this.loading = true
@@ -213,7 +258,34 @@ export default {
       this.table.options = options
     },
 
+    getStatusText(status) {
+      const numStatus = typeof status === 'string' ? parseInt(status, 10) : status
+      switch (numStatus) {
+        case 1:
+          return 'PENDING'
+        case 2:
+          return 'ACCEPTED'
+        case 3:
+          return 'REJECTED'
+        default:
+          console.warn('Unknown status value:', status, 'converted to:', numStatus)
+          return 'UNKNOWN'
+      }
+    },
 
+    getStatusColor(status) {
+      const statusText = this.getStatusText(status)
+      switch (statusText) {
+        case 'PENDING':
+          return 'orange'
+        case 'ACCEPTED':
+          return 'green'
+        case 'REJECTED':
+          return 'red'
+        default:
+          return 'grey'
+      }
+    },
 
     async handleAcceptInvitation(item) {
       if (!confirm(`組織「${item.name}」の招待を承認しますか？`)) {
