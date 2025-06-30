@@ -43,12 +43,6 @@
 
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
-
-    <!-- Project Selection Dialog -->
-    <project-list
-      :projectDialog="projectDialog"
-      @handleProjectDialogResponse="handleProjectDialogResponse"
-    />
   </div>
 </template>
 
