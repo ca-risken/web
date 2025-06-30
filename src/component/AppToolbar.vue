@@ -113,7 +113,7 @@
   </v-app-bar>
 
   <!-- Project dialog -->
-  <entity-select-dialog
+  <project-org-select-dialog
     v-model="projectDialog"
     entity-type="project"
     :items="projectTable.item"
@@ -129,7 +129,7 @@
 <script>
 import { staticRoutes } from '@/router/config'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import EntitySelectDialog from '@/component/dialog/EntitySelectDialog.vue'
+import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import Util from '@/util'
 import store from '@/store'
 import mixin from '@/mixin'
@@ -140,7 +140,7 @@ export default {
   name: 'AppToolbar',
   components: {
     BottomSnackBar,
-    EntitySelectDialog,
+    ProjectOrgSelectDialog,
   },
   mixins: [mixin, project, iam, signin],
   data() {
