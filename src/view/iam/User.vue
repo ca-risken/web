@@ -45,10 +45,7 @@
           </v-avatar>
         </template>
         <template v-slot:[`item.role_cnt`]="{ item }">
-          <v-chip
-            variant="flat"
-            :color="getColorByCount(item.value.role_cnt)"
-          >
+          <v-chip variant="flat" :color="getColorByCount(item.value.role_cnt)">
             {{ item.value.role_cnt }}
           </v-chip>
         </template>
