@@ -107,14 +107,6 @@ export default {
       type: String,
       default: 'id',
     },
-    idFieldType: {
-      type: String,
-      default: 'project', // 'project' or 'organization'
-    },
-    enableDefaultFormatting: {
-      type: Boolean,
-      default: true,
-    },
   },
   emits: ['update-options'],
   methods: {
