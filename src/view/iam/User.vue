@@ -304,8 +304,8 @@ export default {
     BottomSnackBar,
     UserList,
     EntitySearchForm,
-          VDataTable,
-      VDataTableServer,
+    VDataTable,
+    VDataTableServer,
   },
   data() {
     return {
@@ -439,17 +439,17 @@ export default {
   methods: {
     async refleshList(userName, userID) {
       let searchCond = '&project_id=' + this.getCurrentProjectID()
-        if (userName) {
-          searchCond += '&name=' + userName
-        }
-        if (userID) {
-          searchCond += '&user_id=' + userID
-        }
+      if (userName) {
+        searchCond += '&name=' + userName
+      }
+      if (userID) {
+        searchCond += '&user_id=' + userID
+      }
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-        this.userReserved = await this.listUserReserved(userName)
+      this.userReserved = await this.listUserReserved(userName)
       if (userIDs.length + this.userReserved.length == 0) {
         return
       }
@@ -500,9 +500,9 @@ export default {
         return Promise.reject(err)
       })
       const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
+        this.clearList()
+        return Promise.reject(err)
+      })
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -549,8 +549,8 @@ export default {
       this.loading = true
       this.clearRoleList()
       const roles = await this.listRoleAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
+        return Promise.reject(err)
+      })
       roles.forEach(async (id) => {
         const role = await this.getRoleAPI(id).catch((err) => {
           return Promise.reject(err)
@@ -588,19 +588,19 @@ export default {
           }
         })
         if (attachRole) {
-            await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
-          } else {
-            await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
+          await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
+        } else {
+          await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
         }
       })
     },
