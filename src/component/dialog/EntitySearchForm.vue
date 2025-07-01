@@ -134,7 +134,4 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-/* Add any specific styling if needed */
-</style>
+<style scoped></style>

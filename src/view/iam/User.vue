@@ -30,76 +30,34 @@
         @search="handleSearch"
         @create="handleNew"
       />
-      <v-row dense>
-        <v-col cols="12">
-          <v-card>
-            <v-divider></v-divider>
-            <v-card-text class="pa-0">
-              <v-data-table-server
-                :headers="headers"
-                :items-length="table.total"
-                :items="table.items"
-                :loading="loading"
-                :sort-by="table.options.sortBy"
-                :page="table.options.page"
-                :items-per-page="table.options.itemsPerPage"
-                :items-per-page-options="table.footer.itemsPerPageOptions"
-                :items-per-page-text="table.footer.itemsPerPageText"
-                :show-current-page="table.footer.showCurrentPage"
-                locale="ja-jp"
-                loading-text="Loading..."
-                no-data-text="No data."
-                class="elevation-1"
-                item-key="user_id"
-                @update:options="updateOptions"
-              >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-2">
-                    <v-img src="/static/avatar/default.png" alt="avatar" />
-                  </v-avatar>
-                </template>
-                <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip
-                    variant="flat"
-                    :color="getColorByCount(item.value.role_cnt)"
-                    >{{ item.value.role_cnt }}</v-chip
-                  >
-                </template>
-                <template v-slot:[`item.reserved`]="{ item }">
-                  <v-icon v-if="!item.value.reserved" color="success"
-                    >mdi-check-circle</v-icon
-                  >
-                  <v-chip v-else color="grey" variant="flat">{{
-                    $t("item['Reserved']")
-                  }}</v-chip>
-                </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
-                <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
-                    </template>
-                    <v-list class="pa-0" dense>
-                      <v-list-item
-                        v-for="action in table.actions"
-                        :key="action.text"
-                        @click="action.click(item)"
-                        :prepend-icon="action.icon"
-                      >
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-data-table-server>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+
+      <entity-table
+        :table-data="tableData"
+        :loading="loading"
+        :headers="headers"
+        :actions="table.actions"
+        item-key="user_id"
+        @update-options="updateOptions"
+      >
+        <template v-slot:[`item.avator`]>
+          <v-avatar class="ma-2">
+            <v-img src="/static/avatar/default.png" alt="avatar" />
+          </v-avatar>
+        </template>
+        <template v-slot:[`item.role_cnt`]="{ item }">
+          <v-chip variant="flat" :color="getColorByCount(item.value.role_cnt)">
+            {{ item.value.role_cnt }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.reserved`]="{ item }">
+          <v-icon v-if="!item.value.reserved" color="success">
+            mdi-check-circle
+          </v-icon>
+          <v-chip v-else color="grey" variant="flat">
+            {{ $t("item['Reserved']") }}
+          </v-chip>
+        </template>
+      </entity-table>
     </v-container>
 
     <!-- Invite User Dialog -->
@@ -295,7 +253,8 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import organization_iam from '../../mixin/api/organization_iam'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+import { VDataTable } from 'vuetify/labs/VDataTable'
+import EntityTable from '@/component/EntityTable.vue'
 
 export default {
   name: 'UserManagement',
@@ -305,7 +264,7 @@ export default {
     UserList,
     EntitySearchForm,
     VDataTable,
-    VDataTableServer,
+    EntityTable,
   },
   data() {
     return {
@@ -368,6 +327,14 @@ export default {
     }
   },
   computed: {
+    tableData() {
+      return {
+        items: this.table.items,
+        total: this.table.total,
+        options: this.table.options,
+        footer: this.table.footer,
+      }
+    },
     headers() {
       return [
         {
@@ -389,7 +356,6 @@ export default {
           sortable: false,
           key: 'name',
         },
-
         {
           title: this.$i18n.t('item["Status"]'),
           align: 'center',

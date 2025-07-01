@@ -93,7 +93,7 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 
 export default {
-  name: 'EntitySelectDialog',
+  name: 'ProjectOrgSelectDialog',
   components: {
     VDataTable,
   },
@@ -234,5 +234,4 @@ export default {
   },
 }
 </script>
-
 <style scoped></style>
