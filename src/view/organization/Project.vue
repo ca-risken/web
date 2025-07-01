@@ -33,66 +33,31 @@
       />
 
       <!-- Table -->
-      <v-row dense>
-        <v-col cols="12">
-          <v-card>
-            <v-divider></v-divider>
-            <v-card-text class="pa-0">
-              <v-data-table-server
-                :headers="headers"
-                :items-length="table.total"
-                :items="table.items"
-                :loading="loading"
-                :sort-by="table.options.sortBy"
-                :page="table.options.page"
-                :items-per-page="table.options.itemsPerPage"
-                :items-per-page-options="table.footer.itemsPerPageOptions"
-                :items-per-page-text="table.footer.itemsPerPageText"
-                :show-current-page="table.footer.showCurrentPage"
-                locale="ja-jp"
-                loading-text="Loading..."
-                no-data-text="No data."
-                class="elevation-1"
-                :item-key="tableConfig.itemKey"
-                @update:options="updateOptions"
-              >
-                <template v-slot:[`item.status`]="{ item }">
-                  <v-chip
-                    :color="getStatusColor(item.value.status)"
-                    variant="flat"
-                    size="small"
-                  >
-                    {{ getStatusText(item.value.status) }}
-                  </v-chip>
-                </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
-                <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
-                    </template>
-                    <v-list class="pa-0" dense>
-                      <v-list-item
-                        v-for="action in tableActions"
-                        :key="action.text"
-                        @click="action.click(item.value)"
-                        :prepend-icon="action.icon"
-                      >
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-data-table-server>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+      <entity-table
+        :table-data="tableData"
+        :loading="loading"
+        :headers="headers"
+        :actions="table.actions"
+        :item-key="tableConfig.itemKey"
+        @update-options="updateOptions"
+      >
+        <template v-slot:[`item.status`]="{ item }">
+          <v-chip
+            :color="getStatusColor(item.value.status)"
+            variant="flat"
+            size="small"
+          >
+            {{ getStatusText(item.value.status) }}
+          </v-chip>
+        </template>
+      </entity-table>
     </v-container>
+
+    <!-- Project Selection Dialog -->
+    <project-list
+      :projectDialog="projectDialog"
+      @handleProjectDialogResponse="handleProjectDialogResponse"
+    />
 
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
@@ -106,8 +71,9 @@ import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import { VDataTableServer } from 'vuetify/labs/VDataTable'
+import EntityTable from '@/component/EntityTable.vue'
 import organization_base from '@/mixin/util/organization_base'
+import ProjectList from '@/component/widget/list/ProjectList.vue'
 
 export default {
   name: 'OrganizationProject',
@@ -115,7 +81,8 @@ export default {
   components: {
     EntitySearchForm,
     BottomSnackBar,
-    VDataTableServer,
+    EntityTable,
+    ProjectList,
   },
   data() {
     return {
@@ -132,6 +99,13 @@ export default {
           itemsPerPage: 10,
           sortBy: [],
         },
+        actions: [
+          {
+            text: 'Delete Invitation',
+            icon: 'mdi-delete',
+            click: this.handleDeleteInvitation,
+          },
+        ],
         footer: {
           itemsPerPageText: 'Rows/Page',
           itemsPerPageOptions: [{ value: 10, title: '10' }],
@@ -147,13 +121,6 @@ export default {
         itemKey: 'project_id',
         idKey: 'project_id',
       },
-      tableActions: [
-        {
-          text: 'Delete Invitation',
-          icon: 'mdi-delete',
-          click: this.handleDeleteInvitation,
-        },
-      ],
       sortBy: ['project_id'],
     }
   },
@@ -191,6 +158,14 @@ export default {
           key: 'action',
         },
       ]
+    },
+    tableData() {
+      return {
+        options: this.table.options,
+        items: this.table.items,
+        total: this.table.total,
+        footer: this.table.footer,
+      }
     },
   },
   mounted() {

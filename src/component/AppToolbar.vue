@@ -124,17 +124,19 @@
     @edit-entity="handleSettingProject"
     @create-entity="handleNewProject"
   />
-  <entity-select-dialog
+
+  <!-- Organization dialog -->
+  <project-org-select-dialog
     v-model="organizationDialog"
     entity-type="organization"
     :items="organizationTable.item"
     :loading="loading"
     :current-entity-id="currentOrganizationID"
-    :custom-filter="customFilter"
     @item-selected="handleOrganizationSelected"
     @edit-entity="handleSettingOrganization"
     @create-entity="handleNewOrganization"
   />
+  
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
@@ -240,8 +242,8 @@ export default {
     }
     this.myMenu = await this.getMenu()
 
-    this.currentProjectID = store.state.project.project_id
-    this.currentOrganizationID = store.state.organization.organization_id
+    this.currentProjectID = String(store.state.project.project_id || '')
+    this.currentOrganizationID = String(store.state.organization.organization_id || '')
     const userLocale = store.state.locale
     const browserLocale = Util.getNavigatorLanguage()
     if (userLocale.lang && userLocale.text) {
