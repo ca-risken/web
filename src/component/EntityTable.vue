@@ -51,7 +51,7 @@
                   <v-list-item
                     v-for="action in actions"
                     :key="action.text"
-                    @click="action.click(item.value)"
+                    @click="action.click(item)"
                     :prepend-icon="action.icon"
                   >
                     <v-list-item-title>{{

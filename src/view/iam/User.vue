@@ -248,7 +248,6 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import Util from '@/util'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
@@ -671,18 +670,6 @@ export default {
       this.table.options.page = options.page
       this.table.options.itemsPerPage = options.itemsPerPage
       this.loadList()
-    },
-    getColorByCount(count) {
-      if (count > 5) {
-        return 'error'
-      } else if (count > 3) {
-        return 'warning'
-      } else {
-        return 'success'
-      }
-    },
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
     },
   },
 }
