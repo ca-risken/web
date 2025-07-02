@@ -11,39 +11,26 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['User']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            size="large"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            size="large"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-        </v-row>
-      </v-form>
+      <search-toolbar
+        v-model="searchModel"
+        :loading="loading"
+        :id-field-items="[]"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="false"
+        :show-create-button="true"
+        button-size="large"
+        create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName,
+        }"
+        @search="handleSearch"
+        @create="handleNew"
+      />
+
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -116,7 +103,7 @@
       </v-row>
     </v-container>
 
-    <!-- Edit Dialog -->
+    <!-- Invite User Dialog -->
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
@@ -306,13 +293,16 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+
 export default {
   name: 'UserManagement',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     UserList,
+    SearchToolbar,
     VDataTable,
     VDataTableServer,
   },

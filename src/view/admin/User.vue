@@ -11,49 +11,26 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="4" sm="3" md="3">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.userID.label + `']`)"
-              :placeholder="searchForm.userID.placeholder"
-              :items="userIDList"
-              v-model="searchModel.userID"
-            />
-          </v-col>
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.userName.label + `']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-        </v-row>
-      </v-form>
+      <search-toolbar
+        v-model="searchModel"
+        :loading="loading"
+        :id-field-items="userIDList"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="true"
+        :show-create-button="true"
+        button-size="default"
+        create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName,
+        }"
+        @search="handleSearch"
+        @create="handleNew"
+      />
+
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -236,6 +213,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 
 const ADMIN_STATUS = {
@@ -249,6 +227,7 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
+    SearchToolbar,
     VDataTableServer,
   },
   data() {
