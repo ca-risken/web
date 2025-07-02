@@ -57,7 +57,7 @@
 
 <script>
 export default {
-  name: 'EntitySearchForm',
+  name: 'EntitySearchToolbar',
   props: {
     modelValue: {
       type: Object,
@@ -134,4 +134,4 @@ export default {
   },
 }
 </script>
-<style scoped></style>
+<style scoped></style> 

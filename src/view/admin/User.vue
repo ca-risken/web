@@ -11,7 +11,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <entity-search-form
+      <entity-search-toolbar
         v-model="searchModel"
         :loading="loading"
         :id-field-items="userIDList"
@@ -213,7 +213,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
+import EntitySearchToolbar from '@/component/widget/toolbar/EntitySearchToolbar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 
 const ADMIN_STATUS = {
@@ -227,7 +227,7 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
-    EntitySearchForm,
+    EntitySearchToolbar,
     VDataTableServer,
   },
   data() {

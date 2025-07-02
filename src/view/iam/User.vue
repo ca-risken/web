@@ -11,7 +11,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <entity-search-form
+      <entity-search-toolbar
         v-model="searchModel"
         :loading="loading"
         :id-field-items="[]"
@@ -293,7 +293,7 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
+import EntitySearchToolbar from '@/component/widget/toolbar/EntitySearchToolbar.vue'
 import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
 
 export default {
@@ -302,7 +302,7 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
-    EntitySearchForm,
+    EntitySearchToolbar,
     VDataTable,
     VDataTableServer,
   },
