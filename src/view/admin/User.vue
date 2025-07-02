@@ -31,62 +31,20 @@
         @create="handleNew"
       />
 
-      <v-row dense>
-        <v-col cols="12">
-          <v-card>
-            <v-divider></v-divider>
-            <v-card-text class="pa-0">
-              <v-data-table-server
-                :headers="headers"
-                :items="table.items"
-                v-model:options="table.options"
-                :items-length="table.total"
-                :sort-by="table.options.sortBy"
-                :page="table.options.page"
-                :items-per-page="table.options.itemsPerPage"
-                :items-per-page-options="table.footer.itemsPerPageOptions"
-                :showCurrentPage="table.footer.showCurrentPage"
-                :loading="loading"
-                :footer-props="table.footer"
-                locale="ja-jp"
-                loading-text="Loading..."
-                no-data-text="No data."
-                class="elevation-1"
-                item-key="user_id"
-                @update:options="updateOptions"
-              >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-2">
-                    <v-img src="/static/avatar/default.png" alt="avatar" />
-                  </v-avatar>
-                </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
-                <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
-                    </template>
-                    <v-list class="pa-0" dense>
-                      <v-list-item
-                        v-for="action in table.actions"
-                        :key="action.text"
-                        @click="action.click(item)"
-                        :prepend-icon="action.icon"
-                      >
-                        <v-list-item-title>
-                          {{ $t(`action['` + action.text + `']`) }}
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-data-table-server>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+      <data-table
+        :table-data="tableData"
+        :loading="loading"
+        :headers="headers"
+        :actions="table.actions"
+        item-key="user_id"
+        @update-options="updateOptions"
+      >
+        <template v-slot:[`item.avator`]>
+          <v-avatar class="ma-2">
+            <v-img src="/static/avatar/default.png" alt="avatar" />
+          </v-avatar>
+        </template>
+      </data-table>
     </v-container>
 
     <!-- Invite User Dialog -->
@@ -214,7 +172,7 @@ import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
-import { VDataTableServer } from 'vuetify/labs/VDataTable'
+import DataTable from '@/component/widget/table/DataTable.vue'
 
 const ADMIN_STATUS = {
   ENABLED: true,
@@ -227,8 +185,8 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
+    DataTable,
     SearchToolbar,
-    VDataTableServer,
   },
   data() {
     return {
@@ -314,6 +272,14 @@ export default {
           key: 'action',
         },
       ]
+    },
+    tableData() {
+      return {
+        options: this.table.options,
+        items: this.table.items,
+        total: this.table.total,
+        footer: this.table.footer,
+      }
     },
   },
   mounted() {
