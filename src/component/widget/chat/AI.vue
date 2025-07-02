@@ -57,7 +57,7 @@
           <v-btn
             icon
             variant="tonal"
-            @click="showChat = false"
+            @click="close"
             class="mx-1"
             size="x-small"
           >
@@ -65,6 +65,32 @@
           </v-btn>
         </v-card-title>
         <v-divider />
+
+        <!-- Context List -->
+        <v-chip-group
+          v-if="contextList && contextList.length"
+          class="mx-2"
+          column
+          multiple
+          show-arrows
+        >
+          <v-chip
+            v-for="(ctx, idx) in contextList"
+            :key="idx"
+            label
+            x-small
+            closable
+            color="grey-lighten-4"
+            variant="tonal"
+            @click:close="removeContext(ctx.name)"
+          >
+            <v-icon icon="mdi-label" start />
+            {{ ctx.name }}
+          </v-chip>
+        </v-chip-group>
+        <v-divider />
+
+        <!-- Chat Messages -->
         <v-card-text v-show="!minimized" class="pa-3">
           <v-container class="pa-0">
             <v-row class="chat-messages-container mt-1 mb-1">
@@ -177,21 +203,25 @@ export default {
       userInput: '',
       messages: [],
       loading: false,
-      initialContext: '',
+      contextList: [],
       minimized: false,
     }
   },
   methods: {
     open(context) {
       if (context) {
-        this.initialContext = context
+        this.contextList.push(context)
       }
       this.showChat = true
     },
     close() {
       this.showChat = false
       this.messages = []
+      this.contextList = []
       this.userInput = ''
+    },
+    removeContext(name) {
+      this.contextList = this.contextList.filter((ctx) => ctx.name !== name)
     },
     handleEnter(event) {
       if (event.isComposing) {
@@ -209,12 +239,29 @@ export default {
       this.loading = true
       try {
         // Shallow copy
-        const historyForAPI = [...this.messages]
+        const keepMessages = [...this.messages]
         this.messages.push({
           role: this.RoleUser,
           content: userMessageText,
         })
-        const answer = await this.chatAI(userMessageText, historyForAPI)
+
+        // message history for API
+        let messageHistory = []
+        for (const ctx of this.contextList) {
+          messageHistory.push({
+            role: this.RoleAI,
+            content:
+              'User looking at `' +
+              ctx.name +
+              '` view.\n' +
+              'The content is: \n' +
+              ctx.content,
+          })
+          // TODO: delete
+          console.log('ctx: ', ctx)
+        }
+        messageHistory.push(...keepMessages)
+        const answer = await this.chatAI(userMessageText, messageHistory)
         this.messages.push({
           role: this.RoleAI,
           content: answer,
@@ -232,11 +279,11 @@ export default {
     },
     initializeChat() {
       this.messages = []
-      if (this.initialContext) {
-        this.messages.push({
-          role: this.RoleAI,
-          content: this.initialContext,
-          hidden: true,
+      if (this.contextList.length === 0) {
+        // Default context (current page)
+        this.contextList.push({
+          name: this.$route.name,
+          content: document.querySelector('main')?.textContent,
         })
       }
       this.messages.push({
@@ -251,7 +298,7 @@ export default {
         this.initializeChat()
       }
     },
-    initialContext(newContext, oldContext) {
+    contextList(newContext, oldContext) {
       if (this.showChat && newContext && newContext !== oldContext) {
         this.initializeChat()
       }
