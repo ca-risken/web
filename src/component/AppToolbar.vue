@@ -136,7 +136,7 @@
     @edit-entity="handleSettingOrganization"
     @create-entity="handleNewOrganization"
   />
-  
+
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
@@ -243,7 +243,9 @@ export default {
     this.myMenu = await this.getMenu()
 
     this.currentProjectID = String(store.state.project.project_id || '')
-    this.currentOrganizationID = String(store.state.organization.organization_id || '')
+    this.currentOrganizationID = String(
+      store.state.organization.organization_id || ''
+    )
     const userLocale = store.state.locale
     const browserLocale = Util.getNavigatorLanguage()
     if (userLocale.lang && userLocale.text) {

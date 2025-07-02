@@ -490,7 +490,7 @@ export const appRoute = [
             meta: {
               title: 'User',
             },
-            component: () => import('@/view/iam/User.vue'),
+            component: () => import('@/view/organization/iam/User.vue'),
           },
           {
             path: '/organization-iam/role',
@@ -498,7 +498,7 @@ export const appRoute = [
             meta: {
               title: 'Role',
             },
-            component: () => import('@/view/iam/Role.vue'),
+            component: () => import('@/view/organization/iam/Role.vue'),
           },
           {
             path: '/organization-iam/policy',
@@ -506,7 +506,7 @@ export const appRoute = [
             meta: {
               title: 'Policy',
             },
-            component: () => import('@/view/iam/Policy.vue'),
+            component: () => import('@/view/organization/iam/Policy.vue'),
           },
         ],
       },

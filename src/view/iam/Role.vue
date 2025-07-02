@@ -297,18 +297,19 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import organization_iam from '../../mixin/api/organization_iam'
-import organization_base from '../../mixin/util/organization_base'
+import Util from '@/mixin/util/util'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+
 export default {
   name: 'RoleList',
-  mixins: [mixin, iam, organization_iam, organization_base],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     VDataTable,
   },
-  data() {
+        },
+        data() {
     return {
       loading: false,
       searchModel: { roleName: null },
@@ -442,40 +443,16 @@ export default {
         },
       ]
     },
-    isOrganizationMode() {
-      return this.$route.path.startsWith('/organization-iam')
-    },
   },
   mounted() {
     this.refleshList('')
   },
-  watch: {
-    '$route.query.organization_id'() {
-      if (this.isOrganizationMode) {
-        this.editDialog = false
-        this.deleteDialog = false
-        this.refleshList('')
-      }
-    },
-  },
   methods: {
     async refleshList(searchCond) {
-      let roles
-      if (this.isOrganizationMode) {
-        roles = await this.listOrganizationRoleAPI(searchCond).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-      } else {
-        roles = await this.listRoleAPI(searchCond).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-      }
-      if (!roles) {
+      const roles = await this.listRoleAPI(searchCond).catch((err) => {
         this.clearList()
-        return false
-      }
+        return Promise.reject(err)
+      })
       this.table.total = roles.length
       this.roles = roles
       this.loadList()
@@ -483,81 +460,65 @@ export default {
     async loadList() {
       this.loading = true
       let items = []
-      let roleNames = []
+      let names = []
       await Promise.all(
         this.roles.map(async (id) => {
-          let role, policies
-          if (this.isOrganizationMode) {
-            role = await this.getOrganizationRoleAPI(id).catch((err) => {
-              this.clearList()
-              return Promise.reject(err)
-            })
-            policies = await this.listOrganizationPolicyAPI(
-              '&role_id=' + id
-            ).catch((err) => {
-              this.clearList()
-              return Promise.reject(err)
-            })
-          } else {
-            role = await this.getRoleAPI(id).catch((err) => {
-              this.clearList()
-              return Promise.reject(err)
-            })
-            policies = await this.listPolicyAPI('&role_id=' + id).catch(
-              (err) => {
-                this.clearList()
-                return Promise.reject(err)
-              }
-            )
-          }
+          const role = await this.getRoleAPI(id).catch((err) => {
+            this.clearList()
+            return Promise.reject(err)
+          })
+          const attachedPolicyIDs = await this.listPolicyAPI(
+            '&role_id=' + id
+          ).catch((err) => {
+            this.clearList()
+            return Promise.reject(err)
+          })
           const item = {
             role_id: role.role_id,
             name: role.name,
             updated_at: role.updated_at,
-            policy_cnt: policies.length,
-            policies: policies,
+            policy_cnt: attachedPolicyIDs.length,
+            policies: attachedPolicyIDs,
           }
           items.push(item)
-          roleNames.push(item.name)
+          names.push(item.name)
         })
       )
       this.table.items = items
-      this.roleNameList = roleNames
+      this.nameList = [...new Set(names)]
       this.loading = false
     },
     clearList() {
       this.roles = []
       this.table.total = 0
       this.table.items = []
-      this.roleNameList = []
+      this.nameList = []
     },
-
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.table.options.itemsPerPage = options.itemsPerPage
+      this.loadList()
+    },
+    assignDataModel(item) {
+      this.roleModel = {
+        role_id: '',
+        name: '',
+        policy_cnt: 0,
+        policies: [],
+        updated_at: '',
+      }
+      this.roleModel = Object.assign(this.roleModel, item)
+    },
     async loadPolicyList() {
       this.loading = true
       this.clearPolicyList()
-
-      let policies
-      if (this.isOrganizationMode) {
-        policies = await this.listOrganizationPolicyAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
-      } else {
-        policies = await this.listPolicyAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
-      }
-
+      const policies = await this.listPolicyAPI('').catch((err) => {
+        return Promise.reject(err)
+      })
       policies.forEach(async (id) => {
-        let policy
-        if (this.isOrganizationMode) {
-          policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
-            return Promise.reject(err)
-          })
-        } else {
-          policy = await this.getPolicyAPI(id).catch((err) => {
-            return Promise.reject(err)
-          })
-        }
+        const policy = await this.getPolicyAPI(id).catch((err) => {
+          return Promise.reject(err)
+        })
         this.policyTable.items.push(policy)
         if (this.roleModel.policies.indexOf(policy.policy_id) !== -1) {
           this.policyTable.selected.push(policy)
@@ -569,139 +530,86 @@ export default {
       this.policyTable.items = []
       this.policyTable.selected = []
     },
-
     async putItem() {
       this.loading = true
-      // Update role
-      if (this.isOrganizationMode) {
-        await this.putOrganizationRoleAPI(this.roleModel.name).catch((err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
-      } else {
-        await this.putRoleAPI(this.roleModel.name).catch((err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
-      }
-
-      if (this.roleForm.newRole) {
-        this.finishUpdated('Success: Created role.')
-        return
-      }
-      // Attach/Detach policies
-      this.policyTable.items.forEach(async (item) => {
-        let attachPolicy = false
-        this.policyTable.selected.some((selected) => {
-          if (item.policy_id === selected.policy_id) {
-            attachPolicy = true
-            return true
-          }
-        })
-        if (attachPolicy) {
-          if (this.isOrganizationMode) {
-            this.attachOrganizationPolicyAPI(
-              this.roleModel.role_id,
-              item.policy_id
-            ).catch((err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            })
-          } else {
-            this.attachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
-          }
-        } else {
-          if (this.isOrganizationMode) {
-            this.detachOrganizationPolicyAPI(
-              this.roleModel.role_id,
-              item.policy_id
-            ).catch((err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            })
-          } else {
-            this.detachPolicyAPI(this.roleModel.role_id, item.policy_id).catch(
-              (err) => {
-                this.$refs.snackbar.notifyError(err.response.data)
-                return Promise.reject(err)
-              }
-            )
-          }
+      await this.putRoleAPI(this.roleModel.name)
+      if (!this.roleForm.newRole) {
+        const roleId = this.roleModel.role_id
+        const currentPolicyIds = await this.listPolicyAPI(
+          '&role_id=' + this.roleModel.role_id
+        ).catch(() => [])
+        const selectedPolicyIds = this.policyTable.selected.map(
+          (policy) => policy.policy_id
+        )
+        const policiesToAttach = selectedPolicyIds.filter(
+          (policyId) => !currentPolicyIds.includes(policyId)
+        )
+        const policiesToDetach = currentPolicyIds.filter(
+          (policyId) => !selectedPolicyIds.includes(policyId)
+        )
+        for (const policyId of policiesToAttach) {
+          await this.attachPolicyAPI(roleId, policyId)
         }
-      })
-
-      this.finishUpdated('Success: Updated role.')
-    },
-    async deleteItem(roleID) {
-      this.loading = true
-      if (this.isOrganizationMode) {
-        await this.deleteOrganizationRoleAPI(roleID).catch((err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
-      } else {
-        await this.deleteRoleAPI(roleID).catch((err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
+        for (const policyId of policiesToDetach) {
+          await this.detachPolicyAPI(roleId, policyId)
+        }
       }
-      this.finishUpdated('Success: Deleted role.')
-    },
-    async finishUpdated(msg) {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      this.$refs.snackbar.notifySuccess(msg)
-      this.loading = false
-      this.deleteDialog = false
+      this.$refs.snackbar.notifySuccess('Success: Updated role.')
       this.editDialog = false
+      this.loading = false
       this.handleSearch()
     },
-
+    handleEditItem(item) {
+      this.assignDataModel(item.value)
+      this.roleForm.newRole = false
+      this.editDialog = true
+      this.loadPolicyList()
+    },
     handleNewItem() {
       this.roleModel = {
         role_id: '',
         name: '',
         policy_cnt: 0,
-        policies: '',
+        policies: [],
         updated_at: '',
       }
-      this.loadPolicyList()
       this.roleForm.newRole = true
       this.editDialog = true
     },
     handleRowClick(event, roles) {
       this.handleEditItem(roles.item)
     },
-    handleEditItem(item) {
-      this.assignDataModel(item.value)
-      this.loadPolicyList()
-      this.roleForm.newRole = false
-      this.editDialog = true
-    },
+
+    // delete role form
     handleDeleteItem(item) {
       this.assignDataModel(item.value)
       this.deleteDialog = true
     },
+    async deleteItem(roleID) {
+      await this.deleteRoleAPI(roleID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.$refs.snackbar.notifySuccess('Success: Deleting role.')
+      this.deleteDialog = false
+      this.handleSearch()
+    },
+
     handleSearch() {
       let searchCond = ''
-      if (this.searchModel.roleName) {
-        searchCond += '&name=' + this.searchModel.roleName
+      if (this.searchModel.name) {
+        searchCond += '&name=' + this.searchModel.name
       }
       this.refleshList(searchCond)
     },
-    assignDataModel(item) {
-      this.roleModel = {
-        role_id: '',
-        name: '',
-        policy_cnt: 0,
-        policies: '',
-        updated_at: '',
-      }
-      this.roleModel = Object.assign(this.roleModel, item)
+    formatTime(time) {
+      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
+    },
+    getColorByCount(count) {
+      if (count === 0) return 'grey'
+      if (count <= 2) return 'green'
+      if (count <= 5) return 'orange'
+      return 'red'
     },
   },
 }

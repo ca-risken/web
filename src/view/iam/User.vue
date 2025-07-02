@@ -248,16 +248,14 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import organization_iam from '../../mixin/api/organization_iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 
 export default {
   name: 'UserManagement',
-  mixins: [mixin, iam, organization_iam, organization_base],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     UserList,
@@ -400,32 +398,15 @@ export default {
   mounted() {
     this.refleshList('', '')
   },
-  watch: {
-    '$route.query.organization_id'() {
-      if (this.isOrganizationMode) {
-        this.editDialog = false
-        this.refleshList('', '')
-      }
-    },
-  },
+
   methods: {
     async refleshList(userName, userID) {
-      let searchCond = ''
-      if (this.isOrganizationMode) {
-        if (userName) {
-          searchCond += '&name=' + userName
-        }
-        if (userID) {
-          searchCond += '&user_id=' + userID
-        }
-      } else {
-        searchCond = '&project_id=' + this.getCurrentProjectID()
-        if (userName) {
-          searchCond += '&name=' + userName
-        }
-        if (userID) {
-          searchCond += '&user_id=' + userID
-        }
+      let searchCond = '&project_id=' + this.getCurrentProjectID()
+      if (userName) {
+        searchCond += '&name=' + userName
+      }
+      if (userID) {
+        searchCond += '&user_id=' + userID
       }
 
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
@@ -433,11 +414,7 @@ export default {
         return Promise.reject(err)
       })
 
-      if (!this.isOrganizationMode) {
-        this.userReserved = await this.listUserReserved(userName)
-      } else {
-        this.userReserved = []
-      }
+      this.userReserved = await this.listUserReserved(userName)
 
       if (userIDs.length + this.userReserved.length == 0) {
         return
@@ -489,20 +466,10 @@ export default {
         return Promise.reject(err)
       })
 
-      let roles
-      if (this.isOrganizationMode) {
-        roles = await this.listOrganizationRoleAPI('&user_id=' + id).catch(
-          (err) => {
-            this.clearList()
-            return Promise.reject(err)
-          }
-        )
-      } else {
-        roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-      }
+      const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      })
 
       const item = {
         user_id: user.user_id,
@@ -546,32 +513,23 @@ export default {
       this.table.items = []
       this.userNameList = []
     },
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.table.options.itemsPerPage = options.itemsPerPage
+      this.loadList()
+    },
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
 
-      let roles
-      if (this.isOrganizationMode) {
-        roles = await this.listOrganizationRoleAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
-      } else {
-        roles = await this.listRoleAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
-      }
+      const roles = await this.listRoleAPI('').catch((err) => {
+        return Promise.reject(err)
+      })
 
       roles.forEach(async (id) => {
-        let role
-        if (this.isOrganizationMode) {
-          role = await this.getOrganizationRoleAPI(id).catch((err) => {
-            return Promise.reject(err)
-          })
-        } else {
-          role = await this.getRoleAPI(id).catch((err) => {
-            return Promise.reject(err)
-          })
-        }
+        const role = await this.getRoleAPI(id).catch((err) => {
+          return Promise.reject(err)
+        })
         this.roleTable.items.push(role)
 
         if (this.userModel.roles.indexOf(role.role_id) !== -1) {
@@ -590,7 +548,7 @@ export default {
       if (this.userModel.reserved) {
         await this.putUserReserved()
       } else {
-        this.putUserRole()
+        await this.putUserRole()
       }
       this.finishUpdated('Success: Updated role.')
     },
@@ -605,89 +563,36 @@ export default {
           }
         })
         if (attachRole) {
-          if (this.isOrganizationMode) {
-            await this.attachOrganizationRoleAPI(
-              this.userModel.user_id,
-              item.role_id
-            ).catch((err) => {
+          await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
+            (err) => {
               this.$refs.snackbar.notifyError(err.response.data)
               return Promise.reject(err)
-            })
-          } else {
-            await this.attachRoleAPI(
-              this.userModel.user_id,
-              item.role_id
-            ).catch((err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            })
-          }
+            }
+          )
         } else {
-          if (this.isOrganizationMode) {
-            await this.detachOrganizationRoleAPI(
-              this.userModel.user_id,
-              item.role_id
-            ).catch((err) => {
+          await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
+            (err) => {
               this.$refs.snackbar.notifyError(err.response.data)
               return Promise.reject(err)
-            })
-          } else {
-            await this.detachRoleAPI(
-              this.userModel.user_id,
-              item.role_id
-            ).catch((err) => {
-              this.$refs.snackbar.notifyError(err.response.data)
-              return Promise.reject(err)
-            })
-          }
+            }
+          )
         }
       })
     },
     async putUserReserved() {
-      // Create/Delete User Reserved
-      var searchCond = '&user_idp_key=' + this.userModel.user_idp_key
-      const registeredUserReserveds = await this.listUserReservedAPI(searchCond)
-      this.roleTable.items.forEach(async (item) => {
-        let attachRole = false
-        this.roleTable.selected.some((selected) => {
-          if (item.role_id === selected.role_id) {
-            attachRole = true
-            return true
-          }
+      const userReservedList = []
+      this.roleTable.selected.forEach((role) => {
+        userReservedList.push({
+          user_idp_key: this.userModel.user_idp_key,
+          role_id: role.role_id,
         })
-        const registered = registeredUserReserveds.find(
-          (registered) => registered.role_id === item.role_id
-        )
-        if (attachRole) {
-          // PutUserReserved
-          if (registered) {
-            return
-          }
-          const param = {
-            project_id: this.getCurrentProjectID(),
-            user_reserved: {
-              role_id: item.role_id,
-              user_idp_key: this.userModel.user_idp_key,
-            },
-          }
-          await this.putUserReservedAPI(param).catch((err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          })
-          return
-        }
-        // deleteUserReserved
-        if (!registered) {
-          return
-        }
-        await this.deleteUserReservedAPI(registered.reserved_id).catch(
-          (err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          }
-        )
+      })
+      await this.putUserReservedAPI(userReservedList).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
       })
     },
+
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
@@ -696,55 +601,30 @@ export default {
       this.handleSearch()
     },
 
-    handleUserDialogResponse(user) {
-      this.userModel = user
-      this.userDialog = false
-    },
-    handleNew() {
-      this.userForm.clickNew = true
-      this.userModel = {
-        user_id: '',
-        name: '',
-        user_idp_key: '',
-        role_cnt: 0,
-        roles: '',
-        reserved: false,
-        updated_at: '',
-      }
-      this.loadRoleList()
-      this.editDialog = true
-    },
-    handleRowClick(event, users) {
-      this.handleEdit(users.item)
-    },
     handleEdit(item) {
-      this.userForm.clickNew = false
-      this.assignDataModel(item.value)
-      this.loadRoleList()
+      this.userModel = { ...item }
       this.editDialog = true
+      this.loadRoleList()
     },
-    handleEditSubmit() {
-      this.putItem()
+
+    handleRowClick(event, { item }) {
+      this.handleEdit(item)
     },
+
     handleSearch() {
-      this.refleshList(this.searchModel.userName, this.searchModel.userID)
+      this.refleshList(this.searchModel.name, this.searchModel.user_id)
     },
-    assignDataModel(item) {
-      this.userModel = {
-        user_id: '',
-        name: '',
-        user_idp_key: '',
-        role_cnt: 0,
-        roles: '',
-        reserved: false,
-        updated_at: '',
-      }
-      this.userModel = Object.assign(this.userModel, item)
+
+    handleClear() {
+      this.searchModel.name = null
+      this.searchModel.user_id = null
+      this.refleshList('', '')
     },
-    updateOptions(options) {
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
+    getColorByCount(count) {
+      if (count === 0) return 'grey'
+      if (count <= 2) return 'green'
+      if (count <= 5) return 'orange'
+      return 'red'
     },
   },
 }
