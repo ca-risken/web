@@ -12,49 +12,47 @@
     </v-row>
 
     <search-toolbar
+      v-model="searchModel"
       :loading="loading"
-      :search-form-config="searchFormConfig"
+      :name-field-items="nameList"
+      name-field-key="policyName"
+      :show-id-field="false"
+      :show-create-button="true"
+      button-size="large"
+      create-button-icon="mdi-new-box"
+      create-button-color="primary-darken-3"
+      :search-form-config="{
+        nameField: searchForm.policyName,
+      }"
       @search="handleSearch"
-      @clear="handleClear"
+      @create="handleNewItem"
     />
 
     <data-table
-      :headers="headers"
-      :items="table.items"
+      :table-data="tableData"
       :loading="loading"
-      :options="table.options"
-      :total="table.total"
-      :footer="table.footer"
+      :headers="headers"
+      :actions="table.actions"
       item-key="policy_id"
-      @update:options="updateOptions"
-      @click:row="handleRowClick"
+      @update-options="updateOptions"
     >
-      <template v-slot:item.name="{ item }">
-        <span class="font-weight-bold">{{ item.name }}</span>
+      <template v-slot:[`item.avator`]>
+        <v-avatar class="ma-3" size="48px">
+          <v-icon size="x-large">mdi-certificate-outline</v-icon>
+        </v-avatar>
       </template>
 
-      <template v-slot:item.updated_at="{ item }">
-        {{ formatTime(item.updated_at) }}
-      </template>
-
-      <template v-slot:item.actions="{ item }">
-        <v-btn
-          variant="outlined"
-          color="primary"
-          size="small"
-          @click="handleEdit(item)"
+      <template v-slot:[`item.action_ptn`]="{ item }">
+        <v-card
+          label
+          elevation="1"
+          color="teal-lighten-5"
+          class="mx-auto"
         >
-          {{ $t(`btn['EDIT']`) }}
-        </v-btn>
-        <v-btn
-          variant="outlined"
-          color="info"
-          size="small"
-          class="ml-2"
-          @click="handleManageRoles(item)"
-        >
-          {{ $t(`btn['ROLE']`) }}
-        </v-btn>
+          <v-card-text class="font-weight-bold">
+            {{ item.value.action_ptn }}
+          </v-card-text>
+        </v-card>
       </template>
     </data-table>
 
@@ -103,7 +101,7 @@
             item-key="role_id"
             :show-footer="false"
           >
-            <template v-slot:item.attached="{ item }">
+            <template v-slot:[`item.attached`]="{ item }">
               <v-switch
                 :model-value="item.attached"
                 @update:model-value="toggleRole(item, $event)"
@@ -129,14 +127,13 @@
 import mixin from '@/mixin'
 import organization_iam from '@/mixin/api/organization_iam'
 import organization_base from '@/mixin/util/organization_base'
-import list from '@/mixin/util/list'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 
 export default {
   name: 'OrganizationPolicy',
-  mixins: [mixin, organization_iam, organization_base, list],
+  mixins: [mixin, organization_iam, organization_base],
   components: {
     SearchToolbar,
     DataTable,
@@ -144,42 +141,28 @@ export default {
   },
   data() {
     return {
-      headers: [
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          sortable: true,
-          key: 'policy_id',
-          width: '10%',
+      loading: false,
+      searchModel: {
+        policyName: null,
+      },
+      searchForm: {
+        policyName: { label: 'Name', placeholder: 'Filter for policy name' },
+      },
+      nameList: [],
+      table: {
+        options: { page: 1, itemsPerPage: 10, sortBy: ['policy_id'] },
+        actions: [
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
+          { text: 'Manage Roles', icon: 'mdi-account-group', click: this.handleManageRoles },
+          { text: 'Delete Item', icon: 'mdi-delete', click: this.handleDeleteItem },
+        ],
+        total: 0,
+        footer: {
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
+          showCurrentPage: true,
         },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          sortable: true,
-          key: 'name',
-          width: '30%',
-        },
-        {
-          title: this.$i18n.t('item["Updated"]'),
-          align: 'center',
-          sortable: true,
-          key: 'updated_at',
-          width: '20%',
-        },
-        {
-          title: this.$i18n.t('item["Action"]'),
-          align: 'center',
-          sortable: false,
-          key: 'actions',
-          width: '20%',
-        },
-      ],
-      searchFormConfig: {
-        nameField: {
-          label: this.$i18n.t('item["Name"]'),
-          type: 'text',
-          model: 'name',
-        },
+        items: [],
       },
       policyModel: {
         policy_id: null,
@@ -217,6 +200,62 @@ export default {
       ],
     }
   },
+  computed: {
+    tableData() {
+      return {
+        items: this.table.items,
+        total: this.table.total,
+        options: this.table.options,
+        footer: this.table.footer,
+      }
+    },
+    headers() {
+      return [
+        {
+          title: this.$i18n.t('item[""]'),
+          align: 'center',
+          width: '10%',
+          sortable: false,
+          key: 'avator',
+        },
+        {
+          title: this.$i18n.t('item["ID"]'),
+          align: 'start',
+          sortable: false,
+          key: 'policy_id',
+          width: '10%',
+        },
+        {
+          title: this.$i18n.t('item["Name"]'),
+          align: 'start',
+          sortable: false,
+          key: 'name',
+          width: '30%',
+        },
+        {
+          title: this.$i18n.t('item["Action Pattern"]'),
+          align: 'start',
+          sortable: false,
+          key: 'action_ptn',
+          width: '30%',
+        },
+        {
+          title: this.$i18n.t('item["Updated"]'),
+          align: 'center',
+          sortable: false,
+          key: 'updated_at',
+          width: '10%',
+        },
+        {
+          title: this.$i18n.t('item["Action"]'),
+          align: 'center',
+          sortable: false,
+          key: 'action',
+          width: '10%',
+        },
+      ]
+    },
+  },
   mounted() {
     this.refleshList()
   },
@@ -228,26 +267,90 @@ export default {
     },
   },
   methods: {
-    async listItem(searchCond) {
-      return await this.listOrganizationPolicyAPI(searchCond)
+    async refleshList(name) {
+      this.loading = true
+      try {
+        let searchCond = ''
+        if (name) {
+          searchCond += '&name=' + name
+        }
+
+        const policyIDs = await this.listOrganizationPolicyAPI(searchCond)
+        if (!policyIDs || policyIDs.length === 0) {
+          this.clearList()
+          return
+        }
+
+        // Load policy details
+        const policies = await Promise.all(
+          policyIDs.map(async (policyId) => {
+            const policy = await this.getOrganizationPolicyAPI(policyId)
+            return {
+              policy_id: policy.policy_id,
+              name: policy.name,
+              action_ptn: policy.action_ptn || '.*',
+              updated_at: policy.updated_at,
+            }
+          })
+        )
+
+        this.table.items = policies
+        this.table.total = policies.length
+        this.nameList = [...new Set(policies.map((item) => item.name))]
+      } catch (error) {
+        console.error('Error loading list:', error)
+        this.clearList()
+      } finally {
+        this.loading = false
+      }
     },
 
-    async getItem(id) {
-      return await this.getOrganizationPolicyAPI(id)
+    clearList() {
+      this.table.items = []
+      this.table.total = 0
+      this.nameList = []
     },
 
-    handleClear() {
-      this.searchModel.name = null
-      this.refleshList()
+    handleSearch() {
+      const searchName = this.searchModel?.policyName || ''
+      this.refleshList(searchName)
     },
 
-    handleRowClick(event, { item }) {
-      this.handleEdit(item)
+    updateOptions(options) {
+      this.table.options = options
     },
 
-    handleEdit(item) {
-      this.policyModel = { ...item }
+    handleNewItem() {
+      this.policyModel = {
+        policy_id: null,
+        name: '',
+        policy_document: '',
+      }
       this.editDialog = true
+    },
+
+    handleEditItem(item) {
+      this.policyModel = { ...item.value }
+      this.editDialog = true
+    },
+
+    handleDeleteItem(item) {
+      if (confirm(`ポリシー「${item.value.name}」を削除しますか？`)) {
+        this.deletePolicy(item.value.policy_id)
+      }
+    },
+
+    async deletePolicy(policyId) {
+      try {
+        this.loading = true
+        await this.deleteOrganizationPolicyAPI(policyId)
+        this.$refs.snackbar.notifySuccess(this.$t('message["Delete Successful"]'))
+        this.handleSearch()
+      } catch (err) {
+        this.$refs.snackbar.notifyError(err.response?.data || err.message)
+      } finally {
+        this.loading = false
+      }
     },
 
     closeEditDialog() {
@@ -274,7 +377,7 @@ export default {
     },
 
     async handleManageRoles(item) {
-      this.selectedPolicy = item
+      this.selectedPolicy = item.value
       this.roleDialog = true
       await this.loadRoleList()
     },

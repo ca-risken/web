@@ -5,40 +5,38 @@
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">{{ tableConfig.icon }}</v-icon>
-              {{ $t(`submenu['${tableConfig.titleKey}']`) }}
+              <v-icon large class="pr-2">mdi-alpha-p-box</v-icon>
+              {{ $t(`submenu['OrganizationProject']`) }}
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
       </v-row>
 
-      <!-- Search Form -->
-      <entity-search-form
+      <!-- Search Toolbar -->
+      <search-toolbar
         v-model="searchModel"
         :loading="loading"
         :name-field-items="nameList"
+        name-field-key="projectName"
         :show-id-field="false"
         :show-create-button="true"
         button-size="large"
         create-button-icon="mdi-send"
         create-button-color="primary-darken-3"
         :search-form-config="{
-          nameField: {
-            label: tableConfig.searchLabel,
-            placeholder: tableConfig.searchPlaceholder,
-          },
+          nameField: searchForm.projectName,
         }"
         @search="handleSearch"
         @create="handleInviteProjects"
       />
 
       <!-- Table -->
-      <entity-table
+      <data-table
         :table-data="tableData"
         :loading="loading"
         :headers="headers"
         :actions="table.actions"
-        :item-key="tableConfig.itemKey"
+        item-key="project_id"
         @update-options="updateOptions"
       >
         <template v-slot:[`item.status`]="{ item }">
@@ -50,7 +48,7 @@
             {{ getStatusText(item.value.status) }}
           </v-chip>
         </template>
-      </entity-table>
+      </data-table>
     </v-container>
 
     <!-- Project Selection Dialog -->
@@ -69,9 +67,9 @@ import Util from '@/util'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
-import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import EntityTable from '@/component/EntityTable.vue'
+import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
 import ProjectList from '@/component/widget/list/ProjectList.vue'
 
@@ -79,16 +77,21 @@ export default {
   name: 'OrganizationProject',
   mixins: [mixin, project, organization, organization_base],
   components: {
-    EntitySearchForm,
+    SearchToolbar,
     BottomSnackBar,
-    EntityTable,
+    DataTable,
     ProjectList,
   },
   data() {
     return {
       projectDialog: false,
-      searchModel: { name: null },
       loading: false,
+      searchModel: {
+        projectName: null,
+      },
+      searchForm: {
+        projectName: { label: 'Project', placeholder: 'Filter for project name' },
+      },
       entities: [],
       nameList: [],
       table: {
@@ -112,16 +115,6 @@ export default {
           showCurrentPage: true,
         },
       },
-      tableConfig: {
-        icon: 'mdi-alpha-p-box',
-        titleKey: 'OrganizationProject',
-        searchLabel: 'Project',
-        searchPlaceholder: 'Filter for project name',
-        showInviteButton: true,
-        itemKey: 'project_id',
-        idKey: 'project_id',
-      },
-      sortBy: ['project_id'],
     }
   },
   computed: {
@@ -132,30 +125,35 @@ export default {
           align: 'start',
           sortable: false,
           key: 'project_id',
+          width: '15%',
         },
         {
           title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: false,
           key: 'name',
+          width: '30%',
         },
         {
           title: this.$i18n.t('item["Status"]'),
           align: 'center',
           sortable: false,
           key: 'status',
+          width: '15%',
         },
         {
           title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
           key: 'updated_at',
+          width: '20%',
         },
         {
           title: this.$i18n.t('item["Action"]'),
           align: 'center',
           sortable: false,
           key: 'action',
+          width: '20%',
         },
       ]
     },
@@ -255,8 +253,8 @@ export default {
       this.projectDialog = true
     },
 
-    handleSearch(searchModel) {
-      const searchName = searchModel?.name || ''
+    handleSearch() {
+      const searchName = this.searchModel?.projectName || ''
       this.refleshList(searchName)
     },
 
@@ -299,6 +297,13 @@ export default {
       }
     },
 
+    getColorByCount(count) {
+      if (count === 0) return 'grey'
+      if (count <= 2) return 'green'
+      if (count <= 5) return 'orange'
+      return 'red'
+    },
+
     async handleDeleteInvitation(item) {
       if (!confirm(`プロジェクト「${item.name}」の招待を削除しますか？`)) {
         return
@@ -317,7 +322,7 @@ export default {
         this.$refs.snackbar.notifySuccess(
           `プロジェクト「${item.name}」の招待を削除しました`
         )
-        this.handleSearch(this.searchModel)
+        this.handleSearch()
       } catch (err) {
         console.error('Error deleting invitation:', err)
         this.$refs.snackbar.notifyError(
@@ -350,7 +355,7 @@ export default {
         this.$refs.snackbar.notifySuccess(
           `Organization invitation sent to project: ${project.name}`
         )
-        this.handleSearch(this.searchModel)
+        this.handleSearch()
       } catch (err) {
         this.$refs.snackbar.notifyError(
           err.response?.data || 'Failed to send organization invitation'

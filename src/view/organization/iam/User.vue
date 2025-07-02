@@ -12,46 +12,38 @@
     </v-row>
 
     <search-toolbar
+      v-model="searchModel"
       :loading="loading"
-      :search-form-config="searchFormConfig"
+      :name-field-items="nameList"
+      name-field-key="userName"
+      :show-id-field="false"
+      :show-create-button="false"
+      :search-form-config="{
+        nameField: searchForm.userName,
+      }"
       @search="handleSearch"
-      @clear="handleClear"
     />
 
     <data-table
-      :headers="headers"
-      :items="table.items"
+      :table-data="tableData"
       :loading="loading"
-      :options="table.options"
-      :total="table.total"
-      :footer="table.footer"
+      :headers="headers"
+      :actions="table.actions"
       item-key="user_id"
-      @update:options="updateOptions"
-      @click:row="handleRowClick"
+      @update-options="updateOptions"
     >
-      <template v-slot:item.name="{ item }">
-        <span class="font-weight-bold">{{ item.name }}</span>
+      <template v-slot:[`item.name`]="{ item }">
+        <span class="font-weight-bold">{{ item.value.name }}</span>
       </template>
 
-      <template v-slot:item.updated_at="{ item }">
-        {{ formatTime(item.updated_at) }}
+      <template v-slot:[`item.updated_at`]="{ item }">
+        {{ formatTime(item.value.updated_at) }}
       </template>
 
-      <template v-slot:item.role_cnt="{ item }">
-        <v-chip :color="getColorByCount(item.role_cnt)" variant="flat">
-          {{ item.role_cnt }}
+      <template v-slot:[`item.role_cnt`]="{ item }">
+        <v-chip :color="getColorByCount(item.value.role_cnt)" variant="flat">
+          {{ item.value.role_cnt }}
         </v-chip>
-      </template>
-
-      <template v-slot:item.actions="{ item }">
-        <v-btn
-          variant="outlined"
-          color="primary"
-          size="small"
-          @click="handleEdit(item)"
-        >
-          {{ $t(`btn['EDIT']`) }}
-        </v-btn>
       </template>
     </data-table>
 
@@ -189,14 +181,13 @@
 import mixin from '@/mixin'
 import organization_iam from '@/mixin/api/organization_iam'
 import organization_base from '@/mixin/util/organization_base'
-import list from '@/mixin/util/list'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 
 export default {
   name: 'OrganizationUser',
-  mixins: [mixin, organization_iam, organization_base, list],
+  mixins: [mixin, organization_iam, organization_base],
   components: {
     SearchToolbar,
     DataTable,
@@ -204,54 +195,26 @@ export default {
   },
   data() {
     return {
-      headers: [
-        {
-          title: this.$i18n.t('item["User Key"]'),
-          align: 'start',
-          sortable: true,
-          key: 'user_idp_key',
-          width: '25%',
+      loading: false,
+      searchModel: {
+        userName: null,
+      },
+      searchForm: {
+        userName: { label: 'Name', placeholder: 'Filter for user name' },
+      },
+      nameList: [],
+      table: {
+        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
+        actions: [
+          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEdit },
+        ],
+        total: 0,
+        footer: {
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
+          showCurrentPage: true,
         },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          sortable: true,
-          key: 'name',
-          width: '25%',
-        },
-        {
-          title: this.$i18n.t('item["Roles"]'),
-          align: 'center',
-          sortable: false,
-          key: 'role_cnt',
-          width: '15%',
-        },
-        {
-          title: this.$i18n.t('item["Updated"]'),
-          align: 'center',
-          sortable: true,
-          key: 'updated_at',
-          width: '20%',
-        },
-        {
-          title: this.$i18n.t('item["Action"]'),
-          align: 'center',
-          sortable: false,
-          key: 'actions',
-          width: '15%',
-        },
-      ],
-      searchFormConfig: {
-        nameField: {
-          label: this.$i18n.t('item["Name"]'),
-          type: 'text',
-          model: 'name',
-        },
-        userIdField: {
-          label: this.$i18n.t('item["User ID"]'),
-          type: 'text',
-          model: 'user_id',
-        },
+        items: [],
       },
       userModel: {
         user_id: null,
@@ -285,6 +248,55 @@ export default {
       ],
     }
   },
+  computed: {
+    tableData() {
+      return {
+        items: this.table.items,
+        total: this.table.total,
+        options: this.table.options,
+        footer: this.table.footer,
+      }
+    },
+    headers() {
+      return [
+        {
+          title: this.$i18n.t('item["User Key"]'),
+          align: 'start',
+          sortable: false,
+          key: 'user_idp_key',
+          width: '25%',
+        },
+        {
+          title: this.$i18n.t('item["Name"]'),
+          align: 'start',
+          sortable: false,
+          key: 'name',
+          width: '25%',
+        },
+        {
+          title: this.$i18n.t('item["Roles"]'),
+          align: 'center',
+          sortable: false,
+          key: 'role_cnt',
+          width: '15%',
+        },
+        {
+          title: this.$i18n.t('item["Updated"]'),
+          align: 'center',
+          sortable: false,
+          key: 'updated_at',
+          width: '20%',
+        },
+        {
+          title: this.$i18n.t('item["Action"]'),
+          align: 'center',
+          sortable: false,
+          key: 'action',
+          width: '15%',
+        },
+      ]
+    },
+  },
   mounted() {
     this.refleshList()
   },
@@ -313,39 +325,63 @@ export default {
     },
 
     async refleshList(name) {
-      let searchCond = ''
-      if (name) {
-        searchCond += '&name=' + name
-      }
-      if (this.searchModel.user_id) {
-        searchCond += '&user_id=' + this.searchModel.user_id
-      }
+      this.loading = true
+      try {
+        let searchCond = ''
+        if (name) {
+          searchCond += '&name=' + name
+        }
 
-      const userIDs = await this.listUserAPI(searchCond).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+        const userIDs = await this.listUserAPI(searchCond)
+        if (!userIDs || userIDs.length === 0) {
+          this.clearList()
+          return
+        }
 
-      if (userIDs.length == 0) {
+        // Load user details
+        const users = await Promise.all(
+          userIDs.map(async (userId) => {
+            const user = await this.getUserAPI(userId)
+            const roles = await this.listOrganizationRoleAPI('&user_id=' + userId)
+            return {
+              user_id: user.user_id,
+              name: user.name,
+              user_idp_key: user.user_idp_key,
+              updated_at: user.updated_at,
+              role_cnt: roles.length,
+              roles: roles,
+            }
+          })
+        )
+
+        this.table.items = users
+        this.table.total = users.length
+        this.nameList = [...new Set(users.map((item) => item.name))]
+      } catch (error) {
+        console.error('Error loading list:', error)
         this.clearList()
-        return
+      } finally {
+        this.loading = false
       }
-      this.entities = userIDs
-      this.loadList()
     },
 
-    handleClear() {
-      this.searchModel.name = null
-      this.searchModel.user_id = null
-      this.refleshList()
+    clearList() {
+      this.table.items = []
+      this.table.total = 0
+      this.nameList = []
     },
 
-    handleRowClick(event, { item }) {
-      this.handleEdit(item)
+    handleSearch() {
+      const searchName = this.searchModel?.userName || ''
+      this.refleshList(searchName)
+    },
+
+    updateOptions(options) {
+      this.table.options = options
     },
 
     handleEdit(item) {
-      this.userModel = { ...item }
+      this.userModel = { ...item.value }
       this.editDialog = true
       this.loadRoleList()
     },
@@ -424,6 +460,17 @@ export default {
       } finally {
         this.roleLoading = false
       }
+    },
+
+    getColorByCount(count) {
+      if (count === 0) return 'grey'
+      if (count <= 2) return 'green'
+      if (count <= 5) return 'orange'
+      return 'red'
+    },
+
+    formatTime(time) {
+      return new Date(time * 1000).toLocaleString()
     },
   },
 }
