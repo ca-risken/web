@@ -11,7 +11,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <entity-search-form
+      <search-toolbar
         v-model="searchModel"
         :loading="loading"
         :id-field-items="userIDList"
@@ -30,7 +30,7 @@
         @create="handleNew"
       />
 
-      <entity-table
+      <data-table
         :table-data="tableData"
         :loading="loading"
         :headers="headers"
@@ -43,7 +43,7 @@
             <v-img src="/static/avatar/default.png" alt="avatar" />
           </v-avatar>
         </template>
-      </entity-table>
+      </data-table>
     </v-container>
 
     <!-- Invite User Dialog -->
@@ -170,8 +170,8 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
-import EntityTable from '@/component/EntityTable.vue'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
+import DataTable from '@/component/widget/table/DataTable.vue'
 
 const ADMIN_STATUS = {
   ENABLED: true,
@@ -184,8 +184,8 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
-    EntitySearchForm,
-    EntityTable,
+    DataTable,
+    SearchToolbar,
   },
   data() {
     return {

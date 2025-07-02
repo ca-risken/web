@@ -11,7 +11,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <entity-search-form
+      <search-toolbar
         v-model="searchModel"
         :loading="loading"
         :id-field-items="[]"
@@ -31,7 +31,7 @@
         @create="handleNew"
       />
 
-      <entity-table
+      <data-table
         :table-data="tableData"
         :loading="loading"
         :headers="headers"
@@ -57,7 +57,7 @@
             {{ $t("item['Reserved']") }}
           </v-chip>
         </template>
-      </entity-table>
+      </data-table>
     </v-container>
 
     <!-- Invite User Dialog -->
@@ -252,9 +252,8 @@ import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import organization_iam from '../../mixin/api/organization_iam'
-import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
-import { VDataTable } from 'vuetify/labs/VDataTable'
-import EntityTable from '@/component/EntityTable.vue'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
+import DataTable from '@/component/widget/table/DataTable.vue'
 
 export default {
   name: 'UserManagement',
@@ -262,9 +261,8 @@ export default {
   components: {
     BottomSnackBar,
     UserList,
-    EntitySearchForm,
-    VDataTable,
-    EntityTable,
+    SearchToolbar,
+    DataTable,
   },
   data() {
     return {
