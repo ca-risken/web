@@ -29,21 +29,21 @@
         }"
         @search="handleSearch"
         @create="handleNew"
-            />
+      />
 
       <data-table
         :table-data="tableData"
-            :loading="loading"
-                :headers="headers"
+        :loading="loading"
+        :headers="headers"
         :actions="table.actions"
-                item-key="user_id"
+        item-key="user_id"
         @update-options="updateOptions"
-              >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-2">
-                    <v-img src="/static/avatar/default.png" alt="avatar" />
-                  </v-avatar>
-                </template>
+      >
+        <template v-slot:[`item.avator`]>
+          <v-avatar class="ma-2">
+            <v-img src="/static/avatar/default.png" alt="avatar" />
+          </v-avatar>
+        </template>
       </data-table>
     </v-container>
 

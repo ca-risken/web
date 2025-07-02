@@ -43,12 +43,7 @@
       </template>
 
       <template v-slot:[`item.action_ptn`]="{ item }">
-        <v-card
-          label
-          elevation="1"
-          color="teal-lighten-5"
-          class="mx-auto"
-        >
+        <v-card label elevation="1" color="teal-lighten-5" class="mx-auto">
           <v-card-text class="font-weight-bold">
             {{ item.value.action_ptn }}
           </v-card-text>
@@ -153,8 +148,16 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['policy_id'] },
         actions: [
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
-          { text: 'Manage Roles', icon: 'mdi-account-group', click: this.handleManageRoles },
-          { text: 'Delete Item', icon: 'mdi-delete', click: this.handleDeleteItem },
+          {
+            text: 'Manage Roles',
+            icon: 'mdi-account-group',
+            click: this.handleManageRoles,
+          },
+          {
+            text: 'Delete Item',
+            icon: 'mdi-delete',
+            click: this.handleDeleteItem,
+          },
         ],
         total: 0,
         footer: {
@@ -344,7 +347,9 @@ export default {
       try {
         this.loading = true
         await this.deleteOrganizationPolicyAPI(policyId)
-        this.$refs.snackbar.notifySuccess(this.$t('message["Delete Successful"]'))
+        this.$refs.snackbar.notifySuccess(
+          this.$t('message["Delete Successful"]')
+        )
         this.handleSearch()
       } catch (err) {
         this.$refs.snackbar.notifyError(err.response?.data || err.message)

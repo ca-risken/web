@@ -90,7 +90,10 @@ export default {
         projectName: null,
       },
       searchForm: {
-        projectName: { label: 'Project', placeholder: 'Filter for project name' },
+        projectName: {
+          label: 'Project',
+          placeholder: 'Filter for project name',
+        },
       },
       entities: [],
       nameList: [],

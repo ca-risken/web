@@ -43,10 +43,7 @@
       </template>
 
       <template v-slot:[`item.policy_cnt`]="{ item }">
-        <v-chip
-          :color="getColorByCount(item.value.policy_cnt)"
-          variant="flat"
-        >
+        <v-chip :color="getColorByCount(item.value.policy_cnt)" variant="flat">
           {{ item.value.policy_cnt }}
         </v-chip>
       </template>
@@ -149,8 +146,16 @@ export default {
         options: { page: 1, itemsPerPage: 10, sortBy: ['role_id'] },
         actions: [
           { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEditItem },
-          { text: 'Manage Policies', icon: 'mdi-shield-account', click: this.handleManagePolicies },
-          { text: 'Delete Item', icon: 'mdi-delete', click: this.handleDeleteItem },
+          {
+            text: 'Manage Policies',
+            icon: 'mdi-shield-account',
+            click: this.handleManagePolicies,
+          },
+          {
+            text: 'Delete Item',
+            icon: 'mdi-delete',
+            click: this.handleDeleteItem,
+          },
         ],
         total: 0,
         footer: {
@@ -281,7 +286,9 @@ export default {
         const roles = await Promise.all(
           roleIDs.map(async (roleId) => {
             const role = await this.getOrganizationRoleAPI(roleId)
-            const policies = await this.listOrganizationPolicyAPI('&role_id=' + roleId)
+            const policies = await this.listOrganizationPolicyAPI(
+              '&role_id=' + roleId
+            )
             return {
               role_id: role.role_id,
               name: role.name,
@@ -364,7 +371,9 @@ export default {
       try {
         this.loading = true
         await this.deleteOrganizationRoleAPI(roleId)
-        this.$refs.snackbar.notifySuccess(this.$t('message["Delete Successful"]'))
+        this.$refs.snackbar.notifySuccess(
+          this.$t('message["Delete Successful"]')
+        )
         this.handleSearch()
       } catch (err) {
         this.$refs.snackbar.notifyError(err.response?.data || err.message)
@@ -429,7 +438,6 @@ export default {
       this.selectedRole = null
       this.policyTable.items = []
     },
-
 
     getColorByCount(count) {
       if (count === 0) return 'grey'

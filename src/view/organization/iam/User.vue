@@ -342,7 +342,9 @@ export default {
         const users = await Promise.all(
           userIDs.map(async (userId) => {
             const user = await this.getUserAPI(userId)
-            const roles = await this.listOrganizationRoleAPI('&user_id=' + userId)
+            const roles = await this.listOrganizationRoleAPI(
+              '&user_id=' + userId
+            )
             return {
               user_id: user.user_id,
               name: user.name,
