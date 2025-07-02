@@ -251,6 +251,7 @@ import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 import DataTable from '@/component/widget/table/DataTable.vue'
 
 export default {
@@ -260,6 +261,7 @@ export default {
     BottomSnackBar,
     UserList,
     SearchToolbar,
+    VDataTable,
     DataTable,
   },
   data() {
@@ -398,7 +400,6 @@ export default {
   mounted() {
     this.refleshList('', '')
   },
-
   methods: {
     async refleshList(userName, userID) {
       let searchCond = '&project_id=' + this.getCurrentProjectID()
@@ -408,14 +409,11 @@ export default {
       if (userID) {
         searchCond += '&user_id=' + userID
       }
-
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-
       this.userReserved = await this.listUserReserved(userName)
-
       if (userIDs.length + this.userReserved.length == 0) {
         return
       }
@@ -465,12 +463,10 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-
       const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -513,19 +509,12 @@ export default {
       this.table.items = []
       this.userNameList = []
     },
-    updateOptions(options) {
-      this.table.options.page = options.page
-      this.table.options.itemsPerPage = options.itemsPerPage
-      this.loadList()
-    },
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-
       const roles = await this.listRoleAPI('').catch((err) => {
         return Promise.reject(err)
       })
-
       roles.forEach(async (id) => {
         const role = await this.getRoleAPI(id).catch((err) => {
           return Promise.reject(err)
@@ -548,7 +537,7 @@ export default {
       if (this.userModel.reserved) {
         await this.putUserReserved()
       } else {
-        await this.putUserRole()
+        this.putUserRole()
       }
       this.finishUpdated('Success: Updated role.')
     },
@@ -580,19 +569,50 @@ export default {
       })
     },
     async putUserReserved() {
-      const userReservedList = []
-      this.roleTable.selected.forEach((role) => {
-        userReservedList.push({
-          user_idp_key: this.userModel.user_idp_key,
-          role_id: role.role_id,
+      // Create/Delete User Reserved
+      var searchCond = '&user_idp_key=' + this.userModel.user_idp_key
+      const registeredUserReserveds = await this.listUserReservedAPI(searchCond)
+      this.roleTable.items.forEach(async (item) => {
+        let attachRole = false
+        this.roleTable.selected.some((selected) => {
+          if (item.role_id === selected.role_id) {
+            attachRole = true
+            return true
+          }
         })
-      })
-      await this.putUserReservedAPI(userReservedList).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
+        const registered = registeredUserReserveds.find(
+          (registered) => registered.role_id === item.role_id
+        )
+        if (attachRole) {
+          // PutUserReserved
+          if (registered) {
+            return
+          }
+          const param = {
+            project_id: this.getCurrentProjectID(),
+            user_reserved: {
+              role_id: item.role_id,
+              user_idp_key: this.userModel.user_idp_key,
+            },
+          }
+          await this.putUserReservedAPI(param).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          })
+          return
+        }
+        // deleteUserReserved
+        if (!registered) {
+          return
+        }
+        await this.deleteUserReservedAPI(registered.reserved_id).catch(
+          (err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
       })
     },
-
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
@@ -601,30 +621,55 @@ export default {
       this.handleSearch()
     },
 
-    handleEdit(item) {
-      this.userModel = { ...item }
-      this.editDialog = true
+    handleUserDialogResponse(user) {
+      this.userModel = user
+      this.userDialog = false
+    },
+    handleNew() {
+      this.userForm.clickNew = true
+      this.userModel = {
+        user_id: '',
+        name: '',
+        user_idp_key: '',
+        role_cnt: 0,
+        roles: '',
+        reserved: false,
+        updated_at: '',
+      }
       this.loadRoleList()
+      this.editDialog = true
     },
-
-    handleRowClick(event, { item }) {
-      this.handleEdit(item)
+    handleRowClick(event, users) {
+      this.handleEdit(users.item)
     },
-
+    handleEdit(item) {
+      this.userForm.clickNew = false
+      this.assignDataModel(item.value)
+      this.loadRoleList()
+      this.editDialog = true
+    },
+    handleEditSubmit() {
+      this.putItem()
+    },
     handleSearch() {
-      this.refleshList(this.searchModel.name, this.searchModel.user_id)
+      this.refleshList(this.searchModel.userName, this.searchModel.userID)
     },
-
-    handleClear() {
-      this.searchModel.name = null
-      this.searchModel.user_id = null
-      this.refleshList('', '')
+    assignDataModel(item) {
+      this.userModel = {
+        user_id: '',
+        name: '',
+        user_idp_key: '',
+        role_cnt: 0,
+        roles: '',
+        reserved: false,
+        updated_at: '',
+      }
+      this.userModel = Object.assign(this.userModel, item)
     },
-    getColorByCount(count) {
-      if (count === 0) return 'grey'
-      if (count <= 2) return 'green'
-      if (count <= 5) return 'orange'
-      return 'red'
+    updateOptions(options) {
+      this.table.options.page = options.page
+      this.table.options.itemsPerPage = options.itemsPerPage
+      this.loadList()
     },
   },
 }

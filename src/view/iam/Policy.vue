@@ -396,7 +396,6 @@ export default {
   mounted() {
     this.refleshList('')
   },
-
   methods: {
     async refleshList(searchCond) {
       const policies = await this.listPolicyAPI(searchCond).catch((err) => {
