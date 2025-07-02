@@ -31,7 +31,7 @@
         @create="handleNew"
       />
 
-      <entity-table
+      <data-table
         :table-data="tableData"
         :loading="loading"
         :headers="headers"
@@ -57,7 +57,7 @@
             {{ $t("item['Reserved']") }}
           </v-chip>
         </template>
-      </entity-table>
+      </data-table>
     </v-container>
 
     <!-- Invite User Dialog -->
@@ -252,7 +252,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import EntityTable from '@/component/EntityTable.vue'
+import DataTable from '@/component/widget/table/DataTable.vue'
 
 export default {
   name: 'UserManagement',
@@ -262,7 +262,7 @@ export default {
     UserList,
     SearchToolbar,
     VDataTable,
-    EntityTable,
+    DataTable,
   },
   data() {
     return {
