@@ -73,7 +73,6 @@
 </template>
 
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
@@ -85,7 +84,7 @@ import ProjectList from '@/component/widget/list/ProjectList.vue'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 
 export default {
-  name: 'OrganizationProject',
+  name: 'OrganizationProjectList',
   mixins: [mixin, project, organization, organization_base],
   components: {
     SearchToolbar,
@@ -201,126 +200,95 @@ export default {
     },
   },
   methods: {
-    // List management methods (replacing list.js mixin)
-    loadList() {
-      this.table.items = this.entities
-      this.table.total = this.entities.length
-      this.nameList = [...new Set(this.entities.map((item) => item.name))]
-    },
+    async refleshList() {
+      this.loading = true
+      this.clearList()
+      let searchCond = ''
+      if (this.searchModel.projectName) {
+        searchCond += '&name=' + this.searchModel.projectName
+      }
+      const organizationInvitations = await this.ListOrganizationInvitationAPI(
+        searchCond
+      )
+        .then((response) => {
+          return response
+        })
+        .catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return []
+        })
 
+      if (organizationInvitations.length === 0) {
+        this.loading = false
+        return
+      }
+
+      this.entities = organizationInvitations
+      this.table.total = organizationInvitations.length
+      this.loadList()
+    },
+    async loadList() {
+      this.loading = true
+      let items = []
+      let nameList = []
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const to = from + this.table.options.itemsPerPage
+      const targetEntities = this.entities.slice(from, to)
+
+      await Promise.all(
+        targetEntities.map(async (invitation) => {
+          let searchCond = `?project_id=${invitation.project_id}`
+          const projects = await this.ListProjectAPI(searchCond)
+          return {
+            ...invitation,
+            name: projects[0].name,
+          }
+        })
+      )
+
+      this.table.items = items
+      this.nameList = nameList
+      this.loading = false
+    },
     clearList() {
       this.entities = []
       this.table.items = []
       this.table.total = 0
       this.nameList = []
     },
-
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
-    },
-
-    async refleshList(name) {
-      this.loading = true
-      try {
-        let searchCond = ''
-        if (name) {
-          searchCond += '&name=' + name
-        }
-        const invitations = await this.listItem(searchCond)
-        if (!invitations || invitations.length === 0) {
-          this.clearList()
-          return
-        }
-        let invitationsWithProjectName = await Promise.all(
-          invitations.map(async (invitation) => {
-            let searchCond = `?project_id=${invitation.project_id}`
-            const projects = await this.listProjectAPI(searchCond)
-            return {
-              ...invitation,
-              name: projects[0].name,
-            }
-          })
-        )
-        if (name) {
-          invitationsWithProjectName = invitationsWithProjectName.filter(
-            (invitation) => {
-              return name == invitation.name
-            }
-          )
-        }
-        this.entities = invitationsWithProjectName
-        this.loadList()
-      } catch (error) {
-        console.error('Error loading list:', error)
-        this.clearList()
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async getItem(item) {
-      return item
-    },
-
-    async listItem(searchCond) {
-      return await this.ListOrganizationInvitationAPI(searchCond)
-    },
-
     handleInviteProjects() {
       this.projectDialog = true
     },
-
-    handleSearch() {
-      const searchName = this.searchModel?.projectName || ''
-      this.refleshList(searchName)
-    },
-
-    updateOptions(options) {
-      this.table.options = options
-    },
-
-    getStatusText(status) {
-      const numStatus =
-        typeof status === 'string' ? parseInt(status, 10) : status
-      switch (numStatus) {
-        case 1:
-          return 'PENDING'
-        case 2:
-          return 'ACCEPTED'
-        case 3:
-          return 'REJECTED'
-        default:
-          console.warn(
-            'Unknown status value:',
-            status,
-            'converted to:',
-            numStatus
-          )
-          return 'UNKNOWN'
+    handleProjectDialogResponse(projectIds) {
+      this.projectDialog = false
+      if (projectIds && projectIds.length > 0) {
+        this.inviteProjects(projectIds)
       }
     },
+    async inviteProjects(projectIds) {
+      this.loading = true
+      const organizationId = this.getCurrentOrganizationID()
+      const promises = projectIds.map(async (projectId) => {
+        const param = {
+          organization_id: organizationId,
+          project_id: projectId,
+        }
+        return this.putOrganizationAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      })
 
-    getStatusColor(status) {
-      const statusText = this.getStatusText(status)
-      switch (statusText) {
-        case 'PENDING':
-          return 'orange'
-        case 'ACCEPTED':
-          return 'green'
-        case 'REJECTED':
-          return 'red'
-        default:
-          return 'grey'
+      try {
+        await Promise.all(promises)
+        this.$refs.snackbar.notifySuccess('Projects invited successfully')
+        this.refleshList('')
+      } catch (error) {
+        this.$refs.snackbar.notifyError('Failed to invite some projects')
       }
+      this.loading = false
     },
-
-    getColorByCount(count) {
-      if (count === 0) return 'grey'
-      if (count <= 2) return 'green'
-      if (count <= 5) return 'orange'
-      return 'red'
-    },
-
     handleDeleteItem(item) {
       this.deleteTarget = {
         id: item.value.invitation_id,
@@ -328,79 +296,47 @@ export default {
       }
       this.deleteDialog = true
     },
-
-    confirmDelete() {
-      const item = this.entities.find(
-        (entity) => entity.invitation_id === this.deleteTarget.id
-      )
-      if (item) {
-        this.handleDeleteInvitation(item)
-      }
+    async confirmDelete() {
+      this.loading = true
+      await this.deleteOrganizationAPI(this.deleteTarget.id)
+        .then(() => {
+          this.$refs.snackbar.notifySuccess('Invitation deleted successfully')
+          this.refleshList('')
+        })
+        .catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+        })
+      this.loading = false
       this.deleteDialog = false
     },
-
     cancelDelete() {
-      this.deleteTarget = {}
       this.deleteDialog = false
+      this.deleteTarget = {}
     },
-
-    async handleDeleteInvitation(item) {
-      try {
-        this.loading = true
-        const currentOrganization = this.$store.state.organization
-        if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.snackbar.notifyError('No organization selected')
-          return
-        }
-        await this.DeleteOrganizationInvitationAPI(
-          currentOrganization.organization_id,
-          item.project_id
-        )
-        this.$refs.snackbar.notifySuccess(
-          `プロジェクト「${item.name}」の招待を削除しました`
-        )
-        this.handleSearch()
-      } catch (err) {
-        console.error('Error deleting invitation:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の削除に失敗しました'
-        )
-      } finally {
-        this.loading = false
+    handleSearch() {
+      this.refleshList()
+    },
+    updateOptions(options) {
+      this.table.options = options
+      this.loadList()
+    },
+    getStatusColor(status) {
+      switch (status) {
+        case 'INVITED':
+          return 'orange'
+        case 'ACTIVE':
+          return 'green'
+        case 'INACTIVE':
+          return 'red'
+        default:
+          return 'grey'
       }
     },
-
-    async handleProjectDialogResponse(project) {
-      this.projectDialog = false
-
-      if (!project.project_id) {
-        return // User cancelled
-      }
-
-      try {
-        this.loading = true
-        const currentOrganization = this.$store.state.organization
-        if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.snackbar.notifyError('No organization selected')
-          return
-        }
-        await this.PutOrganizationInvitationAPI(
-          currentOrganization.organization_id,
-          project.project_id,
-          1
-        )
-        this.$refs.snackbar.notifySuccess(
-          `Organization invitation sent to project: ${project.name}`
-        )
-        this.handleSearch()
-      } catch (err) {
-        this.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to send organization invitation'
-        )
-      } finally {
-        this.loading = false
-      }
+    getStatusText(status) {
+      return status || 'Unknown'
     },
   },
 }
 </script>
+
+<style scoped></style>

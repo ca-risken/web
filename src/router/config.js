@@ -453,7 +453,7 @@ export const appRoute = [
             meta: {
               title: 'OrganizationProject',
             },
-            component: () => import('@/view/organization/Project.vue'),
+            component: () => import('@/view/organization/ProjectList.vue'),
           },
           {
             path: '/organization/setting',
@@ -470,7 +470,7 @@ export const appRoute = [
             meta: {
               title: 'OrganizationList',
             },
-            component: () => import('@/view/organization/List.vue'),
+            component: () => import('@/view/organization/OrganizationList.vue'),
           },
         ],
       },
@@ -490,7 +490,7 @@ export const appRoute = [
             meta: {
               title: 'User',
             },
-            component: () => import('@/view/organization/iam/User.vue'),
+            component: () => import('@/view/iam/User.vue'),
           },
           {
             path: '/organization-iam/role',
@@ -498,7 +498,7 @@ export const appRoute = [
             meta: {
               title: 'Role',
             },
-            component: () => import('@/view/organization/iam/Role.vue'),
+            component: () => import('@/view/iam/Role.vue'),
           },
           {
             path: '/organization-iam/policy',
@@ -506,7 +506,7 @@ export const appRoute = [
             meta: {
               title: 'Policy',
             },
-            component: () => import('@/view/organization/iam/Policy.vue'),
+            component: () => import('@/view/iam/Policy.vue'),
           },
         ],
       },
