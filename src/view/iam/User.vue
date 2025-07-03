@@ -248,21 +248,23 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+import organization_iam from '../../mixin/api/organization_iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
-import { VDataTable } from 'vuetify/labs/VDataTable'
 import DataTable from '@/component/widget/table/DataTable.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 
 export default {
   name: 'UserManagement',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, organization_iam, organization_base],
   components: {
     BottomSnackBar,
     UserList,
     SearchToolbar,
-    VDataTable,
     DataTable,
+    VDataTable
   },
   data() {
     return {
@@ -400,20 +402,45 @@ export default {
   mounted() {
     this.refleshList('', '')
   },
+  watch: {
+    '$route.query.organization_id'() {
+      if (this.isOrganizationMode) {
+        this.editDialog = false
+        this.refleshList('', '')
+      }
+    },
+  },
   methods: {
     async refleshList(userName, userID) {
-      let searchCond = '&project_id=' + this.getCurrentProjectID()
-      if (userName) {
-        searchCond += '&name=' + userName
+      let searchCond = ''
+      if (this.isOrganizationMode) {
+        if (userName) {
+          searchCond += '&name=' + userName
+        }
+        if (userID) {
+          searchCond += '&user_id=' + userID
+        }
+      } else {
+        searchCond = '&project_id=' + this.getCurrentProjectID()
+        if (userName) {
+          searchCond += '&name=' + userName
+        }
+        if (userID) {
+          searchCond += '&user_id=' + userID
+        }
       }
-      if (userID) {
-        searchCond += '&user_id=' + userID
-      }
+
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      this.userReserved = await this.listUserReserved(userName)
+
+      if (!this.isOrganizationMode) {
+        this.userReserved = await this.listUserReserved(userName)
+      } else {
+        this.userReserved = []
+      }
+
       if (userIDs.length + this.userReserved.length == 0) {
         return
       }
@@ -463,10 +490,22 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+
+      let roles
+      if (this.isOrganizationMode) {
+        roles = await this.listOrganizationRoleAPI('&user_id=' + id).catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      }
+
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -512,13 +551,29 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      const roles = await this.listRoleAPI('').catch((err) => {
-        return Promise.reject(err)
-      })
-      roles.forEach(async (id) => {
-        const role = await this.getRoleAPI(id).catch((err) => {
+
+      let roles
+      if (this.isOrganizationMode) {
+        roles = await this.listOrganizationRoleAPI('').catch((err) => {
           return Promise.reject(err)
         })
+      } else {
+        roles = await this.listRoleAPI('').catch((err) => {
+          return Promise.reject(err)
+        })
+      }
+
+      roles.forEach(async (id) => {
+        let role
+        if (this.isOrganizationMode) {
+          role = await this.getOrganizationRoleAPI(id).catch((err) => {
+            return Promise.reject(err)
+          })
+        } else {
+          role = await this.getRoleAPI(id).catch((err) => {
+            return Promise.reject(err)
+          })
+        }
         this.roleTable.items.push(role)
 
         if (this.userModel.roles.indexOf(role.role_id) !== -1) {
@@ -552,19 +607,41 @@ export default {
           }
         })
         if (attachRole) {
-          await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
-            (err) => {
+          if (this.isOrganizationMode) {
+            await this.attachOrganizationRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
               this.$refs.snackbar.notifyError(err.response.data)
               return Promise.reject(err)
-            }
-          )
+            })
+          } else {
+            await this.attachRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
+          }
         } else {
-          await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
-            (err) => {
+          if (this.isOrganizationMode) {
+            await this.detachOrganizationRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
               this.$refs.snackbar.notifyError(err.response.data)
               return Promise.reject(err)
-            }
-          )
+            })
+          } else {
+            await this.detachRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
+          }
         }
       })
     },
