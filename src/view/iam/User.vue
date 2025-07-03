@@ -264,7 +264,7 @@ export default {
     UserList,
     SearchToolbar,
     DataTable,
-    VDataTable
+    VDataTable,
   },
   data() {
     return {

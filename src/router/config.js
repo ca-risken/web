@@ -453,7 +453,7 @@ export const appRoute = [
             meta: {
               title: 'OrganizationProject',
             },
-            component: () => import('@/view/organization/ProjectList.vue'),
+            component: () => import('@/view/organization/InvitationList.vue'),
           },
           {
             path: '/organization/setting',

@@ -19,7 +19,7 @@ const organization = {
       }
       return res.data.data.organization
     },
-    async ListOrganizationAPI(param) {
+    async listOrganizationAPI(param) {
       if (!param) {
         param = ''
       }
@@ -33,7 +33,7 @@ const organization = {
       }
       return res.data.data.organization
     },
-    async ListOrganizationInvitationAPI(searchCond) {
+    async listOrganizationInvitationAPI(searchCond) {
       const res = await this.$axios
         .get(
           '/organization/list-organization-invitation?organization_id=' +
@@ -48,19 +48,7 @@ const organization = {
       }
       return res.data.data.organization_invitations
     },
-    async ListUserOrganizationInvitationAPI(user_id) {
-      const param = user_id ? `?user_id=${user_id}` : ''
-      const res = await this.$axios
-        .get('/organization/list-user-organization-invitation' + param)
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      if (!res.data.data.organization_invitations) {
-        return []
-      }
-      return res.data.data.organization_invitations
-    },
-    async PutOrganizationInvitationAPI(organization_id, project_id, status) {
+    async putOrganizationInvitationAPI(organization_id, project_id, status) {
       let statusValue = status
       if (typeof status === 'string') {
         const statusMap = {
@@ -84,7 +72,7 @@ const organization = {
       return res.data.data.organization_invitations
     },
 
-    async DeleteOrganizationInvitationAPI(organization_id, project_id) {
+    async deleteOrganizationInvitationAPI(organization_id, project_id) {
       const param = {
         organization_id: organization_id,
         project_id: project_id,
@@ -97,7 +85,7 @@ const organization = {
       return res.data.data.organization_invitations
     },
 
-    async ReplyOrganizationInvitationAPI(organization_id, project_id, status) {
+    async replyOrganizationInvitationAPI(organization_id, project_id, status) {
       let statusValue = status
       if (typeof status === 'string') {
         const statusMap = {
@@ -120,7 +108,7 @@ const organization = {
         })
       return res.data.data.organization_invitation
     },
-    async ListProjectInOrganizationAPI(searchCond) {
+    async listProjectInOrganizationAPI(searchCond) {
       const res = await this.$axios
         .get(
           '/organization/list-project-in-organization?organization_id=' +

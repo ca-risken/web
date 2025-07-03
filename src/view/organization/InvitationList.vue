@@ -32,7 +32,7 @@
         :loading="loading"
         :headers="headers"
         :actions="table.actions"
-        item-key="organization_id"
+        item-key="project_id"
         @update-options="updateOptions"
       >
         <template v-slot:[`item.status`]="{ item }">
@@ -44,11 +44,13 @@
             {{ getStatusText(item.value.status) }}
           </v-chip>
         </template>
-        <template v-slot:[`item.updated_at`]="{ item }">
-          <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-        </template>
       </data-table>
     </v-container>
+
+    <project-list
+      :projectDialog="projectDialog"
+      @handleProjectDialogResponse="handleProjectDialogResponse"
+    />
 
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
@@ -56,7 +58,6 @@
 </template>
 
 <script>
-import Util from '@/util'
 import mixin from '@/mixin'
 import organization from '@/mixin/api/organization'
 import project from '@/mixin/api/project'
@@ -64,14 +65,16 @@ import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
+import ProjectList from '@/component/widget/list/ProjectList.vue'
 
 export default {
-  name: 'OrganizationList',
+  name: 'InvitationList',
   mixins: [mixin, organization, project, organization_base],
   components: {
     SearchToolbar,
     BottomSnackBar,
     DataTable,
+    ProjectList,
   },
   data() {
     return {
@@ -79,18 +82,18 @@ export default {
       searchModel: { name: null },
       searchForm: {
         name: {
-          label: 'Organization',
-          placeholder: 'Filter for organization name',
+          label: 'Project',
+          placeholder: 'Filter for project name',
         },
       },
       entities: [],
       nameList: [],
       headers: [
         {
-          title: 'Organization ID',
+          title: 'Project ID',
           align: 'start',
           sortable: false,
-          key: 'organization_id',
+          key: 'project_id',
         },
         {
           title: this.$i18n.t('item["Name"]'),
@@ -118,7 +121,7 @@ export default {
         },
       ],
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['organization_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         actions: [
           {
             text: 'Accept Invitation',
@@ -157,13 +160,43 @@ export default {
       this.nameList = [...new Set(this.entities.map((item) => item.name))]
     },
 
+    getStatusColor(status) {
+      const numStatus = parseInt(status)
+      switch (numStatus) {
+        case 1:
+          return 'info'
+        case 2:
+          return 'success'
+        case 3:
+          return 'error'
+        default:
+          return 'warning'
+      }
+    },
+
+    getStatusText(status) {
+      const numStatus = parseInt(status)
+      switch (numStatus) {
+        case 1:
+          return 'PENDING'
+        case 2:
+          return 'ACCEPTED'
+        case 3:
+          return 'REJECTED'
+        default:
+          console.warn(
+            'Unknown status value:',
+            status,
+            'converted to:',
+            numStatus
+          )
+          return 'UNKNOWN'
+      }
+    },
+
     clearList() {
       this.entities = []
       this.nameList = []
-    },
-
-    formatTime(time) {
-      return Util.formatDate(new Date(time * 1000), 'yyyy/MM/dd HH:mm:ss')
     },
 
     async refleshList(name) {
@@ -180,12 +213,12 @@ export default {
         }
         let invitationWithName = await Promise.all(
           invitations.map(async (invitation) => {
-            const organizations = await this.listOrganizationAPI(
-              `?organization_id=${invitation.organization_id}`
+            const projects = await this.listProjectAPI(
+              `?project_id=${invitation.project_id}`
             )
             return {
               ...invitation,
-              name: organizations[0].name,
+              name: projects[0].name,
             }
           })
         )
@@ -204,110 +237,72 @@ export default {
       }
     },
 
+    handleInviteProjects() {
+      this.projectDialog = true
+    },
+
     handleSearch(searchModel) {
       this.refleshList(searchModel.name || '')
     },
 
-    async handleAcceptInvitation(item) {
-      if (!confirm(`組織「${item.name}」の招待を承認しますか？`)) {
+    async handleDeleteInvitation(item) {
+      if (!confirm(`プロジェクト「${item.name}」の招待を削除しますか？`)) {
         return
       }
-
-      this.loading = true
       try {
-        const currentProjectID = this.getCurrentProjectID()
-        if (!currentProjectID) {
-          this.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
+        this.loading = true
+        const currentOrganization = this.$store.state.organization
+        if (!currentOrganization || !currentOrganization.organization_id) {
+          this.$refs.snackbar.notifyError('No organization selected')
           return
         }
-
-        await this.replyOrganizationInvitationAPI(
-          item.organization_id,
-          currentProjectID,
-          2 // ACCEPTED status
+        await this.DeleteOrganizationInvitationAPI(
+          currentOrganization.organization_id,
+          item.project_id
         )
-
         this.$refs.snackbar.notifySuccess(
-          `組織「${item.name}」の招待を承認しました`
+          `プロジェクト「${item.name}」の招待を削除しました`
         )
         this.handleSearch(this.searchModel)
       } catch (err) {
-        console.error('Error accepting invitation:', err)
+        console.error('Error deleting invitation:', err)
         this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の承認に失敗しました'
+          err.response?.data || '招待の削除に失敗しました'
         )
       } finally {
         this.loading = false
       }
     },
 
-    async handleRejectInvitation(item) {
-      if (!confirm(`組織「${item.name}」の招待を拒否しますか？`)) {
-        return
+    async handleProjectDialogResponse(project) {
+      this.projectDialog = false
+
+      if (!project.project_id) {
+        return // User cancelled
       }
 
-      this.loading = true
       try {
-        const currentProjectID = this.getCurrentProjectID()
-        if (!currentProjectID) {
-          this.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
+        this.loading = true
+        const currentOrganization = this.$store.state.organization
+        if (!currentOrganization || !currentOrganization.organization_id) {
+          this.$refs.snackbar.notifyError('No organization selected')
           return
         }
-
-        await this.replyOrganizationInvitationAPI(
-          item.organization_id,
-          currentProjectID,
-          3 // REJECTED status
+        await this.PutOrganizationInvitationAPI(
+          currentOrganization.organization_id,
+          project.project_id,
+          1
         )
-
         this.$refs.snackbar.notifySuccess(
-          `組織「${item.name}」の招待を拒否しました`
+          `Organization invitation sent to project: ${project.name}`
         )
         this.handleSearch(this.searchModel)
       } catch (err) {
-        console.error('Error rejecting invitation:', err)
         this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の拒否に失敗しました'
+          err.response?.data || 'Failed to send organization invitation'
         )
       } finally {
         this.loading = false
-      }
-    },
-
-    getStatusColor(status) {
-      const numStatus =
-        typeof status === 'string' ? parseInt(status, 10) : status
-      const statusText = this.getStatusText(numStatus)
-      switch (statusText) {
-        case 'PENDING':
-          return 'orange'
-        case 'ACCEPTED':
-          return 'green'
-        case 'REJECTED':
-          return 'red'
-        default:
-          return 'grey'
-      }
-    },
-
-    getStatusText(status) {
-      const numStatus =
-        typeof status === 'string' ? parseInt(status, 10) : status
-      switch (numStatus) {
-        case 1:
-          return 'PENDING'
-        case 2:
-          return 'ACCEPTED'
-        case 3:
-          return 'REJECTED'
-        default:
-          console.warn(
-            'Unknown status value:',
-            status,
-            'converted to:',
-            numStatus
-          )
-          return 'UNKNOWN'
       }
     },
 
