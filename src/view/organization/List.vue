@@ -90,7 +90,17 @@
       </v-row>
     </v-container>
 
-    <!-- Snackbar -->
+    <!-- Confirm Dialog (using DeleteDialog as generic confirm dialog) -->
+    <delete-dialog
+      v-model="confirmDialog"
+      :item-data="confirmTarget"
+      item-icon="mdi-domain"
+      :loading="loading"
+      :confirm-text="confirmText"
+      @confirm="executeConfirmAction"
+      @cancel="cancelAction"
+    />
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -103,6 +113,7 @@ import project from '@/mixin/api/project'
 import EntitySearchForm from '@/component/dialog/EntitySearchForm.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
+import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 
 export default {
   name: 'OrganizationInvitationList',
@@ -111,6 +122,7 @@ export default {
     EntitySearchForm,
     BottomSnackBar,
     VDataTableServer,
+    DeleteDialog,
   },
   data() {
     return {
@@ -145,15 +157,19 @@ export default {
         {
           text: 'Accept Invitation',
           icon: 'mdi-check',
-          click: this.handleAcceptInvitation,
+          click: this.handleAcceptItem,
         },
         {
           text: 'Reject Invitation',
           icon: 'mdi-close',
-          click: this.handleRejectInvitation,
+          click: this.handleRejectItem,
         },
       ],
       sortBy: ['organization_id'],
+      confirmDialog: false,
+      confirmTarget: {},
+      confirmText: '',
+      pendingAction: null,
     }
   },
   computed: {
@@ -298,11 +314,41 @@ export default {
       }
     },
 
-    async handleAcceptInvitation(item) {
-      if (!confirm(`組織「${item.name}」の招待を承認しますか？`)) {
-        return
+    handleAcceptItem(item) {
+      this.confirmTarget = {
+        id: item.value.invitation_id,
+        name: item.value.name,
       }
+      this.confirmText = this.$t('btn["ACCEPT"]')
+      this.pendingAction = () => this.handleAcceptInvitation(item.value)
+      this.confirmDialog = true
+    },
 
+    handleRejectItem(item) {
+      this.confirmTarget = {
+        id: item.value.invitation_id,
+        name: item.value.name,
+      }
+      this.confirmText = this.$t('btn["REJECT"]')
+      this.pendingAction = () => this.handleRejectInvitation(item.value)
+      this.confirmDialog = true
+    },
+
+    executeConfirmAction() {
+      if (this.pendingAction) {
+        this.pendingAction()
+      }
+      this.confirmDialog = false
+    },
+
+    cancelAction() {
+      this.confirmTarget = {}
+      this.confirmText = ''
+      this.pendingAction = null
+      this.confirmDialog = false
+    },
+
+    async handleAcceptInvitation(item) {
       try {
         this.loading = true
 
@@ -337,10 +383,6 @@ export default {
     },
 
     async handleRejectInvitation(item) {
-      if (!confirm(`組織「${item.name}」の招待を拒否しますか？`)) {
-        return
-      }
-
       try {
         this.loading = true
 

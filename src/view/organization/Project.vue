@@ -57,6 +57,16 @@
       @handleProjectDialogResponse="handleProjectDialogResponse"
     />
 
+    <!-- Delete Dialog -->
+    <delete-dialog
+      v-model="deleteDialog"
+      :item-data="deleteTarget"
+      item-icon="mdi-folder-outline"
+      :loading="loading"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
+
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -72,6 +82,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
 import ProjectList from '@/component/widget/list/ProjectList.vue'
+import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 
 export default {
   name: 'OrganizationProject',
@@ -81,6 +92,7 @@ export default {
     BottomSnackBar,
     DataTable,
     ProjectList,
+    DeleteDialog,
   },
   data() {
     return {
@@ -107,9 +119,9 @@ export default {
         },
         actions: [
           {
-            text: 'Delete Invitation',
-            icon: 'mdi-delete',
-            click: this.handleDeleteInvitation,
+            text: 'Delete Item',
+            icon: 'mdi-trash-can-outline',
+            click: this.handleDeleteItem,
           },
         ],
         footer: {
@@ -118,6 +130,8 @@ export default {
           showCurrentPage: true,
         },
       },
+      deleteDialog: false,
+      deleteTarget: {},
     }
   },
   computed: {
@@ -307,10 +321,30 @@ export default {
       return 'red'
     },
 
-    async handleDeleteInvitation(item) {
-      if (!confirm(`プロジェクト「${item.name}」の招待を削除しますか？`)) {
-        return
+    handleDeleteItem(item) {
+      this.deleteTarget = {
+        id: item.value.invitation_id,
+        name: item.value.name,
       }
+      this.deleteDialog = true
+    },
+
+    confirmDelete() {
+      const item = this.entities.find(
+        (entity) => entity.invitation_id === this.deleteTarget.id
+      )
+      if (item) {
+        this.handleDeleteInvitation(item)
+      }
+      this.deleteDialog = false
+    },
+
+    cancelDelete() {
+      this.deleteTarget = {}
+      this.deleteDialog = false
+    },
+
+    async handleDeleteInvitation(item) {
       try {
         this.loading = true
         const currentOrganization = this.$store.state.organization
