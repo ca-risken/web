@@ -250,15 +250,8 @@ export default {
         for (const ctx of this.contextList) {
           messageHistory.push({
             role: this.RoleAI,
-            content:
-              'User looking at `' +
-              ctx.name +
-              '` view.\n' +
-              'The content is: \n' +
-              ctx.content,
+            content: '# ' + ctx.name + '\n' + ctx.content,
           })
-          // TODO: delete
-          console.log('ctx: ', ctx)
         }
         messageHistory.push(...keepMessages)
         const answer = await this.chatAI(userMessageText, messageHistory)
@@ -281,9 +274,15 @@ export default {
       this.messages = []
       if (this.contextList.length === 0) {
         // Default context (current page)
+        const screenName = this.$route.name
         this.contextList.push({
-          name: this.$route.name,
-          content: document.querySelector('main')?.textContent,
+          name: screenName,
+          content:
+            'User looking at `' +
+            screenName +
+            '` view.\n' +
+            'The content is: \n' +
+            document.querySelector('main')?.textContent,
         })
       }
       this.messages.push({
