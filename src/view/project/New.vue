@@ -1,10 +1,7 @@
 <template>
   <div>
     <v-container>
-      <page-header
-        icon="mdi-alpha-p-box"
-        :title="$t(`menu['Project']`)"
-      />
+      <page-header icon="mdi-alpha-p-box" :title="$t(`menu['Project']`)" />
       <v-row dense justify="center" align-content="center">
         <v-col cols="10">
           <v-card>

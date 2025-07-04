@@ -402,14 +402,6 @@ export default {
   mounted() {
     this.refleshList('', '')
   },
-  watch: {
-    '$route.query.organization_id'() {
-      if (this.isOrganizationMode) {
-        this.editDialog = false
-        this.refleshList('', '')
-      }
-    },
-  },
   methods: {
     async refleshList(userName, userID) {
       let searchCond = ''

@@ -364,15 +364,6 @@ export default {
   mounted() {
     this.refleshList('')
   },
-  watch: {
-    '$route.query.organization_id'() {
-      if (this.isOrganizationMode) {
-        this.editDialog = false
-        this.deleteDialog = false
-        this.refleshList('')
-      }
-    },
-  },
   methods: {
     async refleshList(searchCond) {
       let policies

@@ -43,7 +43,6 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
-    SEARCH: '検索',
   },
   menu: {
     Home: 'ホーム',
@@ -99,7 +98,6 @@ const ja = {
     'New Organization': '新規Organization',
     'Organization Setting': 'Organization設定',
     OrganizationInvitation: '招待一覧',
-    OrganizationInviteProject: 'プロジェクト招待',
     OrganizationList: 'Organization一覧',
     OrganizationProject: 'プロジェクト一覧',
     Profile: 'プロフィール',
@@ -222,9 +220,6 @@ const ja = {
     'UpdatedAt Range': '更新日（範囲）',
     User: 'ユーザー',
     'User Key': 'ユーザキー',
-    Email: 'メールアドレス',
-    Role: 'ロール',
-    Policy: 'ポリシー',
     'Verification Code': '検証コード',
     'Webhook URL': 'ウェブフックURL',
     'WPScan Setting ID': 'ワードプレス設定ID',
@@ -233,8 +228,6 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
-    Project: 'プロジェクト',
-    Organization: 'Organization',
   },
   version: {
     version: 'バージョン',
@@ -275,11 +268,6 @@ const ja = {
     'Delete Invitation': '招待を削除する',
     'Accept Invitation': '招待を承認する',
     'Reject Invitation': '招待を拒否する',
-    'Edit Role': 'ロールを編集',
-    'Remove User': 'ユーザーを削除',
-    'Edit Policy': 'ポリシーを編集',
-    'Delete Role': 'ロールを削除',
-    'Delete Policy': 'ポリシーを削除',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
