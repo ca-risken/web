@@ -2,23 +2,35 @@
   <div>
     <v-container>
       <page-header
-        icon="mdi-alpha-p-box"
-        :title="$t(`menu['Project']`)"
+        icon="mdi-account-group"
+        :title="$t(`menu['Organization']`)"
       />
       <v-row dense justify="center" align-content="center">
         <v-col cols="10">
           <v-card>
             <v-card-text>
-              <v-form v-model="projectForm.valid" ref="form">
+              <v-form v-model="organizationForm.valid" ref="form">
                 <v-text-field
-                  v-model="projectModel.name"
-                  :label="$t(`item['` + projectForm.name.label + `']`) + ' *'"
-                  :placeholder="projectForm.name.placeholder"
+                  v-model="organizationModel.name"
+                  :label="
+                    $t(`item['` + organizationForm.name.label + `']`) + ' *'
+                  "
+                  :placeholder="organizationForm.name.placeholder"
                   :counter="64"
-                  :rules="projectForm.name.validator"
+                  :rules="organizationForm.name.validator"
                   required
                   variant="outlined"
                 ></v-text-field>
+                <v-textarea
+                  v-model="organizationModel.description"
+                  :label="
+                    $t(`item['` + organizationForm.description.label + `']`)
+                  "
+                  :placeholder="organizationForm.description.placeholder"
+                  :counter="255"
+                  variant="outlined"
+                  rows="3"
+                ></v-textarea>
                 <v-divider class="mt-3 mb-3"></v-divider>
                 <v-card-actions>
                   <v-spacer />
@@ -44,13 +56,14 @@
 <script>
 import store from '@/store'
 import mixin from '@/mixin'
-import project from '@/mixin/api/project'
-import alert from '@/mixin/api/alert'
+import organization from '@/mixin/api/organization'
+import organization_base from '@/mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
+
 export default {
-  name: 'NewProject',
-  mixins: [mixin, project, alert],
+  name: 'NewOrganization',
+  mixins: [mixin, organization, organization_base],
   components: {
     BottomSnackBar,
     PageHeader,
@@ -58,30 +71,35 @@ export default {
   data() {
     return {
       loading: false,
-      projectModel: {
-        project_id: '',
+      organizationModel: {
+        organization_id: '',
         name: '',
+        description: '',
         created_at: '',
         updated_at: '',
       },
-      projectForm: {
+      organizationForm: {
         valid: false,
         name: {
           label: 'Name',
-          placeholder: 'your-project',
+          placeholder: 'your-organization',
           validator: [
             (v) => !!v || 'Name is required',
             (v) => v.length <= 64 || 'Name must be less than 64 characters',
-            (v) => !this.existsProjectName(v) || 'Name is already exists.',
+            (v) => !this.existsOrganizationName(v) || 'Name is already exists.',
           ],
         },
+        description: {
+          label: 'Description',
+          placeholder: 'Enter organization description',
+        },
       },
-      projectList: [],
+      organizationList: [],
     }
   },
   async mounted() {
     this.loading = true
-    this.projectList = await this.listProjectAPI().catch((err) => {
+    this.organizationList = await this.listOrganizationAPI().catch((err) => {
       this.$refs.snackbar.notifyError(err.response.data)
       this.loading = false
       return Promise.reject(err)
@@ -89,55 +107,37 @@ export default {
     this.loading = false
   },
   methods: {
-    async createProject() {
+    async createOrganization() {
       if (!store.state.user) {
         this.$refs.snackbar.notifyError('Error: Try again after signin.')
         this.loading = false
         return
       }
-      const project = await this.createProjectAPI(this.projectModel.name).catch(
-        (err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          this.loading = false
-          return Promise.reject(err)
-        }
-      )
-      if (!project.project_id) {
-        this.$refs.snackbar.notifyError('Failed to get new porject.')
-      }
-      store.commit('updateProject', project)
-      this.$refs.snackbar.notifySuccess('Success: Created new project.')
-      setTimeout(() => {
-        this.$router.push('/project/setting/')
-      }, 1000)
-
-      // Default Alert Setting
-      const rule = await this.putDefaultAlertRule().catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        this.loading = false
-        return Promise.reject(err)
-      })
-      const cond = await this.putDefaultAlertCondition().catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        this.loading = false
-        return Promise.reject(err)
-      })
-      await this.putAlertConditionRule(
-        cond.alert_condition_id,
-        rule.alert_rule_id
+      const organization = await this.createOrganizationAPI(
+        this.organizationModel.name,
+        this.organizationModel.description
       ).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         this.loading = false
         return Promise.reject(err)
       })
+      if (!organization.organization_id) {
+        this.$refs.snackbar.notifyError('Failed to get new organization.')
+      }
+      store.commit('updateOrganization', organization)
+      store.commit('updateMode', 'organization')
+      this.$refs.snackbar.notifySuccess('Success: Created new organization.')
+      setTimeout(() => {
+        this.$router.push('/organization/setting/')
+      }, 1000)
     },
 
-    existsProjectName(name) {
+    existsOrganizationName(name) {
       if (name === '') {
         return false
       }
-      for (const pj of this.projectList) {
-        if (pj.name == name) return true
+      for (const org of this.organizationList) {
+        if (org.name == name) return true
       }
       return false
     },
@@ -147,7 +147,7 @@ export default {
         return
       }
       this.loading = true
-      this.createProject()
+      this.createOrganization()
     },
   },
 }

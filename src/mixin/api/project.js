@@ -86,6 +86,44 @@ const project = {
         })
       return res
     },
+    async listProjectOrganizationInvitationAPI(searchCond) {
+      const res = await this.$axios
+        .get(
+          '/project/list-organization-invitation?project_id=' +
+            this.getCurrentProjectID() +
+            searchCond
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.organization_invitations) {
+        return []
+      }
+      return res.data.data.organization_invitations
+    },
+    async replyOrganizationInvitationAPI(organization_id, status) {
+      let statusValue = status
+      if (typeof status === 'string') {
+        const statusMap = {
+          PENDING: 1,
+          ACCEPTED: 2,
+          REJECTED: 3,
+        }
+        statusValue = statusMap[status.toUpperCase()] || status
+      }
+
+      const param = {
+        organization_id: organization_id,
+        project_id: this.getCurrentProjectID(),
+        status: statusValue,
+      }
+      const res = await this.$axios
+        .post('/project/reply-organization-invitation', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res.data.data.organization_invitation
+    },
   },
 }
 

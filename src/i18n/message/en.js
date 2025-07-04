@@ -6,6 +6,8 @@ const en = {
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',
     'CREATE NEW PROJECT': 'CREATE NEW PROJECT',
+    'EDIT ORGANIZATION': 'EDIT ORGANIZATION',
+    'CREATE NEW ORGANIZATION': 'CREATE NEW ORGANIZATION',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
     ARCHIVE: 'ARCHIVE',
@@ -41,6 +43,7 @@ const en = {
     Recommendation: 'Recommendation',
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
+    SEARCH: 'SEARCH',
   },
   menu: {
     Home: 'Home',
@@ -56,8 +59,10 @@ const en = {
     OSINT: 'OSINT',
     Code: 'Code',
     IAM: 'IAM',
+    'Organization IAM': 'Org IAM',
     Analysis: 'Analysis',
     Admin: 'Admin',
+    Organization: 'Organization',
   },
   submenu: {
     Dashboard: 'Dashboard',
@@ -91,6 +96,12 @@ const en = {
     ReportFinding: 'Report Finding', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
+    'New Organization': 'New Organization',
+    'Organization Setting': 'Organization Setting',
+    OrganizationInvitation: 'Invitation List',
+    OrganizationInviteProject: 'Invite Projects',
+    OrganizationList: 'Organization List',
+    OrganizationProject: 'Project List',
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
@@ -211,6 +222,9 @@ const en = {
     'UpdatedAt Range': 'UpdatedAt Range',
     User: 'User',
     'User Key': 'User Key',
+    Email: 'Email',
+    Role: 'Role',
+    Policy: 'Policy',
     'Verification Code': 'Verification Code',
     'Webhook URL': 'Webhook URL',
     'WPScan Setting ID': 'WPScan Setting ID',
@@ -219,6 +233,8 @@ const en = {
     'WPScan Random User Agent': 'Use a random user-agent for each scan',
     'WPScan WP Content Dir':
       'The wp-content directory if custom or not detected, such as "wp-content"',
+    Project: 'Project',
+    Organization: 'Organization',
   },
   version: {
     version: 'version',
@@ -256,6 +272,14 @@ const en = {
     'View Item': 'View Item',
     'Test Notification': 'Test Notification',
     'Disable Admin': 'Disable Admin',
+    'Delete Invitation': 'Delete Invitation',
+    'Accept Invitation': 'Accept Invitation',
+    'Reject Invitation': 'Reject Invitation',
+    'Edit Role': 'Edit Role',
+    'Remove User': 'Remove User',
+    'Edit Policy': 'Edit Policy',
+    'Delete Role': 'Delete Role',
+    'Delete Policy': 'Delete Policy',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',

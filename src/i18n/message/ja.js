@@ -6,6 +6,8 @@ const ja = {
     CANCEL: 'キャンセル',
     'EDIT PROJECT': 'プロジェクト編集',
     'CREATE NEW PROJECT': '新規プロジェクト作成',
+    'EDIT ORGANIZATION': 'Organization編集',
+    'CREATE NEW ORGANIZATION': '新規Organization作成',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: '追加',
     ARCHIVE: 'アーカイブ',
@@ -41,6 +43,7 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
+    SEARCH: '検索',
   },
   menu: {
     Home: 'ホーム',
@@ -56,8 +59,10 @@ const ja = {
     OSINT: 'OSINT',
     Code: 'ソースコード',
     IAM: 'IAM',
+    'Organization IAM': 'Org IAM',
     Analysis: '分析',
     Admin: '管理者',
+    Organization: 'Organization',
   },
   submenu: {
     Dashboard: 'ダッシュボード',
@@ -91,6 +96,12 @@ const ja = {
     ReportFinding: 'Findingレポート',
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
+    'New Organization': '新規Organization',
+    'Organization Setting': 'Organization設定',
+    OrganizationInvitation: '招待一覧',
+    OrganizationInviteProject: 'プロジェクト招待',
+    OrganizationList: 'Organization一覧',
+    OrganizationProject: 'プロジェクト一覧',
     Profile: 'プロフィール',
     Menu: 'メニュー',
     'Admin User': '管理者ユーザ',
@@ -211,6 +222,9 @@ const ja = {
     'UpdatedAt Range': '更新日（範囲）',
     User: 'ユーザー',
     'User Key': 'ユーザキー',
+    Email: 'メールアドレス',
+    Role: 'ロール',
+    Policy: 'ポリシー',
     'Verification Code': '検証コード',
     'Webhook URL': 'ウェブフックURL',
     'WPScan Setting ID': 'ワードプレス設定ID',
@@ -219,6 +233,8 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
+    Project: 'プロジェクト',
+    Organization: 'Organization',
   },
   version: {
     version: 'バージョン',
@@ -256,6 +272,14 @@ const ja = {
     'View Item': '詳細を見る',
     'Test Notification': '通知のテスト',
     'Disable Admin': '管理者権限を無効化する',
+    'Delete Invitation': '招待を削除する',
+    'Accept Invitation': '招待を承認する',
+    'Reject Invitation': '招待を拒否する',
+    'Edit Role': 'ロールを編集',
+    'Remove User': 'ユーザーを削除',
+    'Edit Policy': 'ポリシーを編集',
+    'Delete Role': 'ロールを削除',
+    'Delete Policy': 'ポリシーを削除',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
@@ -394,7 +418,7 @@ const ja = {
         '一つ以上のロールを選択してください。何もロールを選択しない場合、対象ユーザはこのプロジェクトから',
       removed: '削除',
       'from the project.': 'されます.',
-      'Make sure to copy your access token now. You won’t be able to see it again!':
+      'Make sure to copy your access token now. You wont be able to see it again!':
         'アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.',
       'No users found for your search condition.':
         '検索した条件でユーザーが見つかりませんでした。',

@@ -438,6 +438,86 @@ export const appRoute = [
         ],
       },
       {
+        path: '/organization/',
+        component: RouteWrapper,
+        redirect: '/organization/setting',
+        meta: {
+          title: 'Organization',
+          icon: 'mdi-account-group',
+          group: 'organization',
+        },
+        children: [
+          {
+            path: '/organization/project',
+            name: 'OrganizationProject',
+            meta: {
+              title: 'OrganizationProject',
+            },
+            component: () => import('@/view/organization/InvitationList.vue'),
+          },
+          {
+            path: '/organization/setting',
+            name: 'OrganizationSetting',
+            meta: {
+              title: 'Organization Setting',
+            },
+            component: () => import('@/view/organization/Setting.vue'),
+          },
+          {
+            path: '/organization/new',
+            name: 'NewOrganization',
+            meta: {
+              title: 'New Organization',
+            },
+            component: () => import('@/view/organization/New.vue'),
+          },
+          {
+            path: '/organization/list',
+            name: 'OrganizationList',
+            meta: {
+              title: 'OrganizationList',
+            },
+            component: () => import('@/view/organization/OrganizationList.vue'),
+          },
+        ],
+      },
+      {
+        path: '/organization-iam/',
+        component: RouteWrapper,
+        redirect: '/organization-iam/user',
+        meta: {
+          title: 'Organization IAM',
+          icon: 'mdi-account-multiple',
+          group: 'organization-iam',
+        },
+        children: [
+          {
+            path: '/organization-iam/user',
+            name: 'OrganizationUser',
+            meta: {
+              title: 'User',
+            },
+            component: () => import('@/view/iam/User.vue'),
+          },
+          {
+            path: '/organization-iam/role',
+            name: 'OrganizationRole',
+            meta: {
+              title: 'Role',
+            },
+            component: () => import('@/view/iam/Role.vue'),
+          },
+          {
+            path: '/organization-iam/policy',
+            name: 'OrganizationPolicy',
+            meta: {
+              title: 'Policy',
+            },
+            component: () => import('@/view/iam/Policy.vue'),
+          },
+        ],
+      },
+      {
         path: '/admin',
         component: RouteWrapper,
         redirect: '/admin/menu',
