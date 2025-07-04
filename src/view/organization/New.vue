@@ -14,16 +14,8 @@
       <v-row dense justify="center" align-content="center">
         <v-col cols="10">
           <v-card>
-            <!-- Profile -->
             <v-card-text>
               <v-form v-model="organizationForm.valid" ref="form">
-                <v-text-field
-                  v-model="organizationModel.organization_id"
-                  :label="$t(`item['` + organizationForm.ID.label + `']`)"
-                  :placeholder="organizationForm.ID.placeholder"
-                  variant="outlined"
-                  disabled
-                ></v-text-field>
                 <v-text-field
                   v-model="organizationModel.name"
                   :label="$t(`item['` + organizationForm.name.label + `']`) + ' *'"
@@ -41,74 +33,44 @@
                   variant="outlined"
                   rows="3"
                 ></v-textarea>
+                <v-divider class="mt-3 mb-3"></v-divider>
                 <v-card-actions>
                   <v-spacer />
                   <v-btn
+                    text
                     variant="outlined"
                     color="green-darken-1"
                     :loading="loading"
-                    @click="handleEdit"
+                    @click="handleCreate"
+                    >Create</v-btn
                   >
-                    {{ $t(`btn['SAVE']`) }}
-                  </v-btn>
                 </v-card-actions>
               </v-form>
             </v-card-text>
-            <v-divider />
-
-            <!-- DELETE -->
-            <v-card-text>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn
-                  variant="outlined"
-                  color="red-darken-1"
-                  :loading="loading"
-                  @click="handleDelete"
-                >
-                  {{ $t(`btn['DELETE']`) }}
-                </v-btn>
-              </v-card-actions>
-            </v-card-text>
-
             <bottom-snack-bar ref="snackbar" />
           </v-card>
         </v-col>
       </v-row>
     </v-container>
-
-    <!-- Delete Dialog -->
-    <delete-dialog
-      v-model="deleteDialog"
-      :title="$t(`message['Do you really want to delete this?']`)"
-      :item-data="{ id: organizationModel.organization_id, name: organizationModel.name }"
-      item-icon="mdi-account-group"
-      :loading="loading"
-      @confirm="handleDeleteSubmit"
-      @cancel="deleteDialog = false"
-    />
   </div>
 </template>
 
 <script>
-import mixin from '@/mixin'
 import store from '@/store'
+import mixin from '@/mixin'
 import organization from '@/mixin/api/organization'
-import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import organization_base from '@/mixin/util/organization_base'
-import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 
 export default {
-  name: 'OrganizationSetting',
+  name: 'NewOrganization',
   mixins: [mixin, organization, organization_base],
   components: {
     BottomSnackBar,
-    DeleteDialog,
   },
   data() {
     return {
       loading: false,
-      deleteDialog: false,
       organizationModel: {
         organization_id: '',
         name: '',
@@ -118,14 +80,13 @@ export default {
       },
       organizationForm: {
         valid: false,
-        ID: { label: 'ID', placeholder: '-', validator: [] },
         name: {
           label: 'Name',
           placeholder: 'your-organization',
           validator: [
             (v) => !!v || 'Name is required',
-            (v) =>
-              !v || v.length <= 64 || 'Name must be less than 64 characters',
+            (v) => v.length <= 64 || 'Name must be less than 64 characters',
+            (v) => !this.existsOrganizationName(v) || 'Name is already exists.',
           ],
         },
         description: {
@@ -133,29 +94,26 @@ export default {
           placeholder: 'Enter organization description',
         },
       },
+      organizationList: [],
     }
   },
   async mounted() {
     this.loading = true
-    await this.setOrganization()
+    this.organizationList = await this.listOrganizationAPI().catch((err) => {
+      this.$refs.snackbar.notifyError(err.response.data)
+      this.loading = false
+      return Promise.reject(err)
+    })
     this.loading = false
   },
   methods: {
-    async setOrganization() {
-      if (!store.state.organization.organization_id) {
+    async createOrganization() {
+      if (!store.state.user) {
+        this.$refs.snackbar.notifyError('Error: Try again after signin.')
+        this.loading = false
         return
       }
-      this.organizationModel = store.state.organization
-      const param = '?organization_id=' + this.organizationModel.organization_id
-      const organization = await this.listOrganizationAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
-      if (!organization[0]) return
-      this.organizationModel = organization[0]
-    },
-    async editOrganization() {
-      const organization = await this.updateOrganizationAPI(
+      const organization = await this.createOrganizationAPI(
         this.organizationModel.name,
         this.organizationModel.description
       ).catch((err) => {
@@ -164,38 +122,33 @@ export default {
         return Promise.reject(err)
       })
       if (!organization.organization_id) {
-        this.$refs.snackbar.notifyError('Failed to get organization.')
+        this.$refs.snackbar.notifyError('Failed to get new organization.')
       }
       store.commit('updateOrganization', organization)
+      store.commit('updateMode', 'organization')
+      this.$refs.snackbar.notifySuccess('Success: Created new organization.')
+      setTimeout(() => {
+        this.$router.push('/organization/setting/')
+      }, 1000)
     },
-    async deleteOrganization() {
-      await this.deleteOrganizationAPI().catch((err) => {
-        this.$refs.snackbar.notifyError(err)
-        return Promise.reject(err)
-      })
+
+    existsOrganizationName(name) {
+      if (name === '') {
+        return false
+      }
+      for (const org of this.organizationList) {
+        if (org.name == name) return true
+      }
+      return false
     },
-    // Handler
-    handleEdit() {
+
+    handleCreate() {
       if (!this.$refs.form.validate()) {
         return
       }
       this.loading = true
-      this.editOrganization()
-      this.$refs.snackbar.notifySuccess('Success: updated.')
-      this.loading = false
-    },
-    handleDelete() {
-      this.deleteDialog = true
-    },
-    async handleDeleteSubmit() {
-      this.loading = true
-      await this.deleteOrganization()
-      this.deleteDialog = false
-      this.$refs.snackbar.notifySuccess('Success: Organization deleted.')
-      store.commit('clearOrganization')
-      this.$router.push('/organization/list')
-      this.loading = false
+      this.createOrganization()
     },
   },
 }
-</script>
+</script> 

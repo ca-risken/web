@@ -459,11 +459,18 @@ export const appRoute = [
             path: '/organization/setting',
             name: 'OrganizationSetting',
             meta: {
-              title: 'OrganizationSetting',
+              title: 'Organization Setting',
             },
             component: () => import('@/view/organization/Setting.vue'),
           },
-
+          {
+            path: '/organization/new',
+            name: 'NewOrganization',
+            meta: {
+              title: 'New Organization',
+            },
+            component: () => import('@/view/organization/New.vue'),
+          },
           {
             path: '/organization/list',
             name: 'OrganizationList',
