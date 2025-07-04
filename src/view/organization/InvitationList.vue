@@ -48,9 +48,12 @@
       </data-table>
     </v-container>
 
-    <project-list
-      :projectDialog="projectDialog"
-      @handleProjectDialogResponse="handleProjectDialogResponse"
+    <project-org-select-dialog
+      v-model="projectDialog"
+      entity-type="project"
+      :items="projectList"
+      :loading="projectListLoading"
+      @item-selected="handleProjectDialogResponse"
     />
 
     <!-- Snackbar -->
@@ -66,7 +69,7 @@ import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
-import ProjectList from '@/component/widget/list/ProjectList.vue'
+import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 
 export default {
   name: 'InvitationList',
@@ -75,12 +78,14 @@ export default {
     SearchToolbar,
     BottomSnackBar,
     DataTable,
-    ProjectList,
+    ProjectOrgSelectDialog,
   },
   data() {
     return {
       loading: false,
       projectDialog: false,
+      projectList: [],
+      projectListLoading: false,
       searchModel: { name: null },
       searchForm: {
         name: {
@@ -203,6 +208,38 @@ export default {
     },
     handleInviteProjects() {
       this.projectDialog = true
+      this.loadProjectList()
+    },
+    async loadProjectList() {
+      this.projectListLoading = true
+      try {
+        const projects = await this.listProjectAPI()
+        this.projectList = projects.map(project => ({
+          ...project,
+          tag: this.getProjectTagColor(project.tag || [])
+        }))
+      } catch (err) {
+        console.error('Error loading projects:', err)
+        this.$refs.snackbar.notifyError('Failed to load projects')
+      } finally {
+        this.projectListLoading = false
+      }
+    },
+    getProjectTagColor(tags) {
+      if (!tags || tags.length === 0) return []
+      return tags.map((tag) => ({
+        tag: tag,
+        color: this.getRandomColor(),
+      }))
+    },
+    getRandomColor() {
+      const colors = [
+        'red', 'pink', 'purple', 'deep-purple', 'indigo',
+        'blue', 'light-blue', 'cyan', 'teal', 'green',
+        'light-green', 'lime', 'yellow', 'amber', 'orange',
+        'deep-orange', 'brown', 'blue-grey'
+      ]
+      return colors[Math.floor(Math.random() * colors.length)]
     },
     handleSearch(searchModel) {
       let searchCond = ''
