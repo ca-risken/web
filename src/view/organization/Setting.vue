@@ -1,16 +1,10 @@
 <template>
   <div>
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-account-group</v-icon>
-              {{ $t(`menu['Organization']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
+      <page-header
+        icon="mdi-account-group"
+        :title="$t(`menu['Organization']`)"
+      />
       <v-row dense justify="center" align-content="center">
         <v-col cols="10">
           <v-card>
@@ -104,6 +98,7 @@ import organization from '@/mixin/api/organization'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import organization_base from '@/mixin/util/organization_base'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
+import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 
 export default {
   name: 'OrganizationSetting',
@@ -111,6 +106,7 @@ export default {
   components: {
     BottomSnackBar,
     DeleteDialog,
+    PageHeader,
   },
   data() {
     return {
