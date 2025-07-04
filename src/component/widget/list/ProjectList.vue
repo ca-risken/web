@@ -117,7 +117,7 @@ export default {
         },
       },
       table: {
-        options: { page: 1, itemsPerPage: 20 },
+        options: { page: 1, itemsPerPage: 20, sortBy: ['project_id'] },
         total: 0,
         footer: {
           itemsPerPageOptions: [{ value: 20, title: '20' }],
@@ -129,6 +129,9 @@ export default {
     }
   },
   computed: {
+    sortBy() {
+      return this.table.options.sortBy
+    },
     headers() {
       return [
         {

@@ -101,7 +101,7 @@ const project = {
       }
       return res.data.data.organization_invitations
     },
-    async ReplyOrganizationInvitationAPI(organization_id, project_id, status) {
+    async replyOrganizationInvitationAPI(organization_id, status) {
       let statusValue = status
       if (typeof status === 'string') {
         const statusMap = {
@@ -114,7 +114,7 @@ const project = {
 
       const param = {
         organization_id: organization_id,
-        project_id: project_id,
+        project_id: this.getCurrentProjectID(),
         status: statusValue,
       }
       const res = await this.$axios

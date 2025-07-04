@@ -212,22 +212,15 @@ export default {
       this.refleshList(searchCond)
     },
     async handleDeleteInvitation(item) {
-      if (!confirm(`プロジェクト「${item.name}」の招待を削除しますか？`)) {
+      if (!confirm(`プロジェクト「${item.value.name}」の招待を削除しますか？`)) {
         return
       }
       this.loading = true
-      const currentOrganization = this.$store.state.organization
-      if (!currentOrganization || !currentOrganization.organization_id) {
-        this.$refs.snackbar.notifyError('No organization selected')
-        this.loading = false
-        return
-      }
-      await this.DeleteOrganizationInvitationAPI(
-        currentOrganization.organization_id,
-        item.project_id
+      await this.deleteOrganizationInvitationAPI(
+        item.value.project_id
       ).then(() => {
         this.$refs.snackbar.notifySuccess(
-          `プロジェクト「${item.name}」の招待を削除しました`
+          `プロジェクト「${item.value.name}」の招待を削除しました`
         )
         this.handleSearch(this.searchModel)
       }).catch((err) => {
@@ -242,71 +235,29 @@ export default {
 
     async handleProjectDialogResponse(project) {
       this.projectDialog = false
+      this.loading = true
 
-      if (!project.project_id) {
-        return // User cancelled
-      }
-
-      try {
-        this.loading = true
-        const currentOrganization = this.$store.state.organization
-        if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.snackbar.notifyError('No organization selected')
-          return
-        }
-        await this.PutOrganizationInvitationAPI(
-          currentOrganization.organization_id,
-          project.project_id,
-          1
-        )
-        this.$refs.snackbar.notifySuccess(
-          `Organization invitation sent to project: ${project.name}`
-        )
-        this.handleSearch(this.searchModel)
-      } catch (err) {
+      await this.putOrganizationInvitationAPI(
+        project.project_id,
+        1
+      ).catch((err) => {
         this.$refs.snackbar.notifyError(
           err.response?.data || 'Failed to send organization invitation'
         )
-      } finally {
-        this.loading = false
-      }
+        return Promise.reject(err)
+      })
+      this.finishUpdated(`Organization invitation sent to project: ${project.name}`)
+    },
+
+    async finishUpdated(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.loading = false
+      this.handleSearch(this.searchModel)
     },
 
     updateOptions(options) {
       this.table.options = options
-    },
-
-    getStatusColor(status) {
-      const numStatus = parseInt(status)
-      switch (numStatus) {
-        case 1:
-          return 'info'
-        case 2:
-          return 'success'
-        case 3:
-          return 'error'
-        default:
-          return 'warning'
-      }
-    },
-    getStatusText(status) {
-      const numStatus = parseInt(status)
-      switch (numStatus) {
-        case 1:
-          return 'PENDING'
-        case 2:
-          return 'ACCEPTED'
-        case 3:
-          return 'REJECTED'
-        default:
-          console.warn(
-            'Unknown status value:',
-            status,
-            'converted to:',
-            numStatus
-          )
-          return 'UNKNOWN'
-      }
     },
   },
 }

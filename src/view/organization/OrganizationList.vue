@@ -140,10 +140,10 @@ export default {
     },
     tableData() {
       return {
-        items: this.items,
+        items: this.table.items,
         options: this.table.options,
         footer: this.table.footer,
-        total: this.items.length,
+        total: this.table.items.length,
       }
     },
   },
@@ -164,7 +164,6 @@ export default {
         this.loading = false
         return
       }
-      
       let invitationWithName = await Promise.all(
         invitations.map(async (invitation) => {
           const organizations = await this.listOrganizationAPI(
@@ -205,108 +204,50 @@ export default {
       this.refleshList(searchCond)
     },
     async handleAcceptInvitation(item) {
-      if (!confirm(`組織「${item.name}」の招待を承認しますか？`)) {
+      if (!confirm(`組織「${item.value.name}」の招待を承認しますか？`)) {
         return
       }
-
       this.loading = true
-      const currentProjectID = this.getCurrentProjectID()
-      if (!currentProjectID) {
-        this.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
-        this.loading = false
-        return
-      }
-
       await this.replyOrganizationInvitationAPI(
-        item.organization_id,
-        currentProjectID,
+        item.value.organization_id,
         2 // ACCEPTED status
-      ).then(() => {
-        this.$refs.snackbar.notifySuccess(
-          `組織「${item.name}」の招待を承認しました`
-        )
-        this.handleSearch(this.searchModel)
-      }).catch((err) => {
+      ).catch((err) => {
         console.error('Error accepting invitation:', err)
         this.$refs.snackbar.notifyError(
           err.response?.data || '招待の承認に失敗しました'
         )
-      }).finally(() => {
-        this.loading = false
+        return Promise.reject(err)
       })
+      this.finishUpdated(`組織「${item.value.name}」の招待を承認しました`)
     },
     async handleRejectInvitation(item) {
-      if (!confirm(`組織「${item.name}」の招待を拒否しますか？`)) {
+      if (!confirm(`組織「${item.value.name}」の招待を拒否しますか？`)) {
         return
       }
-
       this.loading = true
-      const currentProjectID = this.getCurrentProjectID()
-      if (!currentProjectID) {
-        this.$refs.snackbar.notifyError('プロジェクト情報が見つかりません')
-        this.loading = false
-        return
-      }
-
       await this.replyOrganizationInvitationAPI(
-        item.organization_id,
-        currentProjectID,
+        item.value.organization_id,
         3 // REJECTED status
-      ).then(() => {
-        this.$refs.snackbar.notifySuccess(
-          `組織「${item.name}」の招待を拒否しました`
-        )
-        this.handleSearch(this.searchModel)
-      }).catch((err) => {
+      ).catch((err) => {
         console.error('Error rejecting invitation:', err)
         this.$refs.snackbar.notifyError(
           err.response?.data || '招待の拒否に失敗しました'
         )
-      }).finally(() => {
-        this.loading = false
+        return Promise.reject(err)
       })
+      this.finishUpdated(`組織「${item.value.name}」の招待を拒否しました`)
+    },
+
+    async finishUpdated(msg) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      this.$refs.snackbar.notifySuccess(msg)
+      this.loading = false
+      this.handleSearch(this.searchModel)
     },
 
     updateOptions(options) {
       this.table.options = options
     },
-
-    getStatusColor(status) {
-      const numStatus =
-        typeof status === 'string' ? parseInt(status, 10) : status
-      const statusText = this.getStatusText(numStatus)
-      switch (statusText) {
-        case 'PENDING':
-          return 'orange'
-        case 'ACCEPTED':
-          return 'green'
-        case 'REJECTED':
-          return 'red'
-        default:
-          return 'grey'
-      }
-    },
-    getStatusText(status) {
-      const numStatus =
-        typeof status === 'string' ? parseInt(status, 10) : status
-      switch (numStatus) {
-        case 1:
-          return 'PENDING'
-        case 2:
-          return 'ACCEPTED'
-        case 3:
-          return 'REJECTED'
-        default:
-          console.warn(
-            'Unknown status value:',
-            status,
-            'converted to:',
-            numStatus
-          )
-          return 'UNKNOWN'
-      }
-    },
-
   },
 }
 </script>

@@ -48,7 +48,7 @@ const organization = {
       }
       return res.data.data.organization_invitations
     },
-    async putOrganizationInvitationAPI(organization_id, project_id, status) {
+    async putOrganizationInvitationAPI(project_id, status) {
       let statusValue = status
       if (typeof status === 'string') {
         const statusMap = {
@@ -60,7 +60,7 @@ const organization = {
       }
 
       const param = {
-        organization_id: organization_id,
+        organization_id: this.getCurrentOrganizationID(),
         project_id: project_id,
         status: statusValue,
       }
@@ -72,9 +72,9 @@ const organization = {
       return res.data.data.organization_invitations
     },
 
-    async deleteOrganizationInvitationAPI(organization_id, project_id) {
+    async deleteOrganizationInvitationAPI(project_id) {
       const param = {
-        organization_id: organization_id,
+        organization_id: this.getCurrentOrganizationID(),
         project_id: project_id,
       }
       const res = await this.$axios
@@ -83,30 +83,6 @@ const organization = {
           return Promise.reject(err)
         })
       return res.data.data.organization_invitations
-    },
-
-    async replyOrganizationInvitationAPI(organization_id, project_id, status) {
-      let statusValue = status
-      if (typeof status === 'string') {
-        const statusMap = {
-          PENDING: 1,
-          ACCEPTED: 2,
-          REJECTED: 3,
-        }
-        statusValue = statusMap[status.toUpperCase()] || status
-      }
-
-      const param = {
-        organization_id: organization_id,
-        project_id: project_id,
-        status: statusValue,
-      }
-      const res = await this.$axios
-        .post('/project/reply-organization-invitation', param)
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      return res.data.data.organization_invitation
     },
     async listProjectInOrganizationAPI(searchCond) {
       const res = await this.$axios
