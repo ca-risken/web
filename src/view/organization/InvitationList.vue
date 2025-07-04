@@ -16,10 +16,11 @@
       <search-toolbar
         v-model="searchModel"
         :loading="loading"
-        :name-field-items="nameList"
+        :name-field-items="table.nameList"
         name-field-key="name"
         :show-id-field="false"
-        :show-create-button="false"
+        :show-create-button="true"
+        @create="handleInviteProjects"
         :search-form-config="{
           nameField: searchForm.name,
         }"
@@ -30,7 +31,7 @@
       <data-table
         :table-data="tableData"
         :loading="loading"
-        :headers="headers"
+        :headers="tableHeaders"
         :actions="table.actions"
         item-key="project_id"
         @update-options="updateOptions"
@@ -79,6 +80,7 @@ export default {
   data() {
     return {
       loading: false,
+      projectDialog: false,
       searchModel: { name: null },
       searchForm: {
         name: {
@@ -86,9 +88,28 @@ export default {
           placeholder: 'Filter for project name',
         },
       },
-      entities: [],
-      nameList: [],
-      headers: [
+      table: {
+        items: [],
+        nameList: [],
+        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
+        actions: [
+          {
+            text: 'Delete Invitation',
+            icon: 'mdi-delete',
+            click: this.handleDeleteInvitation,
+          },
+        ],
+        footer: {
+          itemsPerPageText: 'Rows/Page',
+          itemsPerPageOptions: [{ value: 10, title: '10' }],
+          showCurrentPage: true,
+        },
+      },
+    }
+  },
+  computed: {
+    tableHeaders() {
+      return [
         {
           title: 'Project ID',
           align: 'start',
@@ -119,36 +140,15 @@ export default {
           sortable: false,
           key: 'action',
         },
-      ],
-      table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
-        actions: [
-          {
-            text: 'Accept Invitation',
-            icon: 'mdi-check',
-            click: this.handleAcceptInvitation,
-          },
-          {
-            text: 'Reject Invitation',
-            icon: 'mdi-close',
-            click: this.handleRejectInvitation,
-          },
-        ],
-        footer: {
-          itemsPerPageText: 'Rows/Page',
-          itemsPerPageOptions: [{ value: 10, title: '10' }],
-          showCurrentPage: true,
-        },
-      },
-    }
-  },
-  computed: {
+      ]
+    },
     tableData() {
       return {
-        items: this.entities,
+        items: this.table.items,
         options: this.table.options,
+        headers: this.tableHeaders,
         footer: this.table.footer,
-        total: this.entities.length,
+        total: this.table.items.length,
       }
     },
   },
@@ -156,122 +156,88 @@ export default {
     this.refleshList('')
   },
   methods: {
-    loadList() {
-      this.nameList = [...new Set(this.entities.map((item) => item.name))]
-    },
-
-    getStatusColor(status) {
-      const numStatus = parseInt(status)
-      switch (numStatus) {
-        case 1:
-          return 'info'
-        case 2:
-          return 'success'
-        case 3:
-          return 'error'
-        default:
-          return 'warning'
-      }
-    },
-
-    getStatusText(status) {
-      const numStatus = parseInt(status)
-      switch (numStatus) {
-        case 1:
-          return 'PENDING'
-        case 2:
-          return 'ACCEPTED'
-        case 3:
-          return 'REJECTED'
-        default:
-          console.warn(
-            'Unknown status value:',
-            status,
-            'converted to:',
-            numStatus
-          )
-          return 'UNKNOWN'
-      }
-    },
-
-    clearList() {
-      this.entities = []
-      this.nameList = []
-    },
-
-    async refleshList(name) {
+    async refleshList(searchCond) {
       this.loading = true
-      try {
-        let searchCond = ''
-        if (name) {
-          searchCond += `&name=${name}`
-        }
-        const invitations = await this.listOrganizationInvitationAPI(searchCond)
-        if (!invitations || invitations.length === 0) {
-          this.clearList()
-          return
-        }
-        let invitationWithName = await Promise.all(
-          invitations.map(async (invitation) => {
-            const projects = await this.listProjectAPI(
-              `?project_id=${invitation.project_id}`
-            )
-            return {
-              ...invitation,
-              name: projects[0].name,
-            }
-          })
-        )
-        if (name) {
-          invitationWithName = invitationWithName.filter(
-            (invitation) => invitation.name == name
-          )
-        }
-        this.entities = invitationWithName
-        this.loadList()
-      } catch (error) {
-        console.error('Error loading list:', error)
+      const invitations = await this.listOrganizationInvitationAPI(searchCond).catch((err) => {
+        console.error('Error loading invitations:', err)
+        throw err
+      })
+      if (!invitations || invitations.length === 0) {
         this.clearList()
-      } finally {
-        this.loading = false
+        return
       }
-    },
 
+      let invitationWithName = await Promise.all(
+        invitations.map(async (invitation) => {
+          const projects = await this.listProjectAPI(
+            `?project_id=${invitation.project_id}`
+          ).catch((err) => {
+            console.error('Error loading project:', err)
+            throw err
+          })
+          return {
+            ...invitation,
+            name: projects[0].name,
+          }
+        })
+      ).catch((err) => {
+        console.error('Error processing invitations:', err)
+        throw err
+      })
+
+      /* 名前検索がinvitationではできない
+      if (name) {
+        invitationWithName = invitationWithName.filter(
+          (invitation) => invitation.name == name
+        )
+      }
+      */
+
+      this.table.items = invitationWithName
+      this.table.nameList = [...new Set(this.table.items.map((item) => item.name))]
+      this.loading = false
+    },
+    clearList() {
+      this.table.items = []
+      this.table.nameList = []
+    },
     handleInviteProjects() {
       this.projectDialog = true
     },
-
     handleSearch(searchModel) {
-      this.refleshList(searchModel.name || '')
+      let searchCond = ''
+      if (searchModel.name) {
+        searchCond += `&name=${searchModel.name}`
+      }
+      this.refleshList(searchCond)
     },
-
     async handleDeleteInvitation(item) {
       if (!confirm(`プロジェクト「${item.name}」の招待を削除しますか？`)) {
         return
       }
-      try {
-        this.loading = true
-        const currentOrganization = this.$store.state.organization
-        if (!currentOrganization || !currentOrganization.organization_id) {
-          this.$refs.snackbar.notifyError('No organization selected')
-          return
-        }
-        await this.DeleteOrganizationInvitationAPI(
-          currentOrganization.organization_id,
-          item.project_id
-        )
+      this.loading = true
+      const currentOrganization = this.$store.state.organization
+      if (!currentOrganization || !currentOrganization.organization_id) {
+        this.$refs.snackbar.notifyError('No organization selected')
+        this.loading = false
+        return
+      }
+      await this.DeleteOrganizationInvitationAPI(
+        currentOrganization.organization_id,
+        item.project_id
+      ).then(() => {
         this.$refs.snackbar.notifySuccess(
           `プロジェクト「${item.name}」の招待を削除しました`
         )
         this.handleSearch(this.searchModel)
-      } catch (err) {
+      }).catch((err) => {
         console.error('Error deleting invitation:', err)
         this.$refs.snackbar.notifyError(
           err.response?.data || '招待の削除に失敗しました'
         )
-      } finally {
+      }).finally(() => {
         this.loading = false
-      }
+      })
     },
 
     async handleProjectDialogResponse(project) {
@@ -308,6 +274,39 @@ export default {
 
     updateOptions(options) {
       this.table.options = options
+    },
+
+    getStatusColor(status) {
+      const numStatus = parseInt(status)
+      switch (numStatus) {
+        case 1:
+          return 'info'
+        case 2:
+          return 'success'
+        case 3:
+          return 'error'
+        default:
+          return 'warning'
+      }
+    },
+    getStatusText(status) {
+      const numStatus = parseInt(status)
+      switch (numStatus) {
+        case 1:
+          return 'PENDING'
+        case 2:
+          return 'ACCEPTED'
+        case 3:
+          return 'REJECTED'
+        default:
+          console.warn(
+            'Unknown status value:',
+            status,
+            'converted to:',
+            numStatus
+          )
+          return 'UNKNOWN'
+      }
     },
   },
 }
