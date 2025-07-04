@@ -133,7 +133,7 @@
     :loading="loading"
     :current-entity-id="currentOrganizationID"
     @item-selected="handleOrganizationSelected"
-    @edit-entity="handleSettingOrganization"
+    @edit-entity="handleOrganizationSetting"
     @create-entity="handleNewOrganization"
   />
 
@@ -151,6 +151,7 @@ import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
 import organization_base from '@/mixin/util/organization_base'
+import { MODE } from '@/constants/mode'
 export default {
   name: 'AppToolbar',
   components: {
@@ -211,10 +212,10 @@ export default {
       return store.state.mode
     },
     isProjectMode() {
-      return this.currentMode === 'project'
+      return this.currentMode === MODE.PROJECT
     },
     isOrganizationMode() {
-      return this.currentMode === 'organization'
+      return this.currentMode === MODE.ORGANIZATION
     },
     currentModeIcon() {
       return this.isProjectMode ? 'mdi-alpha-p-box' : 'mdi-alpha-o-box'
@@ -240,7 +241,7 @@ export default {
     if (admin) {
       this.isAdmin = true
     }
-    this.myMenu = await this.getMenu()
+    this.myMenu = this.getMenu()
 
     this.currentProjectID = String(store.state.project.project_id || '')
     this.currentOrganizationID = String(
@@ -294,7 +295,7 @@ export default {
       if (this.isAdmin) {
         listOrganizationParam = ''
       }
-      this.organizationTable.item = await this.ListOrganizationAPI(
+      this.organizationTable.item = await this.listOrganizationAPI(
         listOrganizationParam
       ).catch((err) => {
         return Promise.reject(err)
@@ -315,7 +316,7 @@ export default {
           return '?'
       }
     },
-    async getMenu() {
+    getMenu() {
       let menu = [
         {
           icon: 'mdi-account-circle',
@@ -324,7 +325,7 @@ export default {
           click: this.handleAccountSetting,
         },
         {
-          icon: this.isOrganizationMode ? 'mdi-alpha-o-box' : 'mdi-alpha-p-box',
+          icon: this.currentModeIcon,
           href: '#',
           title: this.isOrganizationMode ? 'My Organization' : 'My Project',
           click: this.isOrganizationMode
@@ -332,7 +333,7 @@ export default {
             : this.handleProjectSetting,
         },
         {
-          icon: this.isOrganizationMode ? 'mdi-alpha-p-box' : 'mdi-alpha-o-box',
+          icon: this.currentModeIcon,
           href: '#',
           title: this.isOrganizationMode ? 'Project Mode' : 'Organization Mode',
           click: this.handleModeToggle,
@@ -376,33 +377,20 @@ export default {
     handleAccountSetting() {
       this.$router.push('/iam/profile/')
     },
+    handleProjectSetting() {
+      this.$router.push('/project/setting/')
+    },
     handleOrganizationSetting() {
       this.$router.push('/organization/setting/')
     },
-    handleProjectSetting() {
-      this.$router.push('/project/setting/')
+    handleNewOrganization() {
+      this.$router.push('/organization/setting?new=true')
     },
     handleAdmin() {
       this.$router.push('/admin/menu/')
     },
     handleGoBack() {
       this.$router.go(-1)
-    },
-    async handleProjectSelected(project) {
-      await this.setProjectQueryParam(project.project_id)
-      await store.commit('updateProject', project)
-      this.reload()
-    },
-    handleNewProject() {
-      this.$router.push('/project/new')
-    },
-    handleSettingProject() {
-      this.$router.push('/project/setting/')
-    },
-    handleSearchProject() {
-      this.loading = true
-      this.projectDialog = true
-      this.listProject()
     },
     handleSearchEntity() {
       this.loading = true
@@ -414,70 +402,56 @@ export default {
         this.listOrganization()
       }
     },
+    async handleProjectSelected(project) {
+      await this.setProjectQueryParam(project.project_id)
+      await store.commit('updateProject', project)
+      this.reload()
+    },
     async setProjectQueryParam(project_id) {
       let query = await Object.assign({}, this.$router.query)
       query.project_id = project_id
       await this.$router.push({ query: query })
     },
+    handleNewProject() {
+      this.$router.push('/project/new')
+    },
+    handleSettingProject() {
+      this.$router.push('/project/setting/')
+    },
     async handleOrganizationSelected(organization) {
+      const query = { organization_id: organization.organization_id }
+      await this.$router.push({ query: query })
       await store.commit('updateOrganization', organization)
-      await this.$router.push({
+      await this.$router.go({
         path: '/organization/project',
-        query: { organization_id: organization.organization_id },
+        force: true,
       })
     },
-    handleNewOrganization() {
-      this.$router.push('/organization/setting?new=true')
-    },
-    handleSettingOrganization() {
-      this.$router.push('/organization/setting/')
-    },
-    async setOrganizationQueryParam(organization_id) {
-      // Only keep organization_id, remove all other mode-specific parameters
-      const query = { organization_id: organization_id }
-      await this.$router.push({ query: query })
-    },
     async handleModeToggle() {
-      try {
-        console.log('Mode toggle started')
-        const newMode = this.isProjectMode ? 'organization' : 'project'
-        console.log('Switching to mode:', newMode)
-
-        store.commit('updateMode', newMode)
-        this.myMenu = await this.getMenu() // Refresh menu
-
-        await this.$nextTick()
-
-        let query = {}
-        if (newMode === 'organization') {
-          if (store.state.organization?.organization_id) {
-            query.organization_id = store.state.organization.organization_id
-          }
-        } else {
-          if (store.state.project?.project_id) {
-            query.project_id = store.state.project.project_id
-          }
+      const newMode = this.isProjectMode ? MODE.ORGANIZATION : MODE.PROJECT
+      store.commit('updateMode', newMode)
+      this.myMenu = this.getMenu()
+      let query = {}
+      if (newMode === MODE.ORGANIZATION) {
+        if (store.state.organization?.organization_id) {
+          query.organization_id = store.state.organization.organization_id
         }
-
-        if (newMode === 'organization') {
-          console.log('Navigating to organization/project...')
-          await this.$router.push({
-            path: '/organization/project',
-            query: query,
-          })
-        } else {
-          console.log('Navigating to dashboard...')
-          await this.$router.push({ path: '/dashboard', query: query })
+      } else {
+        if (store.state.project?.project_id) {
+          query.project_id = store.state.project.project_id
         }
-        console.log('Navigation completed')
-      } catch (error) {
-        console.error('Error in handleModeToggle:', error)
-        // エラーが発生した場合の適切な遷移
-        if (store.state.mode === 'organization') {
+      }
+      if (newMode === MODE.ORGANIZATION) {
+        await this.$router.push({
+          path: '/organization/project',
+          query: query,
+        }).catch(() => {
           this.$router.push('/organization/project')
-        } else {
+        })
+      } else {
+        await this.$router.push({ path: '/dashboard', query: query }).catch(() => {
           this.$router.push('/dashboard')
-        }
+        })
       }
     },
   },

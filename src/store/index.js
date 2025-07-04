@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import VuexPersistence from 'vuex-persist'
+import { MODE } from '@/constants/mode'
 
 const vuexLocal = new VuexPersistence({
   key: 'risken',
@@ -12,7 +13,7 @@ const store = createStore({
       user: {},
       project: {},
       organization: {},
-      mode: 'project', // 'project' or 'organization'
+      mode: MODE.PROJECT, // MODE.PROJECT or MODE.ORGANIZATION
       interval: {},
       locale: {},
       findingHistory: [],

@@ -19,6 +19,22 @@ const organization = {
       }
       return res.data.data.organization
     },
+    async updateOrganizationAPI(name, description) {
+      const param = {
+        organization_id: this.getCurrentOrganizationID(),
+        name: name,
+        description: description,
+      }
+      const res = await this.$axios
+        .post('/organization/update-organization/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.organization) {
+        return {}
+      }
+      return res.data.data.organization
+    },
     async listOrganizationAPI(param) {
       if (!param) {
         param = ''
