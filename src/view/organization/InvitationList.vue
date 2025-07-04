@@ -163,7 +163,9 @@ export default {
   methods: {
     async refleshList(searchCond) {
       this.loading = true
-      const invitations = await this.listOrganizationInvitationAPI(searchCond).catch((err) => {
+      const invitations = await this.listOrganizationInvitationAPI(
+        searchCond
+      ).catch((err) => {
         console.error('Error loading invitations:', err)
         throw err
       })
@@ -199,7 +201,9 @@ export default {
       */
 
       this.table.items = invitationWithName
-      this.table.nameList = [...new Set(this.table.items.map((item) => item.name))]
+      this.table.nameList = [
+        ...new Set(this.table.items.map((item) => item.name)),
+      ]
       this.loading = false
     },
     clearList() {
@@ -212,34 +216,12 @@ export default {
     },
     async loadProjectList() {
       this.projectListLoading = true
-      try {
-        const projects = await this.listProjectAPI()
-        this.projectList = projects.map(project => ({
-          ...project,
-          tag: this.getProjectTagColor(project.tag || [])
-        }))
-      } catch (err) {
+      this.projectList = await this.listProjectAPI().catch((err) => {
         console.error('Error loading projects:', err)
         this.$refs.snackbar.notifyError('Failed to load projects')
-      } finally {
-        this.projectListLoading = false
-      }
-    },
-    getProjectTagColor(tags) {
-      if (!tags || tags.length === 0) return []
-      return tags.map((tag) => ({
-        tag: tag,
-        color: this.getRandomColor(),
-      }))
-    },
-    getRandomColor() {
-      const colors = [
-        'red', 'pink', 'purple', 'deep-purple', 'indigo',
-        'blue', 'light-blue', 'cyan', 'teal', 'green',
-        'light-green', 'lime', 'yellow', 'amber', 'orange',
-        'deep-orange', 'brown', 'blue-grey'
-      ]
-      return colors[Math.floor(Math.random() * colors.length)]
+        return Promise.reject(err)
+      })
+      this.projectListLoading = false
     },
     handleSearch(searchModel) {
       let searchCond = ''
@@ -249,41 +231,45 @@ export default {
       this.refleshList(searchCond)
     },
     async handleDeleteInvitation(item) {
-      if (!confirm(`プロジェクト「${item.value.name}」の招待を削除しますか？`)) {
+      if (
+        !confirm(`プロジェクト「${item.value.name}」の招待を削除しますか？`)
+      ) {
         return
       }
       this.loading = true
-      await this.deleteOrganizationInvitationAPI(
-        item.value.project_id
-      ).then(() => {
-        this.$refs.snackbar.notifySuccess(
-          `プロジェクト「${item.value.name}」の招待を削除しました`
-        )
-        this.handleSearch(this.searchModel)
-      }).catch((err) => {
-        console.error('Error deleting invitation:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の削除に失敗しました'
-        )
-      }).finally(() => {
-        this.loading = false
-      })
+      await this.deleteOrganizationInvitationAPI(item.value.project_id)
+        .then(() => {
+          this.$refs.snackbar.notifySuccess(
+            `プロジェクト「${item.value.name}」の招待を削除しました`
+          )
+          this.handleSearch(this.searchModel)
+        })
+        .catch((err) => {
+          console.error('Error deleting invitation:', err)
+          this.$refs.snackbar.notifyError(
+            err.response?.data || '招待の削除に失敗しました'
+          )
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     async handleProjectDialogResponse(project) {
       this.projectDialog = false
       this.loading = true
 
-      await this.putOrganizationInvitationAPI(
-        project.project_id,
-        1
-      ).catch((err) => {
-        this.$refs.snackbar.notifyError(
-          err.response?.data || 'Failed to send organization invitation'
-        )
-        return Promise.reject(err)
-      })
-      this.finishUpdated(`Organization invitation sent to project: ${project.name}`)
+      await this.putOrganizationInvitationAPI(project.project_id, 1).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(
+            err.response?.data || 'Failed to send organization invitation'
+          )
+          return Promise.reject(err)
+        }
+      )
+      this.finishUpdated(
+        `Organization invitation sent to project: ${project.name}`
+      )
     },
 
     async finishUpdated(msg) {

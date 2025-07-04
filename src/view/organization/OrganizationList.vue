@@ -153,7 +153,9 @@ export default {
   methods: {
     async refleshList(searchCond) {
       this.loading = true
-      const invitations = await this.listOrganizationInvitationAPI(searchCond).catch((error) => {
+      const invitations = await this.listOrganizationInvitationAPI(
+        searchCond
+      ).catch((error) => {
         console.error('Error loading list:', error)
         this.clearList()
         this.loading = false
@@ -188,7 +190,9 @@ export default {
       }
       */
       this.table.items = invitationWithName
-      this.table.nameList = [...new Set(this.table.items.map((item) => item.name))]
+      this.table.nameList = [
+        ...new Set(this.table.items.map((item) => item.name)),
+      ]
       this.loading = false
     },
     clearList() {
