@@ -88,6 +88,7 @@
 <script>
 import { appRoute as routes, staticRoutes } from '@/router/config'
 import store from '@/store'
+import { MODE } from '@/constants/mode'
 
 export default {
   name: 'AppDrawer',
@@ -118,7 +119,7 @@ export default {
       return store.state.mode
     },
     isOrganizationMode() {
-      return this.currentMode === 'organization'
+      return this.currentMode === MODE.ORGANIZATION
     },
     drawerToolbarColor() {
       return this.isOrganizationMode ? 'light-blue' : 'primary'
@@ -154,12 +155,17 @@ export default {
     isSubMenuItemVisible(sub) {
       if (!this.isOrganizationMode) {
         const projectModeForbiddenTitles = [
+          'New Organization',
+          'Organization Setting',
           'OrganizationSetting',
           'OrganizationProject',
         ]
         return !projectModeForbiddenTitles.includes(sub.meta.title)
+      } else {
+        // Organization Modeのときに隠すサブメニュー
+        const organizationModeForbiddenTitles = ['OrganizationList']
+        return !organizationModeForbiddenTitles.includes(sub.meta.title)
       }
-      return true
     },
   },
 }

@@ -5,4 +5,4 @@ export const MODE = {
 
 Object.freeze(MODE)
 
-export default MODE 
+export default MODE

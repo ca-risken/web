@@ -442,16 +442,20 @@ export default {
         }
       }
       if (newMode === MODE.ORGANIZATION) {
-        await this.$router.push({
-          path: '/organization/project',
-          query: query,
-        }).catch(() => {
-          this.$router.push('/organization/project')
-        })
+        await this.$router
+          .push({
+            path: '/organization/project',
+            query: query,
+          })
+          .catch(() => {
+            this.$router.push('/organization/project')
+          })
       } else {
-        await this.$router.push({ path: '/dashboard', query: query }).catch(() => {
-          this.$router.push('/dashboard')
-        })
+        await this.$router
+          .push({ path: '/dashboard', query: query })
+          .catch(() => {
+            this.$router.push('/dashboard')
+          })
       }
     },
   },

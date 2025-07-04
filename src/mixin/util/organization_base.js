@@ -1,10 +1,13 @@
+import { MODE } from '@/constants/mode'
+import { INVITATION_STATUS } from '@/constants/invitationStatus'
+
 const organization_iam = {
   data: () => {
     return {}
   },
   computed: {
     isOrganizationMode() {
-      return this.$store.state.mode === 'organization'
+      return this.$store.state.mode === MODE.ORGANIZATION
     },
   },
   methods: {
@@ -19,11 +22,11 @@ const organization_iam = {
         typeof status === 'string' ? parseInt(status, 10) : status
       const statusText = this.getStatusText(numStatus)
       switch (statusText) {
-        case 'PENDING':
+        case INVITATION_STATUS.PENDING:
           return 'orange'
-        case 'ACCEPTED':
+        case INVITATION_STATUS.ACCEPTED:
           return 'green'
-        case 'REJECTED':
+        case INVITATION_STATUS.REJECTED:
           return 'red'
         default:
           return 'grey'
@@ -34,11 +37,11 @@ const organization_iam = {
         typeof status === 'string' ? parseInt(status, 10) : status
       switch (numStatus) {
         case 1:
-          return 'PENDING'
+          return INVITATION_STATUS.PENDING
         case 2:
-          return 'ACCEPTED'
+          return INVITATION_STATUS.ACCEPTED
         case 3:
-          return 'REJECTED'
+          return INVITATION_STATUS.REJECTED
         default:
           console.warn(
             'Unknown status value:',
@@ -46,7 +49,7 @@ const organization_iam = {
             'converted to:',
             numStatus
           )
-          return 'UNKNOWN'
+          return INVITATION_STATUS.UNKNOWN
       }
     },
   },

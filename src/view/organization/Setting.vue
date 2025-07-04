@@ -26,7 +26,9 @@
                 ></v-text-field>
                 <v-text-field
                   v-model="organizationModel.name"
-                  :label="$t(`item['` + organizationForm.name.label + `']`) + ' *'"
+                  :label="
+                    $t(`item['` + organizationForm.name.label + `']`) + ' *'
+                  "
                   :placeholder="organizationForm.name.placeholder"
                   :counter="64"
                   :rules="organizationForm.name.validator"
@@ -35,7 +37,9 @@
                 ></v-text-field>
                 <v-textarea
                   v-model="organizationModel.description"
-                  :label="$t(`item['` + organizationForm.description.label + `']`)"
+                  :label="
+                    $t(`item['` + organizationForm.description.label + `']`)
+                  "
                   :placeholder="organizationForm.description.placeholder"
                   :counter="255"
                   variant="outlined"
@@ -81,7 +85,10 @@
     <delete-dialog
       v-model="deleteDialog"
       :title="$t(`message['Do you really want to delete this?']`)"
-      :item-data="{ id: organizationModel.organization_id, name: organizationModel.name }"
+      :item-data="{
+        id: organizationModel.organization_id,
+        name: organizationModel.name,
+      }"
       item-icon="mdi-account-group"
       :loading="loading"
       @confirm="handleDeleteSubmit"
@@ -147,10 +154,12 @@ export default {
       }
       this.organizationModel = store.state.organization
       const param = '?organization_id=' + this.organizationModel.organization_id
-      const organization = await this.listOrganizationAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
+      const organization = await this.listOrganizationAPI(param).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        }
+      )
       if (!organization[0]) return
       this.organizationModel = organization[0]
     },

@@ -96,7 +96,8 @@ const en = {
     ReportFinding: 'Report Finding', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
-    OrganizationSetting: 'Organization Setting',
+    'New Organization': 'New Organization',
+    'Organization Setting': 'Organization Setting',
     OrganizationInvitation: 'Invitation List',
     OrganizationInviteProject: 'Invite Projects',
     OrganizationList: 'Organization List',

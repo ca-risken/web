@@ -18,7 +18,9 @@
               <v-form v-model="organizationForm.valid" ref="form">
                 <v-text-field
                   v-model="organizationModel.name"
-                  :label="$t(`item['` + organizationForm.name.label + `']`) + ' *'"
+                  :label="
+                    $t(`item['` + organizationForm.name.label + `']`) + ' *'
+                  "
                   :placeholder="organizationForm.name.placeholder"
                   :counter="64"
                   :rules="organizationForm.name.validator"
@@ -27,7 +29,9 @@
                 ></v-text-field>
                 <v-textarea
                   v-model="organizationModel.description"
-                  :label="$t(`item['` + organizationForm.description.label + `']`)"
+                  :label="
+                    $t(`item['` + organizationForm.description.label + `']`)
+                  "
                   :placeholder="organizationForm.description.placeholder"
                   :counter="255"
                   variant="outlined"
@@ -151,4 +155,4 @@ export default {
     },
   },
 }
-</script> 
+</script>
