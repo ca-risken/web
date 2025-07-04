@@ -233,53 +233,15 @@
     </v-dialog>
 
     <!-- Delete Dialog -->
-    <v-dialog v-model="deleteDialog" max-width="40%">
-      <v-card>
-        <v-card-title class="text-h5">
-          <span class="mx-4">
-            {{ $t(`message['Do you really want to delete this?']`) }}
-          </span>
-        </v-card-title>
-        <v-list two-line>
-          <v-list-item prepend-icon="mdi-identifier">
-            <v-list-item-title>
-              {{ roleModel.role_id }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['ID']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-alpha-r-circle">
-            <v-list-item-title>
-              {{ roleModel.name }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['Name']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="deleteDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            :loading="loading"
-            color="red-darken-1"
-            text
-            variant="outlined"
-            @click="deleteItem(roleModel.role_id)"
-          >
-            {{ $t(`btn['DELETE']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <delete-dialog
+      v-model="deleteDialog"
+      :title="$t(`message['Do you really want to delete this?']`)"
+      :item-data="{ id: roleModel.role_id, name: roleModel.name }"
+      item-icon="mdi-alpha-r-circle"
+      :loading="loading"
+      @confirm="deleteItem(roleModel.role_id)"
+      @cancel="deleteDialog = false"
+    />
 
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -289,6 +251,7 @@
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 export default {
@@ -296,6 +259,7 @@ export default {
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
+    DeleteDialog,
     VDataTable,
     PageHeader,
   },
