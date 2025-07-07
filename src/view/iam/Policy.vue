@@ -198,6 +198,10 @@
       </v-card>
     </v-dialog>
 
+<<<<<<< HEAD
+=======
+    <!-- Delete Dialog -->
+>>>>>>> origin/master
     <delete-dialog
       v-model="deleteDialog"
       :title="$t(`message['Do you really want to delete this?']`)"

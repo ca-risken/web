@@ -242,10 +242,16 @@ import iam from '@/mixin/api/iam'
 import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
+<<<<<<< HEAD
 import organization_iam from '../../mixin/api/organization_iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+=======
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
+import DataTable from '@/component/widget/table/DataTable.vue'
+>>>>>>> origin/master
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 
 export default {
@@ -255,8 +261,13 @@ export default {
     BottomSnackBar,
     UserList,
     SearchToolbar,
+<<<<<<< HEAD
     DataTable,
     VDataTable,
+=======
+    VDataTable,
+    DataTable,
+>>>>>>> origin/master
     PageHeader,
   },
   data() {
