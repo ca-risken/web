@@ -140,25 +140,10 @@ export default {
   },
   async mounted() {
     this.loading = true
-    await this.setOrganization()
+    this.organizationModel = store.state.organization
     this.loading = false
   },
   methods: {
-    async setOrganization() {
-      if (!store.state.organization.organization_id) {
-        return
-      }
-      this.organizationModel = store.state.organization
-      const param = '?organization_id=' + this.organizationModel.organization_id
-      const organization = await this.listOrganizationAPI(param).catch(
-        (err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        }
-      )
-      if (!organization[0]) return
-      this.organizationModel = organization[0]
-    },
     async editOrganization() {
       const organization = await this.updateOrganizationAPI(
         this.organizationModel.name,
@@ -179,7 +164,6 @@ export default {
         return Promise.reject(err)
       })
     },
-    // Handler
     handleEdit() {
       if (!this.$refs.form.validate()) {
         return
@@ -197,7 +181,7 @@ export default {
       await this.deleteOrganization()
       this.deleteDialog = false
       this.$refs.snackbar.notifySuccess('Success: Organization deleted.')
-      store.commit('clearOrganization')
+      store.commit('updateOrganization', {})
       this.$router.push('/organization/list')
       this.loading = false
     },

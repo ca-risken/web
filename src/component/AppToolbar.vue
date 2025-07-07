@@ -384,7 +384,7 @@ export default {
       this.$router.push('/organization/setting/')
     },
     handleNewOrganization() {
-      this.$router.push('/organization/setting?new=true')
+      this.$router.push('/organization/new')
     },
     handleAdmin() {
       this.$router.push('/admin/menu/')

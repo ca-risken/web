@@ -65,6 +65,7 @@ import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
 import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
+import { INVITATION_STATUS } from '@/constants/invitationStatus'
 
 export default {
   name: 'InvitationList',
@@ -255,7 +256,7 @@ export default {
       this.projectDialog = false
       this.loading = true
 
-      await this.putOrganizationInvitationAPI(project.project_id, 1).catch(
+      await this.putOrganizationInvitationAPI(project.project_id, INVITATION_STATUS.PENDING).catch(
         (err) => {
           this.$refs.snackbar.notifyError(
             err.response?.data || 'Failed to send organization invitation'

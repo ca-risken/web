@@ -20,8 +20,7 @@ const organization_iam = {
     getStatusColor(status) {
       const numStatus =
         typeof status === 'string' ? parseInt(status, 10) : status
-      const statusText = this.getStatusText(numStatus)
-      switch (statusText) {
+      switch (numStatus) {
         case INVITATION_STATUS.PENDING:
           return 'orange'
         case INVITATION_STATUS.ACCEPTED:
@@ -36,12 +35,12 @@ const organization_iam = {
       const numStatus =
         typeof status === 'string' ? parseInt(status, 10) : status
       switch (numStatus) {
-        case 1:
-          return INVITATION_STATUS.PENDING
-        case 2:
-          return INVITATION_STATUS.ACCEPTED
-        case 3:
-          return INVITATION_STATUS.REJECTED
+        case INVITATION_STATUS.PENDING:
+          return 'PENDING'
+        case INVITATION_STATUS.ACCEPTED:
+          return 'ACCEPTED'
+        case INVITATION_STATUS.REJECTED:
+          return 'REJECTED'
         default:
           console.warn(
             'Unknown status value:',
@@ -49,7 +48,7 @@ const organization_iam = {
             'converted to:',
             numStatus
           )
-          return INVITATION_STATUS.UNKNOWN
+          return 'UNKNOWN'
       }
     },
   },

@@ -101,21 +101,11 @@ const project = {
       }
       return res.data.data.organization_invitations
     },
-    async replyOrganizationInvitationAPI(organization_id, status) {
-      let statusValue = status
-      if (typeof status === 'string') {
-        const statusMap = {
-          PENDING: 1,
-          ACCEPTED: 2,
-          REJECTED: 3,
-        }
-        statusValue = statusMap[status.toUpperCase()] || status
-      }
-
+    async replyOrganizationInvitationAPI(organization_id, statusNum) {
       const param = {
         organization_id: organization_id,
         project_id: this.getCurrentProjectID(),
-        status: statusValue,
+        status: statusNum,
       }
       const res = await this.$axios
         .post('/project/reply-organization-invitation', param)

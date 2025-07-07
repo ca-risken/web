@@ -49,6 +49,17 @@ const organization = {
       }
       return res.data.data.organization
     },
+    async deleteOrganizationAPI() {
+      const param = {
+        organization_id: this.getCurrentOrganizationID(),
+      }
+      const res = await this.$axios
+        .post('/organization/delete-organization/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res
+    },
     async listOrganizationInvitationAPI(searchCond) {
       const res = await this.$axios
         .get(
@@ -64,21 +75,11 @@ const organization = {
       }
       return res.data.data.organization_invitations
     },
-    async putOrganizationInvitationAPI(project_id, status) {
-      let statusValue = status
-      if (typeof status === 'string') {
-        const statusMap = {
-          PENDING: 1,
-          ACCEPTED: 2,
-          REJECTED: 3,
-        }
-        statusValue = statusMap[status.toUpperCase()] || status
-      }
-
+    async putOrganizationInvitationAPI(project_id, statusNum) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         project_id: project_id,
-        status: statusValue,
+        status: statusNum,
       }
       const res = await this.$axios
         .post('/organization/put-organization-invitation', param)

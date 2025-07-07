@@ -228,6 +228,8 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
+    Project: 'プロジェクト',
+    Organization: 'Organization',
   },
   version: {
     version: 'バージョン',

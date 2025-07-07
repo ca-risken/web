@@ -55,6 +55,7 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
+import { INVITATION_STATUS } from '@/constants/invitationStatus'
 
 export default {
   name: 'OrganizationList',
@@ -210,7 +211,7 @@ export default {
       this.loading = true
       await this.replyOrganizationInvitationAPI(
         item.value.organization_id,
-        2 // ACCEPTED status
+        INVITATION_STATUS.ACCEPTED
       ).catch((err) => {
         console.error('Error accepting invitation:', err)
         this.$refs.snackbar.notifyError(
@@ -227,7 +228,7 @@ export default {
       this.loading = true
       await this.replyOrganizationInvitationAPI(
         item.value.organization_id,
-        3 // REJECTED status
+        INVITATION_STATUS.REJECTED
       ).catch((err) => {
         console.error('Error rejecting invitation:', err)
         this.$refs.snackbar.notifyError(

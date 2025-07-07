@@ -228,6 +228,8 @@ const en = {
     'WPScan Random User Agent': 'Use a random user-agent for each scan',
     'WPScan WP Content Dir':
       'The wp-content directory if custom or not detected, such as "wp-content"',
+    Project: 'Project',
+    Organization: 'Organization',
   },
   version: {
     version: 'version',
