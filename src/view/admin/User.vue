@@ -11,117 +11,44 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="4" sm="3" md="3">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.userID.label + `']`)"
-              :placeholder="searchForm.userID.placeholder"
-              :items="userIDList"
-              v-model="searchModel.userID"
-            />
-          </v-col>
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['` + searchForm.userName.label + `']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-        </v-row>
-      </v-form>
-      <v-row dense>
-        <v-col cols="12">
-          <v-card>
-            <v-divider></v-divider>
-            <v-card-text class="pa-0">
-              <v-data-table-server
-                :headers="headers"
-                :items="table.items"
-                v-model:options="table.options"
-                :items-length="table.total"
-                :sort-by="table.options.sortBy"
-                :page="table.options.page"
-                :items-per-page="table.options.itemsPerPage"
-                :items-per-page-options="table.footer.itemsPerPageOptions"
-                :showCurrentPage="table.footer.showCurrentPage"
-                :loading="loading"
-                :footer-props="table.footer"
-                locale="ja-jp"
-                loading-text="Loading..."
-                no-data-text="No data."
-                class="elevation-1"
-                item-key="user_id"
-                @click:row="handleRowClick"
-                @update:options="updateOptions"
-              >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-2">
-                    <v-img src="/static/avatar/default.png" alt="avatar" />
-                  </v-avatar>
-                </template>
-                <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip
-                    :color="getColorByCount(item.value.role_cnt)"
-                    variant="flat"
-                    >{{ item.value.role_cnt }}</v-chip
-                  >
-                </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
-                <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
-                    </template>
-                    <v-list class="pa-0" dense>
-                      <v-list-item
-                        v-for="action in table.actions"
-                        :key="action.text"
-                        @click="action.click(item)"
-                        :prepend-icon="action.icon"
-                      >
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-data-table-server>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+      <search-toolbar
+        v-model="searchModel"
+        :loading="loading"
+        :id-field-items="userIDList"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="true"
+        :show-create-button="true"
+        button-size="default"
+        create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName,
+        }"
+        @search="handleSearch"
+        @create="handleNew"
+      />
+
+      <data-table
+        :table-data="tableData"
+        :loading="loading"
+        :headers="headers"
+        :actions="table.actions"
+        item-key="user_id"
+        @update-options="updateOptions"
+      >
+        <template v-slot:[`item.avator`]>
+          <v-avatar class="ma-2">
+            <v-img src="/static/avatar/default.png" alt="avatar" />
+          </v-avatar>
+        </template>
+      </data-table>
     </v-container>
 
-    <!-- Edit Dialog -->
-    <v-dialog v-model="editDialog" max-width="40%">
+    <!-- Invite User Dialog -->
+    <v-dialog v-model="inviteUserDialog" max-width="40%">
       <v-card>
         <v-card-title>
           <v-icon large>mdi-account-multiple</v-icon>
@@ -161,98 +88,13 @@
             filled
             disabled
           ></v-text-field>
-          <!-- Role List -->
           <div v-show="userModel.user_id">
-            <v-toolbar flat color="white" v-show="userModel.user_id">
-              <v-toolbar-title class="grey--text text--darken-4">
-                <v-icon large>mdi-alpha-r-circle</v-icon>
-                <span class="mx-4">
-                  {{ $t(`submenu['Role']`) }}
-                </span>
-              </v-toolbar-title>
-              <v-text-field
-                text
-                solo
-                flat
-                prepend-icon="mdi-magnify"
-                placeholder="Type something"
-                v-model="roleTable.search"
-                hide-details
-                class="hidden-sm-and-down"
-              />
-              <v-btn icon>
-                <v-icon>mdi-filter</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-divider></v-divider>
-
-            <v-data-table
-              v-model="roleTable.selected"
-              :search="roleTable.search"
-              :headers="roleHeaders"
-              :footer-props="roleTable.footer"
-              :items="roleTable.items"
-              v-model:options="roleTable.options"
-              :loading="loading"
-              :sort-by="roleTable.options.sortBy"
-              :page="roleTable.options.page"
-              :items-per-page="roleTable.options.itemsPerPage"
-              :items-per-page-options="roleTable.footer.itemsPerPageOptions"
-              :showCurrentPage="roleTable.footer.showCurrentPage"
-              locale="ja-jp"
-              loading-text="Loading..."
-              no-data-text="No data."
-              class="elevation-1"
-              item-key="role_id"
-              show-select
-            >
-              <template v-slot:[`item.action_ptn`]="{ item }">
-                <v-card
-                  label
-                  outliend
-                  elevation="0"
-                  color="red-lighten-5"
-                  class="my-1"
-                >
-                  <v-card-text class="font-weight-bold">
-                    {{ item.value.action_ptn }}
-                  </v-card-text>
-                </v-card>
-              </template>
-              <template v-slot:[`item.resource_ptn`]="{ item }">
-                <v-card
-                  label
-                  outliend
-                  elevation="0"
-                  color="red-lighten-5"
-                  class="my-1"
-                >
-                  <v-card-text class="font-weight-bold">
-                    {{ item.value.resource_ptn }}
-                  </v-card-text>
-                </v-card>
-              </template>
-            </v-data-table>
-
-            <v-divider class="mt-3 mb-3"></v-divider>
-            <v-alert
-              v-if="roleTable.selected.length == 0"
-              density="compact"
-              variant="outlined"
-              type="error"
-            >
-              {{
-                $t(
-                  `view.iam['Please select one or more roles. If you do not select any role, the user will be ']`
-                )
-              }}
-            </v-alert>
             <v-card-actions>
               <v-spacer />
               <v-btn
                 variant="outlined"
                 color="grey-darken-1"
-                @click="editDialog = false"
+                @click="inviteUserDialog = false"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
@@ -270,6 +112,56 @@
       </v-card>
     </v-dialog>
 
+    <!-- Disable Admin Dialog -->
+    <v-dialog v-model="disableAdminDialog" max-width="40%">
+      <v-card>
+        <v-card-title>
+          <span class="mx-4 text-h5">
+            {{ $t(`message['Do you want to disable admin?']`) }}
+          </span>
+        </v-card-title>
+
+        <v-list two-line>
+          <v-list-item prepend-icon="mdi-identifier">
+            <v-list-item-title>
+              {{ userModel.user_id }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['ID']`) }}
+            </v-list-item-subtitle>
+          </v-list-item>
+
+          <v-list-item prepend-icon="mdi-account-box">
+            <v-list-item-title>
+              {{ userModel.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ $t(`item['Name']`) }}
+            </v-list-item-subtitle>
+          </v-list-item>
+        </v-list>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="outlined"
+            color="grey-darken-1"
+            @click="disableAdminDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+          <v-btn
+            variant="outlined"
+            color="red-darken-1"
+            :loading="loading"
+            @click="handleDisableAdminSubmit"
+          >
+            {{ $t(`btn['DISABLE']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -279,15 +171,22 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
+import DataTable from '@/component/widget/table/DataTable.vue'
+
+const ADMIN_STATUS = {
+  ENABLED: true,
+  DISABLED: false,
+}
+
 export default {
   name: 'AdminUser',
   mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     UserList,
-    VDataTable,
-    VDataTableServer,
+    DataTable,
+    SearchToolbar,
   },
   data() {
     return {
@@ -310,14 +209,20 @@ export default {
       userModel: {
         user_id: '',
         name: '',
-        role_cnt: 0,
-        roles: '',
         updated_at: '',
       },
       table: {
-        options: { page: 1, itemsPerPage: 10, sortBy: ['user_id'] },
+        options: {
+          page: 1,
+          itemsPerPage: 10,
+          sortBy: [{ key: 'user_id', order: 'asc' }],
+        },
         actions: [
-          { text: 'Edit Item', icon: 'mdi-pencil', click: this.handleEdit },
+          {
+            text: 'Disable Admin',
+            icon: 'mdi-delete',
+            click: this.handleDisableAdmin,
+          },
         ],
         total: 0,
         footer: {
@@ -327,20 +232,9 @@ export default {
         items: [],
       },
       users: [],
-      deleteDialog: false,
-      editDialog: false,
+      disableAdminDialog: false,
+      inviteUserDialog: false,
       userDialog: false,
-      roleTable: {
-        selected: [],
-        search: '',
-        options: { page: 1, itemsPerPage: 5, sortBy: ['role_id'] },
-        total: 0,
-        footer: {
-          itemsPerPageOptions: [{ value: 5, title: '5' }],
-          showCurrentPage: true,
-        },
-        items: [],
-      },
     }
   },
   computed: {
@@ -366,12 +260,6 @@ export default {
           key: 'name',
         },
         {
-          title: this.$i18n.t('item["Roles"]'),
-          align: 'center',
-          sortable: false,
-          key: 'role_cnt',
-        },
-        {
           title: this.$i18n.t('item["Updated"]'),
           align: 'center',
           sortable: false,
@@ -385,21 +273,13 @@ export default {
         },
       ]
     },
-    roleHeaders() {
-      return [
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          sortable: true,
-          key: 'role_id',
-        },
-        {
-          title: this.$i18n.t('item["Name"]'),
-          align: 'start',
-          sortable: true,
-          key: 'name',
-        },
-      ]
+    tableData() {
+      return {
+        options: this.table.options,
+        items: this.table.items,
+        total: this.table.total,
+        footer: this.table.footer,
+      }
     },
   },
   mounted() {
@@ -435,27 +315,27 @@ export default {
             this.clearList()
             return Promise.reject(err)
           })
-          const roles = await this.listAdminRoleAPI('&user_id=' + id).catch(
-            (err) => {
-              this.clearList()
-              return Promise.reject(err)
-            }
-          )
           const item = {
             user_id: user.user_id,
             name: user.name,
             updated_at: user.updated_at,
-            role_cnt: roles.length,
-            roles: roles,
           }
           items.push(item)
           userIDs.push(item.user_id)
           userNames.push(item.name)
         })
       )
+
+      // Sort items by user_id in ascending order
+      items.sort((a, b) => {
+        if (a.user_id < b.user_id) return -1
+        if (a.user_id > b.user_id) return 1
+        return 0
+      })
+
       this.table.items = items
-      this.userIDList = userIDs
-      this.userNameList = userNames
+      this.userIDList = userIDs.sort()
+      this.userNameList = userNames.sort()
       this.loading = false
     },
     clearList() {
@@ -464,67 +344,23 @@ export default {
       this.table.items = []
       this.userNameList = []
     },
-    async loadRoleList() {
-      this.loading = true
-      this.clearRoleList()
-      const roles = await this.listAdminRoleAPI('').catch((err) => {
-        return Promise.reject(err)
-      })
 
-      roles.forEach(async (id) => {
-        const role = await this.getAdminRoleAPI(id).catch((err) => {
+    async putItem(is_admin) {
+      this.loading = true
+      await this.updateUserAdminAPI(this.userModel.user_id, is_admin).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
           return Promise.reject(err)
-        })
-        this.roleTable.items.push(role)
-
-        if (this.userModel.roles.indexOf(role.role_id) !== -1) {
-          this.roleTable.selected.push(role)
         }
-      })
-      this.loading = false
-    },
-    clearRoleList() {
-      this.roleTable.items = []
-      this.roleTable.selected = []
-    },
-
-    async putItem() {
-      this.loading = true
-      // Attach/Detach roles
-      this.roleTable.items.forEach(async (item) => {
-        let attachRole = false
-        this.roleTable.selected.some((selected) => {
-          if (item.role_id === selected.role_id) {
-            attachRole = true
-            return true
-          }
-        })
-        if (attachRole) {
-          await this.attachAdminRoleAPI(
-            this.userModel.user_id,
-            item.role_id
-          ).catch((err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          })
-        } else {
-          await this.detachAdminRoleAPI(
-            this.userModel.user_id,
-            item.role_id
-          ).catch((err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          })
-        }
-      })
-
+      )
       this.finishUpdated('Success: Updated role.')
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
-      this.editDialog = false
+      this.disableAdminDialog = false
+      this.inviteUserDialog = false
       this.handleSearch()
     },
 
@@ -537,24 +373,25 @@ export default {
       this.userModel = {
         user_id: '',
         name: '',
-        role_cnt: 0,
-        roles: '',
         updated_at: '',
       }
-      this.loadRoleList()
-      this.editDialog = true
-    },
-    handleRowClick(event, users) {
-      this.handleEdit(users.item)
+      this.inviteUserDialog = true
     },
     handleEdit(item) {
       this.userForm.clickNew = false
       this.assignDataModel(item.value)
       this.loadRoleList()
-      this.editDialog = true
+      this.inviteUserDialog = true
     },
     handleEditSubmit() {
-      this.putItem()
+      this.putItem(ADMIN_STATUS.ENABLED)
+    },
+    handleDisableAdmin(item) {
+      this.assignDataModel(item.value)
+      this.disableAdminDialog = true
+    },
+    async handleDisableAdminSubmit() {
+      this.putItem(ADMIN_STATUS.DISABLED)
     },
     handleSearch() {
       let searchCond = ''
@@ -572,12 +409,10 @@ export default {
       this.refleshList('')
     },
     assignDataModel(item) {
-      this.awsuserModelModel = {
-        user_id: '',
-        name: '',
-        role_cnt: 0,
-        roles: '',
-        updated_at: '',
+      this.userModel = {
+        user_id: item.user_id || '',
+        name: item.name || '',
+        updated_at: item.updated_at || '',
       }
       this.userModel = Object.assign(this.userModel, item)
     },

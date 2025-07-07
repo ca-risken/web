@@ -488,7 +488,10 @@ export default {
         '\n\n## AI Summary:\n' +
         this.aiAnswer
 
-      this.$root.$refs.aiChatRef.open(context)
+      this.$root.$refs.aiChatRef.open({
+        name: 'Finding Detail',
+        content: context,
+      })
     },
     handleRecommendItem() {
       this.$emit('recommend')

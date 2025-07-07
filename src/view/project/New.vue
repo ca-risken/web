@@ -1,16 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-alpha-p-box</v-icon>
-              {{ $t(`menu['Project']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
+      <page-header icon="mdi-alpha-p-box" :title="$t(`menu['Project']`)" />
       <v-row dense justify="center" align-content="center">
         <v-col cols="10">
           <v-card>
@@ -53,11 +44,13 @@ import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import alert from '@/mixin/api/alert'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 export default {
   name: 'NewProject',
   mixins: [mixin, project, alert],
   components: {
     BottomSnackBar,
+    PageHeader,
   },
   data() {
     return {

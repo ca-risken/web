@@ -1,122 +1,57 @@
 <template>
   <div>
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              {{ $t(`submenu['User']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
-      <v-form ref="searchForm">
-        <v-row dense justify="center" align-content="center">
-          <v-col cols="8" sm="4" md="4">
-            <v-combobox
-              variant="outlined"
-              density="compact"
-              clearable
-              bg-color="white"
-              :label="$t(`item['User']`)"
-              :placeholder="searchForm.userName.placeholder"
-              :items="userNameList"
-              v-model="searchModel.userName"
-            />
-          </v-col>
-          <v-spacer />
-          <v-btn
-            class="mt-3 mr-4"
-            size="large"
-            density="compact"
-            :loading="loading"
-            @click="handleSearch"
-            icon="mdi-magnify"
-          />
-          <v-btn
-            class="mt-3 mr-4"
-            color="primary-darken-3"
-            size="large"
-            density="compact"
-            @click="handleNew"
-            icon="mdi-new-box"
-          />
-        </v-row>
-      </v-form>
-      <v-row dense>
-        <v-col cols="12">
-          <v-card>
-            <v-divider></v-divider>
-            <v-card-text class="pa-0">
-              <v-data-table-server
-                :headers="headers"
-                :items-length="table.total"
-                :items="table.items"
-                :loading="loading"
-                :sort-by="table.options.sortBy"
-                :page="table.options.page"
-                :items-per-page="table.options.itemsPerPage"
-                :items-per-page-options="table.footer.itemsPerPageOptions"
-                :items-per-page-text="table.footer.itemsPerPageText"
-                :show-current-page="table.footer.showCurrentPage"
-                locale="ja-jp"
-                loading-text="Loading..."
-                no-data-text="No data."
-                class="elevation-1"
-                item-key="user_id"
-                @update:options="updateOptions"
-              >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-2">
-                    <v-img src="/static/avatar/default.png" alt="avatar" />
-                  </v-avatar>
-                </template>
-                <template v-slot:[`item.role_cnt`]="{ item }">
-                  <v-chip
-                    variant="flat"
-                    :color="getColorByCount(item.value.role_cnt)"
-                    >{{ item.value.role_cnt }}</v-chip
-                  >
-                </template>
-                <template v-slot:[`item.reserved`]="{ item }">
-                  <v-icon v-if="!item.value.reserved" color="success"
-                    >mdi-check-circle</v-icon
-                  >
-                  <v-chip v-else color="grey" variant="flat">{{
-                    $t("item['Reserved']")
-                  }}</v-chip>
-                </template>
-                <template v-slot:[`item.updated_at`]="{ item }">
-                  <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
-                </template>
-                <template v-slot:[`item.action`]="{ item }">
-                  <v-menu>
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" icon="mdi-dots-vertical"></v-icon>
-                    </template>
-                    <v-list class="pa-0" dense>
-                      <v-list-item
-                        v-for="action in table.actions"
-                        :key="action.text"
-                        @click="action.click(item)"
-                        :prepend-icon="action.icon"
-                      >
-                        <v-list-item-title>{{
-                          $t(`action['` + action.text + `']`)
-                        }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-data-table-server>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+      <page-header icon="mdi-account-multiple" :title="$t(`submenu['User']`)" />
+      <search-toolbar
+        v-model="searchModel"
+        :loading="loading"
+        :id-field-items="[]"
+        :name-field-items="userNameList"
+        id-field-key="userID"
+        name-field-key="userName"
+        :show-id-field="false"
+        :show-create-button="true"
+        button-size="large"
+        create-button-icon="mdi-new-box"
+        create-button-color="primary-darken-3"
+        :search-form-config="{
+          idField: searchForm.userID,
+          nameField: searchForm.userName,
+        }"
+        @search="handleSearch"
+        @create="handleNew"
+      />
+
+      <data-table
+        :table-data="tableData"
+        :loading="loading"
+        :headers="headers"
+        :actions="table.actions"
+        item-key="user_id"
+        @update-options="updateOptions"
+      >
+        <template v-slot:[`item.avator`]>
+          <v-avatar class="ma-2">
+            <v-img src="/static/avatar/default.png" alt="avatar" />
+          </v-avatar>
+        </template>
+        <template v-slot:[`item.role_cnt`]="{ item }">
+          <v-chip variant="flat" :color="getColorByCount(item.value.role_cnt)">
+            {{ item.value.role_cnt }}
+          </v-chip>
+        </template>
+        <template v-slot:[`item.reserved`]="{ item }">
+          <v-icon v-if="!item.value.reserved" color="success">
+            mdi-check-circle
+          </v-icon>
+          <v-chip v-else color="grey" variant="flat">
+            {{ $t("item['Reserved']") }}
+          </v-chip>
+        </template>
+      </data-table>
     </v-container>
 
-    <!-- Edit Dialog -->
+    <!-- Invite User Dialog -->
     <v-dialog v-model="editDialog" max-width="40%">
       <v-card>
         <v-card-title>
@@ -304,17 +239,25 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable'
+import organization_iam from '../../mixin/api/organization_iam'
+import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
+import DataTable from '@/component/widget/table/DataTable.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
+import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
+
 export default {
   name: 'UserManagement',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, organization_iam, organization_base],
   components: {
     BottomSnackBar,
     UserList,
+    SearchToolbar,
+    DataTable,
     VDataTable,
-    VDataTableServer,
+    PageHeader,
   },
   data() {
     return {
@@ -377,6 +320,14 @@ export default {
     }
   },
   computed: {
+    tableData() {
+      return {
+        items: this.table.items,
+        total: this.table.total,
+        options: this.table.options,
+        footer: this.table.footer,
+      }
+    },
     headers() {
       return [
         {
@@ -398,7 +349,6 @@ export default {
           sortable: false,
           key: 'name',
         },
-
         {
           title: this.$i18n.t('item["Status"]'),
           align: 'center',
@@ -447,18 +397,35 @@ export default {
   },
   methods: {
     async refleshList(userName, userID) {
-      let searchCond = '&project_id=' + this.getCurrentProjectID()
-      if (userName) {
-        searchCond += '&name=' + userName
+      let searchCond = ''
+      if (this.isOrganizationMode) {
+        if (userName) {
+          searchCond += '&name=' + userName
+        }
+        if (userID) {
+          searchCond += '&user_id=' + userID
+        }
+      } else {
+        searchCond = '&project_id=' + this.getCurrentProjectID()
+        if (userName) {
+          searchCond += '&name=' + userName
+        }
+        if (userID) {
+          searchCond += '&user_id=' + userID
+        }
       }
-      if (userID) {
-        searchCond += '&user_id=' + userID
-      }
+
       const userIDs = await this.listUserAPI(searchCond).catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
-      this.userReserved = await this.listUserReserved(userName)
+
+      if (!this.isOrganizationMode) {
+        this.userReserved = await this.listUserReserved(userName)
+      } else {
+        this.userReserved = []
+      }
+
       if (userIDs.length + this.userReserved.length == 0) {
         return
       }
@@ -508,10 +475,22 @@ export default {
         this.clearList()
         return Promise.reject(err)
       })
-      const roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+
+      let roles
+      if (this.isOrganizationMode) {
+        roles = await this.listOrganizationRoleAPI('&user_id=' + id).catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        roles = await this.listRoleAPI('&user_id=' + id).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      }
+
       const item = {
         user_id: user.user_id,
         name: user.name,
@@ -557,13 +536,29 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      const roles = await this.listRoleAPI('').catch((err) => {
-        return Promise.reject(err)
-      })
-      roles.forEach(async (id) => {
-        const role = await this.getRoleAPI(id).catch((err) => {
+
+      let roles
+      if (this.isOrganizationMode) {
+        roles = await this.listOrganizationRoleAPI('').catch((err) => {
           return Promise.reject(err)
         })
+      } else {
+        roles = await this.listRoleAPI('').catch((err) => {
+          return Promise.reject(err)
+        })
+      }
+
+      roles.forEach(async (id) => {
+        let role
+        if (this.isOrganizationMode) {
+          role = await this.getOrganizationRoleAPI(id).catch((err) => {
+            return Promise.reject(err)
+          })
+        } else {
+          role = await this.getRoleAPI(id).catch((err) => {
+            return Promise.reject(err)
+          })
+        }
         this.roleTable.items.push(role)
 
         if (this.userModel.roles.indexOf(role.role_id) !== -1) {
@@ -597,19 +592,41 @@ export default {
           }
         })
         if (attachRole) {
-          await this.attachRoleAPI(this.userModel.user_id, item.role_id).catch(
-            (err) => {
+          if (this.isOrganizationMode) {
+            await this.attachOrganizationRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
               this.$refs.snackbar.notifyError(err.response.data)
               return Promise.reject(err)
-            }
-          )
+            })
+          } else {
+            await this.attachRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
+          }
         } else {
-          await this.detachRoleAPI(this.userModel.user_id, item.role_id).catch(
-            (err) => {
+          if (this.isOrganizationMode) {
+            await this.detachOrganizationRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
               this.$refs.snackbar.notifyError(err.response.data)
               return Promise.reject(err)
-            }
-          )
+            })
+          } else {
+            await this.detachRoleAPI(
+              this.userModel.user_id,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
+          }
         }
       })
     },

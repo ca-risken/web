@@ -6,6 +6,8 @@ const en = {
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',
     'CREATE NEW PROJECT': 'CREATE NEW PROJECT',
+    'EDIT ORGANIZATION': 'EDIT ORGANIZATION',
+    'CREATE NEW ORGANIZATION': 'CREATE NEW ORGANIZATION',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
     ARCHIVE: 'ARCHIVE',
@@ -56,8 +58,10 @@ const en = {
     OSINT: 'OSINT',
     Code: 'Code',
     IAM: 'IAM',
+    'Organization IAM': 'Org IAM',
     Analysis: 'Analysis',
     Admin: 'Admin',
+    Organization: 'Organization',
   },
   submenu: {
     Dashboard: 'Dashboard',
@@ -91,6 +95,11 @@ const en = {
     ReportFinding: 'Report Finding', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
+    'New Organization': 'New Organization',
+    'Organization Setting': 'Organization Setting',
+    OrganizationInvitation: 'Invitation List',
+    OrganizationList: 'Organization List',
+    OrganizationProject: 'Project List',
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
@@ -219,6 +228,8 @@ const en = {
     'WPScan Random User Agent': 'Use a random user-agent for each scan',
     'WPScan WP Content Dir':
       'The wp-content directory if custom or not detected, such as "wp-content"',
+    Project: 'Project',
+    Organization: 'Organization',
   },
   version: {
     version: 'version',
@@ -255,6 +266,10 @@ const en = {
     'View Finding': 'View Finding',
     'View Item': 'View Item',
     'Test Notification': 'Test Notification',
+    'Disable Admin': 'Disable Admin',
+    'Delete Invitation': 'Delete Invitation',
+    'Accept Invitation': 'Accept Invitation',
+    'Reject Invitation': 'Reject Invitation',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
@@ -267,6 +282,7 @@ const en = {
     'Do you want to send a test notification?':
       'Do you want to send a test notification?',
     'REQUEST PROJECT ROLE COMPLETED': 'REQUEST PROJECT ROLE COMPLETED',
+    'Do you want to disable admin?': 'Do you want to disable admin?',
   },
   error: {
     'Sorry, Please access again after a while.':

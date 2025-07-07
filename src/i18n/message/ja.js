@@ -43,7 +43,6 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
-    SEARCH: '検索',
   },
   menu: {
     Home: 'ホーム',
@@ -59,11 +58,10 @@ const ja = {
     OSINT: 'OSINT',
     Code: 'ソースコード',
     IAM: 'IAM',
+    'Organization IAM': 'Org IAM',
     Analysis: '分析',
     Admin: '管理者',
     Organization: 'Organization',
-    'Project Mode': 'プロジェクトモード',
-    'Organization Mode': 'Organizationモード',
   },
   submenu: {
     Dashboard: 'ダッシュボード',
@@ -97,7 +95,9 @@ const ja = {
     ReportFinding: 'Findingレポート',
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
-    OrganizationSetting: 'Organization設定',
+    'New Organization': '新規Organization',
+    'Organization Setting': 'Organization設定',
+    OrganizationInvitation: '招待一覧',
     OrganizationList: 'Organization一覧',
     OrganizationProject: 'プロジェクト一覧',
     Profile: 'プロフィール',
@@ -228,7 +228,8 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
-    'My Organization': 'My Organization',
+    Project: 'プロジェクト',
+    Organization: 'Organization',
   },
   version: {
     version: 'バージョン',
@@ -265,6 +266,10 @@ const ja = {
     'View Finding': '詳細を見る',
     'View Item': '詳細を見る',
     'Test Notification': '通知のテスト',
+    'Disable Admin': '管理者権限を無効化する',
+    'Delete Invitation': '招待を削除する',
+    'Accept Invitation': '招待を承認する',
+    'Reject Invitation': '招待を拒否する',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
@@ -277,6 +282,7 @@ const ja = {
       'テスト通知を送信してよろしいですか?',
     'REQUEST PROJECT ROLE COMPLETED':
       'プロジェクトへのアクセス権を管理者にリクエストしました。',
+    'Do you want to disable admin?': '本当に無効化しますか？',
   },
   error: {
     'Sorry, Please access again after a while.':

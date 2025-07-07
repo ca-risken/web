@@ -1,16 +1,10 @@
 <template>
   <div>
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              {{ $t(`submenu['Policy']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
+      <page-header
+        icon="mdi-account-multiple"
+        :title="$t(`submenu['Policy']`)"
+      />
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
@@ -204,52 +198,16 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="40%">
-      <v-card>
-        <v-card-title class="text-h5">
-          <span class="mx-4">
-            {{ $t(`message['Do you really want to delete this?']`) }}
-          </span>
-        </v-card-title>
-        <v-list two-line>
-          <v-list-item prepend-icon="mdi-identifier">
-            <v-list-item-title>
-              {{ policyModel.policy_id }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['ID']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-certificate-outline">
-            <v-list-item-title>
-              {{ policyModel.name }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ $t(`item['Name']`) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            variant="outlined"
-            color="grey-darken-1"
-            @click="deleteDialog = false"
-          >
-            {{ $t(`btn['CANCEL']`) }}
-          </v-btn>
-          <v-btn
-            color="red-darken-1"
-            text
-            variant="outlined"
-            @click="deleteItem(policyModel.policy_id)"
-          >
-            {{ $t(`btn['DELETE']`) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <delete-dialog
+      v-model="deleteDialog"
+      :title="$t(`message['Do you really want to delete this?']`)"
+      :item-data="{ id: policyModel.policy_id, name: policyModel.name }"
+      item-icon="mdi-certificate-outline"
+      :loading="loading"
+      @confirm="deleteItem(policyModel.policy_id)"
+      @cancel="deleteDialog = false"
+    />
+
     <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
@@ -257,14 +215,20 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import organization_iam from '../../mixin/api/organization_iam'
+import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 export default {
   name: 'PolicyList',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, organization_iam, organization_base],
   components: {
     BottomSnackBar,
+    DeleteDialog,
     VDataTable,
+    PageHeader,
   },
   data() {
     return {
@@ -398,10 +362,20 @@ export default {
   },
   methods: {
     async refleshList(searchCond) {
-      const policies = await this.listPolicyAPI(searchCond).catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+      let policies
+      if (this.isOrganizationMode) {
+        policies = await this.listOrganizationPolicyAPI(searchCond).catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        policies = await this.listPolicyAPI(searchCond).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      }
       this.table.total = policies.length
       this.policies = policies
       this.loadList()
@@ -412,10 +386,18 @@ export default {
       let policyNames = []
       await Promise.all(
         this.policies.map(async (id) => {
-          const policy = await this.getPolicyAPI(id).catch((err) => {
-            this.clearList()
-            return Promise.reject(err)
-          })
+          let policy
+          if (this.isOrganizationMode) {
+            policy = await this.getOrganizationPolicyAPI(id).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
+          } else {
+            policy = await this.getPolicyAPI(id).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
+          }
           items.push(policy)
           policyNames.push(policy.name)
         })
@@ -431,28 +413,52 @@ export default {
       this.policyNameList = []
     },
     async deleteItem(policyID) {
-      await this.deletePolicyAPI(policyID).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
+      if (this.isOrganizationMode) {
+        await this.deleteOrganizationPolicyAPI(policyID).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        await this.deletePolicyAPI(policyID).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.$refs.snackbar.notifySuccess('Success: Deleting policy.')
       this.deleteDialog = false
       this.handleSearch()
     },
     async putItem() {
-      const param = {
-        project_id: this.getCurrentProjectID(),
-        policy: {
-          name: this.policyModel.name,
+      let param
+      if (this.isOrganizationMode) {
+        param = {
+          organization_id: this.getCurrentOrganizationID(),
+          policy: {
+            name: this.policyModel.name,
+            organization_id: this.getCurrentOrganizationID(),
+            action_ptn: this.policyModel.action_ptn,
+            resource_ptn: '.*', //this.policyModel.resource_ptn,
+          },
+        }
+        await this.putOrganizationPolicyAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        param = {
           project_id: this.getCurrentProjectID(),
-          action_ptn: this.policyModel.action_ptn,
-          resource_ptn: '.*', //this.policyModel.resource_ptn,
-        },
+          policy: {
+            name: this.policyModel.name,
+            project_id: this.getCurrentProjectID(),
+            action_ptn: this.policyModel.action_ptn,
+            resource_ptn: '.*', //this.policyModel.resource_ptn,
+          },
+        }
+        await this.putPolicyAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
       }
-      await this.putPolicyAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
       this.$refs.snackbar.notifySuccess('Success: Updated policy.')
       this.editDialog = false
       this.handleSearch()

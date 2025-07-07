@@ -440,7 +440,7 @@ export const appRoute = [
       {
         path: '/organization/',
         component: RouteWrapper,
-        redirect: '/organization/list',
+        redirect: '/organization/setting',
         meta: {
           title: 'Organization',
           icon: 'mdi-account-group',
@@ -448,29 +448,72 @@ export const appRoute = [
         },
         children: [
           {
-            path: '/organization/list',
-            name: 'OrganizationList',
-            meta: {
-              title: 'OrganizationList',
-            },
-            component: () => import('@/view/organization/List.vue'),
-          },
-          {
             path: '/organization/project',
             name: 'OrganizationProject',
             meta: {
               title: 'OrganizationProject',
             },
-            component: () => import('@/view/organization/Project.vue'),
+            component: () => import('@/view/organization/InvitationList.vue'),
           },
           {
             path: '/organization/setting',
             name: 'OrganizationSetting',
             meta: {
-              title: 'OrganizationSetting',
-              hiddenInMenu: true,
+              title: 'Organization Setting',
             },
             component: () => import('@/view/organization/Setting.vue'),
+          },
+          {
+            path: '/organization/new',
+            name: 'NewOrganization',
+            meta: {
+              title: 'New Organization',
+            },
+            component: () => import('@/view/organization/New.vue'),
+          },
+          {
+            path: '/organization/list',
+            name: 'OrganizationList',
+            meta: {
+              title: 'OrganizationList',
+            },
+            component: () => import('@/view/organization/OrganizationList.vue'),
+          },
+        ],
+      },
+      {
+        path: '/organization-iam/',
+        component: RouteWrapper,
+        redirect: '/organization-iam/user',
+        meta: {
+          title: 'Organization IAM',
+          icon: 'mdi-account-multiple',
+          group: 'organization-iam',
+        },
+        children: [
+          {
+            path: '/organization-iam/user',
+            name: 'OrganizationUser',
+            meta: {
+              title: 'User',
+            },
+            component: () => import('@/view/iam/User.vue'),
+          },
+          {
+            path: '/organization-iam/role',
+            name: 'OrganizationRole',
+            meta: {
+              title: 'Role',
+            },
+            component: () => import('@/view/iam/Role.vue'),
+          },
+          {
+            path: '/organization-iam/policy',
+            name: 'OrganizationPolicy',
+            meta: {
+              title: 'Policy',
+            },
+            component: () => import('@/view/iam/Policy.vue'),
           },
         ],
       },
