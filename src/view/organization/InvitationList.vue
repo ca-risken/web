@@ -256,14 +256,15 @@ export default {
       this.projectDialog = false
       this.loading = true
 
-      await this.putOrganizationInvitationAPI(project.project_id, INVITATION_STATUS.PENDING).catch(
-        (err) => {
-          this.$refs.snackbar.notifyError(
-            err.response?.data || 'Failed to send organization invitation'
-          )
-          return Promise.reject(err)
-        }
-      )
+      await this.putOrganizationInvitationAPI(
+        project.project_id,
+        INVITATION_STATUS.PENDING
+      ).catch((err) => {
+        this.$refs.snackbar.notifyError(
+          err.response?.data || 'Failed to send organization invitation'
+        )
+        return Promise.reject(err)
+      })
       this.finishUpdated(
         `Organization invitation sent to project: ${project.name}`
       )

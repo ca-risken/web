@@ -267,12 +267,9 @@ const en = {
     'View Item': 'View Item',
     'Test Notification': 'Test Notification',
     'Disable Admin': 'Disable Admin',
-<<<<<<< HEAD
     'Delete Invitation': 'Delete Invitation',
     'Accept Invitation': 'Accept Invitation',
     'Reject Invitation': 'Reject Invitation',
-=======
->>>>>>> origin/master
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',

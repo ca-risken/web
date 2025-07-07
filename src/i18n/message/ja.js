@@ -267,12 +267,9 @@ const ja = {
     'View Item': '詳細を見る',
     'Test Notification': '通知のテスト',
     'Disable Admin': '管理者権限を無効化する',
-<<<<<<< HEAD
     'Delete Invitation': '招待を削除する',
     'Accept Invitation': '招待を承認する',
     'Reject Invitation': '招待を拒否する',
-=======
->>>>>>> origin/master
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
