@@ -1,16 +1,10 @@
 <template>
   <div>
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              {{ $t(`submenu['Policy']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
+      <page-header
+        icon="mdi-account-multiple"
+        :title="$t(`submenu['Policy']`)"
+      />
       <v-form ref="searchForm">
         <v-row dense justify="center" align-content="center">
           <v-col cols="12" sm="6" md="6">
@@ -226,6 +220,7 @@ import organization_base from '../../mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 export default {
   name: 'PolicyList',
   mixins: [mixin, iam, organization_iam, organization_base],
@@ -233,6 +228,7 @@ export default {
     BottomSnackBar,
     DeleteDialog,
     VDataTable,
+    PageHeader,
   },
   data() {
     return {

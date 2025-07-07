@@ -1,16 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-row dense justify="center" align-content="center">
-        <v-col cols="12">
-          <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
-              <v-icon large class="pr-2">mdi-account-multiple</v-icon>
-              {{ $t(`submenu['User']`) }}
-            </v-toolbar-title>
-          </v-toolbar>
-        </v-col>
-      </v-row>
+      <page-header icon="mdi-account-multiple" :title="$t(`submenu['User']`)" />
       <search-toolbar
         v-model="searchModel"
         :loading="loading"
@@ -255,6 +246,7 @@ import organization_iam from '../../mixin/api/organization_iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 
 export default {
   name: 'UserManagement',
@@ -265,6 +257,7 @@ export default {
     SearchToolbar,
     DataTable,
     VDataTable,
+    PageHeader,
   },
   data() {
     return {
