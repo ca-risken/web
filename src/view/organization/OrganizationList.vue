@@ -150,7 +150,7 @@ export default {
   methods: {
     async refleshList(searchCond) {
       this.loading = true
-      const invitations = await this.listOrganizationInvitationAPI(
+      const invitations = await this.listProjectOrganizationInvitationAPI(
         searchCond
       ).catch((error) => {
         console.error('Error loading list:', error)

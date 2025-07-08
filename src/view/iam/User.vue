@@ -399,6 +399,7 @@ export default {
     async refleshList(userName, userID) {
       let searchCond = ''
       if (this.isOrganizationMode) {
+        searchCond = '&organization_id=' + this.getCurrentOrganizationID()
         if (userName) {
           searchCond += '&name=' + userName
         }

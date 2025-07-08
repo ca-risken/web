@@ -120,7 +120,6 @@ const organization = {
           return project.name == name
         })
       }
-      console.log(res.data.data.project)
       return res.data.data.project
     },
   },
