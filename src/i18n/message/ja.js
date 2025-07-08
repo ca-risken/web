@@ -43,6 +43,7 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
+    'Select Organization': 'Organizationを選択',
   },
   menu: {
     Home: 'ホーム',
@@ -273,6 +274,9 @@ const ja = {
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
+    'Please select an organization': 'Organizationを選択してください',
+    'You need to select an organization to continue.':
+      '続行するにはOrganizationを選択する必要があります。',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
       '無効化すると、保存されていない設定が失われます。本当に削除しますか？',
     'Do you want to archive this?': 'アーカイブしますか？',

@@ -43,6 +43,7 @@ const en = {
     Recommendation: 'Recommendation',
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
+    'Select Organization': 'Select Organization',
   },
   menu: {
     Home: 'Home',
@@ -273,6 +274,9 @@ const en = {
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
+    'Please select an organization': 'Please select an organization',
+    'You need to select an organization to continue.':
+      'You need to select an organization to continue.',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
       'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?',
     'Do you want to archive this?': 'Do you want to archive this?',

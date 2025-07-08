@@ -206,7 +206,7 @@ export default {
       return store.state.project.name
     },
     organizationName: () => {
-      return store.state.organization.name || 'Select Organization'
+      return store.state.organization.name
     },
     currentMode() {
       return store.state.mode

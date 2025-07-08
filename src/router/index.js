@@ -4,6 +4,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from '@/store'
 import axios from '@/axios'
+import { MODE } from '@/constants/mode'
 const routes = commonRoute.concat(appRoute)
 
 const router = createRouter({
@@ -89,8 +90,23 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (
+    store.state.mode === MODE.ORGANIZATION &&
+    !to.path.startsWith('/organization/select') &&
+    !to.path.startsWith('/organization/new') &&
+    !to.path.startsWith('/auth/signin') &&
+    (!store.state.organization ||
+      !store.state.organization.organization_id ||
+      Object.keys(store.state.organization).length === 0)
+  ) {
+    next('/organization/select')
+    return
+  }
+
+  if (
+    store.state.mode === MODE.ORGANIZATION &&
     to.path.startsWith('/organization') &&
     !to.path.startsWith('/organization/new') &&
+    !to.path.startsWith('/organization/select') &&
     !to.query.organization_id &&
     current_organization_id &&
     current_organization_id != ''
@@ -99,7 +115,7 @@ router.beforeEach(async (to, from, next) => {
     next({ ...to, query })
     return
   } else if (
-    to.path.startsWith('/project') &&
+    store.state.mode === MODE.PROJECT &&
     !to.path.startsWith('/project/new') &&
     !to.query.project_id &&
     current_project_id &&

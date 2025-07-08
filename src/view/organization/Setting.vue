@@ -182,7 +182,7 @@ export default {
       this.deleteDialog = false
       this.$refs.snackbar.notifySuccess('Success: Organization deleted.')
       store.commit('updateOrganization', {})
-      this.$router.push('/organization/list')
+      this.$router.push('/organization/select')
       this.loading = false
     },
   },

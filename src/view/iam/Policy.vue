@@ -79,7 +79,10 @@
                     </v-card-text>
                   </v-card>
                 </template>
-                <template v-slot:[`item.resource_ptn`]="{ item }">
+                <template
+                  v-if="!isOrganizationMode"
+                  v-slot:[`item.resource_ptn`]="{ item }"
+                >
                   <v-card
                     label
                     elevation="1"
@@ -165,6 +168,7 @@
               required
             ></v-text-field>
             <v-text-field
+              v-if="!isOrganizationMode"
               v-model="policyModel.resource_ptn"
               :rules="policyForm.resource_ptn.validator"
               :label="
@@ -310,7 +314,7 @@ export default {
   },
   computed: {
     headers() {
-      return [
+      const baseHeaders = [
         {
           title: this.$i18n.t('item[""]'),
           align: 'center',
@@ -336,12 +340,18 @@ export default {
           sortable: false,
           key: 'action_ptn',
         },
-        {
+      ]
+
+      if (!this.isOrganizationMode) {
+        baseHeaders.push({
           title: this.$i18n.t('item["Resource Pattern"]'),
           align: 'start',
           sortable: false,
           key: 'resource_ptn',
-        },
+        })
+      }
+
+      baseHeaders.push(
         {
           title: this.$i18n.t('item["Updated"]'),
           align: 'center',
@@ -353,8 +363,10 @@ export default {
           align: 'center',
           sortable: false,
           key: 'action',
-        },
-      ]
+        }
+      )
+
+      return baseHeaders
     },
   },
   mounted() {

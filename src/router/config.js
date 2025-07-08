@@ -479,6 +479,16 @@ export const appRoute = [
             },
             component: () => import('@/view/organization/OrganizationList.vue'),
           },
+          {
+            path: '/organization/select',
+            name: 'OrganizationSelect',
+            meta: {
+              title: 'OrganizationSelect',
+              hiddenInMenu: true,
+            },
+            component: () =>
+              import('@/view/organization/SelectOrganization.vue'),
+          },
         ],
       },
       {
