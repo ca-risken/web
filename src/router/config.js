@@ -438,6 +438,99 @@ export const appRoute = [
         ],
       },
       {
+        path: '/organization/',
+        component: RouteWrapper,
+        redirect: '/organization/setting',
+        meta: {
+          title: 'Organization',
+          icon: 'mdi-account-group',
+          group: 'organization',
+        },
+        children: [
+          {
+            path: '/organization/project',
+            name: 'ProjectInvitation',
+            meta: {
+              title: 'ProjectInvitation',
+            },
+            component: () =>
+              import('@/view/organization/ProjectInvitation.vue'),
+          },
+          {
+            path: '/organization/setting',
+            name: 'OrganizationSetting',
+            meta: {
+              title: 'Organization Setting',
+            },
+            component: () => import('@/view/organization/Setting.vue'),
+          },
+          {
+            path: '/organization/new',
+            name: 'NewOrganization',
+            meta: {
+              title: 'New Organization',
+            },
+            component: () => import('@/view/organization/New.vue'),
+          },
+          {
+            path: '/organization/list',
+            name: 'OrganizationInvitation',
+            meta: {
+              title: 'OrganizationInvitation',
+              requiresAuth: true,
+            },
+            component: () =>
+              import('@/view/organization/OrganizationInvitation.vue'),
+          },
+          {
+            path: '/organization/select',
+            name: 'OrganizationSelect',
+            meta: {
+              title: 'OrganizationSelect',
+              hiddenInMenu: true,
+            },
+            component: () =>
+              import('@/view/organization/SelectOrganization.vue'),
+          },
+        ],
+      },
+      {
+        path: '/organization-iam/',
+        component: RouteWrapper,
+        redirect: '/organization-iam/user',
+        meta: {
+          title: 'Organization IAM',
+          icon: 'mdi-account-multiple',
+          group: 'organization-iam',
+        },
+        children: [
+          {
+            path: '/organization-iam/user',
+            name: 'OrganizationUser',
+            meta: {
+              title: 'User',
+            },
+            component: () => import('@/view/iam/User.vue'),
+          },
+          {
+            path: '/organization-iam/role',
+            name: 'OrganizationRole',
+            meta: {
+              title: 'Role',
+            },
+            component: () => import('@/view/iam/Role.vue'),
+          },
+          {
+            path: '/organization-iam/policy',
+            name: 'OrganizationPolicy',
+            meta: {
+              title: 'Policy',
+            },
+            component: () => import('@/view/iam/Policy.vue'),
+          },
+        ],
+      },
+      {
         path: '/admin',
         component: RouteWrapper,
         redirect: '/admin/menu',

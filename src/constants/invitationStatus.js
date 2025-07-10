@@ -1,0 +1,10 @@
+export const INVITATION_STATUS = {
+  PENDING: 1,
+  ACCEPTED: 2,
+  REJECTED: 3,
+  UNKNOWN: 0,
+}
+
+Object.freeze(INVITATION_STATUS)
+
+export default INVITATION_STATUS

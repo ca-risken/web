@@ -1,7 +1,7 @@
 <template>
   <v-app-bar
     v-bind="$attrs"
-    color="primary-darken-2"
+    :color="toolbarColor"
     extension-height="48"
     extended
   >
@@ -15,18 +15,18 @@
         transition="scale-transition"
       >
         <template v-slot:activator="{ props }">
-          <!-- Project -->
+          <!-- Organization or Project based on mode -->
           <v-btn
             v-bind="props"
             variant="text"
             class="pa-0 ml-4"
             style="text-transform: none"
             height="42"
-            @click="handleSearchProject"
+            @click="handleSearchEntity"
           >
-            <v-icon size="42">mdi-alpha-p-box</v-icon>
+            <v-icon size="42">{{ currentModeIcon }}</v-icon>
             <span class="text-h5 mx-4 font-weight-black">
-              {{ projectName }}
+              {{ currentEntityName }}
             </span>
           </v-btn>
         </template>
@@ -124,6 +124,19 @@
     @edit-entity="handleSettingProject"
     @create-entity="handleNewProject"
   />
+
+  <!-- Organization dialog -->
+  <project-org-select-dialog
+    v-model="organizationDialog"
+    entity-type="organization"
+    :items="organizationTable.item"
+    :loading="loading"
+    :current-entity-id="currentOrganizationID"
+    @item-selected="handleOrganizationSelected"
+    @edit-entity="handleOrganizationSetting"
+    @create-entity="handleNewOrganization"
+  />
+
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
@@ -136,13 +149,16 @@ import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
+import organization from '@/mixin/api/organization'
+import organization_base from '@/mixin/util/organization_base'
+import { MODE } from '@/constants/mode'
 export default {
   name: 'AppToolbar',
   components: {
     BottomSnackBar,
     ProjectOrgSelectDialog,
   },
-  mixins: [mixin, project, iam, signin],
+  mixins: [mixin, project, iam, signin, organization, organization_base],
   data() {
     return {
       loading: false,
@@ -151,37 +167,25 @@ export default {
         item: [],
       },
       currentProjectID: '',
+      organizationDialog: false,
+      organizationTable: {
+        item: [],
+      },
+      currentOrganizationID: '',
       availableLanguages: [
         { text: 'English', value: 'en' },
         { text: '日本語', value: 'ja' },
       ],
-      myMenu: [
-        {
-          icon: 'mdi-account-circle',
-          href: '#',
-          title: 'Account',
-          click: this.handleAccountSetting,
-        },
-        {
-          icon: 'mdi-alpha-p-box',
-          href: '#',
-          title: 'My Project',
-          click: this.handleProjectSetting,
-        },
-        {
-          icon: 'mdi-logout',
-          href: '#',
-          title: 'Signout',
-          click: this.handleSignout,
-        },
-      ],
+      myMenu: [],
       isAdmin: false,
       staticRoutes: staticRoutes,
     }
   },
   computed: {
     toolbarColor() {
-      return this.$vuetify.options.extra.mainNav
+      return this.isOrganizationMode
+        ? 'light-blue-darken-2'
+        : 'primary-darken-2'
     },
     breadcrumbs() {
       const { matched } = this.$route
@@ -201,6 +205,27 @@ export default {
     projectName: () => {
       return store.state.project.name
     },
+    organizationName: () => {
+      return store.state.organization.name
+    },
+    currentMode() {
+      return store.state.mode
+    },
+    isProjectMode() {
+      return this.currentMode === MODE.PROJECT
+    },
+    isOrganizationMode() {
+      return this.currentMode === MODE.ORGANIZATION
+    },
+    currentModeIcon() {
+      return this.isProjectMode ? 'mdi-alpha-p-box' : 'mdi-alpha-o-box'
+    },
+    currentEntityName() {
+      return this.isProjectMode ? this.projectName : this.organizationName
+    },
+    currentDialog() {
+      return this.isProjectMode ? this.projectDialog : this.organizationDialog
+    },
   },
   async mounted() {
     await this.signinUser()
@@ -216,9 +241,12 @@ export default {
     if (admin) {
       this.isAdmin = true
     }
-    this.myMenu = await this.getMenu()
+    this.myMenu = this.getMenu()
 
-    this.currentProjectID = store.state.project.project_id
+    this.currentProjectID = String(store.state.project.project_id || '')
+    this.currentOrganizationID = String(
+      store.state.organization.organization_id || ''
+    )
     const userLocale = store.state.locale
     const browserLocale = Util.getNavigatorLanguage()
     if (userLocale.lang && userLocale.text) {
@@ -261,7 +289,22 @@ export default {
     clearProjectList() {
       this.projectTable.item = []
     },
-
+    async listOrganization() {
+      this.clearOrganizationList()
+      let listOrganizationParam = '?user_id=' + store.state.user.user_id
+      if (this.isAdmin) {
+        listOrganizationParam = ''
+      }
+      this.organizationTable.item = await this.listOrganizationAPI(
+        listOrganizationParam
+      ).catch((err) => {
+        return Promise.reject(err)
+      })
+      this.loading = false
+    },
+    clearOrganizationList() {
+      this.organizationTable.item = []
+    },
     getLocaleText(locale) {
       if (typeof locale !== 'string' || locale === '') return '?'
       switch (locale.toLowerCase()) {
@@ -273,8 +316,7 @@ export default {
           return '?'
       }
     },
-
-    async getMenu() {
+    getMenu() {
       let menu = [
         {
           icon: 'mdi-account-circle',
@@ -283,10 +325,18 @@ export default {
           click: this.handleAccountSetting,
         },
         {
-          icon: 'mdi-alpha-p-box',
+          icon: this.currentModeIcon,
           href: '#',
-          title: 'My Project',
-          click: this.handleProjectSetting,
+          title: this.isOrganizationMode ? 'My Organization' : 'My Project',
+          click: this.isOrganizationMode
+            ? this.handleOrganizationSetting
+            : this.handleProjectSetting,
+        },
+        {
+          icon: this.currentModeIcon,
+          href: '#',
+          title: this.isOrganizationMode ? 'Project Mode' : 'Organization Mode',
+          click: this.handleModeToggle,
         },
       ]
       if (this.isAdmin) {
@@ -305,7 +355,6 @@ export default {
       })
       return menu
     },
-
     // handler
     handleDrawerToggle() {
       this.$emit('side-icon-click')
@@ -331,16 +380,37 @@ export default {
     handleProjectSetting() {
       this.$router.push('/project/setting/')
     },
+    handleOrganizationSetting() {
+      this.$router.push('/organization/setting/')
+    },
+    handleNewOrganization() {
+      this.$router.push('/organization/new')
+    },
     handleAdmin() {
       this.$router.push('/admin/menu/')
     },
     handleGoBack() {
       this.$router.go(-1)
     },
+    handleSearchEntity() {
+      this.loading = true
+      if (this.isProjectMode) {
+        this.projectDialog = true
+        this.listProject()
+      } else {
+        this.organizationDialog = true
+        this.listOrganization()
+      }
+    },
     async handleProjectSelected(project) {
       await this.setProjectQueryParam(project.project_id)
       await store.commit('updateProject', project)
       this.reload()
+    },
+    async setProjectQueryParam(project_id) {
+      let query = await Object.assign({}, this.$router.query)
+      query.project_id = project_id
+      await this.$router.push({ query: query })
     },
     handleNewProject() {
       this.$router.push('/project/new')
@@ -348,15 +418,45 @@ export default {
     handleSettingProject() {
       this.$router.push('/project/setting/')
     },
-    handleSearchProject() {
-      this.loading = true
-      this.projectDialog = true
-      this.listProject()
-    },
-    async setProjectQueryParam(project_id) {
-      let query = await Object.assign({}, this.$router.query)
-      query.project_id = project_id
+    async handleOrganizationSelected(organization) {
+      const query = { organization_id: organization.organization_id }
       await this.$router.push({ query: query })
+      await store.commit('updateOrganization', organization)
+      await this.$router.go({
+        path: '/organization/project',
+        force: true,
+      })
+    },
+    async handleModeToggle() {
+      const newMode = this.isProjectMode ? MODE.ORGANIZATION : MODE.PROJECT
+      store.commit('updateMode', newMode)
+      this.myMenu = this.getMenu()
+      let query = {}
+      if (newMode === MODE.ORGANIZATION) {
+        if (store.state.organization?.organization_id) {
+          query.organization_id = store.state.organization.organization_id
+        }
+      } else {
+        if (store.state.project?.project_id) {
+          query.project_id = store.state.project.project_id
+        }
+      }
+      if (newMode === MODE.ORGANIZATION) {
+        await this.$router
+          .push({
+            path: '/organization/project',
+            query: query,
+          })
+          .catch(() => {
+            this.$router.push('/organization/project')
+          })
+      } else {
+        await this.$router
+          .push({ path: '/dashboard', query: query })
+          .catch(() => {
+            this.$router.push('/dashboard')
+          })
+      }
     },
   },
 }
