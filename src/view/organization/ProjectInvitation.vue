@@ -3,7 +3,7 @@
     <v-container>
       <page-header
         icon="mdi-email-multiple"
-        :title="$t(`submenu['OrganizationInvitation']`)"
+        :title="$t(`submenu['ProjectInvitation']`)"
       />
 
       <!-- Search Form -->
@@ -13,7 +13,8 @@
         :name-field-items="table.nameList"
         name-field-key="name"
         :show-id-field="false"
-        :show-create-button="false"
+        :show-create-button="true"
+        @create="handleInviteProjects"
         :search-form-config="{
           nameField: searchForm.name,
         }"
@@ -26,7 +27,7 @@
         :loading="loading"
         :headers="tableHeaders"
         :actions="table.actions"
-        item-key="organization_id"
+        item-key="project_id"
         @update-options="updateOptions"
       >
         <template v-slot:[`item.status`]="{ item }">
@@ -38,8 +39,29 @@
             {{ getStatusText(item.value.status) }}
           </v-chip>
         </template>
+        <template v-slot:[`item.membership`]="{ item }">
+          <v-chip
+            :color="item.value.membership ? 'success' : 'default'"
+            variant="flat"
+            size="small"
+          >
+            {{
+              item.value.membership
+                ? $t('item["Joined"]')
+                : $t('item["Not Joined"]')
+            }}
+          </v-chip>
+        </template>
       </data-table>
     </v-container>
+
+    <project-org-select-dialog
+      v-model="projectDialog"
+      entity-type="project"
+      :items="projectList"
+      :loading="projectListLoading"
+      @item-selected="handleProjectDialogResponse"
+    />
 
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
@@ -54,42 +76,42 @@ import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import organization_base from '@/mixin/util/organization_base'
+import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 import { INVITATION_STATUS } from '@/constants/invitationStatus'
 
 export default {
-  name: 'OrganizationList',
+  name: 'ProjectInvitation',
   mixins: [mixin, organization, project, organization_base],
   components: {
     SearchToolbar,
     BottomSnackBar,
     DataTable,
+    ProjectOrgSelectDialog,
     PageHeader,
   },
   data() {
     return {
       loading: false,
+      projectDialog: false,
+      projectList: [],
+      projectListLoading: false,
       searchModel: { name: null },
       searchForm: {
         name: {
-          label: 'Organization',
-          placeholder: 'Filter for organization name',
+          label: 'Project',
+          placeholder: 'Filter for project name',
         },
       },
       table: {
         items: [],
         nameList: [],
-        options: { page: 1, itemsPerPage: 10, sortBy: ['organization_id'] },
+        options: { page: 1, itemsPerPage: 10, sortBy: ['project_id'] },
         actions: [
           {
-            text: 'Accept Invitation',
-            icon: 'mdi-check',
-            click: this.handleAcceptInvitation,
-          },
-          {
-            text: 'Reject Invitation',
-            icon: 'mdi-close',
-            click: this.handleRejectInvitation,
+            text: 'Delete Invitation',
+            icon: 'mdi-delete',
+            click: this.handleDeleteInvitation,
           },
         ],
         footer: {
@@ -104,10 +126,10 @@ export default {
     tableHeaders() {
       return [
         {
-          title: 'Organization ID',
+          title: 'Project ID',
           align: 'start',
           sortable: false,
-          key: 'organization_id',
+          key: 'project_id',
         },
         {
           title: this.$i18n.t('item["Name"]'),
@@ -120,6 +142,12 @@ export default {
           align: 'center',
           sortable: false,
           key: 'status',
+        },
+        {
+          title: this.$i18n.t('item["Membership"]'),
+          align: 'center',
+          sortable: false,
+          key: 'membership',
         },
         {
           title: this.$i18n.t('item["Updated"]'),
@@ -139,6 +167,7 @@ export default {
       return {
         items: this.table.items,
         options: this.table.options,
+        headers: this.tableHeaders,
         footer: this.table.footer,
         total: this.table.items.length,
       }
@@ -148,44 +177,51 @@ export default {
     this.refleshList('')
   },
   methods: {
-    async refleshList(searchCond) {
+    async refleshList(name) {
       this.loading = true
-      const invitations = await this.listProjectOrganizationInvitationAPI(
-        searchCond
-      ).catch((error) => {
-        console.error('Error loading list:', error)
-        this.clearList()
-        this.loading = false
-        throw error
-      })
+      const invitations = await this.listOrganizationInvitationAPI().catch(
+        (err) => {
+          console.error('Error loading invitations:', err)
+          throw err
+        }
+      )
       if (!invitations || invitations.length === 0) {
         this.clearList()
         this.loading = false
         return
       }
+      const organizationProject = await this.listProjectAPI(
+        `?organization_id=${this.getCurrentOrganizationID()}`
+      ).catch((err) => {
+        console.error('Error loading projects:', err)
+        throw err
+      })
       let invitationWithName = await Promise.all(
         invitations.map(async (invitation) => {
-          const organizations = await this.listOrganizationAPI(
-            `?organization_id=${invitation.organization_id}`
-          )
+          const projects = await this.listProjectAPI(
+            `?project_id=${invitation.project_id}`
+          ).catch((err) => {
+            console.error('Error loading project:', err)
+            throw err
+          })
           return {
             ...invitation,
-            name: organizations[0].name,
+            name: projects[0].name,
+            membership: organizationProject.some(
+              (project) => project.project_id === invitation.project_id
+            ),
           }
         })
-      ).catch((error) => {
-        console.error('Error loading list:', error)
-        this.clearList()
-        this.loading = false
-        throw error
+      ).catch((err) => {
+        console.error('Error processing invitations:', err)
+        throw err
       })
-      /*
       if (name) {
         invitationWithName = invitationWithName.filter(
           (invitation) => invitation.name == name
         )
       }
-      */
+
       this.table.items = invitationWithName
       this.table.nameList = [
         ...new Set(this.table.items.map((item) => item.name)),
@@ -196,47 +232,63 @@ export default {
       this.table.items = []
       this.table.nameList = []
     },
-
+    handleInviteProjects() {
+      this.projectDialog = true
+      this.loadProjectList()
+    },
+    async loadProjectList() {
+      this.projectListLoading = true
+      this.projectList = await this.listProjectAPI().catch((err) => {
+        console.error('Error loading projects:', err)
+        this.$refs.snackbar.notifyError('Failed to load projects')
+        return Promise.reject(err)
+      })
+      this.projectListLoading = false
+    },
     handleSearch(searchModel) {
-      let searchCond = ''
-      if (searchModel.name) {
-        searchCond += `&name=${searchModel.name}`
-      }
-      this.refleshList(searchCond)
+      this.refleshList(searchModel.name)
     },
-    async handleAcceptInvitation(item) {
-      if (!confirm(`組織「${item.value.name}」の招待を承認しますか？`)) {
+    async handleDeleteInvitation(item) {
+      if (
+        !confirm(`プロジェクト「${item.value.name}」の招待を削除しますか？`)
+      ) {
         return
       }
       this.loading = true
-      await this.replyOrganizationInvitationAPI(
-        item.value.organization_id,
-        INVITATION_STATUS.ACCEPTED
-      ).catch((err) => {
-        console.error('Error accepting invitation:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の承認に失敗しました'
-        )
-        return Promise.reject(err)
-      })
-      this.finishUpdated(`組織「${item.value.name}」の招待を承認しました`)
+      await this.deleteOrganizationInvitationAPI(item.value.project_id)
+        .then(() => {
+          this.$refs.snackbar.notifySuccess(
+            `プロジェクト「${item.value.name}」の招待を削除しました`
+          )
+          this.handleSearch(this.searchModel)
+        })
+        .catch((err) => {
+          console.error('Error deleting invitation:', err)
+          this.$refs.snackbar.notifyError(
+            err.response?.data || '招待の削除に失敗しました'
+          )
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
-    async handleRejectInvitation(item) {
-      if (!confirm(`組織「${item.value.name}」の招待を拒否しますか？`)) {
-        return
-      }
+
+    async handleProjectDialogResponse(project) {
+      this.projectDialog = false
       this.loading = true
-      await this.replyOrganizationInvitationAPI(
-        item.value.organization_id,
-        INVITATION_STATUS.REJECTED
+
+      await this.putOrganizationInvitationAPI(
+        project.project_id,
+        INVITATION_STATUS.PENDING
       ).catch((err) => {
-        console.error('Error rejecting invitation:', err)
         this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の拒否に失敗しました'
+          err.response?.data || 'Failed to send organization invitation'
         )
         return Promise.reject(err)
       })
-      this.finishUpdated(`組織「${item.value.name}」の招待を拒否しました`)
+      this.finishUpdated(
+        `Organization invitation sent to project: ${project.name}`
+      )
     },
 
     async finishUpdated(msg) {

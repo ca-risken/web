@@ -158,12 +158,11 @@ export default {
           'New Organization',
           'Organization Setting',
           'OrganizationSetting',
-          'OrganizationProject',
+          'ProjectInvitation',
         ]
         return !projectModeForbiddenTitles.includes(sub.meta.title)
       } else {
-        // Organization Modeのときに隠すサブメニュー
-        const organizationModeForbiddenTitles = ['OrganizationList']
+        const organizationModeForbiddenTitles = ['OrganizationInvitation']
         return !organizationModeForbiddenTitles.includes(sub.meta.title)
       }
     },

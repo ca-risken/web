@@ -98,8 +98,9 @@ const en = {
     ProjectSetting: 'Setting', // Project
     'New Organization': 'New Organization',
     'Organization Setting': 'Organization Setting',
-    OrganizationInvitation: 'Invitation List',
-    OrganizationList: 'Organization List',
+    OrganizationInvitation: 'Organization Invitation',
+    OrganizationSelect: 'Select Organization',
+    ProjectInvitation: 'Project Invitation',
     OrganizationProject: 'Project List',
     Profile: 'Profile',
     Menu: 'Menu',
@@ -159,6 +160,8 @@ const en = {
     Keyword: 'Keyword',
     ID: 'ID',
     Japanese: 'Japanese',
+    Joined: 'Joined',
+    'Not Joined': 'Not Joined',
     Link: 'Link',
     'Last Updated User': 'Last Updated User',
     'MAX Score': 'MAX Score',
@@ -231,6 +234,7 @@ const en = {
       'The wp-content directory if custom or not detected, such as "wp-content"',
     Project: 'Project',
     Organization: 'Organization',
+    Membership: 'Membership',
   },
   version: {
     version: 'version',

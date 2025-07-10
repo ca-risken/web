@@ -449,11 +449,12 @@ export const appRoute = [
         children: [
           {
             path: '/organization/project',
-            name: 'OrganizationProject',
+            name: 'ProjectInvitation',
             meta: {
-              title: 'OrganizationProject',
+              title: 'ProjectInvitation',
             },
-            component: () => import('@/view/organization/InvitationList.vue'),
+            component: () =>
+              import('@/view/organization/ProjectInvitation.vue'),
           },
           {
             path: '/organization/setting',
@@ -473,11 +474,13 @@ export const appRoute = [
           },
           {
             path: '/organization/list',
-            name: 'OrganizationList',
+            name: 'OrganizationInvitation',
             meta: {
-              title: 'OrganizationList',
+              title: 'OrganizationInvitation',
+              requiresAuth: true,
             },
-            component: () => import('@/view/organization/OrganizationList.vue'),
+            component: () =>
+              import('@/view/organization/OrganizationInvitation.vue'),
           },
           {
             path: '/organization/select',

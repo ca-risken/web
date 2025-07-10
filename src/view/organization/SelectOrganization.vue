@@ -3,7 +3,7 @@
     <v-container>
       <page-header
         icon="mdi-account-group"
-        :title="$t(`menu['Organization']`)"
+        :title="$t(`submenu['OrganizationSelect']`)"
       />
 
       <v-row dense justify="center" align-content="center">

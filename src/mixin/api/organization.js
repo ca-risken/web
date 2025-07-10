@@ -60,12 +60,11 @@ const organization = {
         })
       return res
     },
-    async listOrganizationInvitationAPI(searchCond) {
+    async listOrganizationInvitationAPI() {
       const res = await this.$axios
         .get(
           '/organization/list-organization-invitation?organization_id=' +
-            this.getCurrentOrganizationID() +
-            searchCond
+            this.getCurrentOrganizationID()
         )
         .catch((err) => {
           return Promise.reject(err)
@@ -88,7 +87,6 @@ const organization = {
         })
       return res.data.data.organization_invitations
     },
-
     async deleteOrganizationInvitationAPI(project_id) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
@@ -100,27 +98,6 @@ const organization = {
           return Promise.reject(err)
         })
       return res.data.data.organization_invitations
-    },
-    async listProjectInOrganizationAPI(searchCond) {
-      const res = await this.$axios
-        .get(
-          '/organization/list-project-in-organization?organization_id=' +
-            this.getCurrentOrganizationID()
-        )
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      if (!res.data.data.project) {
-        return []
-      }
-      // 検索条件がある場合は、検索条件を適用。APIに実装がないので一時的な対応。
-      if (searchCond) {
-        const name = searchCond.slice(6)
-        res.data.data.project = res.data.data.project.filter((project) => {
-          return project.name == name
-        })
-      }
-      return res.data.data.project
     },
   },
 }
