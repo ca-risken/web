@@ -6,6 +6,8 @@ const en = {
     CANCEL: 'CANCEL',
     'EDIT PROJECT': 'EDIT PROJECT',
     'CREATE NEW PROJECT': 'CREATE NEW PROJECT',
+    'EDIT ORGANIZATION': 'EDIT ORGANIZATION',
+    'CREATE NEW ORGANIZATION': 'CREATE NEW ORGANIZATION',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: 'ADD',
     ARCHIVE: 'ARCHIVE',
@@ -41,6 +43,7 @@ const en = {
     Recommendation: 'Recommendation',
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
+    'Select Organization': 'Select Organization',
   },
   menu: {
     Home: 'Home',
@@ -56,8 +59,10 @@ const en = {
     OSINT: 'OSINT',
     Code: 'Code',
     IAM: 'IAM',
+    'Organization IAM': 'Org IAM',
     Analysis: 'Analysis',
     Admin: 'Admin',
+    Organization: 'Organization',
   },
   submenu: {
     Dashboard: 'Dashboard',
@@ -91,6 +96,12 @@ const en = {
     ReportFinding: 'Report Finding', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
+    'New Organization': 'New Organization',
+    'Organization Setting': 'Organization Setting',
+    OrganizationInvitation: 'Organization Invitation',
+    OrganizationSelect: 'Select Organization',
+    ProjectInvitation: 'Project Invitation',
+    OrganizationProject: 'Project List',
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
@@ -149,6 +160,8 @@ const en = {
     Keyword: 'Keyword',
     ID: 'ID',
     Japanese: 'Japanese',
+    Joined: 'Joined',
+    'Not Joined': 'Not Joined',
     Link: 'Link',
     'Last Updated User': 'Last Updated User',
     'MAX Score': 'MAX Score',
@@ -219,6 +232,9 @@ const en = {
     'WPScan Random User Agent': 'Use a random user-agent for each scan',
     'WPScan WP Content Dir':
       'The wp-content directory if custom or not detected, such as "wp-content"',
+    Project: 'Project',
+    Organization: 'Organization',
+    Membership: 'Membership',
   },
   version: {
     version: 'version',
@@ -256,9 +272,15 @@ const en = {
     'View Item': 'View Item',
     'Test Notification': 'Test Notification',
     'Disable Admin': 'Disable Admin',
+    'Delete Invitation': 'Delete Invitation',
+    'Accept Invitation': 'Accept Invitation',
+    'Reject Invitation': 'Reject Invitation',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
+    'Please select an organization': 'Please select an organization',
+    'You need to select an organization to continue.':
+      'You need to select an organization to continue.',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
       'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?',
     'Do you want to archive this?': 'Do you want to archive this?',

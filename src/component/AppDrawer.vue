@@ -5,7 +5,7 @@
     v-model:mini-variant="mini"
     :width="drawerWidth"
   >
-    <v-toolbar color="primary">
+    <v-toolbar :color="drawerToolbarColor">
       <div
         class="d-flex align-center justify-start"
         height="64"
@@ -45,7 +45,7 @@
               :to="sub.path"
               :title="$t(`submenu['` + sub.meta.title + `']`)"
               :prepend-icon="sub.meta.icon"
-              v-show="!sub.meta.hiddenInMenu"
+              v-show="!sub.meta.hiddenInMenu && isSubMenuItemVisible(sub)"
             ></v-list-item>
           </v-list-group>
         </template>
@@ -87,6 +87,9 @@
 </template>
 <script>
 import { appRoute as routes, staticRoutes } from '@/router/config'
+import store from '@/store'
+import { MODE } from '@/constants/mode'
+
 export default {
   name: 'AppDrawer',
   components: {},
@@ -112,8 +115,26 @@ export default {
     computeLogo() {
       return '/static/m.png'
     },
+    currentMode() {
+      return store.state.mode
+    },
+    isOrganizationMode() {
+      return this.currentMode === MODE.ORGANIZATION
+    },
+    drawerToolbarColor() {
+      return this.isOrganizationMode ? 'light-blue' : 'primary'
+    },
     computeMenu() {
-      return routes[0].children
+      const allMenus = routes[0].children
+      let filteredMenus = allMenus.filter((menu) => {
+        if (this.isOrganizationMode) {
+          const allowedMenuTitles = ['Organization', 'Organization IAM']
+          return allowedMenuTitles.includes(menu.meta.title)
+        }
+        const forbiddenMenuTitles = ['Organization IAM']
+        return !forbiddenMenuTitles.includes(menu.meta.title)
+      })
+      return filteredMenus
     },
   },
   watch: {
@@ -130,6 +151,20 @@ export default {
     },
     toTop() {
       this.$router.push('/')
+    },
+    isSubMenuItemVisible(sub) {
+      if (!this.isOrganizationMode) {
+        const projectModeForbiddenTitles = [
+          'New Organization',
+          'Organization Setting',
+          'OrganizationSetting',
+          'ProjectInvitation',
+        ]
+        return !projectModeForbiddenTitles.includes(sub.meta.title)
+      } else {
+        const organizationModeForbiddenTitles = ['OrganizationInvitation']
+        return !organizationModeForbiddenTitles.includes(sub.meta.title)
+      }
     },
   },
 }

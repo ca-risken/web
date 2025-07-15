@@ -6,6 +6,8 @@ const ja = {
     CANCEL: 'キャンセル',
     'EDIT PROJECT': 'プロジェクト編集',
     'CREATE NEW PROJECT': '新規プロジェクト作成',
+    'EDIT ORGANIZATION': 'Organization編集',
+    'CREATE NEW ORGANIZATION': '新規Organization作成',
     'VIEW FINDING': 'VIEW FINDING',
     ADD: '追加',
     ARCHIVE: 'アーカイブ',
@@ -41,6 +43,7 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
+    'Select Organization': 'Organizationを選択',
   },
   menu: {
     Home: 'ホーム',
@@ -56,8 +59,10 @@ const ja = {
     OSINT: 'OSINT',
     Code: 'ソースコード',
     IAM: 'IAM',
+    'Organization IAM': 'Org IAM',
     Analysis: '分析',
     Admin: '管理者',
+    Organization: 'Organization',
   },
   submenu: {
     Dashboard: 'ダッシュボード',
@@ -91,6 +96,12 @@ const ja = {
     ReportFinding: 'Findingレポート',
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
+    'New Organization': '新規Organization',
+    'Organization Setting': 'Organization設定',
+    OrganizationInvitation: 'Organization招待',
+    OrganizationSelect: 'Organization選択',
+    ProjectInvitation: 'プロジェクト招待',
+    OrganizationProject: 'プロジェクト一覧',
     Profile: 'プロフィール',
     Menu: 'メニュー',
     'Admin User': '管理者ユーザ',
@@ -149,6 +160,8 @@ const ja = {
     'CodeScan Status': 'CodeScanステータス',
     ID: 'ID',
     Japanese: '日本語',
+    Joined: '所属中',
+    'Not Joined': '未所属',
     Link: 'リンク',
     'Last Updated User': '最終更新者',
     'MAX Score': 'MAXスコア',
@@ -219,6 +232,9 @@ const ja = {
     'WPScan Random User Agent': 'スキャンごとにランダムなUAを使用する',
     'WPScan WP Content Dir':
       '「wp-content」ディレクトリを自動で検知できない場合に手動で設定する',
+    Project: 'プロジェクト',
+    Organization: 'Organization',
+    Membership: '所属',
   },
   version: {
     version: 'バージョン',
@@ -256,9 +272,15 @@ const ja = {
     'View Item': '詳細を見る',
     'Test Notification': '通知のテスト',
     'Disable Admin': '管理者権限を無効化する',
+    'Delete Invitation': '招待を削除する',
+    'Accept Invitation': '招待を承認する',
+    'Reject Invitation': '招待を拒否する',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
+    'Please select an organization': 'Organizationを選択してください',
+    'You need to select an organization to continue.':
+      '続行するにはOrganizationを選択する必要があります。',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
       '無効化すると、保存されていない設定が失われます。本当に削除しますか？',
     'Do you want to archive this?': 'アーカイブしますか？',
@@ -394,7 +416,7 @@ const ja = {
         '一つ以上のロールを選択してください。何もロールを選択しない場合、対象ユーザはこのプロジェクトから',
       removed: '削除',
       'from the project.': 'されます.',
-      'Make sure to copy your access token now. You won’t be able to see it again!':
+      'Make sure to copy your access token now. You wont be able to see it again!':
         'アクセストークンをコピーし大切に保管してください. この画面を閉じた後は再度見ることができなくなります.',
       'No users found for your search condition.':
         '検索した条件でユーザーが見つかりませんでした。',
