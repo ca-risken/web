@@ -41,7 +41,7 @@
         </template>
         <template v-slot:[`item.membership`]="{ item }">
           <v-chip
-            :color="item.value.membership ? 'success' : 'default'"
+            :color="item.value.membership ? 'success' : 'grey'"
             variant="flat"
             size="small"
           >
@@ -69,9 +69,11 @@
 </template>
 
 <script>
+import store from '@/store'
 import mixin from '@/mixin'
 import organization from '@/mixin/api/organization'
 import project from '@/mixin/api/project'
+import iam from '@/mixin/api/iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
@@ -82,7 +84,7 @@ import { INVITATION_STATUS } from '@/constants/invitationStatus'
 
 export default {
   name: 'ProjectInvitation',
-  mixins: [mixin, organization, project, organization_base],
+  mixins: [mixin, organization, project, organization_base, iam],
   components: {
     SearchToolbar,
     BottomSnackBar,
@@ -237,13 +239,28 @@ export default {
       this.loadProjectList()
     },
     async loadProjectList() {
+      this.clearProjectList()
       this.projectListLoading = true
-      this.projectList = await this.listProjectAPI().catch((err) => {
-        console.error('Error loading projects:', err)
-        this.$refs.snackbar.notifyError('Failed to load projects')
-        return Promise.reject(err)
-      })
+      let listProjectParam = '?user_id=' + store.state.user.user_id
+      const isAdmin = await this.isAdminAPI(store.state.user.user_id).catch(
+        (err) => {
+          return Promise.reject(err)
+        }
+      )
+      if (isAdmin) {
+        listProjectParam = ''
+      }
+      this.projectList = await this.listProjectAPI(listProjectParam).catch(
+        (err) => {
+          console.error('Error loading projects:', err)
+          this.$refs.snackbar.notifyError('Failed to load projects')
+          return Promise.reject(err)
+        }
+      )
       this.projectListLoading = false
+    },
+    clearProjectList() {
+      this.projectList = []
     },
     handleSearch(searchModel) {
       this.refleshList(searchModel.name)
