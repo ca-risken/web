@@ -272,9 +272,31 @@ export default {
     },
     initializeChat() {
       this.messages = []
-      if (this.contextList.length === 0) {
-        // Default context (current page)
-        const screenName = this.$route.name
+      this.setDefaultContext()
+      this.messages.push({
+        role: this.RoleAI,
+        content: this.$t('view.ai["Chat Greeting"]'),
+      })
+    },
+    setDefaultContext() {
+      // current project
+      const project = this.$store.state?.project || {}
+      if (project.project_id) {
+        this.contextList.push({
+          name: 'project(' + project.name + ')',
+          content:
+            'Now, user is signing in to: \n' +
+            'project_id: ' +
+            project.project_id +
+            '\n' +
+            'project_name: ' +
+            project.name,
+        })
+      }
+
+      // current screen
+      const screenName = this.$route.name
+      if (screenName) {
         this.contextList.push({
           name: screenName,
           content:
@@ -285,10 +307,6 @@ export default {
             document.querySelector('main')?.textContent,
         })
       }
-      this.messages.push({
-        role: this.RoleAI,
-        content: this.$t('view.ai["Chat Greeting"]'),
-      })
     },
   },
   watch: {
