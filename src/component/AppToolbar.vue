@@ -325,7 +325,7 @@ export default {
           click: this.handleAccountSetting,
         },
         {
-          icon: this.currentModeIcon,
+          icon: 'mdi-domain',
           href: '#',
           title: this.isOrganizationMode ? 'My Organization' : 'My Project',
           click: this.isOrganizationMode
@@ -333,7 +333,7 @@ export default {
             : this.handleProjectSetting,
         },
         {
-          icon: this.currentModeIcon,
+          icon: this.isProjectMode ? 'mdi-alpha-o-box' : 'mdi-alpha-p-box',
           href: '#',
           title: this.isOrganizationMode ? 'Project Mode' : 'Organization Mode',
           click: this.handleModeToggle,
