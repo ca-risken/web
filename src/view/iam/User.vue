@@ -239,10 +239,10 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import organization_base from '../../mixin/util/organization_base'
+import organization_base from '@/mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import UserList from '@/component/widget/list/UserList.vue'
-import organization_iam from '../../mixin/api/organization_iam'
+import organization_iam from '@/mixin/api/organization_iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'

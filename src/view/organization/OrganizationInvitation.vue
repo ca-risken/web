@@ -40,7 +40,7 @@
         </template>
         <template v-slot:[`item.membership`]="{ item }">
           <v-chip
-            :color="item.value.membership ? 'success' : 'default'"
+            :color="item.value.membership ? 'success' : 'grey'"
             variant="flat"
             size="small"
           >
@@ -231,7 +231,13 @@ export default {
       this.refleshList(searchCond)
     },
     async handleAcceptInvitation(item) {
-      if (!confirm(`組織「${item.value.name}」の招待を承認しますか？`)) {
+      if (
+        !confirm(
+          this.$t('message["Accept organization invitation confirm"]', {
+            name: item.value.name,
+          })
+        )
+      ) {
         return
       }
       this.loading = true
@@ -239,16 +245,23 @@ export default {
         item.value.organization_id,
         INVITATION_STATUS.ACCEPTED
       ).catch((err) => {
-        console.error('Error accepting invitation:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の承認に失敗しました'
-        )
+        this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated(`組織「${item.value.name}」の招待を承認しました`)
+      this.finishUpdated(
+        this.$t('message["Accepted organization invitation"]', {
+          name: item.value.name,
+        })
+      )
     },
     async handleRejectInvitation(item) {
-      if (!confirm(`組織「${item.value.name}」の招待を拒否しますか？`)) {
+      if (
+        !confirm(
+          this.$t('message["Reject organization invitation confirm"]', {
+            name: item.value.name,
+          })
+        )
+      ) {
         return
       }
       this.loading = true
@@ -256,13 +269,14 @@ export default {
         item.value.organization_id,
         INVITATION_STATUS.REJECTED
       ).catch((err) => {
-        console.error('Error rejecting invitation:', err)
-        this.$refs.snackbar.notifyError(
-          err.response?.data || '招待の拒否に失敗しました'
-        )
+        this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated(`組織「${item.value.name}」の招待を拒否しました`)
+      this.finishUpdated(
+        this.$t('message["Rejected organization invitation"]', {
+          name: item.value.name,
+        })
+      )
     },
 
     async finishUpdated(msg) {

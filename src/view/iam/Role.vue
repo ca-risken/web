@@ -250,8 +250,8 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import organization_iam from '../../mixin/api/organization_iam'
-import organization_base from '../../mixin/util/organization_base'
+import organization_iam from '@/mixin/api/organization_iam'
+import organization_base from '@/mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'

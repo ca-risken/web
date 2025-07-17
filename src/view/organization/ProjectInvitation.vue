@@ -63,6 +63,20 @@
       @item-selected="handleProjectDialogResponse"
     />
 
+    <!-- Delete Dialog -->
+    <delete-dialog
+      v-model="deleteDialog"
+      :title="$t(`message['Do you really want to delete this?']`)"
+      :item-data="{
+        id: invitationModel.project_id,
+        name: invitationModel.name,
+      }"
+      item-icon="mdi-alpha-r-circle"
+      :loading="loading"
+      @confirm="deleteItem(invitationModel.project_id)"
+      @cancel="deleteDialog = false"
+    />
+
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
   </div>
@@ -81,6 +95,7 @@ import organization_base from '@/mixin/util/organization_base'
 import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 import { INVITATION_STATUS } from '@/constants/invitationStatus'
+import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 
 export default {
   name: 'ProjectInvitation',
@@ -91,13 +106,23 @@ export default {
     DataTable,
     ProjectOrgSelectDialog,
     PageHeader,
+    DeleteDialog,
   },
   data() {
     return {
       loading: false,
       projectDialog: false,
+      deleteDialog: false,
       projectList: [],
       projectListLoading: false,
+      invitationModel: {
+        project_id: '',
+        organization_id: '',
+        name: '',
+        status: '',
+        membership: false,
+        updated_at: '',
+      },
       searchModel: { name: null },
       searchForm: {
         name: {
@@ -265,29 +290,19 @@ export default {
     handleSearch(searchModel) {
       this.refleshList(searchModel.name)
     },
-    async handleDeleteInvitation(item) {
-      if (
-        !confirm(`プロジェクト「${item.value.name}」の招待を削除しますか？`)
-      ) {
-        return
-      }
+
+    async deleteItem(projectID) {
       this.loading = true
-      await this.deleteOrganizationInvitationAPI(item.value.project_id)
-        .then(() => {
-          this.$refs.snackbar.notifySuccess(
-            `プロジェクト「${item.value.name}」の招待を削除しました`
-          )
-          this.handleSearch(this.searchModel)
-        })
-        .catch((err) => {
-          console.error('Error deleting invitation:', err)
-          this.$refs.snackbar.notifyError(
-            err.response?.data || '招待の削除に失敗しました'
-          )
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      await this.deleteOrganizationInvitationAPI(projectID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishUpdated('Success: Deleted invitation.')
+    },
+
+    async handleDeleteInvitation(item) {
+      this.invitationModel = item.value
+      this.deleteDialog = true
     },
 
     async handleProjectDialogResponse(project) {
@@ -312,6 +327,7 @@ export default {
       await new Promise((resolve) => setTimeout(resolve, 500))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
+      this.deleteDialog = false
       this.handleSearch(this.searchModel)
     },
 
