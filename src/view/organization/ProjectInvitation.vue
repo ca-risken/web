@@ -67,13 +67,15 @@
     <delete-dialog
       v-model="deleteDialog"
       :title="$t(`message['Do you really want to delete this?']`)"
-      :item-data="{ id: invitationModel.project_id, name: invitationModel.name }"
+      :item-data="{
+        id: invitationModel.project_id,
+        name: invitationModel.name,
+      }"
       item-icon="mdi-alpha-r-circle"
       :loading="loading"
       @confirm="deleteItem(invitationModel.project_id)"
       @cancel="deleteDialog = false"
     />
-
 
     <!-- Snackbar -->
     <bottom-snack-bar ref="snackbar" />
@@ -291,14 +293,11 @@ export default {
 
     async deleteItem(projectID) {
       this.loading = true
-      await this.deleteOrganizationInvitationAPI(projectID)
-        .catch((err) => {
-          this.$refs.snackbar.notifyError(err.response.data)
-          return Promise.reject(err)
-        })
-      this.finishUpdated(
-        'Success: Deleted invitation.'
-      )
+      await this.deleteOrganizationInvitationAPI(projectID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishUpdated('Success: Deleted invitation.')
     },
 
     async handleDeleteInvitation(item) {

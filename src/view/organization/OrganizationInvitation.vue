@@ -231,7 +231,13 @@ export default {
       this.refleshList(searchCond)
     },
     async handleAcceptInvitation(item) {
-      if (!confirm(this.$t('message["Accept organization invitation confirm"]', { name: item.value.name }))) {
+      if (
+        !confirm(
+          this.$t('message["Accept organization invitation confirm"]', {
+            name: item.value.name,
+          })
+        )
+      ) {
         return
       }
       this.loading = true
@@ -242,10 +248,20 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated(this.$t('message["Accepted organization invitation"]', { name: item.value.name }))
+      this.finishUpdated(
+        this.$t('message["Accepted organization invitation"]', {
+          name: item.value.name,
+        })
+      )
     },
     async handleRejectInvitation(item) {
-      if (!confirm(this.$t('message["Reject organization invitation confirm"]', { name: item.value.name }))) {
+      if (
+        !confirm(
+          this.$t('message["Reject organization invitation confirm"]', {
+            name: item.value.name,
+          })
+        )
+      ) {
         return
       }
       this.loading = true
@@ -256,7 +272,11 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      this.finishUpdated(this.$t('message["Rejected organization invitation"]', { name: item.value.name }))
+      this.finishUpdated(
+        this.$t('message["Rejected organization invitation"]', {
+          name: item.value.name,
+        })
+      )
     },
 
     async finishUpdated(msg) {
