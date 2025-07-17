@@ -291,6 +291,10 @@ const en = {
       'Do you want to send a test notification?',
     'REQUEST PROJECT ROLE COMPLETED': 'REQUEST PROJECT ROLE COMPLETED',
     'Do you want to disable admin?': 'Do you want to disable admin?',
+    'Accept organization invitation confirm': 'Do you want to accept the invitation to organization "{name}"?',
+    'Reject organization invitation confirm': 'Do you want to reject the invitation to organization "{name}"?',
+    'Accepted organization invitation': 'Accepted invitation to organization "{name}".',
+    'Rejected organization invitation': 'Rejected invitation to organization "{name}".',
   },
   error: {
     'Sorry, Please access again after a while.':

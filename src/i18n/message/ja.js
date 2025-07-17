@@ -291,6 +291,10 @@ const ja = {
     'REQUEST PROJECT ROLE COMPLETED':
       'プロジェクトへのアクセス権を管理者にリクエストしました。',
     'Do you want to disable admin?': '本当に無効化しますか？',
+    'Accept organization invitation confirm': '組織「{name}」の招待を承認しますか？',
+    'Reject organization invitation confirm': '組織「{name}」の招待を拒否しますか？',
+    'Accepted organization invitation': '組織「{name}」の招待を承認しました',
+    'Rejected organization invitation': '組織「{name}」の招待を拒否しました',
   },
   error: {
     'Sorry, Please access again after a while.':

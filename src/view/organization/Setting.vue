@@ -140,7 +140,7 @@ export default {
   },
   async mounted() {
     this.loading = true
-    this.organizationModel = store.state.organization
+    this.organizationModel = { ...store.state.organization }
     this.loading = false
   },
   methods: {

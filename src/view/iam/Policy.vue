@@ -219,8 +219,8 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import organization_iam from '../../mixin/api/organization_iam'
-import organization_base from '../../mixin/util/organization_base'
+import organization_iam from '@/mixin/api/organization_iam'
+import organization_base from '@/mixin/util/organization_base'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
@@ -449,7 +449,6 @@ export default {
             name: this.policyModel.name,
             organization_id: this.getCurrentOrganizationID(),
             action_ptn: this.policyModel.action_ptn,
-            resource_ptn: '.*', //this.policyModel.resource_ptn,
           },
         }
         await this.putOrganizationPolicyAPI(param).catch((err) => {
