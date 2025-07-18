@@ -128,7 +128,7 @@ export default {
       store.commit('updateMode', 'organization')
       this.$refs.snackbar.notifySuccess('Success: Created new organization.')
       setTimeout(() => {
-        this.$router.push('/organization/setting/')
+        this.$router.push('/organization/project/')
       }, 1000)
     },
 
