@@ -45,7 +45,7 @@
               :to="sub.path"
               :title="$t(`submenu['` + sub.meta.title + `']`)"
               :prepend-icon="sub.meta.icon"
-              v-show="!sub.meta.hiddenInMenu && isSubMenuItemVisible(sub)"
+              v-show="!sub.meta.hiddenInMenu"
             ></v-list-item>
           </v-list-group>
         </template>
@@ -126,14 +126,37 @@ export default {
     },
     computeMenu() {
       const allMenus = routes[0].children
-      let filteredMenus = allMenus.filter((menu) => {
-        if (this.isOrganizationMode) {
-          const allowedMenuTitles = ['Organization', 'Organization IAM']
-          return allowedMenuTitles.includes(menu.meta.title)
-        }
-        const forbiddenMenuTitles = ['Organization IAM']
-        return !forbiddenMenuTitles.includes(menu.meta.title)
-      })
+      let filteredMenus = allMenus
+        .filter((menu) => {
+          if (this.isOrganizationMode) {
+            const allowedMenuTitles = ['Organization', 'Organization IAM']
+            return allowedMenuTitles.includes(menu.meta.title)
+          } else {
+            const forbiddenMenuTitles = ['Organization IAM']
+            return !forbiddenMenuTitles.includes(menu.meta.title)
+          }
+        })
+        .map((menu) => {
+          if (menu.children && menu.children.length > 0) {
+            menu = { ...menu }
+            menu.children = menu.children.filter((sub) => {
+              if (!this.isOrganizationMode) {
+                const projectModeForbiddenTitles = [
+                  'New Organization',
+                  'Organization Setting',
+                  'ProjectInvitation',
+                ]
+                return !projectModeForbiddenTitles.includes(sub.meta.title)
+              } else {
+                const organizationModeForbiddenTitles = [
+                  'OrganizationInvitation',
+                ]
+                return !organizationModeForbiddenTitles.includes(sub.meta.title)
+              }
+            })
+          }
+          return menu
+        })
       return filteredMenus
     },
   },
@@ -151,20 +174,6 @@ export default {
     },
     toTop() {
       this.$router.push('/')
-    },
-    isSubMenuItemVisible(sub) {
-      if (!this.isOrganizationMode) {
-        const projectModeForbiddenTitles = [
-          'New Organization',
-          'Organization Setting',
-          'OrganizationSetting',
-          'ProjectInvitation',
-        ]
-        return !projectModeForbiddenTitles.includes(sub.meta.title)
-      } else {
-        const organizationModeForbiddenTitles = ['OrganizationInvitation']
-        return !organizationModeForbiddenTitles.includes(sub.meta.title)
-      }
     },
   },
 }

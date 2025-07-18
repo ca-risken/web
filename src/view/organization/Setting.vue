@@ -96,13 +96,13 @@ import mixin from '@/mixin'
 import store from '@/store'
 import organization from '@/mixin/api/organization'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
-import organization_base from '@/mixin/util/organization_base'
+import organization_helper from '@/mixin/helper/organization_helper'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 
 export default {
   name: 'OrganizationSetting',
-  mixins: [mixin, organization, organization_base],
+  mixins: [mixin, organization, organization_helper],
   components: {
     BottomSnackBar,
     DeleteDialog,

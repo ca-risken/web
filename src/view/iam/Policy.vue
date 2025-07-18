@@ -220,14 +220,14 @@
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
 import organization_iam from '@/mixin/api/organization_iam'
-import organization_base from '@/mixin/util/organization_base'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 export default {
   name: 'PolicyList',
-  mixins: [mixin, iam, organization_iam, organization_base],
+  mixins: [mixin, iam, organization_iam, organization_helper],
   components: {
     BottomSnackBar,
     DeleteDialog,
