@@ -1,0 +1,8 @@
+repos:
+-   repo: local
+    hooks:
+    -   id: make-fmt
+        name: make fmt
+        entry: make fmt
+        language: system
+        pass_filenames: false
