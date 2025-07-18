@@ -15,6 +15,7 @@ This module requires the following modules:
 
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
+- [pip](https://pip.pypa.io/en/latest/installation/)
 
 ### Install packages
 

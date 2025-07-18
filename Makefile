@@ -22,6 +22,8 @@ local-clean:
 .PHONY: install
 install:
 	yarn install
+	pip install pre-commit
+	pre-commit install
 
 .PHONY: build
 build: lint
