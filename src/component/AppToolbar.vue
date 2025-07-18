@@ -150,7 +150,7 @@ import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
 import project from '@/mixin/api/project'
 import organization from '@/mixin/api/organization'
-import organization_base from '@/mixin/util/organization_base'
+import organization_helper from '@/mixin/helper/organization_helper'
 import { MODE } from '@/constants/mode'
 export default {
   name: 'AppToolbar',
@@ -158,7 +158,7 @@ export default {
     BottomSnackBar,
     ProjectOrgSelectDialog,
   },
-  mixins: [mixin, project, iam, signin, organization, organization_base],
+  mixins: [mixin, project, iam, signin, organization, organization_helper],
   data() {
     return {
       loading: false,

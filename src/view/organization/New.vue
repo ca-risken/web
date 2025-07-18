@@ -57,13 +57,13 @@
 import store from '@/store'
 import mixin from '@/mixin'
 import organization from '@/mixin/api/organization'
-import organization_base from '@/mixin/util/organization_base'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 
 export default {
   name: 'NewOrganization',
-  mixins: [mixin, organization, organization_base],
+  mixins: [mixin, organization, organization_helper],
   components: {
     BottomSnackBar,
     PageHeader,

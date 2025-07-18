@@ -1,7 +1,7 @@
 import { MODE } from '@/constants/mode'
 import { INVITATION_STATUS } from '@/constants/invitationStatus'
 
-const organization_iam = {
+const organization_helper = {
   data: () => {
     return {}
   },
@@ -54,4 +54,4 @@ const organization_iam = {
   },
 }
 
-export default organization_iam
+export default organization_helper

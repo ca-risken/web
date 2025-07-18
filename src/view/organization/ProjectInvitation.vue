@@ -91,7 +91,7 @@ import iam from '@/mixin/api/iam'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
-import organization_base from '@/mixin/util/organization_base'
+import organization_helper from '@/mixin/helper/organization_helper'
 import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 import { INVITATION_STATUS } from '@/constants/invitationStatus'
@@ -99,7 +99,7 @@ import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 
 export default {
   name: 'ProjectInvitation',
-  mixins: [mixin, organization, project, organization_base, iam],
+  mixins: [mixin, organization, project, organization_helper, iam],
   components: {
     SearchToolbar,
     BottomSnackBar,

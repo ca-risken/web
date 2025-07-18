@@ -66,13 +66,13 @@ import project from '@/mixin/api/project'
 import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import DataTable from '@/component/widget/table/DataTable.vue'
-import organization_base from '@/mixin/util/organization_base'
+import organization_helper from '@/mixin/helper/organization_helper'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 import { INVITATION_STATUS } from '@/constants/invitationStatus'
 
 export default {
   name: 'OrganizationInvitation',
-  mixins: [mixin, organization, project, organization_base],
+  mixins: [mixin, organization, project, organization_helper],
   components: {
     SearchToolbar,
     BottomSnackBar,
