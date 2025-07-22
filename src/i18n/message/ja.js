@@ -275,6 +275,7 @@ const ja = {
     'Delete Invitation': '招待を削除する',
     'Accept Invitation': '招待を承認する',
     'Reject Invitation': '招待を拒否する',
+    'Visit Project': 'プロジェクトを表示する',
   },
   message: {
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
