@@ -95,6 +95,7 @@ import organization_helper from '@/mixin/helper/organization_helper'
 import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
 import { INVITATION_STATUS } from '@/constants/invitationStatus'
+import { MODE } from '@/constants/mode'
 import DeleteDialog from '@/component/dialog/DeleteDialog.vue'
 
 export default {
@@ -139,6 +140,11 @@ export default {
             text: 'Delete Invitation',
             icon: 'mdi-delete',
             click: this.handleDeleteInvitation,
+          },
+          {
+            text: 'Visit Project',
+            icon: 'mdi-arrow-right-bold',
+            click: this.handleVisitProject,
           },
         ],
         footer: {
@@ -303,6 +309,25 @@ export default {
     async handleDeleteInvitation(item) {
       this.invitationModel = item.value
       this.deleteDialog = true
+    },
+
+    async handleVisitProject(item) {
+      const project = await this.listProjectAPI(
+        `?project_id=${item.value.project_id}`
+      ).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      const newProject = {
+        name: project[0].name,
+        project_id: project[0].project_id,
+        created_at: project[0].created_at,
+        updated_at: project[0].updated_at,
+      }
+      store.commit('updateMode', MODE.PROJECT)
+      store.commit('updateProject', newProject)
+      await this.$router.push('/dashboard')
+      this.reload()
     },
 
     async handleProjectDialogResponse(project) {

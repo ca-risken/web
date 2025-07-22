@@ -275,6 +275,7 @@ const en = {
     'Delete Invitation': 'Delete Invitation',
     'Accept Invitation': 'Accept Invitation',
     'Reject Invitation': 'Reject Invitation',
+    'Visit Project': 'Visit Project',
   },
   message: {
     'Do you really want to delete this?': 'Do you really want to delete this?',
