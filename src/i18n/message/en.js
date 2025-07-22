@@ -398,6 +398,8 @@ const en = {
         'Please specify the Slack Webhook URL.',
       '(You need to issue the URL in advance.)':
         '(You need to issue the URL in advance.)',
+      'severity mention':
+        'When you mention &#64;severity, it will be mentioned according to the severity of the vulnerability.',
     },
     report: {
       'All Data Source': 'All Data Source',
