@@ -318,14 +318,9 @@ export default {
         this.$refs.snackbar.notifyError(err.response.data)
         return Promise.reject(err)
       })
-      const newProject = {
-        name: project[0].name,
-        project_id: project[0].project_id,
-        created_at: project[0].created_at,
-        updated_at: project[0].updated_at,
-      }
+      delete project[0].tag
       store.commit('updateMode', MODE.PROJECT)
-      store.commit('updateProject', newProject)
+      store.commit('updateProject', project[0])
       await this.$router.push('/dashboard')
       this.reload()
     },
