@@ -399,7 +399,7 @@ const ja = {
       '(You need to issue the URL in advance.)':
         '(事前にURLを発行する必要があります。)',
       'severity mention':
-        '&#64;severityにメンションすると、脆弱性の重大度に応じてメンションされます。',
+        '&lt;&#64;severity&gt;を文頭に挿入すると、脆弱性の重大度に応じてメンションされます。',
     },
     report: {
       'All Data Source': '全データソース',
