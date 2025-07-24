@@ -399,7 +399,7 @@ const en = {
       '(You need to issue the URL in advance.)':
         '(You need to issue the URL in advance.)',
       'severity mention explanation':
-        'If you insert &lt;&#64;severity&gt; at the beginning of the message, users will be mentioned according to the severity of the vulnerability.',
+        'By inserting &lt;&#64;severity&gt;, users will be mentioned based on the severity of the vulnerability.',
     },
     report: {
       'All Data Source': 'All Data Source',
