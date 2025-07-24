@@ -129,7 +129,11 @@ export default {
       let filteredMenus = allMenus
         .filter((menu) => {
           if (this.isOrganizationMode) {
-            const allowedMenuTitles = ['Organization', 'Organization IAM']
+            const allowedMenuTitles = [
+              'Organization',
+              'Organization IAM',
+              'User Reservation',
+            ]
             return allowedMenuTitles.includes(menu.meta.title)
           } else {
             const forbiddenMenuTitles = ['Organization IAM']

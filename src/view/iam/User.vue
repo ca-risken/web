@@ -421,11 +421,7 @@ export default {
         return Promise.reject(err)
       })
 
-      if (!this.isOrganizationMode) {
-        this.userReserved = await this.listUserReserved(userName)
-      } else {
-        this.userReserved = []
-      }
+      this.userReserved = await this.listUserReserved(userName)
 
       if (userIDs.length + this.userReserved.length == 0) {
         return
@@ -508,7 +504,12 @@ export default {
       if (userIdpKey) {
         searchCond = '&user_idp_key=' + userIdpKey
       }
-      const userReserved = await this.listUserReservedAPI(searchCond)
+      let userReserved
+      if (this.isOrganizationMode) {
+        userReserved = await this.listOrganizationUserReservedAPI(searchCond)
+      } else {
+        userReserved = await this.listUserReservedAPI(searchCond)
+      }
       let mapUserReserved = {}
       userReserved.forEach((ur) => {
         if (mapUserReserved[ur.user_idp_key]) {
@@ -634,7 +635,14 @@ export default {
     async putUserReserved() {
       // Create/Delete User Reserved
       var searchCond = '&user_idp_key=' + this.userModel.user_idp_key
-      const registeredUserReserveds = await this.listUserReservedAPI(searchCond)
+      let registeredUserReserveds
+      if (this.isOrganizationMode) {
+        registeredUserReserveds = await this.listOrganizationUserReservedAPI(
+          searchCond
+        )
+      } else {
+        registeredUserReserveds = await this.listUserReservedAPI(searchCond)
+      }
       this.roleTable.items.forEach(async (item) => {
         let attachRole = false
         this.roleTable.selected.some((selected) => {
@@ -651,29 +659,49 @@ export default {
           if (registered) {
             return
           }
-          const param = {
-            project_id: this.getCurrentProjectID(),
-            user_reserved: {
-              role_id: item.role_id,
-              user_idp_key: this.userModel.user_idp_key,
-            },
+          if (this.isOrganizationMode) {
+            await this.putOrganizationUserReservedAPI(
+              null,
+              this.userModel.user_idp_key,
+              item.role_id
+            ).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
+          } else {
+            const param = {
+              project_id: this.getCurrentProjectID(),
+              user_reserved: {
+                role_id: item.role_id,
+                user_idp_key: this.userModel.user_idp_key,
+              },
+            }
+            await this.putUserReservedAPI(param).catch((err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            })
           }
-          await this.putUserReservedAPI(param).catch((err) => {
-            this.$refs.snackbar.notifyError(err.response.data)
-            return Promise.reject(err)
-          })
           return
         }
         // deleteUserReserved
         if (!registered) {
           return
         }
-        await this.deleteUserReservedAPI(registered.reserved_id).catch(
-          (err) => {
+        if (this.isOrganizationMode) {
+          await this.deleteOrganizationUserReservationAPI(
+            registered.reserved_id
+          ).catch((err) => {
             this.$refs.snackbar.notifyError(err.response.data)
             return Promise.reject(err)
-          }
-        )
+          })
+        } else {
+          await this.deleteUserReservedAPI(registered.reserved_id).catch(
+            (err) => {
+              this.$refs.snackbar.notifyError(err.response.data)
+              return Promise.reject(err)
+            }
+          )
+        }
       })
     },
     async finishUpdated(msg) {

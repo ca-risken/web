@@ -248,11 +248,13 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import organization_iam from '@/mixin/api/organization_iam'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'UserReservation',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, organization_iam, organization_helper],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -391,21 +393,38 @@ export default {
     async refleshList() {
       this.loading = true
       this.clearList()
-      const userReserveds = await this.listUserReservedAPI('').catch((err) => {
-        this.clearList()
-        return Promise.reject(err)
-      })
+      let userReserveds
+      if (this.isOrganizationMode) {
+        userReserveds = await this.listOrganizationUserReservedAPI('').catch(
+          (err) => {
+            this.clearList()
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        userReserveds = await this.listUserReservedAPI('').catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      }
       if (!userReserveds) {
         this.clearList()
         return false
       }
       this.table.total = userReserveds.length
       userReserveds.forEach(async (userReserved) => {
-        const role = await this.getRoleAPI(userReserved.role_id).catch(
-          (err) => {
+        let role
+        if (this.isOrganizationMode) {
+          role = await this.getOrganizationRoleAPI(userReserved.role_id).catch(
+            (err) => {
+              return Promise.reject(err)
+            }
+          )
+        } else {
+          role = await this.getRoleAPI(userReserved.role_id).catch((err) => {
             return Promise.reject(err)
-          }
-        )
+          })
+        }
         const item = {
           reserved_id: userReserved.reserved_id,
           role_id: userReserved.role_id,
@@ -428,16 +447,32 @@ export default {
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      const roles = await this.listRoleAPI('').catch((err) => {
-        this.loading = false
-        return Promise.reject(err)
-      })
-
-      roles.forEach(async (id) => {
-        const role = await this.getRoleAPI(id).catch((err) => {
+      let roles
+      if (this.isOrganizationMode) {
+        roles = await this.listOrganizationRoleAPI('').catch((err) => {
           this.loading = false
           return Promise.reject(err)
         })
+      } else {
+        roles = await this.listRoleAPI('').catch((err) => {
+          this.loading = false
+          return Promise.reject(err)
+        })
+      }
+
+      roles.forEach(async (id) => {
+        let role
+        if (this.isOrganizationMode) {
+          role = await this.getOrganizationRoleAPI(id).catch((err) => {
+            this.loading = false
+            return Promise.reject(err)
+          })
+        } else {
+          role = await this.getRoleAPI(id).catch((err) => {
+            this.loading = false
+            return Promise.reject(err)
+          })
+        }
         this.roleTable.items.push(role)
 
         if (this.dataModel.role_id == role.role_id) {
@@ -469,28 +504,48 @@ export default {
       }
 
       this.loading = true
-      const param = {
-        project_id: this.getCurrentProjectID(),
-        user_reserved: {
-          reserved_id: this.dataModel.reserved_id,
-          role_id: this.roleTable.selected[0].role_id,
-          user_idp_key: this.dataModel.user_idp_key,
-        },
+      if (this.isOrganizationMode) {
+        await this.putOrganizationUserReservedAPI(
+          this.dataModel.reserved_id,
+          this.dataModel.user_idp_key,
+          this.roleTable.selected[0].role_id
+        ).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          this.loading = false
+          return Promise.reject(err)
+        })
+      } else {
+        const param = {
+          project_id: this.getCurrentProjectID(),
+          user_reserved: {
+            reserved_id: this.dataModel.reserved_id,
+            role_id: this.roleTable.selected[0].role_id,
+            user_idp_key: this.dataModel.user_idp_key,
+          },
+        }
+        await this.putUserReservedAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          this.loading = false
+          return Promise.reject(err)
+        })
       }
-
-      await this.putUserReservedAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        this.loading = false
-        return Promise.reject(err)
-      })
       this.finishUpdated('Success: Updated role.')
     },
     async deleteItem(reservedID) {
       this.loading = true
-      await this.deleteUserReservedAPI(reservedID).catch((err) => {
-        this.$refs.snackbar.notifyError(err.response.data)
-        return Promise.reject(err)
-      })
+      if (this.isOrganizationMode) {
+        await this.deleteOrganizationUserReservationAPI(reservedID).catch(
+          (err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        await this.deleteUserReservedAPI(reservedID).catch((err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.finishUpdated('Success: Deleted user reservation.')
     },
     async finishUpdated(msg) {
