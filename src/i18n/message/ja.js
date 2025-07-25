@@ -405,6 +405,8 @@ const ja = {
         'SlackのWebhookURLを指定してください。',
       '(You need to issue the URL in advance.)':
         '(事前にURLを発行する必要があります。)',
+      'severity mention':
+        '&lt;&#64;severity&gt;を挿入すると、脆弱性の重大度に応じてメンションされます。',
     },
     report: {
       'All Data Source': '全データソース',

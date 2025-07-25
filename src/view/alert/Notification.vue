@@ -182,6 +182,11 @@
                       {{ $t(`view.alert['Show options']`) }}
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
+                      <p class="text-body-2 ma-4">
+                        <span
+                          v-html="$t(`view.alert['severity mention']`)"
+                        ></span>
+                      </p>
                       <v-text-field
                         v-model="dataModel.custom_message"
                         :counter="500"
@@ -241,6 +246,11 @@
                       {{ $t(`view.alert['Show options']`) }}
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
+                      <p class="text-body-2 ma-4">
+                        <span
+                          v-html="$t(`view.alert['severity mention']`)"
+                        ></span>
+                      </p>
                       <v-text-field
                         v-model="dataModel.custom_message"
                         :counter="500"
