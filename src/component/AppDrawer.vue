@@ -129,7 +129,11 @@ export default {
       let filteredMenus = allMenus
         .filter((menu) => {
           if (this.isOrganizationMode) {
-            const allowedMenuTitles = ['Organization', 'Organization IAM']
+            const allowedMenuTitles = [
+              'Finding',
+              'Organization',
+              'Organization IAM',
+            ]
             return allowedMenuTitles.includes(menu.meta.title)
           } else {
             const forbiddenMenuTitles = ['Organization IAM']
@@ -151,6 +155,10 @@ export default {
                 const organizationModeForbiddenTitles = [
                   'OrganizationInvitation',
                 ]
+                if (menu.meta.title === 'Finding') {
+                  const findingForbiddenTitles = ['Resource', 'Setting']
+                  return !findingForbiddenTitles.includes(sub.meta.title)
+                }
                 return !organizationModeForbiddenTitles.includes(sub.meta.title)
               }
             })

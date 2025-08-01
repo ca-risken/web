@@ -9,6 +9,9 @@
                 >mdi-file-find-outline</v-icon
               >
               {{ $t(`submenu['Finding']`) }}
+              <span v-if="isOrganizationMode" class="text-caption ml-2"
+                >(Organization)</span
+              >
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -409,6 +412,7 @@ import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
@@ -419,7 +423,7 @@ import FindingDetailDialog from '@/component/dialog/finding/Detail.vue'
 
 export default {
   name: 'FindingList',
-  mixins: [mixin, finding, alert, iam, signin],
+  mixins: [mixin, finding, alert, iam, signin, organization_helper],
   components: {
     BottomSnackBar,
     VDataTableServer,
@@ -732,7 +736,9 @@ export default {
       if (parse) {
         this.parseQuery()
       }
-      const list = await this.listFinding(this.getSearchCondition())
+      const list = this.isOrganizationMode
+        ? await this.listOrganizationFinding(this.getSearchCondition())
+        : await this.listFinding(this.getSearchCondition())
       if (!list.finding_id || list.finding_id.length == 0) {
         this.loading = false
         return
