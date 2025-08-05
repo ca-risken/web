@@ -405,8 +405,7 @@ export default {
     async refleshList() {
       this.loading = true
       this.clearList()
-      let userReserveds
-      userReserveds = await this.listUserReservedAPI('').catch((err) => {
+      const userReserveds = await this.listUserReservedAPI('').catch((err) => {
         this.clearList()
         return Promise.reject(err)
       })
@@ -436,13 +435,12 @@ export default {
     async refleshListOrganization() {
       this.loading = true
       this.clearList()
-      let userReserveds
-      userReserveds = await this.listOrganizationUserReservedAPI('').catch(
-        (err) => {
-          this.clearList()
-          return Promise.reject(err)
-        }
-      )
+      const userReserveds = await this.listOrganizationUserReservedAPI(
+        ''
+      ).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      })
       if (!userReserveds) {
         this.clearList()
         return false
