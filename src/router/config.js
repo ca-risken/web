@@ -528,6 +528,14 @@ export const appRoute = [
             },
             component: () => import('@/view/iam/Policy.vue'),
           },
+          {
+            path: '/organization-iam/user-reservation',
+            name: 'OrganizationUserReservation',
+            meta: {
+              title: 'User Reservation',
+            },
+            component: () => import('@/view/iam/UserReservation.vue'),
+          },
         ],
       },
       {

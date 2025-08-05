@@ -46,7 +46,11 @@
                 class="elevation-1"
                 item-key="reserved_id"
                 @click:row="handleRowClick"
-                @update:page="refleshList"
+                @update:page="
+                  this.isOrganizationMode
+                    ? refleshListOrganization()
+                    : refleshList()
+                "
               >
                 <template v-slot:[`item.avator`]>
                   <v-avatar class="ma-3" size="48px">
@@ -180,7 +184,9 @@
                 variant="outlined"
                 color="green-darken-1"
                 :loading="loading"
-                @click="putItem"
+                @click="
+                  this.isOrganizationMode ? putItemOrganization() : putItem()
+                "
               >
                 <template v-if="form.isNew">
                   {{ $t(`btn['RESERVE']`) }}
@@ -234,7 +240,11 @@
             color="red-darken-1"
             text
             variant="outlined"
-            @click="deleteItem(dataModel.reserved_id)"
+            @click="
+              this.isOrganizationMode
+                ? deleteItemOrganization(dataModel.reserved_id)
+                : deleteItem(dataModel.reserved_id)
+            "
           >
             {{ $t(`btn['DELETE']`) }}
           </v-btn>
@@ -248,11 +258,13 @@
 <script>
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
+import organization_iam from '@/mixin/api/organization_iam'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'UserReservation',
-  mixins: [mixin, iam],
+  mixins: [mixin, iam, organization_iam, organization_helper],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -385,7 +397,9 @@ export default {
     },
   },
   mounted() {
-    this.refleshList()
+    this.isOrganizationMode
+      ? this.refleshListOrganization()
+      : this.refleshList()
   },
   methods: {
     async refleshList() {
@@ -406,6 +420,38 @@ export default {
             return Promise.reject(err)
           }
         )
+        const item = {
+          reserved_id: userReserved.reserved_id,
+          role_id: userReserved.role_id,
+          role_name: role.name,
+          user_idp_key: userReserved.user_idp_key,
+          created_at: userReserved.created_at,
+          updated_at: userReserved.updated_at,
+        }
+        this.table.items.push(item)
+      })
+      this.loading = false
+    },
+    async refleshListOrganization() {
+      this.loading = true
+      this.clearList()
+      const userReserveds = await this.listOrganizationUserReservedAPI(
+        ''
+      ).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      })
+      if (!userReserveds) {
+        this.clearList()
+        return false
+      }
+      this.table.total = userReserveds.length
+      userReserveds.forEach(async (userReserved) => {
+        const role = await this.getOrganizationRoleAPI(
+          userReserved.role_id
+        ).catch((err) => {
+          return Promise.reject(err)
+        })
         const item = {
           reserved_id: userReserved.reserved_id,
           role_id: userReserved.role_id,
@@ -446,6 +492,26 @@ export default {
       })
       this.loading = false
     },
+    async loadRoleListOrganization() {
+      this.loading = true
+      this.clearRoleList()
+      const roles = await this.listOrganizationRoleAPI('').catch((err) => {
+        this.loading = false
+        return Promise.reject(err)
+      })
+      roles.forEach(async (id) => {
+        const role = await this.getOrganizationRoleAPI(id).catch((err) => {
+          this.loading = false
+          return Promise.reject(err)
+        })
+        this.roleTable.items.push(role)
+
+        if (this.dataModel.role_id == role.role_id) {
+          this.roleTable.selected.push(role)
+        }
+      })
+      this.loading = false
+    },
     clearRoleList() {
       this.roleTable.items = []
       this.roleTable.selected = []
@@ -467,7 +533,6 @@ export default {
         this.$refs.snackbar.notifyError('role: must be selected.')
         return
       }
-
       this.loading = true
       const param = {
         project_id: this.getCurrentProjectID(),
@@ -477,8 +542,24 @@ export default {
           user_idp_key: this.dataModel.user_idp_key,
         },
       }
-
       await this.putUserReservedAPI(param).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        this.loading = false
+        return Promise.reject(err)
+      })
+      this.finishUpdated('Success: Updated role.')
+    },
+    async putItemOrganization() {
+      if (this.roleTable.selected.length == 0) {
+        this.$refs.snackbar.notifyError('role: must be selected.')
+        return
+      }
+      this.loading = true
+      await this.putOrganizationUserReservedAPI(
+        this.dataModel.reserved_id,
+        this.dataModel.user_idp_key,
+        this.roleTable.selected[0].role_id
+      ).catch((err) => {
         this.$refs.snackbar.notifyError(err.response.data)
         this.loading = false
         return Promise.reject(err)
@@ -493,13 +574,25 @@ export default {
       })
       this.finishUpdated('Success: Deleted user reservation.')
     },
+    async deleteItemOrganization(reservedID) {
+      this.loading = true
+      await this.deleteOrganizationUserReservationAPI(reservedID).catch(
+        (err) => {
+          this.$refs.snackbar.notifyError(err.response.data)
+          return Promise.reject(err)
+        }
+      )
+      this.finishUpdated('Success: Deleted user reservation.')
+    },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
       this.$refs.snackbar.notifySuccess(msg)
       this.loading = false
       this.deleteDialog = false
       this.editDialog = false
-      this.refleshList()
+      this.isOrganizationMode
+        ? this.refleshListOrganization()
+        : this.refleshList()
     },
 
     // handler
@@ -510,7 +603,11 @@ export default {
         created_at: '',
         updated_at: '',
       }
-      this.loadRoleList()
+      if (this.isOrganizationMode) {
+        this.loadRoleListOrganization()
+      } else {
+        this.loadRoleList()
+      }
       this.form.isNew = true
       this.editDialog = true
     },
@@ -519,7 +616,11 @@ export default {
     },
     handleEditItem(item) {
       this.assignDataModel(item.value)
-      this.loadRoleList()
+      if (this.isOrganizationMode) {
+        this.loadRoleListOrganization()
+      } else {
+        this.loadRoleList()
+      }
       this.form.newToken = false
       this.editDialog = true
     },
