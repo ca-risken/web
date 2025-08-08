@@ -44,10 +44,16 @@ const en = {
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
     'Select Organization': 'Select Organization',
+    'NEW REPORT': 'NEW REPORT',
+    'AI GENERATE': 'AI GENERATE',
+    CREATE: 'CREATE',
+    NEW: 'NEW',
+    EDIT: 'EDIT',
   },
   menu: {
     Home: 'Home',
     Project: 'Project',
+    Report: 'Report',
     'Access Denied': 'Access Denied',
     Dashboard: 'Dashboard',
     Finding: 'Finding',
@@ -68,6 +74,8 @@ const en = {
     Dashboard: 'Dashboard',
     Resource: 'Resource', // Finding
     Finding: 'Finding', // Finding
+    Report: 'Report',
+    Edit: 'Edit',
     Setting: 'Setting', // Finding, Project
     Alert: 'Alert', // Alert
     Condition: 'Condition', // Alert
@@ -105,7 +113,6 @@ const en = {
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
-    Report: 'Report',
   },
   item: {
     '': '',
@@ -170,6 +177,22 @@ const en = {
     Name: 'Name',
     'Name space': 'Name space',
     Namespace: 'Namespace',
+    'Report Name': 'Report Name',
+    'New Report': 'New Report',
+    'Edit Report': 'Edit Report',
+    Status: 'Status',
+    Type: 'Type',
+    Updated: 'Updated',
+    Actions: 'Actions',
+    'AI Generate': 'AI Generate',
+    'AI Prompt': 'AI Prompt',
+    'Report prompt by AI': 'e.g. Create a report about AWS findings.',
+    Edit: 'Edit',
+    Preview: 'Preview',
+    'Content (Markdown)': 'Content (Markdown)',
+    'Enter report content in Markdown format':
+      'Enter report content in Markdown format',
+    Optional: 'Optional',
     'Notification ID': 'Notification ID',
     'Notification Language': 'Notification Language',
     'Notification throttle': 'Notification throttle',
@@ -208,7 +231,6 @@ const en = {
     Score: 'Score',
     'Setting Detail': 'Setting Detail',
     Severity: 'Severity',
-    Status: 'Status',
     'Status Detail': 'Status Detail',
     'Subscription ID': 'Subscription ID',
     'Sum Score': 'Sum Score',
@@ -219,8 +241,6 @@ const en = {
     TargetResource: 'TargetResource',
     ToDate: 'ToDate',
     Token: 'Token',
-    Type: 'Type',
-    Updated: 'Updated',
     'UpdatedAt Range': 'UpdatedAt Range',
     User: 'User',
     'User Key': 'User Key',
@@ -278,6 +298,25 @@ const en = {
     'Visit Project': 'Visit Project',
   },
   message: {
+    'Confirm Delete': 'Confirm Delete',
+    'Are you sure you want to delete this report?':
+      'Are you sure you want to delete this report?',
+    'Report deleted successfully': 'Report deleted successfully',
+    'Report saved successfully': 'Report saved successfully',
+    'Report generated successfully': 'Report generated successfully',
+    'No content to preview': 'No content to preview',
+    'Generating Report': 'Generating Report',
+    'AI is generating your report. This may take a few minutes...':
+      'AI is generating your report. This may take a few minutes...',
+    'Report name is required': 'Report name is required',
+    'Report name must be less than 100 characters':
+      'Report name must be less than 100 characters',
+    'Report created successfully': 'Report created successfully',
+    'Report created and AI generation started':
+      'Report created and AI generation started',
+    'Select a report to edit': 'Select a report to edit',
+    'AI will generate report content automatically':
+      'AI will generate report content automatically',
     'Do you really want to delete this?': 'Do you really want to delete this?',
     'Please select an organization': 'Please select an organization',
     'You need to select an organization to continue.':

@@ -323,13 +323,30 @@ export const appRoute = [
       {
         path: '/analysis',
         component: RouteWrapper,
-        redirect: '/analysis/attack-flow',
+        redirect: '/report',
         meta: {
           title: 'Analysis',
           icon: 'mdi-file-chart',
           group: 'analysis',
         },
         children: [
+          {
+            path: '/report',
+            name: 'Report',
+            meta: {
+              title: 'Report',
+            },
+            component: () => import('@/view/report/Report.vue'),
+          },
+          {
+            path: '/report/edit/:id?',
+            name: 'ReportEdit',
+            meta: {
+              title: 'Edit',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/report/Edit.vue'),
+          },
           {
             path: '/analysis/attack-flow',
             name: 'AttackFlow',

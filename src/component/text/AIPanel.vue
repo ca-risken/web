@@ -15,8 +15,8 @@
       color="green-darken-2"
       class="ma-6 px-12"
     ></v-progress-circular>
-    <v-card-text v-else class="text-body-1 my-2 py-2 wrap">
-      <MarkdownDisplay breaks linkify :source="aiAnswer" />
+    <v-card-text v-else class="text-body-1 py-1 wrap">
+      <MarkdownDisplay breaks linkify :source="aiAnswer" :compact="true" />
     </v-card-text>
   </v-alert>
 </template>
