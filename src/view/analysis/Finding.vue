@@ -385,7 +385,7 @@ export default {
     },
     async getReportFinding(searchCond) {
       let url = ''
-      url = '/report/get-report/?project_id='
+      url = '/report/get-report-finding/?project_id='
       const res = await this.$axios
         .get(url + this.getCurrentProjectID() + searchCond)
         .catch((err) => {
@@ -417,7 +417,7 @@ export default {
       if (toDate != null && toDate != '') {
         endDate = new Date(toDate)
       }
-      const url = '/report/get-report-all/?project_id='
+      const url = '/report/get-report-finding-all/?project_id='
       while (fDate < endDate) {
         let condDate = '&from_date=' + Util.formatDate(fDate, 'yyyy-MM-dd')
         condDate += '&to_date=' + Util.formatDate(tDate, 'yyyy-MM-dd')
@@ -521,7 +521,7 @@ export default {
     async setReportFinding() {
       const res = await this.$axios
         .get(
-          '/report/get-report/?project_id=' +
+          '/report/get-report-finding/?project_id=' +
             this.getCurrentProjectID() +
             '&from_date=' +
             this.fromDate +
