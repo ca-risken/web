@@ -176,7 +176,7 @@ const ja = {
     'Name space': 'ネーム スペース',
     Namespace: 'ネームスペース',
     'Report Name': 'レポート名',
-    'New Report': '新規レポート',
+    'AI Report': 'AIレポート',
     'AI Prompt': 'AIプロンプト',
     'Report prompt by AI': '例） AWSのFindingレポートを作成してください。',
     Edit: '編集',

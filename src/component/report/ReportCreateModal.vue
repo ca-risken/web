@@ -3,13 +3,9 @@
     <v-card>
       <v-card-title class="d-flex align-center bg-grey-lighten-4 border-b">
         <v-icon class="mr-2" color="blue-lighten-2">
-          {{ isAIEdit ? 'mdi-robot' : 'mdi-file-document-plus-outline' }}
+          mdi-file-document-plus-outline
         </v-icon>
-        {{
-          isAIEdit
-            ? $t(`item['AI Edit']`) || 'AI編集'
-            : $t(`item['New Report']`)
-        }}
+        {{ $t(`item['AI Report']`) }}
       </v-card-title>
 
       <v-card-text>
@@ -22,8 +18,6 @@
             density="compact"
             required
             autofocus
-            :disabled="isAIEdit"
-            :readonly="isAIEdit"
             @keyup.enter="handleCreate"
           ></v-text-field>
 
@@ -89,10 +83,6 @@ export default {
       type: String,
       default: '',
     },
-    isAIEdit: {
-      type: Boolean,
-      default: false,
-    },
   },
   emits: ['update:modelValue', 'report-created', 'error'],
   data() {
@@ -141,9 +131,7 @@ export default {
   },
   methods: {
     resetForm() {
-      if (!this.isAIEdit) {
-        this.reportName = ''
-      }
+      this.reportName = ''
       this.aiPrompt = ''
       this.valid = true
       this.creating = false

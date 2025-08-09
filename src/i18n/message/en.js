@@ -176,7 +176,7 @@ const en = {
     'Name space': 'Name space',
     Namespace: 'Namespace',
     'Report Name': 'Report Name',
-    'New Report': 'New Report',
+    'AI Report': 'AI Report',
     'AI Prompt': 'AI Prompt',
     'Report prompt by AI': 'e.g. Create a report about AWS findings.',
     Edit: 'Edit',

@@ -28,7 +28,6 @@
     <report-create-modal
       v-model="createModalOpen"
       :preset-title="presetReportTitle"
-      :is-ai-edit="isAIEditMode"
       @report-created="handleReportCreated"
       @error="handleError"
     />
@@ -58,7 +57,6 @@ export default {
       selectedReportId: null,
       createModalOpen: false,
       presetReportTitle: '',
-      isAIEditMode: false,
     }
   },
   computed: {
@@ -88,7 +86,6 @@ export default {
     createModalOpen(newVal) {
       if (!newVal) {
         // Reset flags when modal is closed
-        this.isAIEditMode = false
         this.presetReportTitle = ''
       }
     },
@@ -100,12 +97,10 @@ export default {
 
     handleCreateReport() {
       this.presetReportTitle = ''
-      this.isAIEditMode = false
       this.createModalOpen = true
     },
 
     handleAIEdit(report) {
-      this.isAIEditMode = true
       this.presetReportTitle = report.name
       this.$nextTick(() => {
         this.createModalOpen = true
