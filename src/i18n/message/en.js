@@ -44,8 +44,6 @@ const en = {
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
     'Select Organization': 'Select Organization',
-    'NEW REPORT': 'NEW REPORT',
-    'AI GENERATE': 'AI GENERATE',
     CREATE: 'CREATE',
     NEW: 'NEW',
     EDIT: 'EDIT',
@@ -74,8 +72,6 @@ const en = {
     Dashboard: 'Dashboard',
     Resource: 'Resource', // Finding
     Finding: 'Finding', // Finding
-    Report: 'Report',
-    Edit: 'Edit',
     Setting: 'Setting', // Finding, Project
     Alert: 'Alert', // Alert
     Condition: 'Condition', // Alert
@@ -113,6 +109,7 @@ const en = {
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
+    Report: 'Report',
   },
   item: {
     '': '',
@@ -179,12 +176,6 @@ const en = {
     Namespace: 'Namespace',
     'Report Name': 'Report Name',
     'New Report': 'New Report',
-    'Edit Report': 'Edit Report',
-    Status: 'Status',
-    Type: 'Type',
-    Updated: 'Updated',
-    Actions: 'Actions',
-    'AI Generate': 'AI Generate',
     'AI Prompt': 'AI Prompt',
     'Report prompt by AI': 'e.g. Create a report about AWS findings.',
     Edit: 'Edit',
@@ -231,6 +222,7 @@ const en = {
     Score: 'Score',
     'Setting Detail': 'Setting Detail',
     Severity: 'Severity',
+    Status: 'Status',
     'Status Detail': 'Status Detail',
     'Subscription ID': 'Subscription ID',
     'Sum Score': 'Sum Score',
@@ -241,6 +233,8 @@ const en = {
     TargetResource: 'TargetResource',
     ToDate: 'ToDate',
     Token: 'Token',
+    Type: 'Type',
+    Updated: 'Updated',
     'UpdatedAt Range': 'UpdatedAt Range',
     User: 'User',
     'User Key': 'User Key',
@@ -298,19 +292,8 @@ const en = {
     'Visit Project': 'Visit Project',
   },
   message: {
-    'Confirm Delete': 'Confirm Delete',
-    'Are you sure you want to delete this report?':
-      'Are you sure you want to delete this report?',
-    'Report deleted successfully': 'Report deleted successfully',
     'Report saved successfully': 'Report saved successfully',
-    'Report generated successfully': 'Report generated successfully',
     'No content to preview': 'No content to preview',
-    'Generating Report': 'Generating Report',
-    'AI is generating your report. This may take a few minutes...':
-      'AI is generating your report. This may take a few minutes...',
-    'Report name is required': 'Report name is required',
-    'Report name must be less than 100 characters':
-      'Report name must be less than 100 characters',
     'Report created successfully': 'Report created successfully',
     'Report created and AI generation started':
       'Report created and AI generation started',

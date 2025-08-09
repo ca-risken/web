@@ -88,10 +88,10 @@ export default {
       reportName: '',
       aiPrompt: '',
       nameRules: [
-        (v) => !!v || this.$t('message["Report name is required"]'),
+        (v) => !!v || 'Report name is required',
         (v) =>
           (v && v.length <= 100) ||
-          this.$t('message["Report name must be less than 100 characters"]'),
+          'Report name must be less than 100 characters',
       ],
     }
   },
@@ -145,7 +145,7 @@ export default {
         }
 
         if (this.aiPrompt) {
-          // AIプロンプトがある場合はAI生成を実行
+          // If AI prompt is present, execute AI generation
           const result = await this.generateReport(
             this.aiPrompt,
             this.reportName
@@ -160,7 +160,7 @@ export default {
             })
           }
         } else {
-          // 通常の新規作成
+          // Normal new creation
           const savedReport = await this.putReport(newReport)
           this.$emit('report-created', {
             ...savedReport,

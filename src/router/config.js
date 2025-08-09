@@ -339,15 +339,6 @@ export const appRoute = [
             component: () => import('@/view/report/Report.vue'),
           },
           {
-            path: '/report/edit/:id?',
-            name: 'ReportEdit',
-            meta: {
-              title: 'Edit',
-              hiddenInMenu: true,
-            },
-            component: () => import('@/view/report/Edit.vue'),
-          },
-          {
             path: '/analysis/attack-flow',
             name: 'AttackFlow',
             meta: {

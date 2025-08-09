@@ -91,12 +91,12 @@ export default {
     },
 
     handleReportCreated(reportData) {
-      // リストを更新
+      // Refresh report list
       if (this.$refs.reportList) {
         this.$refs.reportList.refreshList()
       }
 
-      // 新規作成されたレポートを選択
+      // Select the newly created report
       this.selectedReportId = reportData.report_id
       this.createModalOpen = false
 
@@ -112,7 +112,7 @@ export default {
     },
 
     handleReportUpdated() {
-      // リストを更新
+      // Refresh report list
       if (this.$refs.reportList) {
         this.$refs.reportList.refreshList()
       }
