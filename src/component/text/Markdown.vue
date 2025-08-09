@@ -1,38 +1,17 @@
 <template>
   <v-sheet
-    v-if="card"
-    :class="['pa-8', 'rounded-lg', cardElevation ? 'elevation-1' : '']"
-    :color="cardColor"
-    :style="{ maxWidth: maxWidth, width: '100%' }"
-  >
-    <div
-      :class="[
-        'markdown-display',
-        'text-body-1',
-        { 'markdown-compact': compact },
-      ]"
-    >
-      <vue-markdown-it
-        :source="source"
-        :plugins="markdownPlugins"
-        v-bind="$attrs"
-      />
-    </div>
-  </v-sheet>
-  <div
-    v-else
-    :class="[
-      'markdown-display',
-      'text-body-1',
-      { 'markdown-compact': compact },
-    ]"
+    :color="cardColor || 'transparent'"
+    :elevation="cardElevation ? 1 : 0"
+    :max-width="maxWidth"
+    :class="compact ? 'pa-0' : 'pa-8'"
+    rounded
   >
     <vue-markdown-it
       :source="source"
       :plugins="markdownPlugins"
       v-bind="$attrs"
     />
-  </div>
+  </v-sheet>
 </template>
 
 <script>
@@ -52,13 +31,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    card: {
-      type: Boolean,
-      default: false,
-    },
     cardColor: {
       type: String,
-      default: 'white',
+      default: '',
     },
     cardElevation: {
       type: Boolean,
@@ -108,7 +83,6 @@ export default {
     },
 
     processMermaidBlocks() {
-      // マークダウンレンダリング後にmermaidブロックを処理
       setTimeout(() => {
         const codeBlocks = this.$el.querySelectorAll(
           'pre code.language-mermaid'
@@ -144,9 +118,8 @@ export default {
           element.innerHTML = svg
           element.setAttribute('data-processed', 'true')
         } catch (error) {
-          // エラー時は元のコードをフォールバック表示
           console.warn('Mermaid rendering failed:', error.message)
-          element.innerHTML = `<pre class="mermaid-fallback">${element.textContent}</pre>`
+          element.innerHTML = `<pre style="text-align: left;">${element.textContent}</pre>`
           element.setAttribute('data-processed', 'true')
         }
       }
@@ -156,118 +129,100 @@ export default {
 </script>
 
 <style scoped>
-/* VuetifyのUIクラスとテーマカラーを活用したMarkdownスタイル */
-.markdown-display {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
-  color: rgb(var(--v-theme-on-surface));
-}
-
-/* 見出し */
-.markdown-display :deep(h1) {
+:deep(h1) {
   font-size: 2rem;
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.3;
   margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-on-surface));
+  border-bottom: 1px solid rgb(var(--v-theme-outline-variant));
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.markdown-display :deep(h2) {
+:deep(h2) {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.3;
   margin: 1.5rem 0 1rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgb(var(--v-theme-outline-variant));
-  color: rgb(var(--v-theme-on-surface));
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.markdown-display :deep(h3) {
+:deep(h3) {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.3;
   margin: 1.25rem 0 0.75rem 0;
-  color: rgb(var(--v-theme-on-surface));
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-/* 段落とリスト */
-.markdown-display :deep(p) {
+:deep(p) {
   margin: 0 0 1rem 0;
-  color: rgb(var(--v-theme-on-surface));
 }
 
-.markdown-display :deep(ul),
-.markdown-display :deep(ol) {
+:deep(ul),
+:deep(ol) {
   margin: 0 0 1rem 0;
   padding-left: 2rem;
 }
 
-.markdown-display :deep(li) {
+:deep(li) {
   margin: 0.25rem 0;
 }
 
-/* コードブロック */
-.markdown-display :deep(code) {
+:deep(code) {
   background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-on-surface-variant));
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
   font-size: 0.875rem;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas,
-    monospace;
+  font-family: 'Roboto Mono', monospace;
 }
 
-.markdown-display :deep(pre) {
+:deep(pre) {
   background: rgb(var(--v-theme-surface));
   border: 1px solid rgb(var(--v-theme-outline-variant));
   border-radius: 8px;
   padding: 1rem;
   margin: 1rem 0;
   overflow-x: auto;
-  font-size: 0.875rem;
 }
 
-.markdown-display :deep(pre code) {
+:deep(pre code) {
   background: transparent;
-  color: rgb(var(--v-theme-on-surface));
   padding: 0;
 }
 
-/* 引用 */
-.markdown-display :deep(blockquote) {
+:deep(blockquote) {
   border-left: 4px solid rgb(var(--v-theme-primary));
   margin: 1rem 0;
   padding: 0 1rem;
-  color: rgb(var(--v-theme-on-surface-variant));
   background: rgb(var(--v-theme-surface-variant));
   border-radius: 0 4px 4px 0;
 }
 
-/* テーブル */
-.markdown-display :deep(table) {
+:deep(table) {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
-  border: 1px solid rgb(var(--v-theme-outline-variant));
-  border-radius: 4px;
-  overflow: hidden;
 }
 
-.markdown-display :deep(th),
-.markdown-display :deep(td) {
+:deep(th),
+:deep(td) {
   border: 1px solid rgb(var(--v-theme-outline-variant));
   padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
-.markdown-display :deep(th) {
+:deep(th) {
   background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-on-surface-variant));
-  font-weight: 600;
+  font-weight: 500;
 }
 
-/* Mermaid図表 */
-.markdown-display :deep(.mermaid) {
-  text-align: center;
+:deep(.mermaid) {
   margin: 1rem 0;
   background: rgb(var(--v-theme-surface));
   border: 1px solid rgb(var(--v-theme-outline-variant));
@@ -276,104 +231,86 @@ export default {
   overflow-x: auto;
 }
 
-.markdown-display :deep(.mermaid svg) {
+:deep(.mermaid:has(svg)) {
+  text-align: center;
+}
+
+:deep(.mermaid svg) {
   max-width: 100%;
   height: auto;
 }
 
-.markdown-display :deep(.mermaid-fallback) {
-  background: rgb(var(--v-theme-surface-variant));
-  border: 1px solid rgb(var(--v-theme-outline-variant));
-  border-radius: 6px;
-  padding: 0.75rem;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-  font-size: 0.875rem;
-  color: rgb(var(--v-theme-on-surface-variant));
-  white-space: pre-wrap;
-  margin: 1rem 0;
-  text-align: left;
-}
-
-/* コンパクトモード - AIPanelなどで使用 */
-.markdown-compact :deep(h1) {
+/* Compact mode */
+.pa-0 :deep(h1) {
   font-size: 1.375rem;
+  line-height: 1.3;
   margin: 0 0 0.375rem 0;
   padding-bottom: 0.25rem;
 }
 
-.markdown-compact :deep(h2) {
+.pa-0 :deep(h2) {
   font-size: 1.125rem;
+  line-height: 1.3;
   margin: 0.5rem 0 0.375rem 0;
   padding-bottom: 0.125rem;
 }
 
-.markdown-compact :deep(h3) {
+.pa-0 :deep(h3) {
   font-size: 1rem;
+  line-height: 1.3;
   margin: 0.375rem 0 0.25rem 0;
 }
 
-.markdown-compact :deep(p) {
+.pa-0 :deep(p) {
   margin: 0 0 0.375rem 0;
 }
 
-.markdown-compact :deep(p:last-child) {
-  margin-bottom: 0;
-}
-
-.markdown-compact :deep(ul),
-.markdown-compact :deep(ol) {
+.pa-0 :deep(ul),
+.pa-0 :deep(ol) {
   margin: 0 0 0.375rem 0;
   padding-left: 1.25rem;
 }
 
-.markdown-compact :deep(ul:last-child),
-.markdown-compact :deep(ol:last-child) {
-  margin-bottom: 0;
+.pa-0 :deep(li) {
+  margin: 0;
 }
 
-.markdown-compact :deep(li) {
-  margin: 0 0;
-  line-height: 1.4;
-}
-
-.markdown-compact :deep(pre) {
+.pa-0 :deep(pre) {
   padding: 0.375rem;
   margin: 0.375rem 0;
   font-size: 0.8125rem;
 }
 
-.markdown-compact :deep(code) {
+.pa-0 :deep(code) {
   font-size: 0.8125rem;
   padding: 0.0625rem 0.25rem;
 }
 
-.markdown-compact :deep(blockquote) {
+.pa-0 :deep(blockquote) {
   margin: 0.375rem 0;
   padding: 0.25rem 0.5rem;
 }
 
-.markdown-compact :deep(table) {
+.pa-0 :deep(table) {
   margin: 0.375rem 0;
 }
 
-.markdown-compact :deep(th),
-.markdown-compact :deep(td) {
+.pa-0 :deep(th),
+.pa-0 :deep(td) {
   padding: 0.25rem 0.375rem;
   font-size: 0.875rem;
 }
 
-.markdown-compact :deep(.mermaid) {
+.pa-0 :deep(.mermaid) {
   margin: 0.375rem 0;
   padding: 0.375rem;
 }
 
-.markdown-compact :deep(.mermaid-fallback) {
-  margin: 0.375rem 0;
-  padding: 0.25rem;
-  font-size: 0.8125rem;
-  text-align: left;
-}
-.markdown-compact :deep(> *:first-child) {
+:deep(> *:first-child) {
   margin-top: 0;
+}
+
+.pa-0 :deep(> *:last-child) {
+  margin-bottom: 0;
 }
 </style>
