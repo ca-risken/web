@@ -44,10 +44,15 @@ const ja = {
     Upgrade: 'アップグレード',
     CHECK: '確認',
     'Select Organization': 'Organizationを選択',
+    CREATE: '作成',
+    NEW: '新規',
+    EDIT: '編集',
+    'AI Edit': 'AI編集',
   },
   menu: {
     Home: 'ホーム',
     Project: 'プロジェクト',
+    Report: 'レポート',
     'Access Denied': 'アクセスエラー',
     Dashboard: 'ダッシュボード',
     Finding: 'Finding',
@@ -170,6 +175,16 @@ const ja = {
     Name: '名前',
     'Name space': 'ネーム スペース',
     Namespace: 'ネームスペース',
+    'Report Name': 'レポート名',
+    'AI Report': 'AIレポート',
+    'AI Prompt': 'AIプロンプト',
+    'Report prompt by AI': '例） AWSのFindingレポートを作成してください。',
+    Edit: '編集',
+    Preview: 'プレビュー',
+    'Content (Markdown)': 'コンテンツ (Markdown)',
+    'Enter report content in Markdown format':
+      'Markdown形式でレポートコンテンツを入力',
+    Optional: '任意',
     'Notification ID': '通知ID',
     'Notification Language': '通知の言語',
     'Notification throttle': '通知の抑制期間',
@@ -278,6 +293,14 @@ const ja = {
     'Visit Project': 'プロジェクトを表示する',
   },
   message: {
+    'Report saved successfully': 'レポートを保存しました',
+    'No content to preview': 'プレビューするコンテンツがありません',
+    'Report created successfully': 'レポートを作成しました',
+    'Report created and AI generation started':
+      'レポートを作成し、AI生成を開始しました',
+    'Select a report to edit': '編集するレポートを選択してください',
+    'AI will generate report content automatically':
+      'AIが自動でレポートコンテンツを生成します(5分〜10分程度かかる場合があります)',
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
     'Please select an organization': 'Organizationを選択してください',
     'You need to select an organization to continue.':

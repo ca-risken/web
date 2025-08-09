@@ -136,8 +136,18 @@
                     <MarkdownDisplay
                       breaks
                       linkify
-                      class="mx-2"
+                      :class="[
+                        'pa-0',
+                        'ma-0',
+                        msg.role === this.RoleUser
+                          ? 'user-message'
+                          : 'ai-message',
+                      ]"
                       :source="msg.content"
+                      :compact="true"
+                      :card-elevation="false"
+                      :max-width="'100%'"
+                      :card-color="''"
                     />
                   </v-list-item>
                 </v-list>
@@ -350,8 +360,6 @@ export default {
 }
 
 .chat-message {
-  padding: 6px 6px;
-  margin-bottom: 8px;
   border-radius: 12px;
   word-wrap: break-word;
   white-space: pre-wrap;

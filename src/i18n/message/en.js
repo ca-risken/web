@@ -44,10 +44,15 @@ const en = {
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
     'Select Organization': 'Select Organization',
+    CREATE: 'CREATE',
+    NEW: 'NEW',
+    EDIT: 'EDIT',
+    'AI Edit': 'AI Edit',
   },
   menu: {
     Home: 'Home',
     Project: 'Project',
+    Report: 'Report',
     'Access Denied': 'Access Denied',
     Dashboard: 'Dashboard',
     Finding: 'Finding',
@@ -170,6 +175,16 @@ const en = {
     Name: 'Name',
     'Name space': 'Name space',
     Namespace: 'Namespace',
+    'Report Name': 'Report Name',
+    'AI Report': 'AI Report',
+    'AI Prompt': 'AI Prompt',
+    'Report prompt by AI': 'e.g. Create a report about AWS findings.',
+    Edit: 'Edit',
+    Preview: 'Preview',
+    'Content (Markdown)': 'Content (Markdown)',
+    'Enter report content in Markdown format':
+      'Enter report content in Markdown format',
+    Optional: 'Optional',
     'Notification ID': 'Notification ID',
     'Notification Language': 'Notification Language',
     'Notification throttle': 'Notification throttle',
@@ -278,6 +293,14 @@ const en = {
     'Visit Project': 'Visit Project',
   },
   message: {
+    'Report saved successfully': 'Report saved successfully',
+    'No content to preview': 'No content to preview',
+    'Report created successfully': 'Report created successfully',
+    'Report created and AI generation started':
+      'Report created and AI generation started',
+    'Select a report to edit': 'Select a report to edit',
+    'AI will generate report content automatically':
+      'AI will generate report content automatically (It may take 5-10 minutes)',
     'Do you really want to delete this?': 'Do you really want to delete this?',
     'Please select an organization': 'Please select an organization',
     'You need to select an organization to continue.':
