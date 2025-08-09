@@ -300,7 +300,7 @@ const en = {
       'Report created and AI generation started',
     'Select a report to edit': 'Select a report to edit',
     'AI will generate report content automatically':
-      'AI will generate report content automatically',
+      'AI will generate report content automatically (It may take 5-10 minutes)',
     'Do you really want to delete this?': 'Do you really want to delete this?',
     'Please select an organization': 'Please select an organization',
     'You need to select an organization to continue.':

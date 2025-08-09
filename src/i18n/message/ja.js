@@ -300,7 +300,7 @@ const ja = {
       'レポートを作成し、AI生成を開始しました',
     'Select a report to edit': '編集するレポートを選択してください',
     'AI will generate report content automatically':
-      'AIが自動でレポートコンテンツを生成します',
+      'AIが自動でレポートコンテンツを生成します(5分〜10分程度かかる場合があります)',
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
     'Please select an organization': 'Organizationを選択してください',
     'You need to select an organization to continue.':
