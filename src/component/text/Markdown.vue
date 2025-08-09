@@ -162,12 +162,16 @@ export default {
 
 :deep(p) {
   margin: 0 0 1rem 0;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 
 :deep(ul),
 :deep(ol) {
   margin: 0 0 1rem 0;
   padding-left: 2rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 
 :deep(li) {
@@ -178,7 +182,7 @@ export default {
   background: rgb(var(--v-theme-surface-variant));
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-family: 'Roboto Mono', monospace;
 }
 
@@ -208,18 +212,21 @@ export default {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
+  border: 2px solid #424242;
 }
 
 :deep(th),
 :deep(td) {
-  border: 1px solid rgb(var(--v-theme-outline-variant));
+  border: 1px solid #616161;
   padding: 0.5rem 0.75rem;
   text-align: left;
+  font-size: 1rem;
 }
 
 :deep(th) {
-  background: rgb(var(--v-theme-surface-variant));
+  background: #424242;
   font-weight: 500;
+  color: #ffffff;
 }
 
 :deep(.mermaid) {

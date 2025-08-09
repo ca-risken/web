@@ -29,11 +29,11 @@
       </v-btn>
     </v-toolbar>
 
-    <v-card flat class="mt-2">
-      <v-card-text class="pa-0">
+    <v-card flat class="mt-4">
+      <v-card-text class="pa-1">
         <div v-if="loading" class="text-center pa-4">
           <v-progress-circular indeterminate size="24"></v-progress-circular>
-          <div class="mt-2 text-caption">Loading reports...</div>
+          <div class="mt-4 text-caption">Loading reports...</div>
         </div>
 
         <div v-else-if="reportList.length === 0" class="text-center pa-4">
@@ -55,12 +55,12 @@
             class="border-b-thin"
           >
             <template v-slot:prepend>
-              <v-icon color="blue-lighten-2" size="small">
+              <v-icon color="blue-lighten-2" size="default">
                 mdi-file-document-outline
               </v-icon>
             </template>
 
-            <v-list-item-title class="text-subtitle-2">
+            <v-list-item-title class="text-subtitle-1">
               {{ item.name }}
             </v-list-item-title>
             <v-list-item-subtitle class="text-caption">
@@ -70,7 +70,7 @@
             <template v-slot:append>
               <v-chip
                 :color="getStatusColor(item.status)"
-                size="x-small"
+                size="small"
                 class="mr-1"
               >
                 {{ item.status }}
@@ -81,7 +81,7 @@
                     icon
                     v-bind="props"
                     variant="text"
-                    size="x-small"
+                    size="small"
                     @click.stop
                   >
                     <v-icon size="small">mdi-dots-vertical</v-icon>

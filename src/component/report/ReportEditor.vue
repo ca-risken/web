@@ -85,7 +85,7 @@
                   <v-card flat>
                     <v-card-text class="px-0">
                       <div
-                        class="bg-grey-lighten-5 pa-6 d-flex justify-center"
+                        class="bg-grey-lighten-5 pa-2 d-flex justify-center"
                         style="min-height: 500px"
                       >
                         <markdown-display
@@ -94,7 +94,7 @@
                           :card="true"
                           card-color="white"
                           :card-elevation="true"
-                          max-width="800px"
+                          max-width="90%"
                         />
                         <v-sheet
                           v-else
