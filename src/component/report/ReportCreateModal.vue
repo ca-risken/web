@@ -16,10 +16,40 @@
             :rules="nameRules"
             variant="outlined"
             density="compact"
-            required
             autofocus
-            @keyup.enter="handleCreate"
+            @keydown.enter.prevent
           ></v-text-field>
+
+          <v-row class="mt-2">
+            <v-col cols="4">
+              <v-label class="mb-2">BaseScore</v-label>
+              <v-text-field
+                v-model.number="baseScore"
+                type="number"
+                :min="0.0"
+                :max="1.0"
+                :step="0.1"
+                variant="outlined"
+                density="compact"
+                @keydown.enter.prevent
+              ></v-text-field>
+            </v-col>
+            <v-col cols="8">
+              <v-label class="mb-0">Data Source</v-label>
+              <v-row dense>
+                <v-col v-for="ds in dataSources" :key="ds.value" cols="auto">
+                  <v-checkbox
+                    v-model="selectedDataSources"
+                    :value="ds.value"
+                    :label="ds.text"
+                    density="compact"
+                    hide-details
+                    class="text-caption"
+                  ></v-checkbox>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
 
           <v-textarea
             v-model="aiPrompt"
@@ -31,7 +61,6 @@
             rows="4"
             class="mt-2"
           ></v-textarea>
-
           <v-alert v-if="aiPrompt" type="info" variant="tonal" class="mt-2">
             <template v-slot:prepend>
               <v-icon>mdi-robot</v-icon>
@@ -57,7 +86,7 @@
           color="green-darken-4"
           @click="handleCreate"
           :loading="creating"
-          :disabled="!valid"
+          :disabled="creating"
         >
           {{ $t(`btn['CREATE']`) }}
         </v-btn>
@@ -87,10 +116,20 @@ export default {
   emits: ['update:modelValue', 'report-created', 'error'],
   data() {
     return {
-      valid: true,
+      valid: false,
       creating: false,
       reportName: '',
       aiPrompt: '',
+      baseScore: 0.5,
+      selectedDataSources: [],
+      dataSources: [
+        { value: 'AWS', text: 'AWS' },
+        { value: 'GCP', text: 'GCP' },
+        { value: 'Azure', text: 'Azure' },
+        { value: 'GitHub', text: 'GitHub' },
+        { value: 'OSINT', text: 'OSINT' },
+        { value: 'Diagnosis', text: 'Diagnosis' },
+      ],
       nameRules: [
         (v) =>
           !v ||
@@ -119,6 +158,7 @@ export default {
         this.$nextTick(() => {
           if (this.$refs.form) {
             this.$refs.form.resetValidation()
+            this.valid = true
           }
         })
       }
@@ -133,8 +173,40 @@ export default {
     resetForm() {
       this.reportName = ''
       this.aiPrompt = ''
-      this.valid = true
+      this.baseScore = 0.5
+      this.selectedDataSources = []
       this.creating = false
+      this.$nextTick(() => {
+        if (this.$refs.form) {
+          this.$refs.form.resetValidation()
+        }
+      })
+    },
+
+    formatPromptWithConditions(
+      originalPrompt,
+      baseScore,
+      dataSources,
+      language
+    ) {
+      if (baseScore !== 0.5 || dataSources.length > 0) {
+        const conditions = [
+          `- Base Score: ${baseScore}`,
+          dataSources.length > 0
+            ? `- Data Source: ${dataSources.join(', ')}`
+            : '',
+          `- Language: ${language}`,
+        ]
+          .filter(Boolean)
+          .join('\n')
+
+        return `${originalPrompt}\n\n---\nReport Conditions\n${conditions}`
+      }
+      return originalPrompt
+    },
+
+    getLanguageFromLocale() {
+      return this.$store.state.locale?.text || 'English'
     },
 
     handleCancel() {
@@ -143,7 +215,8 @@ export default {
     },
 
     async handleCreate() {
-      if (!this.valid) {
+      const isValid = await this.$refs.form?.validate()
+      if (!isValid?.valid) {
         return
       }
 
@@ -159,34 +232,24 @@ export default {
 
       this.creating = true
       try {
-        const newReport = {
-          name: finalReportName,
-          type: 'Markdown',
-          status: 'OK',
-          content: '',
-        }
+        const language = this.getLanguageFromLocale()
+        const enhancedPrompt = this.formatPromptWithConditions(
+          this.aiPrompt,
+          this.baseScore,
+          this.selectedDataSources,
+          language
+        )
+        const result = await this.generateReport(
+          enhancedPrompt,
+          finalReportName
+        )
 
-        if (this.aiPrompt) {
-          // If AI prompt is present, execute AI generation
-          const result = await this.generateReport(
-            this.aiPrompt,
-            finalReportName
-          )
-
-          if (result.report_id) {
-            this.$emit('report-created', {
-              report_id: result.report_id,
-              name: finalReportName,
-              status: result.status || 'IN_PROGRESS',
-              isAIGenerated: true,
-            })
-          }
-        } else {
-          // Normal new creation
-          const savedReport = await this.putReport(newReport)
+        if (result.report_id) {
           this.$emit('report-created', {
-            ...savedReport,
-            isAIGenerated: false,
+            report_id: result.report_id,
+            name: finalReportName,
+            status: result.status || 'IN_PROGRESS',
+            isAIGenerated: true,
           })
         }
 
