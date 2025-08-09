@@ -132,7 +132,9 @@ export default {
       this.loading = true
       try {
         const reports = await this.listReport()
-        this.reportList = reports
+        this.reportList = reports.sort((a, b) => {
+          return (b.updated_at || 0) - (a.updated_at || 0)
+        })
       } catch (error) {
         this.$emit('error', error)
       } finally {
