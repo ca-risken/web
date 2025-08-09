@@ -47,6 +47,7 @@ const ja = {
     CREATE: '作成',
     NEW: '新規',
     EDIT: '編集',
+    'AI Edit': 'AI編集',
   },
   menu: {
     Home: 'ホーム',

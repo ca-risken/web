@@ -47,6 +47,7 @@ const en = {
     CREATE: 'CREATE',
     NEW: 'NEW',
     EDIT: 'EDIT',
+    'AI Edit': 'AI Edit',
   },
   menu: {
     Home: 'Home',

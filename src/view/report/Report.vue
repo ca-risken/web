@@ -8,6 +8,7 @@
             :selected-report-id="selectedReportId"
             @select-report="handleSelectReport"
             @create-report="handleCreateReport"
+            @ai-edit="handleAIEdit"
             @error="handleError"
           />
         </v-col>
@@ -26,6 +27,8 @@
 
     <report-create-modal
       v-model="createModalOpen"
+      :preset-title="presetReportTitle"
+      :is-ai-edit="isAIEditMode"
       @report-created="handleReportCreated"
       @error="handleError"
     />
@@ -54,6 +57,8 @@ export default {
     return {
       selectedReportId: null,
       createModalOpen: false,
+      presetReportTitle: '',
+      isAIEditMode: false,
     }
   },
   computed: {
@@ -80,6 +85,13 @@ export default {
         this.$router.replace({ query })
       }
     },
+    createModalOpen(newVal) {
+      if (!newVal) {
+        // Reset flags when modal is closed
+        this.isAIEditMode = false
+        this.presetReportTitle = ''
+      }
+    },
   },
   methods: {
     handleSelectReport(report) {
@@ -87,7 +99,17 @@ export default {
     },
 
     handleCreateReport() {
+      this.presetReportTitle = ''
+      this.isAIEditMode = false
       this.createModalOpen = true
+    },
+
+    handleAIEdit(report) {
+      this.isAIEditMode = true
+      this.presetReportTitle = report.name
+      this.$nextTick(() => {
+        this.createModalOpen = true
+      })
     },
 
     handleReportCreated(reportData) {

@@ -9,7 +9,17 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
+        class="mr-4"
         color="primary"
+        size="default"
+        density="compact"
+        icon="mdi-refresh"
+        variant="outlined"
+        :loading="loading"
+        @click="handleList"
+      />
+      <v-btn
+        color="grey-darken-2"
         variant="outlined"
         @click="handleNewReport"
         size="small"
@@ -65,6 +75,27 @@
               >
                 {{ item.status }}
               </v-chip>
+              <v-menu>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    icon
+                    v-bind="props"
+                    variant="text"
+                    size="x-small"
+                    @click.stop
+                  >
+                    <v-icon size="small">mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="handleAIEdit(item)">
+                    <v-list-item-title>
+                      <v-icon size="small" class="mr-2">mdi-robot</v-icon>
+                      {{ $t(`btn['AI Edit']`) }}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </template>
           </v-list-item>
         </v-list>
@@ -86,7 +117,7 @@ export default {
       default: null,
     },
   },
-  emits: ['select-report', 'create-report', 'error'],
+  emits: ['select-report', 'create-report', 'ai-edit', 'error'],
   data() {
     return {
       loading: false,
@@ -115,6 +146,14 @@ export default {
 
     handleNewReport() {
       this.$emit('create-report')
+    },
+
+    handleAIEdit(report) {
+      this.$emit('ai-edit', report)
+    },
+
+    handleList() {
+      this.loadReportList()
     },
 
     refreshList() {

@@ -40,10 +40,12 @@
                     {{ $t(`item['Edit']`) }}
                   </v-tab>
                 </v-tabs>
+                <v-spacer />
                 <v-btn
                   v-if="hasUnsavedChanges && tab === 'edit'"
                   color="green-darken-4"
                   variant="tonal"
+                  class="mr-4"
                   @click="handleSave"
                   :loading="saveLoading"
                 >

@@ -3,9 +3,13 @@
     <v-card>
       <v-card-title class="d-flex align-center bg-grey-lighten-4 border-b">
         <v-icon class="mr-2" color="blue-lighten-2">
-          mdi-file-document-plus-outline
+          {{ isAIEdit ? 'mdi-robot' : 'mdi-file-document-plus-outline' }}
         </v-icon>
-        {{ $t(`item['New Report']`) }}
+        {{
+          isAIEdit
+            ? $t(`item['AI Edit']`) || 'AI編集'
+            : $t(`item['New Report']`)
+        }}
       </v-card-title>
 
       <v-card-text>
@@ -18,6 +22,8 @@
             density="compact"
             required
             autofocus
+            :disabled="isAIEdit"
+            :readonly="isAIEdit"
             @keyup.enter="handleCreate"
           ></v-text-field>
 
@@ -57,7 +63,7 @@
           color="green-darken-4"
           @click="handleCreate"
           :loading="creating"
-          :disabled="!valid || !reportName"
+          :disabled="!valid"
         >
           {{ $t(`btn['CREATE']`) }}
         </v-btn>
@@ -79,17 +85,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    presetTitle: {
+      type: String,
+      default: '',
+    },
+    isAIEdit: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['update:modelValue', 'report-created', 'error'],
   data() {
     return {
-      valid: false,
+      valid: true,
       creating: false,
       reportName: '',
       aiPrompt: '',
       nameRules: [
-        (v) => !!v || 'Report name is required',
         (v) =>
+          !v ||
           (v && v.length <= 100) ||
           'Report name must be less than 100 characters',
       ],
@@ -109,6 +123,9 @@ export default {
     modelValue(newVal) {
       if (newVal) {
         this.resetForm()
+        if (this.presetTitle) {
+          this.reportName = this.presetTitle
+        }
         this.$nextTick(() => {
           if (this.$refs.form) {
             this.$refs.form.resetValidation()
@@ -116,12 +133,19 @@ export default {
         })
       }
     },
+    presetTitle(newVal) {
+      if (newVal) {
+        this.reportName = newVal
+      }
+    },
   },
   methods: {
     resetForm() {
-      this.reportName = ''
+      if (!this.isAIEdit) {
+        this.reportName = ''
+      }
       this.aiPrompt = ''
-      this.valid = false
+      this.valid = true
       this.creating = false
     },
 
@@ -131,14 +155,24 @@ export default {
     },
 
     async handleCreate() {
-      if (!this.valid || !this.reportName) {
+      if (!this.valid) {
         return
+      }
+
+      // If report name is empty, set default name as current date
+      let finalReportName = this.reportName
+      if (!finalReportName) {
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = String(today.getMonth() + 1).padStart(2, '0')
+        const day = String(today.getDate()).padStart(2, '0')
+        finalReportName = `${year}-${month}-${day}`
       }
 
       this.creating = true
       try {
         const newReport = {
-          name: this.reportName,
+          name: finalReportName,
           type: 'Markdown',
           status: 'OK',
           content: '',
@@ -148,13 +182,13 @@ export default {
           // If AI prompt is present, execute AI generation
           const result = await this.generateReport(
             this.aiPrompt,
-            this.reportName
+            finalReportName
           )
 
           if (result.report_id) {
             this.$emit('report-created', {
               report_id: result.report_id,
-              name: this.reportName,
+              name: finalReportName,
               status: result.status || 'IN_PROGRESS',
               isAIGenerated: true,
             })
