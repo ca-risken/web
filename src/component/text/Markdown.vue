@@ -16,6 +16,8 @@
 
 <script>
 import VueMarkdownIt from 'vue3-markdown-it'
+import mermaid from 'mermaid'
+import MermaidPlugin from 'markdown-it-mermaid-plugin'
 
 export default {
   name: 'MarkdownDisplay',
@@ -46,61 +48,30 @@ export default {
   },
   data() {
     return {
-      markdownPlugins: [],
+      markdownPlugins: [
+        {
+          plugin: MermaidPlugin,
+        },
+      ],
     }
   },
   mounted() {
-    this.loadMermaid()
+    this.initMermaid()
+    this.renderMermaid()
   },
   updated() {
-    this.processMermaidBlocks()
+    this.renderMermaid()
   },
   methods: {
-    async loadMermaid() {
-      if (!window.mermaid) {
-        const script = document.createElement('script')
-        script.src =
-          'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'
-        script.onload = () => {
-          this.initMermaid()
-          this.processMermaidBlocks()
-        }
-        document.head.appendChild(script)
-      } else {
-        this.initMermaid()
-        this.processMermaidBlocks()
-      }
-    },
-
     initMermaid() {
-      if (window.mermaid) {
-        window.mermaid.initialize({
-          startOnLoad: false,
-          theme: 'default',
-          securityLevel: 'loose',
-        })
-      }
-    },
-
-    processMermaidBlocks() {
-      setTimeout(() => {
-        const codeBlocks = this.$el.querySelectorAll(
-          'pre code.language-mermaid'
-        )
-        codeBlocks.forEach((block, index) => {
-          const mermaidDiv = document.createElement('div')
-          mermaidDiv.className = 'mermaid'
-          mermaidDiv.id = `mermaid-${index}-${Date.now()}`
-          mermaidDiv.textContent = block.textContent
-          block.parentElement.replaceWith(mermaidDiv)
-        })
-        this.renderMermaid()
-      }, 100)
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        securityLevel: 'loose',
+      })
     },
 
     async renderMermaid() {
-      if (!window.mermaid) return
-
       await this.$nextTick()
 
       const mermaidElements = this.$el.querySelectorAll(
@@ -114,7 +85,7 @@ export default {
           const graphDefinition = element.textContent.trim()
           const uniqueId = `mermaid-${Date.now()}-${i}`
 
-          const { svg } = await window.mermaid.render(uniqueId, graphDefinition)
+          const { svg } = await mermaid.render(uniqueId, graphDefinition)
           element.innerHTML = svg
           element.setAttribute('data-processed', 'true')
         } catch (error) {
