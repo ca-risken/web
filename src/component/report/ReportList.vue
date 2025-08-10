@@ -151,7 +151,9 @@ export default {
         const dateMatch = this.formatDate(report.updated_at)
           .toLowerCase()
           .includes(query)
-        return nameMatch || dateMatch
+        const contentMatch =
+          report.content && report.content.toLowerCase().includes(query)
+        return nameMatch || dateMatch || contentMatch
       })
     },
   },
