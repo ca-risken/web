@@ -14,6 +14,7 @@
             v-model="reportName"
             :label="$t(`item['Report Name']`)"
             :rules="nameRules"
+            :placeholder="$t(`item['Report Name Placeholder']`)"
             variant="outlined"
             density="compact"
             autofocus
@@ -83,12 +84,22 @@
 
         <v-btn
           variant="tonal"
+          color="grey-darken-2"
+          @click="handleCreateEmptyReport"
+          :loading="creating"
+          :disabled="creating"
+        >
+          {{ $t(`btn['CREATE EMPTY REPORT']`) }}
+        </v-btn>
+
+        <v-btn
+          variant="tonal"
           color="green-darken-4"
           @click="handleCreate"
           :loading="creating"
           :disabled="creating"
         >
-          {{ $t(`btn['CREATE']`) }}
+          {{ $t(`btn['CREATE AUTO']`) }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -189,17 +200,18 @@ export default {
       dataSources,
       language
     ) {
-      if (baseScore !== 0.5 || dataSources.length > 0) {
-        const conditions = [
-          `- Base Score: ${baseScore}`,
-          dataSources.length > 0
-            ? `- Data Source: ${dataSources.join(', ')}`
-            : '',
-          `- Language: ${language}`,
-        ]
-          .filter(Boolean)
-          .join('\n')
+      let conditions = ''
+      if (baseScore > 0.0) {
+        conditions += `\n- Base Score: ${baseScore}`
+      }
+      if (dataSources.length > 0) {
+        conditions += `\n- Data Source: ${dataSources.join(', ')}`
+      }
+      if (language) {
+        conditions += `\n- Language: ${language}`
+      }
 
+      if (conditions !== '') {
         return `${originalPrompt}\n\n---\nReport Conditions\n${conditions}`
       }
       return originalPrompt
@@ -209,7 +221,44 @@ export default {
       return this.$store.state.locale?.text || 'English'
     },
 
+    getReportName() {
+      // If report name is empty, set default name as current date
+      if (this.reportName === '') {
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = String(today.getMonth() + 1).padStart(2, '0')
+        const day = String(today.getDate()).padStart(2, '0')
+        this.reportName = `${year}-${month}-${day}`
+      }
+      return this.reportName
+    },
+
     handleCancel() {
+      this.dialogOpen = false
+      this.resetForm()
+    },
+
+    async handleCreateEmptyReport() {
+      const isValid = await this.$refs.form?.validate()
+      if (!isValid?.valid) {
+        return
+      }
+      const reportName = this.getReportName()
+      const result = await this.putReport({
+        name: reportName,
+        type: 'Markdown',
+        status: 'OK',
+        content: '',
+      })
+      if (result.report_id) {
+        this.$emit('report-created', {
+          report_id: result.report_id,
+          name: reportName,
+          status: result.status || 'OK',
+          isAIGenerated: false,
+        })
+      }
+
       this.dialogOpen = false
       this.resetForm()
     },
@@ -218,16 +267,6 @@ export default {
       const isValid = await this.$refs.form?.validate()
       if (!isValid?.valid) {
         return
-      }
-
-      // If report name is empty, set default name as current date
-      let finalReportName = this.reportName
-      if (!finalReportName) {
-        const today = new Date()
-        const year = today.getFullYear()
-        const month = String(today.getMonth() + 1).padStart(2, '0')
-        const day = String(today.getDate()).padStart(2, '0')
-        finalReportName = `${year}-${month}-${day}`
       }
 
       this.creating = true
@@ -239,15 +278,13 @@ export default {
           this.selectedDataSources,
           language
         )
-        const result = await this.generateReport(
-          enhancedPrompt,
-          finalReportName
-        )
+        const reportName = this.getReportName()
+        const result = await this.generateReport(enhancedPrompt, reportName)
 
         if (result.report_id) {
           this.$emit('report-created', {
             report_id: result.report_id,
-            name: finalReportName,
+            name: reportName,
             status: result.status || 'IN_PROGRESS',
             isAIGenerated: true,
           })
