@@ -83,6 +83,7 @@
         </v-btn>
 
         <v-btn
+          v-show="presetTitle === ''"
           variant="tonal"
           color="grey-darken-2"
           @click="handleCreateEmptyReport"
