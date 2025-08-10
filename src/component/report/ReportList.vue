@@ -10,11 +10,11 @@
       <v-spacer></v-spacer>
       <v-btn
         class="mr-4"
-        color="primary"
+        color="grey-darken-2"
         size="default"
         density="compact"
         icon="mdi-refresh"
-        variant="outlined"
+        variant="plain"
         :loading="loading"
         @click="handleList"
       />
