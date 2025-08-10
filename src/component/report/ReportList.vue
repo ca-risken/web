@@ -1,6 +1,6 @@
 <template>
   <div class="border-e">
-    <v-toolbar color="background" flat>
+    <v-toolbar color="background" flat density="compact">
       <v-toolbar-title class="text-subtitle-1">
         <v-icon class="pr-2" color="blue-lighten-2">
           mdi-file-document-outline
@@ -29,6 +29,18 @@
       </v-btn>
     </v-toolbar>
 
+    <v-card flat class="mx-2">
+      <v-text-field
+        v-model="searchQuery"
+        density="compact"
+        variant="outlined"
+        clearable
+        hide-details
+        placeholder="Search by name or date..."
+        prepend-inner-icon="mdi-magnify"
+      />
+    </v-card>
+
     <v-card flat class="mt-2">
       <v-card-text class="pa-1">
         <div v-if="loading" class="text-center pa-4">
@@ -48,7 +60,7 @@
 
         <v-list v-else class="pa-0" density="compact">
           <v-list-item
-            v-for="item in reportList"
+            v-for="item in filteredReportList"
             :key="item.report_id"
             @click="handleSelectReport(item)"
             :class="{ 'bg-blue-lighten-5': selectedReportId == item.report_id }"
@@ -122,10 +134,26 @@ export default {
     return {
       loading: false,
       reportList: [],
+      searchQuery: '',
     }
   },
   mounted() {
     this.loadReportList()
+  },
+  computed: {
+    filteredReportList() {
+      if (!this.searchQuery) {
+        return this.reportList
+      }
+      const query = this.searchQuery.toLowerCase()
+      return this.reportList.filter((report) => {
+        const nameMatch = report.name.toLowerCase().includes(query)
+        const dateMatch = this.formatDate(report.updated_at)
+          .toLowerCase()
+          .includes(query)
+        return nameMatch || dateMatch
+      })
+    },
   },
   methods: {
     async loadReportList() {
