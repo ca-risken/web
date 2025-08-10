@@ -100,7 +100,7 @@ const ja = {
     Policy: 'ポリシー',
     AccessToken: 'アクセストークン',
     AttackFlow: 'アタックフロー',
-    ReportFinding: 'Findingレポート',
+    FindingSummary: 'Findingサマリー',
     NewProject: '新規プロジェクト',
     ProjectSetting: '設定',
     'New Organization': '新規Organization',

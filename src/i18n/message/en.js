@@ -100,7 +100,7 @@ const en = {
     Policy: 'Policy', // IAM
     AccessToken: 'AccessToken', // IAM
     AttackFlow: 'AttackFlow', // Analysis
-    ReportFinding: 'Report Finding', // Analysis
+    FindingSummary: 'Finding Summary', // Analysis
     NewProject: 'New', // Project
     ProjectSetting: 'Setting', // Project
     'New Organization': 'New Organization',

@@ -36,7 +36,7 @@
         variant="outlined"
         clearable
         hide-details
-        placeholder="Search by name or date..."
+        placeholder="Search reports by keyword..."
         prepend-inner-icon="mdi-magnify"
       />
     </v-card>

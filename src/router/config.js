@@ -336,7 +336,7 @@ export const appRoute = [
             meta: {
               title: 'Report',
             },
-            component: () => import('@/view/report/Report.vue'),
+            component: () => import('@/view/analysis/Report.vue'),
           },
           {
             path: '/analysis/attack-flow',
@@ -348,9 +348,9 @@ export const appRoute = [
           },
           {
             path: '/analysis/finding',
-            name: 'ReportFinding',
+            name: 'FindingSummary',
             meta: {
-              title: 'ReportFinding',
+              title: 'FindingSummary',
             },
             component: () => import('@/view/analysis/Finding.vue'),
           },
