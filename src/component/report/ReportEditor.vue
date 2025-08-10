@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-4">
+  <div class="d-flex flex-column" style="height: calc(100vh - 100px)">
     <div v-if="!reportId" class="text-center pa-8">
       <v-icon size="64" color="grey-lighten-2">
         mdi-file-document-outline
@@ -9,134 +9,115 @@
       </div>
     </div>
 
-    <div v-else>
-      <v-card flat>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12">
-              <div class="d-flex">
-                <div>
-                  <h2 class="text-h5 mr-3">{{ report.name }}</h2>
+    <div v-else class="d-flex flex-column flex-grow-1 overflow-hidden">
+      <v-card flat class="d-flex flex-column h-100">
+        <v-card-text class="pa-0 d-flex flex-column h-100">
+          <!-- Fixed Header Section -->
+          <div
+            class="pa-4 pb-0 bg-white elevation-1"
+            style="position: sticky; top: 0; z-index: 10"
+          >
+            <div class="d-flex align-center mb-3">
+              <h2 class="text-h5">{{ report.name }}</h2>
+            </div>
+
+            <div class="d-flex align-center">
+              <v-tabs
+                v-model="tab"
+                class="modern-tabs"
+                density="comfortable"
+                color="primary"
+              >
+                <v-tab value="preview" class="modern-tab">
+                  <v-icon left size="small">mdi-eye</v-icon>
+                  {{ $t(`item['Preview']`) }}
+                </v-tab>
+                <v-tab value="edit" class="modern-tab">
+                  <v-icon left size="small">mdi-pencil</v-icon>
+                  {{ $t(`item['Edit']`) }}
+                </v-tab>
+              </v-tabs>
+              <v-spacer />
+              <v-btn
+                v-if="tab === 'preview' && report.content"
+                color="grey-darken-2"
+                variant="tonal"
+                class="mr-2"
+                @click="handleDownloadPDF"
+                :loading="pdfLoading"
+              >
+                <v-icon left>mdi-file-pdf-box</v-icon>
+                {{ $t(`btn['DOWNLOAD_PDF']`) }}
+              </v-btn>
+              <v-btn
+                v-if="hasUnsavedChanges && tab === 'edit'"
+                color="green-darken-4"
+                variant="tonal"
+                class="mr-4"
+                @click="handleSave"
+                :loading="saveLoading"
+              >
+                <v-icon left>mdi-content-save</v-icon>
+                {{ $t(`btn['SAVE']`) }}
+              </v-btn>
+            </div>
+          </div>
+
+          <!-- Scrollable Content Section -->
+          <div class="flex-grow-1 overflow-hidden">
+            <v-window v-model="tab" class="h-100" show-arrows="hover">
+              <!-- Preview -->
+              <v-window-item value="preview" class="h-100">
+                <div class="overflow-y-auto h-100 bg-white pa-4">
+                  <markdown-display
+                    v-if="report.content"
+                    :source="report.content"
+                    :card="false"
+                    :card-elevation="false"
+                    max-width="100%"
+                    class="markdown-display"
+                  />
+                  <v-sheet
+                    v-else
+                    class="pa-8 rounded-lg"
+                    style="max-width: 800px; width: 100%"
+                    color="transparent"
+                  >
+                    <div
+                      class="d-flex flex-column align-center justify-center"
+                      style="min-height: 300px"
+                    >
+                      <v-icon size="48" color="grey-lighten-2" class="mb-4">
+                        mdi-file-document-outline
+                      </v-icon>
+                      <div class="text-body-1 text-grey">
+                        {{ $t(`message['No content to preview']`) }}
+                      </div>
+                    </div>
+                  </v-sheet>
                 </div>
-              </div>
-            </v-col>
-          </v-row>
+              </v-window-item>
 
-          <v-row class="mt-0">
-            <v-col cols="12">
-              <div class="d-flex">
-                <v-tabs
-                  v-model="tab"
-                  class="modern-tabs"
-                  density="comfortable"
-                  color="primary"
-                >
-                  <v-tab value="preview" class="modern-tab">
-                    <v-icon left size="small">mdi-eye</v-icon>
-                    {{ $t(`item['Preview']`) }}
-                  </v-tab>
-                  <v-tab value="edit" class="modern-tab">
-                    <v-icon left size="small">mdi-pencil</v-icon>
-                    {{ $t(`item['Edit']`) }}
-                  </v-tab>
-                </v-tabs>
-                <v-spacer />
-                <v-btn
-                  v-if="tab === 'preview' && report.content"
-                  color="grey-darken-2"
-                  variant="tonal"
-                  class="mr-2"
-                  @click="handleDownloadPDF"
-                  :loading="pdfLoading"
-                >
-                  <v-icon left>mdi-file-pdf-box</v-icon>
-                  {{ $t(`btn['DOWNLOAD_PDF']`) }}
-                </v-btn>
-                <v-btn
-                  v-if="hasUnsavedChanges && tab === 'edit'"
-                  color="green-darken-4"
-                  variant="tonal"
-                  class="mr-4"
-                  @click="handleSave"
-                  :loading="saveLoading"
-                >
-                  <v-icon left>mdi-content-save</v-icon>
-                  {{ $t(`btn['SAVE']`) }}
-                </v-btn>
-              </div>
-
-              <v-window v-model="tab">
-                <v-window-item value="edit">
-                  <v-card flat>
-                    <v-card-text class="px-0">
-                      <div
-                        class="bg-grey-lighten-5 pa-6"
-                        style="min-height: 500px"
-                      >
-                        <v-textarea
-                          v-model="report.content"
-                          :label="$t(`item['Content (Markdown)']`)"
-                          variant="outlined"
-                          rows="25"
-                          auto-grow
-                          class="modern-textarea bg-white elevation-1 rounded-lg"
-                          :placeholder="
-                            $t(
-                              `item['Enter report content in Markdown format']`
-                            )
-                          "
-                          @input="markAsChanged"
-                        ></v-textarea>
-                      </div>
-                    </v-card-text>
-                  </v-card>
-                </v-window-item>
-
-                <v-window-item value="preview">
-                  <v-card flat>
-                    <v-card-text class="px-0">
-                      <div
-                        class="bg-grey-lighten-5 pa-2 d-flex justify-center"
-                        style="min-height: 500px"
-                      >
-                        <markdown-display
-                          v-if="report.content"
-                          :source="report.content"
-                          :card="true"
-                          card-color="white"
-                          :card-elevation="true"
-                          max-width="96%"
-                          class="markdown-display"
-                        />
-                        <v-sheet
-                          v-else
-                          class="pa-8 rounded-lg elevation-1"
-                          style="max-width: 800px; width: 100%"
-                          color="white"
-                        >
-                          <div
-                            class="d-flex flex-column align-center justify-center"
-                            style="min-height: 300px"
-                          >
-                            <v-icon
-                              size="48"
-                              color="grey-lighten-2"
-                              class="mb-4"
-                            >
-                              mdi-file-document-outline
-                            </v-icon>
-                            <div class="text-body-1 text-grey">
-                              {{ $t(`message['No content to preview']`) }}
-                            </div>
-                          </div>
-                        </v-sheet>
-                      </div>
-                    </v-card-text>
-                  </v-card>
-                </v-window-item>
-              </v-window>
-            </v-col>
-          </v-row>
+              <!-- Edit -->
+              <v-window-item value="edit" class="h-100">
+                <div class="overflow-y-auto h-100 bg-grey-lighten-5 pa-8">
+                  <v-textarea
+                    v-model="report.content"
+                    :label="$t(`item['Content (Markdown)']`)"
+                    variant="outlined"
+                    rows="25"
+                    auto-grow
+                    class="rounded-lg"
+                    bg-color="white"
+                    :placeholder="
+                      $t(`item['Enter report content in Markdown format']`)
+                    "
+                    @input="markAsChanged"
+                  ></v-textarea>
+                </div>
+              </v-window-item>
+            </v-window>
+          </div>
         </v-card-text>
       </v-card>
     </div>
@@ -355,6 +336,10 @@ export default {
 </script>
 
 <style scoped>
+.h-100 {
+  height: 100%;
+}
+
 .modern-tabs {
   background: transparent !important;
   box-shadow: none !important;
@@ -387,7 +372,7 @@ export default {
   border-radius: 2px !important;
 }
 
-.modern-textarea :deep(.v-field__input) {
+.v-textarea :deep(.v-field__input) {
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas,
     monospace !important;
   font-size: 14px !important;

@@ -132,3 +132,7 @@ The platform provides:
 - Messages stored in `src/i18n/message/`
 - Language preference persisted in store.locale
 - Default language determined by browser settings
+
+## ルール
+- コメントは **英語** で記述する
+- 独自のCSSスタイルはなるべく避け、UIコンポーネントフレームワーク（Vuetify）で事前定義済みのスタイルを利用する
