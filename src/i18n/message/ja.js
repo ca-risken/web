@@ -48,6 +48,7 @@ const ja = {
     NEW: '新規',
     EDIT: '編集',
     'AI Edit': 'AI編集',
+    DOWNLOAD_PDF: 'PDFダウンロード',
   },
   menu: {
     Home: 'ホーム',

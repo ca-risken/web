@@ -48,6 +48,7 @@ const en = {
     NEW: 'NEW',
     EDIT: 'EDIT',
     'AI Edit': 'AI Edit',
+    DOWNLOAD_PDF: 'Download PDF',
   },
   menu: {
     Home: 'Home',

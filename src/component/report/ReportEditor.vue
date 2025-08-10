@@ -42,6 +42,17 @@
                 </v-tabs>
                 <v-spacer />
                 <v-btn
+                  v-if="tab === 'preview' && report.content"
+                  color="grey-darken-2"
+                  variant="tonal"
+                  class="mr-2"
+                  @click="handleDownloadPDF"
+                  :loading="pdfLoading"
+                >
+                  <v-icon left>mdi-file-pdf-box</v-icon>
+                  {{ $t(`btn['DOWNLOAD_PDF']`) }}
+                </v-btn>
+                <v-btn
                   v-if="hasUnsavedChanges && tab === 'edit'"
                   color="green-darken-4"
                   variant="tonal"
@@ -94,7 +105,8 @@
                           :card="true"
                           card-color="white"
                           :card-elevation="true"
-                          max-width="90%"
+                          max-width="96%"
+                          class="markdown-display"
                         />
                         <v-sheet
                           v-else
@@ -136,6 +148,8 @@ import mixin from '@/mixin'
 import report from '@/mixin/api/report'
 import ai from '@/mixin/api/ai'
 import MarkdownDisplay from '@/component/text/Markdown.vue'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 export default {
   name: 'ReportEditor',
@@ -163,6 +177,7 @@ export default {
       originalReport: {},
       aiPrompt: '',
       saveLoading: false,
+      pdfLoading: false,
       hasUnsavedChanges: false,
     }
   },
@@ -232,6 +247,107 @@ export default {
         this.$emit('error', error)
       } finally {
         this.saveLoading = false
+      }
+    },
+
+    async handleDownloadPDF() {
+      this.pdfLoading = true
+      try {
+        // Get markdown preview DOM element
+        const markdownElement = this.$el.querySelector('.markdown-display')
+        if (!markdownElement) {
+          throw new Error('Preview element not found')
+        }
+
+        // Capture with html2canvas
+        const canvas = await html2canvas(markdownElement, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+        })
+
+        // Create PDF (A4 portrait)
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        })
+
+        // A4 size definitions
+        const pdfWidth = pdf.internal.pageSize.getWidth()
+        const pdfHeight = pdf.internal.pageSize.getHeight()
+        const margin = 10 // Page margin
+
+        // Available area
+        const maxWidth = pdfWidth - 2 * margin
+        const maxHeight = pdfHeight - 2 * margin
+
+        // Calculate aspect ratio preserving width maximization
+        const imgWidth = canvas.width
+        const imgHeight = canvas.height
+        const widthRatio = maxWidth / imgWidth
+        const scaledWidth = imgWidth * widthRatio
+        const scaledHeight = imgHeight * widthRatio
+
+        // Calculate pages needed for height
+        const totalPages = Math.ceil(scaledHeight / maxHeight)
+
+        // Generate each page
+        for (let page = 0; page < totalPages; page++) {
+          if (page > 0) {
+            pdf.addPage()
+          }
+
+          // Calculate the portion to show on current page
+          const sourceY = (page * maxHeight) / widthRatio
+          const sourceHeight = Math.min(
+            maxHeight / widthRatio,
+            imgHeight - sourceY
+          )
+          const destHeight = sourceHeight * widthRatio
+
+          // Create temporary canvas for cropping
+          const tempCanvas = document.createElement('canvas')
+          tempCanvas.width = imgWidth
+          tempCanvas.height = sourceHeight
+          const tempCtx = tempCanvas.getContext('2d')
+          tempCtx.drawImage(
+            canvas,
+            0,
+            sourceY,
+            imgWidth,
+            sourceHeight,
+            0,
+            0,
+            imgWidth,
+            sourceHeight
+          )
+
+          // Add image to PDF
+          const pageImgData = tempCanvas.toDataURL('image/png')
+          pdf.addImage(
+            pageImgData,
+            'PNG',
+            margin,
+            margin,
+            scaledWidth,
+            destHeight
+          )
+        }
+
+        // Generate filename
+        const filename = `${this.report.name || 'report'}.pdf`
+
+        // Download PDF
+        pdf.save(filename)
+      } catch (error) {
+        console.error('PDF generation failed:', error)
+        this.$emit('error', {
+          response: { data: { message: 'Failed to generate PDF' } },
+        })
+      } finally {
+        this.pdfLoading = false
       }
     },
   },
