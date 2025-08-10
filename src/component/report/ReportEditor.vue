@@ -14,10 +14,10 @@
         <v-card-text class="pa-0 d-flex flex-column h-100">
           <!-- Fixed Header Section -->
           <div
-            class="pa-4 pb-0 bg-white elevation-1"
+            class="pt-4 px-4 pb-0 bg-white elevation-1"
             style="position: sticky; top: 0; z-index: 10"
           >
-            <div class="d-flex align-center mb-3">
+            <div class="d-flex align-center">
               <h2 class="text-h5">{{ report.name }}</h2>
             </div>
 
@@ -68,13 +68,14 @@
             <v-window v-model="tab" class="h-100" show-arrows="hover">
               <!-- Preview -->
               <v-window-item value="preview" class="h-100">
-                <div class="overflow-y-auto h-100 bg-white pa-4">
+                <div class="overflow-y-auto h-100 bg-grey-lighten-4 py-8 px-10">
                   <markdown-display
                     v-if="report.content"
                     :source="report.content"
                     :card="false"
                     :card-elevation="false"
-                    max-width="100%"
+                    max-width="98%"
+                    cardColor="white"
                     class="markdown-display"
                   />
                   <v-sheet
@@ -100,7 +101,7 @@
 
               <!-- Edit -->
               <v-window-item value="edit" class="h-100">
-                <div class="overflow-y-auto h-100 bg-grey-lighten-5 pa-8">
+                <div class="overflow-y-auto h-100 bg-grey-lighten-4 py-8 px-16">
                   <v-textarea
                     v-model="report.content"
                     :label="$t(`item['Content (Markdown)']`)"

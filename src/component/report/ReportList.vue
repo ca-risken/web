@@ -1,6 +1,6 @@
 <template>
   <div class="border-e">
-    <v-toolbar color="background" flat density="compact">
+    <v-toolbar color="background" flat>
       <v-toolbar-title class="text-subtitle-1">
         <v-icon class="pr-2" color="blue-lighten-2">
           mdi-file-document-outline
@@ -29,7 +29,7 @@
       </v-btn>
     </v-toolbar>
 
-    <v-card flat class="mt-4">
+    <v-card flat class="mt-2">
       <v-card-text class="pa-1">
         <div v-if="loading" class="text-center pa-4">
           <v-progress-circular indeterminate size="24"></v-progress-circular>
