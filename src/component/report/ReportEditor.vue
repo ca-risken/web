@@ -101,13 +101,13 @@
 
               <!-- Edit -->
               <v-window-item value="edit" class="h-100">
-                <div class="overflow-y-auto h-100 bg-grey-lighten-4 py-8 px-16">
+                <div class="h-100 bg-grey-lighten-4 py-8 px-16 d-flex">
                   <v-textarea
                     v-model="report.content"
                     :label="$t(`item['Content (Markdown)']`)"
                     variant="outlined"
-                    rows="25"
-                    auto-grow
+                    :rows="textareaRows"
+                    no-resize
                     class="rounded-lg"
                     bg-color="white"
                     :placeholder="
@@ -161,6 +161,7 @@ export default {
       saveLoading: false,
       pdfLoading: false,
       hasUnsavedChanges: false,
+      textareaRows: 30,
     }
   },
   watch: {
@@ -171,7 +172,24 @@ export default {
       immediate: true,
     },
   },
+  mounted() {
+    this.calculateTextareaRows()
+    window.addEventListener('resize', this.calculateTextareaRows)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.calculateTextareaRows)
+  },
   methods: {
+    calculateTextareaRows() {
+      // Calculate rows based on viewport height
+      const viewportHeight = window.innerHeight
+      // Approximate height of other elements (header, tabs, padding, etc.)
+      const otherElementsHeight = 300
+      // Approximate height per row in pixels
+      const rowHeight = 20
+      const availableHeight = viewportHeight - otherElementsHeight
+      this.textareaRows = Math.max(20, Math.floor(availableHeight / rowHeight))
+    },
     async loadReport() {
       if (!this.reportId) {
         this.resetReport()
