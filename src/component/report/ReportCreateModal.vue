@@ -135,12 +135,12 @@ export default {
       baseScore: 0.5,
       selectedDataSources: [],
       dataSources: [
-        { value: 'aws', text: 'AWS' },
-        { value: 'google', text: 'GCP' },
-        { value: 'azure', text: 'Azure' },
-        { value: 'code', text: 'GitHub' },
-        { value: 'osint', text: 'OSINT' },
-        { value: 'diagnosis', text: 'Diagnosis' },
+        { value: 'aws:*', text: 'AWS' },
+        { value: 'google:*', text: 'GCP' },
+        { value: 'azure:*', text: 'Azure' },
+        { value: 'code:*', text: 'GitHub' },
+        { value: 'osint:*', text: 'OSINT' },
+        { value: 'diagnosis:*', text: 'Diagnosis' },
       ],
       nameRules: [
         (v) =>
@@ -279,6 +279,7 @@ export default {
           this.selectedDataSources,
           language
         )
+        console.log('enhancedPrompt: ', enhancedPrompt)
         const reportName = this.getReportName()
         const result = await this.generateReport(enhancedPrompt, reportName)
 
