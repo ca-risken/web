@@ -150,7 +150,7 @@ export default {
 }
 
 :deep(code) {
-  background: rgb(var(--v-theme-surface-variant));
+  background: rgba(175, 122, 68, 0.15);
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
   font-size: 0.9375rem;
@@ -158,32 +158,26 @@ export default {
 }
 
 :deep(pre) {
-  background: rgb(var(--v-theme-surface));
-  border: 1px solid rgb(var(--v-theme-outline-variant));
-  border-radius: 8px;
   padding: 1rem;
   margin: 1rem 0;
   overflow-x: auto;
 }
 
-:deep(pre code) {
-  background: transparent;
-  padding: 0;
-}
-
 :deep(blockquote) {
   border-left: 4px solid rgb(var(--v-theme-primary));
-  margin: 1rem 0;
-  padding: 0 1rem;
-  background: rgb(var(--v-theme-surface-variant));
+  margin: 1rem;
+  padding: 0rem 1rem;
   border-radius: 0 4px 4px 0;
+  font-style: italic;
+  font-size: 0.875rem;
 }
 
 :deep(table) {
-  width: 100%;
+  width: 96%;
+  border: 2px solid #797777;
   border-collapse: collapse;
-  margin: 1rem 0;
-  border: 2px solid #424242;
+  margin: 1rem;
+  padding: 0rem 1rem;
 }
 
 :deep(th),
@@ -195,14 +189,14 @@ export default {
 }
 
 :deep(th) {
-  background: #424242;
+  background: #666363;
   font-weight: 500;
   color: #ffffff;
 }
 
 :deep(.mermaid) {
   margin: 1rem 0;
-  background: rgb(var(--v-theme-surface));
+  background: rgb(var(--v-theme-surface), 0.5);
   border: 1px solid rgb(var(--v-theme-outline-variant));
   border-radius: 8px;
   padding: 1rem;
