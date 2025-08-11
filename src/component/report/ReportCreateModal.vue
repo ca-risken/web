@@ -135,12 +135,12 @@ export default {
       baseScore: 0.5,
       selectedDataSources: [],
       dataSources: [
-        { value: 'AWS', text: 'AWS' },
-        { value: 'GCP', text: 'GCP' },
-        { value: 'Azure', text: 'Azure' },
-        { value: 'GitHub', text: 'GitHub' },
-        { value: 'OSINT', text: 'OSINT' },
-        { value: 'Diagnosis', text: 'Diagnosis' },
+        { value: 'aws', text: 'AWS' },
+        { value: 'google', text: 'GCP' },
+        { value: 'azure', text: 'Azure' },
+        { value: 'code', text: 'GitHub' },
+        { value: 'osint', text: 'OSINT' },
+        { value: 'diagnosis', text: 'Diagnosis' },
       ],
       nameRules: [
         (v) =>
