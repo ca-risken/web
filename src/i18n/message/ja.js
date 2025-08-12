@@ -48,7 +48,7 @@ const ja = {
     'CREATE EMPTY REPORT': '空のレポートを作成',
     NEW: '新規',
     EDIT: '編集',
-    'AI Edit': 'AI編集',
+    'Re-generate': '再生成',
     DOWNLOAD_PDF: 'PDFダウンロード',
   },
   menu: {

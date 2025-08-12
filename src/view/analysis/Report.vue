@@ -8,7 +8,7 @@
             :selected-report-id="selectedReportId"
             @select-report="handleSelectReport"
             @create-report="handleCreateReport"
-            @ai-edit="handleAIEdit"
+            @re-generate="handleReGenerate"
             @error="handleError"
           />
         </v-col>
@@ -100,7 +100,7 @@ export default {
       this.createModalOpen = true
     },
 
-    handleAIEdit(report) {
+    handleReGenerate(report) {
       this.presetReportTitle = report.name
       this.$nextTick(() => {
         this.createModalOpen = true

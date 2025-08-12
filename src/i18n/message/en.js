@@ -48,7 +48,7 @@ const en = {
     'CREATE EMPTY REPORT': 'CREATE EMPTY REPORT',
     NEW: 'NEW',
     EDIT: 'EDIT',
-    'AI Edit': 'AI Edit',
+    'Re-generate': 'Re-generate',
     DOWNLOAD_PDF: 'Download PDF',
   },
   menu: {

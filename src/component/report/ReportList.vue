@@ -100,10 +100,10 @@
                   </v-btn>
                 </template>
                 <v-list>
-                  <v-list-item @click="handleAIEdit(item)">
+                  <v-list-item @click="handleReGenerate(item)">
                     <v-list-item-title>
                       <v-icon size="small" class="mr-2">mdi-robot</v-icon>
-                      {{ $t(`btn['AI Edit']`) }}
+                      {{ $t(`btn['Re-generate']`) }}
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -129,7 +129,7 @@ export default {
       default: null,
     },
   },
-  emits: ['select-report', 'create-report', 'ai-edit', 'error'],
+  emits: ['select-report', 'create-report', 're-generate', 'error'],
   data() {
     return {
       loading: false,
@@ -180,8 +180,8 @@ export default {
       this.$emit('create-report')
     },
 
-    handleAIEdit(report) {
-      this.$emit('ai-edit', report)
+    handleReGenerate(report) {
+      this.$emit('re-generate', report)
     },
 
     handleList() {
