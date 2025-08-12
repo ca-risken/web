@@ -102,7 +102,7 @@
                 <v-list>
                   <v-list-item @click="handleReGenerate(item)">
                     <v-list-item-title>
-                      <v-icon size="small" class="mr-2">mdi-robot</v-icon>
+                      <v-icon size="small" class="mr-2">mdi-creation</v-icon>
                       {{ $t(`btn['Re-generate']`) }}
                     </v-list-item-title>
                   </v-list-item>
