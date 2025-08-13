@@ -28,6 +28,24 @@ const ai = {
       }
       return res.data.data.answer
     },
+
+    // Generate Report API
+    async generateReport(prompt, name) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        prompt: prompt,
+        name: name,
+      }
+      const res = await longAxios
+        .post('/ai/generate-report/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data) {
+        return {}
+      }
+      return res.data.data
+    },
   },
 }
 
