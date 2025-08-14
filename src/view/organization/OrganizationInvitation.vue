@@ -110,7 +110,9 @@ export default {
           itemsPerPageOptions: [{ value: 10, title: '10' }],
           showCurrentPage: true,
         },
+        total: 0,
       },
+      invitations: [],
     }
   },
   computed: {
@@ -159,7 +161,7 @@ export default {
         items: this.table.items,
         options: this.table.options,
         footer: this.table.footer,
-        total: this.table.items.length,
+        total: this.table.total,
       }
     },
   },
@@ -212,15 +214,26 @@ export default {
           (invitation) => invitation.name == name
         )
       }
-      this.table.items = invitationWithName
+      this.invitations = invitationWithName
+      this.table.total = invitationWithName.length
       this.table.nameList = [
-        ...new Set(this.table.items.map((item) => item.name)),
+        ...new Set(invitationWithName.map((item) => item.name)),
       ]
-      this.loading = false
+      this.loadList()
     },
     clearList() {
       this.table.items = []
       this.table.nameList = []
+      this.table.total = 0
+      this.invitations = []
+    },
+    loadList() {
+      this.loading = true
+      const from =
+        (this.table.options.page - 1) * this.table.options.itemsPerPage
+      const to = from + this.table.options.itemsPerPage
+      this.table.items = this.invitations.slice(from, to)
+      this.loading = false
     },
 
     handleSearch(searchModel) {
@@ -287,7 +300,9 @@ export default {
     },
 
     updateOptions(options) {
-      this.table.options = options
+      this.table.options.page = options.page
+      this.table.options.itemsPerPage = options.itemsPerPage
+      this.loadList()
     },
   },
 }
