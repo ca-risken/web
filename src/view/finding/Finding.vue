@@ -708,11 +708,15 @@ export default {
     this.isInitializing = true
     await this.reSign()
     this.findingHistory = this.getSearchHistory()
-    await Promise.all([
-      this.UpdateAlertFirstViewedAt(),
-      this.getTag(),
-      this.listResourceNameForCombobox(),
-    ])
+    if (this.isOrganizationMode) {
+      await this.UpdateAlertFirstViewedAt()
+    } else {
+      await Promise.all([
+        this.UpdateAlertFirstViewedAt(),
+        this.getTag(),
+        this.listResourceNameForCombobox(),
+      ])
+    }
     await this.refleshList(true)
     this.isInitializing = false
   },
@@ -731,14 +735,19 @@ export default {
       this.loadList(true)
     },
     async loadList(parse) {
+      if (this.isOrganizationMode) {
+        await this.loadListForOrganization(parse)
+      } else {
+        await this.loadProjectList(parse)
+      }
+    },
+    async loadProjectList(parse) {
       this.loading = true
       this.clearList()
       if (parse) {
         this.parseQuery()
       }
-      const list = this.isOrganizationMode
-        ? await this.listOrganizationFinding(this.getSearchCondition())
-        : await this.listFinding(this.getSearchCondition())
+      const list = await this.listFinding(this.getSearchCondition())
       if (!list.finding_id || list.finding_id.length == 0) {
         this.loading = false
         return
@@ -749,6 +758,56 @@ export default {
         findings.push(this.getFindingDetail(id))
       }
       this.table.items = await Promise.all(findings) // Parallel API call
+      this.loading = false
+    },
+    async loadListForOrganization(parse) {
+      this.loading = true
+      this.clearList()
+      if (parse) {
+        this.parseQuery()
+      }
+      const list = await this.listFindingForOrganization(
+        this.getCurrentOrganizationID(),
+        this.getSearchCondition()
+      )
+      if (!list.findings || list.findings.length == 0) {
+        this.loading = false
+        return
+      }
+      this.table.total = list.total
+      this.table.items = list.findings.map((findingDetail) => ({
+        finding_id: findingDetail.finding.finding_id,
+        project_id: findingDetail.finding.project_id,
+        status: findingDetail.pend_info
+          ? findingDetail.pend_info.status
+          : 'ACTIVE',
+        score: findingDetail.finding.score,
+        original_score: findingDetail.finding.original_score,
+        data_source: findingDetail.finding.data_source,
+        resource_name: findingDetail.finding.resource_name,
+        description: findingDetail.finding.description,
+        tags: findingDetail.finding_tags || [],
+        data: findingDetail.finding.data,
+        updated_at: findingDetail.finding.updated_at,
+        created_at: findingDetail.finding.created_at,
+        pendModel: {
+          finding_id: findingDetail.finding.finding_id,
+          pend_user_id:
+            findingDetail.pend_info && findingDetail.pend_info.user_name
+              ? 1
+              : 0,
+          pend_user: findingDetail.pend_info
+            ? findingDetail.pend_info.user_name
+            : '',
+          note: findingDetail.pend_info ? findingDetail.pend_info.note : '',
+          expired_at: findingDetail.pend_info
+            ? findingDetail.pend_info.expired_at
+            : null,
+          false_positive: findingDetail.pend_info
+            ? findingDetail.pend_info.false_positive
+            : false,
+        },
+      }))
       this.loading = false
     },
     async getFindingDetail(id) {

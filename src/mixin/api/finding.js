@@ -33,11 +33,11 @@ const finding = {
       }
       return res.data.data
     },
-    async listOrganizationFinding(searchCond) {
+    async listFindingForOrganization(organization_id, searchCond) {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-finding/?organization_id=' +
-            this.getCurrentOrganizationID() +
+          '/finding/list-finding-for-organization/?organization_id=' +
+            organization_id +
             searchCond
         )
         .catch((err) => {
