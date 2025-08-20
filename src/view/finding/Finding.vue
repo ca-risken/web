@@ -465,6 +465,7 @@ export default {
       },
       findingModel: {
         finding_id: '',
+        project_id: '',
         status: '',
         score: '',
         original_score: '',
@@ -803,9 +804,6 @@ export default {
           expired_at: findingDetail.pend_info
             ? findingDetail.pend_info.expired_at
             : null,
-          false_positive: findingDetail.pend_info
-            ? findingDetail.pend_info.false_positive
-            : false,
         },
       }))
       this.loading = false
@@ -818,6 +816,7 @@ export default {
       ])
       return {
         finding_id: id,
+        project_id: finding.project_id,
         status: this.isPending(pend),
         score: finding.score,
         original_score: finding.original_score,
@@ -1078,7 +1077,11 @@ export default {
     async handleNewTagSubmit(newTag) {
       this.loading = true
       if (this.findingModel.finding_id && newTag) {
-        await this.tagFinding(this.findingModel.finding_id, newTag)
+        await this.tagFinding(
+          this.findingModel.project_id,
+          this.findingModel.finding_id,
+          newTag
+        )
         this.finishSuccess('Success: New Tag `' + newTag + '`.')
       }
       this.loading = false
@@ -1086,7 +1089,10 @@ export default {
     async handleUntag(item) {
       this.loading = true
       if (item.finding_tag_id) {
-        await this.untagFinding(item.finding_tag_id)
+        await this.untagFinding(
+          this.findingModel.project_id,
+          item.finding_tag_id
+        )
         this.finishSuccess('Success: Untag `' + item.tag + '`.')
       }
       this.viewDialog = false
@@ -1099,7 +1105,10 @@ export default {
     },
     async handleDeleteSubmit() {
       this.loading = true
-      await this.deleteFinding(this.findingModel.finding_id)
+      await this.deleteFinding(
+        this.findingModel.project_id,
+        this.findingModel.finding_id
+      )
       this.finishSuccess('Success: Delete.')
     },
     async handleDeleteSelected() {
@@ -1107,17 +1116,14 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-        await this.deleteFinding(item.finding_id)
+        await this.deleteFinding(item.project_id, item.finding_id)
       })
       this.table.selected = []
       this.finishSuccess('Success: Delete ' + count + ' findings.')
     },
     async handleActivateItem(row) {
       this.loading = true
-      await this.deletePendFinding(
-        this.getCurrentProjectID(),
-        row.value.finding_id
-      )
+      await this.deletePendFinding(row.value.project_id, row.value.finding_id)
       this.finishSuccess('Success: Activated.')
     },
     async handleActivateSelected() {
@@ -1125,10 +1131,7 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-        await this.deletePendFinding(
-          this.getCurrentProjectID(),
-          item.finding_id
-        )
+        await this.deletePendFinding(item.project_id, item.finding_id)
       })
       this.table.selected = []
       this.finishSuccess('Success: Activated ' + count + ' findings.')
@@ -1170,6 +1173,7 @@ export default {
         this.table.selected.forEach(async (item) => {
           if (!item.finding_id) return
           await this.putPendFinding(
+            item.project_id,
             item.finding_id,
             pendModel.note,
             pendReason,
@@ -1184,6 +1188,7 @@ export default {
         this.finishSuccess('Success: Pend ' + count + ' findings.')
       } else {
         await this.putPendFinding(
+          this.findingModel.project_id,
           pendModel.finding_id,
           pendModel.note,
           pendReason,
