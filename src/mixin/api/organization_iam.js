@@ -175,6 +175,47 @@ const organization_iam = {
         })
       return res.data.data.role
     },
+    async listOrganizationUserReservedAPI(searchCond) {
+      const res = await this.$axios
+        .get(
+          '/organization/list-organization-user-reserved/?organization_id=' +
+            this.getCurrentOrganizationID() +
+            searchCond
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.user_reserved) {
+        return []
+      }
+      return res.data.data.user_reserved
+    },
+    async putOrganizationUserReservedAPI(reserved_id, user_idp_key, role_id) {
+      const param = {
+        organization_id: this.getCurrentOrganizationID(),
+        reserved_id: reserved_id,
+        user_idp_key: user_idp_key,
+        role_id: role_id,
+      }
+      const res = await this.$axios
+        .post('/organization/put-organization-user-reserved/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res
+    },
+    async deleteOrganizationUserReservationAPI(reserved_id) {
+      const param = {
+        reserved_id: reserved_id,
+        organization_id: this.getCurrentOrganizationID(),
+      }
+      const res = await this.$axios
+        .post('/organization/delete-organization-user-reserved', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      return res
+    },
   },
 }
 

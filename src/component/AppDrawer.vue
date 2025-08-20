@@ -133,6 +133,7 @@ export default {
               'Finding',
               'Organization',
               'Organization IAM',
+              'User Reservation',
             ]
             return allowedMenuTitles.includes(menu.meta.title)
           } else {
