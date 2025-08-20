@@ -33,6 +33,21 @@ const finding = {
       }
       return res.data.data
     },
+    async listFindingForOrganization(organization_id, searchCond) {
+      const res = await this.$axios
+        .get(
+          '/finding/list-finding-for-organization/?organization_id=' +
+            organization_id +
+            searchCond
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data) {
+        return { total: 0, finding_id: [] } // empty list
+      }
+      return res.data.data
+    },
     async listFindingCnt(searchCond) {
       const res = await this.$axios
         .get(
@@ -47,22 +62,6 @@ const finding = {
         return 0
       }
       return res.data.data.total
-    },
-    async listFindingByResouceName(resource_name) {
-      const res = await this.$axios
-        .get(
-          '/finding/list-finding/?project_id=' +
-            this.getCurrentProjectID() +
-            '&resource_name=' +
-            resource_name
-        )
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      if (!res.data.data.finding_id) {
-        return [] // empty list
-      }
-      return res.data.data.finding_id
     },
     async getFinding(id) {
       const res = await this.$axios
@@ -191,11 +190,11 @@ const finding = {
       return res.data.data.tag
     },
 
-    async tagFinding(findingID, tag) {
+    async tagFinding(project_id, findingID, tag) {
       const param = {
-        project_id: this.getCurrentProjectID(),
+        project_id: project_id,
         tag: {
-          project_id: this.getCurrentProjectID(),
+          project_id: project_id,
           finding_id: findingID,
           tag: tag,
         },
@@ -206,9 +205,9 @@ const finding = {
       })
     },
 
-    async untagFinding(finding_tag_id) {
+    async untagFinding(project_id, finding_tag_id) {
       const param = {
-        project_id: this.getCurrentProjectID(),
+        project_id: project_id,
         finding_tag_id: finding_tag_id,
       }
       await this.$axios.post('/finding/untag-finding/', param).catch((err) => {
@@ -228,12 +227,12 @@ const finding = {
           return Promise.reject(err)
         })
     },
-    async putPendFinding(finding_id, note, reason, expired_at) {
+    async putPendFinding(project_id, finding_id, note, reason, expired_at) {
       const param = {
-        project_id: this.getCurrentProjectID(),
+        project_id: project_id,
         pend_finding: {
           finding_id: finding_id,
-          project_id: this.getCurrentProjectID(),
+          project_id: project_id,
           note: note,
           reason: reason,
         },
@@ -248,9 +247,9 @@ const finding = {
           return Promise.reject(err)
         })
     },
-    async deleteFinding(finding_id) {
+    async deleteFinding(project_id, finding_id) {
       const param = {
-        project_id: this.getCurrentProjectID(),
+        project_id: project_id,
         finding_id: finding_id,
       }
       await this.$axios.post('/finding/delete-finding/', param).catch((err) => {
