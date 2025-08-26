@@ -9,6 +9,9 @@
                 >mdi-file-find-outline</v-icon
               >
               {{ $t(`submenu['Finding']`) }}
+              <span v-if="isOrganizationMode" class="text-caption ml-2"
+                >(Organization)</span
+              >
             </v-toolbar-title>
           </v-toolbar>
         </v-col>
@@ -409,6 +412,7 @@ import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
 import signin from '@/mixin/api/signin'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
@@ -419,7 +423,7 @@ import FindingDetailDialog from '@/component/dialog/finding/Detail.vue'
 
 export default {
   name: 'FindingList',
-  mixins: [mixin, finding, alert, iam, signin],
+  mixins: [mixin, finding, alert, iam, signin, organization_helper],
   components: {
     BottomSnackBar,
     VDataTableServer,
@@ -461,6 +465,7 @@ export default {
       },
       findingModel: {
         finding_id: '',
+        project_id: '',
         status: '',
         score: '',
         original_score: '',
@@ -704,11 +709,15 @@ export default {
     this.isInitializing = true
     await this.reSign()
     this.findingHistory = this.getSearchHistory()
-    await Promise.all([
-      this.UpdateAlertFirstViewedAt(),
-      this.getTag(),
-      this.listResourceNameForCombobox(),
-    ])
+    if (this.isOrganizationMode) {
+      await this.UpdateAlertFirstViewedAt()
+    } else {
+      await Promise.all([
+        this.UpdateAlertFirstViewedAt(),
+        this.getTag(),
+        this.listResourceNameForCombobox(),
+      ])
+    }
     await this.refleshList(true)
     this.isInitializing = false
   },
@@ -727,6 +736,13 @@ export default {
       this.loadList(true)
     },
     async loadList(parse) {
+      if (this.isOrganizationMode) {
+        await this.loadListForOrganization(parse)
+      } else {
+        await this.loadProjectList(parse)
+      }
+    },
+    async loadProjectList(parse) {
       this.loading = true
       this.clearList()
       if (parse) {
@@ -745,6 +761,53 @@ export default {
       this.table.items = await Promise.all(findings) // Parallel API call
       this.loading = false
     },
+    async loadListForOrganization(parse) {
+      this.loading = true
+      this.clearList()
+      if (parse) {
+        this.parseQuery()
+      }
+      const list = await this.listFindingForOrganization(
+        this.getCurrentOrganizationID(),
+        this.getSearchCondition()
+      )
+      if (!list.findings || list.findings.length == 0) {
+        this.loading = false
+        return
+      }
+      this.table.total = list.total
+      this.table.items = list.findings.map((findingDetail) => ({
+        finding_id: findingDetail.finding.finding_id,
+        project_id: findingDetail.finding.project_id,
+        status: findingDetail.pend_info
+          ? findingDetail.pend_info.status
+          : 'ACTIVE',
+        score: findingDetail.finding.score,
+        original_score: findingDetail.finding.original_score,
+        data_source: findingDetail.finding.data_source,
+        resource_name: findingDetail.finding.resource_name,
+        description: findingDetail.finding.description,
+        tags: findingDetail.finding_tags || [],
+        data: findingDetail.finding.data,
+        updated_at: findingDetail.finding.updated_at,
+        created_at: findingDetail.finding.created_at,
+        pendModel: {
+          finding_id: findingDetail.finding.finding_id,
+          pend_user_id:
+            findingDetail.pend_info && findingDetail.pend_info.user_name
+              ? 1
+              : 0,
+          pend_user: findingDetail.pend_info
+            ? findingDetail.pend_info.user_name
+            : '',
+          note: findingDetail.pend_info ? findingDetail.pend_info.note : '',
+          expired_at: findingDetail.pend_info
+            ? findingDetail.pend_info.expired_at
+            : null,
+        },
+      }))
+      this.loading = false
+    },
     async getFindingDetail(id) {
       const [finding, tag, pend] = await Promise.all([
         this.getFinding(id),
@@ -753,6 +816,7 @@ export default {
       ])
       return {
         finding_id: id,
+        project_id: finding.project_id,
         status: this.isPending(pend),
         score: finding.score,
         original_score: finding.original_score,
@@ -1013,7 +1077,11 @@ export default {
     async handleNewTagSubmit(newTag) {
       this.loading = true
       if (this.findingModel.finding_id && newTag) {
-        await this.tagFinding(this.findingModel.finding_id, newTag)
+        await this.tagFinding(
+          this.findingModel.project_id,
+          this.findingModel.finding_id,
+          newTag
+        )
         this.finishSuccess('Success: New Tag `' + newTag + '`.')
       }
       this.loading = false
@@ -1021,7 +1089,10 @@ export default {
     async handleUntag(item) {
       this.loading = true
       if (item.finding_tag_id) {
-        await this.untagFinding(item.finding_tag_id)
+        await this.untagFinding(
+          this.findingModel.project_id,
+          item.finding_tag_id
+        )
         this.finishSuccess('Success: Untag `' + item.tag + '`.')
       }
       this.viewDialog = false
@@ -1034,7 +1105,10 @@ export default {
     },
     async handleDeleteSubmit() {
       this.loading = true
-      await this.deleteFinding(this.findingModel.finding_id)
+      await this.deleteFinding(
+        this.findingModel.project_id,
+        this.findingModel.finding_id
+      )
       this.finishSuccess('Success: Delete.')
     },
     async handleDeleteSelected() {
@@ -1042,17 +1116,14 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-        await this.deleteFinding(item.finding_id)
+        await this.deleteFinding(item.project_id, item.finding_id)
       })
       this.table.selected = []
       this.finishSuccess('Success: Delete ' + count + ' findings.')
     },
     async handleActivateItem(row) {
       this.loading = true
-      await this.deletePendFinding(
-        this.getCurrentProjectID(),
-        row.value.finding_id
-      )
+      await this.deletePendFinding(row.value.project_id, row.value.finding_id)
       this.finishSuccess('Success: Activated.')
     },
     async handleActivateSelected() {
@@ -1060,10 +1131,7 @@ export default {
       const count = this.table.selected.length
       this.table.selected.forEach(async (item) => {
         if (!item.finding_id) return
-        await this.deletePendFinding(
-          this.getCurrentProjectID(),
-          item.finding_id
-        )
+        await this.deletePendFinding(item.project_id, item.finding_id)
       })
       this.table.selected = []
       this.finishSuccess('Success: Activated ' + count + ' findings.')
@@ -1105,6 +1173,7 @@ export default {
         this.table.selected.forEach(async (item) => {
           if (!item.finding_id) return
           await this.putPendFinding(
+            item.project_id,
             item.finding_id,
             pendModel.note,
             pendReason,
@@ -1119,6 +1188,7 @@ export default {
         this.finishSuccess('Success: Pend ' + count + ' findings.')
       } else {
         await this.putPendFinding(
+          this.findingModel.project_id,
           pendModel.finding_id,
           pendModel.note,
           pendReason,
