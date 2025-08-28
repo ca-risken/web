@@ -231,26 +231,30 @@ export default {
         console.error('Error loading projects:', err)
         throw err
       })
-      let invitationWithName = await Promise.all(
-        invitations.map(async (invitation) => {
+      let invitationWithName = []
+      try {
+        for (const invitation of invitations) {
           const projects = await this.listProjectAPI(
             `?project_id=${invitation.project_id}`
           ).catch((err) => {
             console.error('Error loading project:', err)
             throw err
           })
-          return {
-            ...invitation,
-            name: projects[0].name,
-            membership: organizationProject.some(
-              (project) => project.project_id === invitation.project_id
-            ),
+          if (projects && projects.length > 0) {
+            invitationWithName.push({
+              ...invitation,
+              name: projects[0].name,
+              membership: organizationProject.some(
+                (project) => project.project_id === invitation.project_id
+              ),
+            })
           }
-        })
-      ).catch((err) => {
+        }
+      } catch (err) {
         console.error('Error processing invitations:', err)
         throw err
-      })
+      }
+
       if (name) {
         invitationWithName = invitationWithName.filter(
           (invitation) => invitation.name == name
