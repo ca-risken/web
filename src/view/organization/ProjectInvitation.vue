@@ -338,7 +338,7 @@ export default {
       delete project[0].tag
       store.commit('updateMode', MODE.PROJECT)
       store.commit('updateProject', project[0])
-      await this.$router.push('/dashboard')
+      await this.$router.push('/organization/list')
       this.reload()
     },
 
