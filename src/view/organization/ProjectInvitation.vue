@@ -240,7 +240,7 @@ export default {
             console.error('Error loading project:', err)
             throw err
           })
-          if (projects && projects.length > 0) {
+          if (projects.length > 0) {
             invitationWithName.push({
               ...invitation,
               name: projects[0].name,
