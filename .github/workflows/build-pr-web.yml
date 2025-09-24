@@ -30,9 +30,9 @@ jobs:
       - name: Install Dependencies and Lint
         run: |
           echo "Installing dependencies and running linter"
-          cd ${CODEBUILD_SRC_DIR} && make install && make lint
+          cd ${GITHUB_WORKSPACE} && make install && make lint
 
       - name: Build Docker Image
         run: |
           echo "Build web started on `date`"
-          cd ${CODEBUILD_SRC_DIR} && docker build ${BUILD_OPT} -t ${IMAGE}:test .
+          cd ${GITHUB_WORKSPACE} && docker build ${{ env.BUILD_OPT }} -t ${{ env.IMAGE }}:test .
