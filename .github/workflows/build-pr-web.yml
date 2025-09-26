@@ -11,7 +11,7 @@ jobs:
     env:
       IMAGE: "gateway/web"
       BUILD_OPT: --no-cache --pull
-      NODEJS_VERSION: "16"
+      NODEJS_VERSION: "22"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
