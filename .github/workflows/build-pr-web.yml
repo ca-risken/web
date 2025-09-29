@@ -1,0 +1,38 @@
+name: Build and Tag Container for PR Web
+
+on: 
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  build-pr-web:
+    runs-on: codebuild-mimosa-web-pr-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    env:
+      IMAGE: "gateway/web"
+      BUILD_OPT: --no-cache --pull
+      NODEJS_VERSION: "22"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Install Dependencies and Lint
+        run: |
+          echo "Installing dependencies and running linter"
+          cd ${GITHUB_WORKSPACE} && make install && make lint
+
+      - name: Build Docker Image
+        run: |
+          echo "Build web started on `date`"
+          cd ${GITHUB_WORKSPACE} && docker build ${{ env.BUILD_OPT }} -t ${{ env.IMAGE }}:test .
