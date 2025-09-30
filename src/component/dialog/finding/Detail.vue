@@ -411,6 +411,7 @@ import JsonView from '@/component/text/JsonView.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
 import FindingTriageDialog from '@/component/dialog/finding/Triage.vue'
 import CopyLink from '@/component/link/CopyLink.vue'
+import Markdown from '@/component/text/Markdown.vue'
 
 export default {
   name: 'FindingDetailDialog',
@@ -420,6 +421,7 @@ export default {
     AIPanel,
     FindingTriageDialog,
     CopyLink,
+    Markdown,
   },
   mixins: [mixin],
   props: {
