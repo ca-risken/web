@@ -23,39 +23,66 @@
         </v-toolbar-title>
       </div>
     </v-toolbar>
-    <v-list class="pa-0">
-      <template v-for="(item, key) in computeMenu">
-        <template v-if="item.children && item.children.length > 0">
+    <v-list class="pa-0" nav>
+      <template v-for="(item, key) in computeMenu" :key="`menu-${key}`">
+        <template v-if="hasChildren(item)">
           <v-list-group
-            :model-value="item.meta.title"
-            :prepend-icon="item.meta.icon"
-            :key="key"
+            :model-value="true"
+            :prepend-icon="item.meta?.icon"
             v-show="!item.hidden"
           >
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
-                :title="$t(`menu['` + item.meta.title + `']`)"
-                :prepend-icon="item.meta.icon"
+                :title="getMenuTitle(item, true)"
+                :prepend-icon="item.meta?.icon"
               ></v-list-item>
             </template>
-            <v-list-item
-              v-for="sub in item.children"
-              :key="sub.name"
-              :to="sub.path"
-              :title="$t(`submenu['` + sub.meta.title + `']`)"
-              :prepend-icon="sub.meta.icon"
-              v-show="!sub.meta.hiddenInMenu"
-            ></v-list-item>
+            <template
+              v-for="(sub, subIndex) in item.children"
+              :key="`sub-${key}-${subIndex}`"
+            >
+              <template v-if="hasChildren(sub)">
+                <v-list-group
+                  :model-value="true"
+                  :prepend-icon="sub.meta?.icon"
+                  v-show="!sub.meta?.hiddenInMenu"
+                >
+                  <template #activator="{ props: subProps }">
+                    <v-list-item
+                      v-bind="subProps"
+                      :title="getMenuTitle(sub, true)"
+                      :prepend-icon="sub.meta?.icon"
+                    ></v-list-item>
+                  </template>
+                  <v-list-item
+                    v-for="leaf in sub.children"
+                    :key="leaf.name || leaf.meta?.title"
+                    :to="leaf.path"
+                    v-show="!leaf.meta?.hiddenInMenu"
+                    :prepend-icon="leaf.meta?.icon"
+                    :title="getMenuTitle(leaf, false)"
+                  ></v-list-item>
+                </v-list-group>
+              </template>
+              <v-list-item
+                v-else
+                :key="sub.name || sub.meta?.title"
+                :to="sub.path"
+                v-show="!sub.meta?.hiddenInMenu"
+                :prepend-icon="sub.meta?.icon"
+                :title="getMenuTitle(sub, false)"
+              ></v-list-item>
+            </template>
           </v-list-group>
         </template>
         <template v-else>
           <v-list-item
-            :key="key"
+            :key="item.name || item.meta?.title"
             :to="item.path"
-            v-show="!item.meta.hiddenInMenu"
-            :prepend-icon="item.meta.icon"
-            :title="$t(`menu['` + item.meta.title + `']`)"
+            v-show="!item.meta?.hiddenInMenu"
+            :prepend-icon="item.meta?.icon"
+            :title="getMenuTitle(item, true)"
           >
           </v-list-item>
         </template>
@@ -103,7 +130,7 @@ export default {
   data() {
     return {
       mini: false,
-      drawerWidth: 260,
+      drawerWidth: 263,
       drawer: true,
       scrollSettings: {
         maxScrollbarLength: 160,
@@ -125,48 +152,69 @@ export default {
       return this.isOrganizationMode ? 'light-blue' : 'primary'
     },
     computeMenu() {
-      const allMenus = routes[0].children
-      let filteredMenus = allMenus
-        .filter((menu) => {
-          if (this.isOrganizationMode) {
-            const allowedMenuTitles = [
-              'Finding',
-              'Organization',
-              'Organization IAM',
-              'User Reservation',
-            ]
-            return allowedMenuTitles.includes(menu.meta.title)
-          } else {
-            const forbiddenMenuTitles = ['Organization IAM']
-            return !forbiddenMenuTitles.includes(menu.meta.title)
-          }
-        })
-        .map((menu) => {
-          if (menu.children && menu.children.length > 0) {
-            menu = { ...menu }
-            menu.children = menu.children.filter((sub) => {
-              if (!this.isOrganizationMode) {
-                const projectModeForbiddenTitles = [
-                  'New Organization',
-                  'Organization Setting',
-                  'ProjectInvitation',
-                ]
-                return !projectModeForbiddenTitles.includes(sub.meta.title)
-              } else {
-                const organizationModeForbiddenTitles = [
-                  'OrganizationInvitation',
-                ]
-                if (menu.meta.title === 'Finding') {
-                  const findingForbiddenTitles = ['Resource', 'Setting']
-                  return !findingForbiddenTitles.includes(sub.meta.title)
-                }
-                return !organizationModeForbiddenTitles.includes(sub.meta.title)
-              }
-            })
-          }
-          return menu
-        })
-      return filteredMenus
+      const allMenus = routes[0].children || []
+      const visibleMenus = allMenus
+        .filter((menu) => !menu.hidden)
+        .filter((menu) => this.shouldIncludeMenu(menu.meta?.title))
+        .map((menu) => this.cloneMenu(menu))
+
+      if (this.isOrganizationMode) {
+        return visibleMenus
+      }
+
+      const menuMap = new Map()
+      visibleMenus.forEach((menu) => {
+        if (menu.meta?.title) {
+          menuMap.set(menu.meta.title, menu)
+        }
+      })
+
+      const usedTitles = new Set()
+      const orderedMenus = []
+      const addMenuIfExists = (title) => {
+        if (!title) return
+        const menu = menuMap.get(title)
+        if (menu) {
+          usedTitles.add(title)
+          orderedMenus.push(menu)
+        }
+      }
+
+      addMenuIfExists('Dashboard')
+      addMenuIfExists('Finding')
+
+      const categoryDefinitions = [
+        {
+          title: 'Data Source',
+          icon: 'mdi-database-cog',
+          children: ['AWS', 'Google', 'Azure', 'Diagnosis', 'OSINT', 'Code'],
+        },
+        {
+          title: 'Setting',
+          icon: 'mdi-cog-outline',
+          children: ['IAM', 'Project', 'Alert'],
+        },
+        {
+          title: 'Operation',
+          icon: 'mdi-briefcase-check-outline',
+          children: ['Analysis', 'Organization', 'Organization IAM'],
+        },
+      ]
+
+      categoryDefinitions.forEach((definition) => {
+        const category = this.buildCategory(definition, menuMap, usedTitles)
+        if (category) {
+          orderedMenus.push(category)
+        }
+      })
+
+      visibleMenus.forEach((menu) => {
+        if (!usedTitles.has(menu.meta?.title)) {
+          orderedMenus.push(menu)
+        }
+      })
+
+      return orderedMenus
     },
   },
   watch: {
@@ -178,6 +226,96 @@ export default {
     },
   },
   methods: {
+    getMenuTitle(item, isGroup) {
+      const titleKey = item?.meta?.title
+      if (!titleKey) {
+        return ''
+      }
+      const dictionary = isGroup ? 'menu' : 'submenu'
+      const locale = this.$i18n?.locale
+      const messages = this.$i18n?.messages?.[locale]?.[dictionary]
+      if (messages && messages[titleKey]) {
+        return messages[titleKey]
+      }
+      return titleKey
+    },
+    hasChildren(item) {
+      return Array.isArray(item?.children) && item.children.length > 0
+    },
+    cloneMenu(menu) {
+      if (!menu) return null
+      const cloned = { ...menu }
+      delete cloned.children
+      if (menu.children && menu.children.length > 0) {
+        const children = menu.children
+          .filter((child) => !child.meta?.hiddenInMenu)
+          .filter((child) =>
+            this.shouldIncludeChild(menu.meta?.title, child.meta?.title)
+          )
+          .map((child) => this.cloneMenu(child))
+        if (children.length > 0) {
+          cloned.children = children
+        }
+      }
+      return cloned
+    },
+    shouldIncludeMenu(title) {
+      if (!title) {
+        return false
+      }
+      if (this.isOrganizationMode) {
+        const allowedMenuTitles = [
+          'Finding',
+          'Organization',
+          'Organization IAM',
+          'User Reservation',
+        ]
+        return allowedMenuTitles.includes(title)
+      }
+      const forbiddenMenuTitles = ['Organization IAM']
+      return !forbiddenMenuTitles.includes(title)
+    },
+    shouldIncludeChild(parentTitle, childTitle) {
+      if (!childTitle) {
+        return false
+      }
+      if (!this.isOrganizationMode) {
+        const projectModeForbiddenTitles = [
+          'New Organization',
+          'Organization Setting',
+          'ProjectInvitation',
+        ]
+        return !projectModeForbiddenTitles.includes(childTitle)
+      }
+      if (parentTitle === 'Finding') {
+        const findingForbiddenTitles = ['Resource', 'Setting']
+        return !findingForbiddenTitles.includes(childTitle)
+      }
+      const organizationModeForbiddenTitles = ['OrganizationInvitation']
+      return !organizationModeForbiddenTitles.includes(childTitle)
+    },
+    buildCategory(definition, menuMap, usedTitles) {
+      const children = definition.children
+        .map((title) => {
+          const menu = menuMap.get(title)
+          if (menu) {
+            usedTitles.add(title)
+            return menu
+          }
+          return null
+        })
+        .filter((menu) => !!menu)
+      if (!children.length) {
+        return null
+      }
+      return {
+        meta: {
+          title: definition.title,
+          icon: definition.icon,
+        },
+        children,
+      }
+    },
     handleDrawerCollapse() {
       this.drawerWidth = this.drawerWidth === 256 ? 64 : 256
     },
