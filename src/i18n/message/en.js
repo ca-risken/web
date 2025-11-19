@@ -99,6 +99,7 @@ const en = {
     Role: 'Role', // IAM
     Policy: 'Policy', // IAM
     AccessToken: 'AccessToken', // IAM
+    'Organization Access Token': 'Org Access Token', // IAM
     AttackFlow: 'AttackFlow', // Analysis
     FindingSummary: 'Finding Summary', // Analysis
     NewProject: 'New', // Project

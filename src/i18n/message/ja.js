@@ -99,6 +99,7 @@ const ja = {
     Role: 'ロール',
     Policy: 'ポリシー',
     AccessToken: 'アクセストークン',
+    'Organization Access Token': 'Orgアクセストークン',
     AttackFlow: 'アタックフロー',
     FindingSummary: 'Findingサマリー',
     NewProject: '新規プロジェクト',
