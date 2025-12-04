@@ -540,7 +540,7 @@ export const appRoute = [
             path: '/organization-iam/organization-access-token',
             name: 'OrganizationAccessToken',
             meta: {
-              title: 'Organization Access Token',
+              title: 'AccessToken',
             },
             component: () => import('@/view/iam/AccessToken.vue'),
           },

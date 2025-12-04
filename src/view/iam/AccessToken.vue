@@ -1,7 +1,10 @@
 <template>
   <div>
     <v-container>
-      <page-header icon="mdi-shield-key-outline" :title="tokenTitle" />
+      <page-header
+        icon="mdi-shield-key-outline"
+        :title="$t(`submenu['AccessToken']`)"
+      />
       <search-toolbar
         v-model="searchModel"
         :loading="loading"
@@ -94,7 +97,7 @@
         <v-card-title>
           <v-icon large>mdi-shield-key-outline</v-icon>
           <span class="mx-4 text-h5">
-            {{ tokenTitle }}
+            {{ $t(`submenu['AccessToken']`) }}
           </span>
         </v-card-title>
         <v-card-text>
@@ -373,7 +376,7 @@
           <v-list-item>
             <template v-slot:prepend>
               <clip-board
-                :name="tokenLabel"
+                :name="$t(`submenu['AccessToken']`)"
                 size="small"
                 :text="String(dataModel.token_hash)"
               />
@@ -600,13 +603,6 @@ export default {
           key: 'name',
         },
       ]
-    },
-    tokenTitle() {
-      const key = this.isOrganizationMode ? 'OrgAccessToken' : 'AccessToken'
-      return this.$i18n.t(`submenu['${key}']`)
-    },
-    tokenLabel() {
-      return this.isOrganizationMode ? 'Org Access Token' : 'Access Token'
     },
     isOrganizationMode() {
       return this.$route.path.startsWith('/organization-iam')
