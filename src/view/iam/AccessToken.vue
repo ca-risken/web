@@ -376,7 +376,7 @@
           <v-list-item>
             <template v-slot:prepend>
               <clip-board
-                :name="$t(`submenu['AccessToken']`)"
+                name="Access Token"
                 size="small"
                 :text="String(dataModel.token_hash)"
               />
@@ -942,10 +942,10 @@ export default {
       this.assignDataModel(item.value)
       this.deleteDialog = true
     },
-    handleSearch(search = this.searchModel) {
+    handleSearch() {
       let searchCond = ''
-      if (search?.keyword) {
-        searchCond += '&name=' + search.keyword
+      if (this.searchModel?.keyword) {
+        searchCond += '&name=' + this.searchModel.keyword
       }
       this.refleshList(searchCond)
     },
