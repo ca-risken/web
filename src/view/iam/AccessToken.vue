@@ -616,73 +616,70 @@ export default {
       this.loading = true
       this.clearList()
       const query = searchCond || ''
-      try {
-        let tokens
-        if (this.isOrganizationMode) {
-          tokens = await this.listOrgAccessTokenAPI(query).catch((err) => {
-            this.clearList()
-            return Promise.reject(err)
-          })
-        } else {
-          tokens = await this.listAccessTokenAPI(query).catch((err) => {
-            this.clearList()
-            return Promise.reject(err)
-          })
-        }
+      let tokens
+      if (this.isOrganizationMode) {
+        tokens = await this.listOrgAccessTokenAPI(query).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      } else {
+        tokens = await this.listAccessTokenAPI(query).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
+      }
 
-        if (!tokens || !tokens.length) {
-          this.table.total = 0
-          return
-        }
-        this.table.total = tokens.length
+      if (!tokens || !tokens.length) {
+        this.table.total = 0
+        return
+      }
+      this.table.total = tokens.length
 
-        const items = await Promise.all(
-          tokens.map(async (token) => {
-            let roles
-            if (this.isOrganizationMode) {
-              roles = await this.listOrganizationRoleAPI(
-                '&access_token_id=' + token.access_token_id
-              ).catch((err) => {
-                this.clearList()
-                return Promise.reject(err)
-              })
-            } else {
-              roles = await this.listRoleAPI(
-                '&access_token_id=' + token.access_token_id
-              ).catch((err) => {
-                this.clearList()
-                return Promise.reject(err)
-              })
-            }
-            const user = await this.getUserAPI(
-              token.last_updated_user_id
+      const items = await Promise.all(
+        tokens.map(async (token) => {
+          let roles
+          if (this.isOrganizationMode) {
+            roles = await this.listOrganizationRoleAPI(
+              '&access_token_id=' + token.access_token_id
             ).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
+          } else {
+            roles = await this.listRoleAPI(
+              '&access_token_id=' + token.access_token_id
+            ).catch((err) => {
+              this.clearList()
+              return Promise.reject(err)
+            })
+          }
+          const user = await this.getUserAPI(token.last_updated_user_id).catch(
+            (err) => {
               console.log(err)
               return { name: token.last_updated_user_id }
-            })
-
-            return {
-              access_token_id: token.access_token_id,
-              name: token.name,
-              description: token.description,
-              expired_at: Util.formatDate(
-                new Date(token.expired_at * 1000),
-                'yyyy-MM-dd'
-              ),
-              last_updated_user_id: token.last_updated_user_id,
-              last_updated_user_name: user.name,
-              created_at: token.created_at,
-              updated_at: token.updated_at,
-              role_cnt: roles.length,
-              roles: roles,
             }
-          })
-        )
-        this.table.items = items
-        this.tokenNameList = [...new Set(items.map((item) => item.name))]
-      } finally {
-        this.loading = false
-      }
+          )
+
+          return {
+            access_token_id: token.access_token_id,
+            name: token.name,
+            description: token.description,
+            expired_at: Util.formatDate(
+              new Date(token.expired_at * 1000),
+              'yyyy-MM-dd'
+            ),
+            last_updated_user_id: token.last_updated_user_id,
+            last_updated_user_name: user.name,
+            created_at: token.created_at,
+            updated_at: token.updated_at,
+            role_cnt: roles.length,
+            roles: roles,
+          }
+        })
+      )
+      this.table.items = items
+      this.tokenNameList = [...new Set(items.map((item) => item.name))]
+      this.loading = false
     },
     clearList() {
       this.table.total = 0
@@ -741,22 +738,18 @@ export default {
     },
     async putItem() {
       this.loading = true
-      try {
-        const expiredAt = this.convertToUnixTime(this.dataModel.expired_at)
-        if (this.isOrganizationMode) {
-          await this.upsertOrganizationToken(expiredAt)
-        } else {
-          await this.upsertProjectToken(expiredAt)
-        }
-        await this.syncTokenRoles()
-        if (this.form.newToken) {
-          await this.finishGenerateToken(this.dataModel.token_hash)
-          return
-        }
-        await this.finishUpdated('Success: Updated token.')
-      } catch (err) {
-        this.loading = false
+      const expiredAt = this.convertToUnixTime(this.dataModel.expired_at)
+      if (this.isOrganizationMode) {
+        await this.upsertOrganizationToken(expiredAt)
+      } else {
+        await this.upsertProjectToken(expiredAt)
       }
+      await this.syncTokenRoles()
+      if (this.form.newToken) {
+        await this.finishGenerateToken(this.dataModel.token_hash)
+        return
+      }
+      await this.finishUpdated('Success: Updated token.')
     },
     async upsertProjectToken(expiredAt) {
       const param = {
@@ -778,12 +771,12 @@ export default {
         )
         this.dataModel.access_token_id = newToken.access_token_id
         this.dataModel.token_hash = newToken.access_token
-        return
+      } else {
+        await this.updateAccessTokenAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err?.response?.data)
+          return Promise.reject(err)
+        })
       }
-      await this.updateAccessTokenAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err?.response?.data)
-        return Promise.reject(err)
-      })
     },
     async upsertOrganizationToken(expiredAt) {
       const param = {
@@ -803,12 +796,12 @@ export default {
         )
         this.dataModel.access_token_id = newToken.access_token_id
         this.dataModel.token_hash = newToken.access_token
-        return
+      } else {
+        await this.updateOrgAccessTokenAPI(param).catch((err) => {
+          this.$refs.snackbar.notifyError(err?.response?.data)
+          return Promise.reject(err)
+        })
       }
-      await this.updateOrgAccessTokenAPI(param).catch((err) => {
-        this.$refs.snackbar.notifyError(err?.response?.data)
-        return Promise.reject(err)
-      })
     },
     async syncTokenRoles() {
       if (!this.roleTable.items.length) {
