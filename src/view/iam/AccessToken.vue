@@ -630,55 +630,54 @@ export default {
       }
 
       if (!tokens || !tokens.length) {
-        this.table.total = 0
+        this.clearList()
         return
       }
       this.table.total = tokens.length
 
-      const items = await Promise.all(
-        tokens.map(async (token) => {
-          let roles
-          if (this.isOrganizationMode) {
-            roles = await this.listOrganizationRoleAPI(
-              '&access_token_id=' + token.access_token_id
-            ).catch((err) => {
-              this.clearList()
-              return Promise.reject(err)
-            })
-          } else {
-            roles = await this.listRoleAPI(
-              '&access_token_id=' + token.access_token_id
-            ).catch((err) => {
-              this.clearList()
-              return Promise.reject(err)
-            })
+      for (const token of tokens) {
+        let roles
+        if (this.isOrganizationMode) {
+          roles = await this.listOrganizationRoleAPI(
+            '&access_token_id=' + token.access_token_id
+          ).catch((err) => {
+            this.clearList()
+            return Promise.reject(err)
+          })
+        } else {
+          roles = await this.listRoleAPI(
+            '&access_token_id=' + token.access_token_id
+          ).catch((err) => {
+            this.clearList()
+            return Promise.reject(err)
+          })
+        }
+        const user = await this.getUserAPI(token.last_updated_user_id).catch(
+          (err) => {
+            console.log(err)
+            return { name: token.last_updated_user_id }
           }
-          const user = await this.getUserAPI(token.last_updated_user_id).catch(
-            (err) => {
-              console.log(err)
-              return { name: token.last_updated_user_id }
-            }
-          )
+        )
 
-          return {
-            access_token_id: token.access_token_id,
-            name: token.name,
-            description: token.description,
-            expired_at: Util.formatDate(
-              new Date(token.expired_at * 1000),
-              'yyyy-MM-dd'
-            ),
-            last_updated_user_id: token.last_updated_user_id,
-            last_updated_user_name: user.name,
-            created_at: token.created_at,
-            updated_at: token.updated_at,
-            role_cnt: roles.length,
-            roles: roles,
-          }
+        this.table.items.push({
+          access_token_id: token.access_token_id,
+          name: token.name,
+          description: token.description,
+          expired_at: Util.formatDate(
+            new Date(token.expired_at * 1000),
+            'yyyy-MM-dd'
+          ),
+          last_updated_user_id: token.last_updated_user_id,
+          last_updated_user_name: user.name,
+          created_at: token.created_at,
+          updated_at: token.updated_at,
+          role_cnt: roles.length,
+          roles: roles,
         })
-      )
-      this.table.items = items
-      this.tokenNameList = [...new Set(items.map((item) => item.name))]
+      }
+      this.tokenNameList = [
+        ...new Set(this.table.items.map((item) => item.name)),
+      ]
       this.loading = false
     },
     clearList() {
