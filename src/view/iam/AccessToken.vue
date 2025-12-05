@@ -744,7 +744,22 @@ export default {
       } else {
         await this.upsertProjectToken(expiredAt)
       }
-      await this.syncTokenRoles()
+      if (this.roleTable.items.length) {
+        for (const item of this.roleTable.items) {
+          let attachRole = false
+          this.roleTable.selected.some((selected) => {
+            if (item.role_id === selected.role_id) {
+              attachRole = true
+              return true
+            }
+          })
+          if (attachRole) {
+            await this.attachRoleToToken(item.role_id)
+          } else {
+            await this.detachRoleFromToken(item.role_id)
+          }
+        }
+      }
       if (this.form.newToken) {
         await this.finishGenerateToken(this.dataModel.token_hash)
         return
@@ -802,25 +817,6 @@ export default {
           return Promise.reject(err)
         })
       }
-    },
-    async syncTokenRoles() {
-      if (!this.roleTable.items.length) {
-        return
-      }
-      const ops = this.roleTable.items.map(async (item) => {
-        let attachRole = false
-        this.roleTable.selected.some((selected) => {
-          if (item.role_id === selected.role_id) {
-            attachRole = true
-            return true
-          }
-        })
-        if (attachRole) {
-          return this.attachRoleToToken(item.role_id)
-        }
-        return this.detachRoleFromToken(item.role_id)
-      })
-      await Promise.all(ops)
     },
     async attachRoleToToken(roleID) {
       if (this.isOrganizationMode) {
