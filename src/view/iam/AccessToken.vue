@@ -629,7 +629,7 @@ export default {
         })
       }
 
-      if (!tokens || !tokens.length) {
+      if (!tokens) {
         this.clearList()
         return
       }
