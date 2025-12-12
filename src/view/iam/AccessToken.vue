@@ -1,24 +1,48 @@
 <template>
   <div>
     <v-container>
-      <page-header
-        icon="mdi-shield-key-outline"
-        :title="$t(`submenu['AccessToken']`)"
-      />
-      <search-toolbar
-        v-model="searchModel"
-        :loading="loading"
-        :id-field-items="[]"
-        :name-field-items="tokenNameList"
-        name-field-key="keyword"
-        :show-id-field="false"
-        button-size="large"
-        create-button-icon="mdi-new-box"
-        create-button-color="primary-darken-3"
-        :search-form-config="searchToolbarConfig"
-        @search="handleSearch"
-        @create="handleNewItem"
-      />
+      <v-row dense justify="center" align-content="center">
+        <v-col cols="12">
+          <v-toolbar color="background" flat>
+            <v-toolbar-title class="grey--text text--darken-4">
+              <v-icon large class="pr-2">mdi-shield-key-outline</v-icon>
+              {{ $t(`submenu['AccessToken']`) }}
+            </v-toolbar-title>
+          </v-toolbar>
+        </v-col>
+      </v-row>
+      <v-form ref="searchForm">
+        <v-row dense justify="center" align-content="center">
+          <v-col cols="12" sm="6" md="6">
+            <v-text-field
+              variant="outlined"
+              density="compact"
+              clearable
+              bg-color="white"
+              :label="$t(`item['` + searchForm.keyword.label + `']`)"
+              :placeholder="searchForm.keyword.placeholder"
+              v-model="searchModel.keyword"
+            />
+          </v-col>
+
+          <v-spacer />
+          <v-btn
+            class="mt-3 mr-4"
+            size="large"
+            density="compact"
+            @click="handleSearch"
+            icon="mdi-magnify"
+          />
+          <v-btn
+            class="mt-3 mr-4"
+            color="primary-darken-3"
+            size="large"
+            density="compact"
+            @click="handleNewItem"
+            icon="mdi-new-box"
+          />
+        </v-row>
+      </v-form>
       <v-row dense>
         <v-col cols="12">
           <v-card>
@@ -414,23 +438,17 @@
 import Util from '@/util'
 import mixin from '@/mixin'
 import iam from '@/mixin/api/iam'
-import organization_iam from '@/mixin/api/organization_iam'
-import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
-import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
-import SearchToolbar from '@/component/widget/toolbar/SearchToolbar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import Datepicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 export default {
   name: 'AccessTokenList',
-  mixins: [mixin, iam, organization_iam, organization_helper],
+  mixins: [mixin, iam],
   components: {
     BottomSnackBar,
     ClipBoard,
-    PageHeader,
-    SearchToolbar,
     VDataTable,
     Datepicker,
   },
@@ -438,7 +456,6 @@ export default {
     return {
       loading: false,
       searchModel: { keyword: '' },
-      tokenNameList: [],
       searchForm: {
         keyword: {
           label: 'Keyword',
@@ -529,12 +546,6 @@ export default {
     }
   },
   computed: {
-    searchToolbarConfig() {
-      return {
-        idField: this.searchForm.keyword,
-        nameField: this.searchForm.keyword,
-      }
-    },
     headers() {
       return [
         {
@@ -604,9 +615,6 @@ export default {
         },
       ]
     },
-    isOrganizationMode() {
-      return this.$route.path.startsWith('/organization-iam')
-    },
   },
   mounted() {
     this.refleshList('')
@@ -615,51 +623,29 @@ export default {
     async refleshList(searchCond) {
       this.loading = true
       this.clearList()
-      const query = searchCond || ''
-      let tokens
-      if (this.isOrganizationMode) {
-        tokens = await this.listOrgAccessTokenAPI(query).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-      } else {
-        tokens = await this.listAccessTokenAPI(query).catch((err) => {
-          this.clearList()
-          return Promise.reject(err)
-        })
-      }
-
+      const tokens = await this.listAccessTokenAPI(searchCond).catch((err) => {
+        this.clearList()
+        return Promise.reject(err)
+      })
       if (!tokens) {
         this.clearList()
-        return
+        return false
       }
       this.table.total = tokens.length
-
-      for (const token of tokens) {
-        let roles
-        if (this.isOrganizationMode) {
-          roles = await this.listOrganizationRoleAPI(
-            '&access_token_id=' + token.access_token_id
-          ).catch((err) => {
-            this.clearList()
-            return Promise.reject(err)
-          })
-        } else {
-          roles = await this.listRoleAPI(
-            '&access_token_id=' + token.access_token_id
-          ).catch((err) => {
-            this.clearList()
-            return Promise.reject(err)
-          })
-        }
+      tokens.forEach(async (token) => {
+        const roles = await this.listRoleAPI(
+          '&access_token_id=' + token.access_token_id
+        ).catch((err) => {
+          this.clearList()
+          return Promise.reject(err)
+        })
         const user = await this.getUserAPI(token.last_updated_user_id).catch(
           (err) => {
             console.log(err)
-            return { name: token.last_updated_user_id }
           }
         )
 
-        this.table.items.push({
+        const item = {
           access_token_id: token.access_token_id,
           name: token.name,
           description: token.description,
@@ -673,44 +659,29 @@ export default {
           updated_at: token.updated_at,
           role_cnt: roles.length,
           roles: roles,
-        })
-      }
-      this.tokenNameList = [
-        ...new Set(this.table.items.map((item) => item.name)),
-      ]
+        }
+        this.table.items.push(item)
+      })
       this.loading = false
     },
     clearList() {
       this.table.total = 0
       this.table.items = []
+      this.accessTokens = []
       this.tokenNameList = []
     },
 
     async loadRoleList() {
       this.loading = true
       this.clearRoleList()
-      let roles
-      if (this.isOrganizationMode) {
-        roles = await this.listOrganizationRoleAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
-      } else {
-        roles = await this.listRoleAPI('').catch((err) => {
-          return Promise.reject(err)
-        })
-      }
+      const roles = await this.listRoleAPI('').catch((err) => {
+        return Promise.reject(err)
+      })
 
       roles.forEach(async (id) => {
-        let role
-        if (this.isOrganizationMode) {
-          role = await this.getOrganizationRoleAPI(id).catch((err) => {
-            return Promise.reject(err)
-          })
-        } else {
-          role = await this.getRoleAPI(id).catch((err) => {
-            return Promise.reject(err)
-          })
-        }
+        const role = await this.getRoleAPI(id).catch((err) => {
+          return Promise.reject(err)
+        })
         this.roleTable.items.push(role)
 
         if (this.dataModel.roles.indexOf(role.role_id) !== -1) {
@@ -737,35 +708,6 @@ export default {
     },
     async putItem() {
       this.loading = true
-      const expiredAt = this.convertToUnixTime(this.dataModel.expired_at)
-      if (this.isOrganizationMode) {
-        await this.upsertOrganizationToken(expiredAt)
-      } else {
-        await this.upsertProjectToken(expiredAt)
-      }
-      if (this.roleTable.items.length) {
-        for (const item of this.roleTable.items) {
-          let attachRole = false
-          this.roleTable.selected.some((selected) => {
-            if (item.role_id === selected.role_id) {
-              attachRole = true
-              return true
-            }
-          })
-          if (attachRole) {
-            await this.attachRoleToToken(item.role_id)
-          } else {
-            await this.detachRoleFromToken(item.role_id)
-          }
-        }
-      }
-      if (this.form.newToken) {
-        await this.finishGenerateToken(this.dataModel.token_hash)
-        return
-      }
-      await this.finishUpdated('Success: Updated token.')
-    },
-    async upsertProjectToken(expiredAt) {
       const param = {
         project_id: this.getCurrentProjectID(),
         access_token: {
@@ -773,13 +715,17 @@ export default {
           project_id: this.getCurrentProjectID(),
           name: this.dataModel.name,
           description: this.dataModel.description,
-          expired_at: expiredAt,
+          expired_at: this.convertToUnixTime(this.dataModel.expired_at),
+
+          // server side update.
+          // plainTextToken: '',
+          // last_updated_user_id: '',
         },
       }
       if (this.form.newToken) {
         const newToken = await this.generateAccessTokenAPI(param).catch(
           (err) => {
-            this.$refs.snackbar.notifyError(err?.response?.data)
+            this.$refs.snackbar.notifyError(err.response.data)
             return Promise.reject(err)
           }
         )
@@ -787,86 +733,52 @@ export default {
         this.dataModel.token_hash = newToken.access_token
       } else {
         await this.updateAccessTokenAPI(param).catch((err) => {
-          this.$refs.snackbar.notifyError(err?.response?.data)
+          this.$refs.snackbar.notifyError(err.response.data)
           return Promise.reject(err)
         })
       }
-    },
-    async upsertOrganizationToken(expiredAt) {
-      const param = {
-        organization_id: this.getCurrentOrganizationID(),
-        access_token_id: this.dataModel.access_token_id,
-        name: this.dataModel.name,
-        description: this.dataModel.description,
-        expired_at: expiredAt,
-      }
-      if (this.form.newToken) {
-        delete param.access_token_id
-        const newToken = await this.generateOrgAccessTokenAPI(param).catch(
-          (err) => {
-            this.$refs.snackbar.notifyError(err?.response?.data)
-            return Promise.reject(err)
+
+      // Attach/Detach roles
+      this.roleTable.items.forEach(async (item) => {
+        let attachRole = false
+        this.roleTable.selected.some((selected) => {
+          if (item.role_id === selected.role_id) {
+            attachRole = true
+            return true
           }
-        )
-        this.dataModel.access_token_id = newToken.access_token_id
-        this.dataModel.token_hash = newToken.access_token
-      } else {
-        await this.updateOrgAccessTokenAPI(param).catch((err) => {
-          this.$refs.snackbar.notifyError(err?.response?.data)
-          return Promise.reject(err)
         })
-      }
-    },
-    async attachRoleToToken(roleID) {
-      if (this.isOrganizationMode) {
-        return this.attachOrgAccessTokenRoleAPI(
-          this.dataModel.access_token_id,
-          roleID
-        ).catch((err) => {
-          this.$refs.snackbar.notifyError(err?.response?.data)
-          return Promise.reject(err)
-        })
-      }
-      return this.attachTokenRoleAPI(
-        this.dataModel.access_token_id,
-        roleID
-      ).catch((err) => {
-        this.$refs.snackbar.notifyError(err?.response?.data)
-        return Promise.reject(err)
+        if (attachRole) {
+          await this.attachTokenRoleAPI(
+            this.dataModel.access_token_id,
+            item.role_id
+          ).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          })
+        } else {
+          await this.detachTokenRoleAPI(
+            this.dataModel.access_token_id,
+            item.role_id
+          ).catch((err) => {
+            this.$refs.snackbar.notifyError(err.response.data)
+            return Promise.reject(err)
+          })
+        }
       })
-    },
-    async detachRoleFromToken(roleID) {
-      if (this.isOrganizationMode) {
-        return this.detachOrgAccessTokenRoleAPI(
-          this.dataModel.access_token_id,
-          roleID
-        ).catch((err) => {
-          this.$refs.snackbar.notifyError(err?.response?.data)
-          return Promise.reject(err)
-        })
+
+      if (this.form.newToken) {
+        this.finishGenerateToken(this.dataModel.token_hash)
+        return
       }
-      return this.detachTokenRoleAPI(
-        this.dataModel.access_token_id,
-        roleID
-      ).catch((err) => {
-        this.$refs.snackbar.notifyError(err?.response?.data)
-        return Promise.reject(err)
-      })
+      this.finishUpdated('Success: Updated role.')
     },
     async deleteItem(accessTokenID) {
       this.loading = true
-      if (this.isOrganizationMode) {
-        await this.deleteOrgAccessTokenAPI(accessTokenID).catch((err) => {
-          this.$refs.snackbar.notifyError(err?.response?.data)
-          return Promise.reject(err)
-        })
-      } else {
-        await this.deleteAccessTokenAPI(accessTokenID).catch((err) => {
-          this.$refs.snackbar.notifyError(err?.response?.data)
-          return Promise.reject(err)
-        })
-      }
-      await this.finishUpdated('Success: Deleted access token.')
+      await this.deleteAccessTokenAPI(accessTokenID).catch((err) => {
+        this.$refs.snackbar.notifyError(err.response.data)
+        return Promise.reject(err)
+      })
+      this.finishUpdated('Success: Deleted access token.')
     },
     async finishUpdated(msg) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -909,7 +821,6 @@ export default {
         last_updated_user_name: '',
         created_at: '',
         updated_at: '',
-        token_hash: '',
         role_cnt: 0,
         roles: [],
       }
@@ -932,24 +843,18 @@ export default {
     },
     handleSearch() {
       let searchCond = ''
-      if (this.searchModel?.keyword) {
-        searchCond += '&name=' + this.searchModel.keyword
+      if (this.searchModel.tokenName) {
+        searchCond += '&name=' + this.searchModel.tokenName
       }
       this.refleshList(searchCond)
     },
     assignDataModel(item) {
       this.dataModel = {
-        access_token_id: '',
+        role_id: '',
         name: '',
-        description: '',
-        expired_at: '',
-        last_updated_user_id: '',
-        last_updated_user_name: '',
-        created_at: '',
-        updated_at: '',
-        token_hash: '',
         role_cnt: 0,
-        roles: [],
+        roles: '',
+        updated_at: '',
       }
       this.dataModel = Object.assign(this.dataModel, item)
     },
