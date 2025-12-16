@@ -635,6 +635,7 @@ export default {
       }
       this.table.total = tokens.length
 
+      const items = []
       for (const token of tokens) {
         let roles
         if (this.isOrganizationMode) {
@@ -658,7 +659,7 @@ export default {
           }
         )
 
-        this.table.items.push({
+        items.push({
           access_token_id: token.access_token_id,
           name: token.name,
           description: token.description,
@@ -674,6 +675,7 @@ export default {
           roles: roles,
         })
       }
+      this.table.items = items
       this.tokenNameList = [
         ...new Set(this.table.items.map((item) => item.name)),
       ]
