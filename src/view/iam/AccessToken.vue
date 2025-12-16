@@ -655,7 +655,6 @@ export default {
         const user = await this.getUserAPI(token.last_updated_user_id).catch(
           (err) => {
             console.log(err)
-            return { name: token.last_updated_user_id }
           }
         )
 
@@ -668,7 +667,7 @@ export default {
             'yyyy-MM-dd'
           ),
           last_updated_user_id: token.last_updated_user_id,
-          last_updated_user_name: user.name,
+          last_updated_user_name: user ? user.name : 'undefined',
           created_at: token.created_at,
           updated_at: token.updated_at,
           role_cnt: roles.length,
