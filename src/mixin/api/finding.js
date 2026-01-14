@@ -303,11 +303,12 @@ const finding = {
           return Promise.reject(err)
         })
     },
-    async getRecommend(findingID) {
+    async getRecommend(findingID, projectID) {
+      const pid = projectID || this.getCurrentProjectID()
       const res = await this.$axios
         .get(
           '/finding/get-recommend/?project_id=' +
-            this.getCurrentProjectID() +
+            pid +
             '&finding_id=' +
             findingID
         )

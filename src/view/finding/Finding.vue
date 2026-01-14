@@ -931,7 +931,8 @@ export default {
         this.findingModel.data
       )
       this.recommendModel = await this.getRecommend(
-        this.findingModel.finding_id
+        this.findingModel.finding_id,
+        this.findingModel.project_id
       )
       this.overrideRecommend()
       this.viewDialog = true
