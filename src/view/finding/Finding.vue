@@ -1471,7 +1471,8 @@ export default {
       this.getAISummaryStream(
         this.findingModel.finding_id,
         this.$i18n.locale,
-        this.aiFetchController.signal
+        this.aiFetchController.signal,
+        this.findingModel.project_id
       )
         .then((resp) => {
           const reader = resp.body.getReader()
