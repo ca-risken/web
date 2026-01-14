@@ -303,11 +303,12 @@ const finding = {
           return Promise.reject(err)
         })
     },
-    async getRecommend(findingID) {
+    async getRecommend(findingID, projectID) {
+      const pid = projectID || this.getCurrentProjectID()
       const res = await this.$axios
         .get(
           '/finding/get-recommend/?project_id=' +
-            this.getCurrentProjectID() +
+            pid +
             '&finding_id=' +
             findingID
         )
@@ -319,11 +320,12 @@ const finding = {
       }
       return res.data.data.recommend
     },
-    async getAISummary(findingID, lang) {
+    async getAISummary(findingID, lang, projectID) {
+      const pid = projectID || this.getCurrentProjectID()
       const res = await longAxios
         .get(
           '/finding/get-ai-summary/?project_id=' +
-            this.getCurrentProjectID() +
+            pid +
             '&finding_id=' +
             findingID +
             '&lang=' +
@@ -337,7 +339,8 @@ const finding = {
       }
       return res.data.data.answer
     },
-    async getAISummaryStream(findingID, lang, signal) {
+    async getAISummaryStream(findingID, lang, signal, projectID) {
+      const pid = projectID || this.getCurrentProjectID()
       // Using fetch API for streaming response
       const fetchOptions = {
         method: 'GET',
@@ -349,7 +352,7 @@ const finding = {
       }
       return await fetch(
         '/api/v1/finding/get-ai-summary-stream/?project_id=' +
-          this.getCurrentProjectID() +
+          pid +
           '&finding_id=' +
           findingID +
           '&lang=' +

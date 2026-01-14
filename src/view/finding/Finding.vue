@@ -931,7 +931,8 @@ export default {
         this.findingModel.data
       )
       this.recommendModel = await this.getRecommend(
-        this.findingModel.finding_id
+        this.findingModel.finding_id,
+        this.findingModel.project_id
       )
       this.overrideRecommend()
       this.viewDialog = true
@@ -1471,7 +1472,8 @@ export default {
       this.getAISummaryStream(
         this.findingModel.finding_id,
         this.$i18n.locale,
-        this.aiFetchController.signal
+        this.aiFetchController.signal,
+        this.findingModel.project_id
       )
         .then((resp) => {
           const reader = resp.body.getReader()
