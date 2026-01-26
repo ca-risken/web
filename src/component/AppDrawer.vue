@@ -34,7 +34,7 @@
             <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
-                :title="getMenuTitle(item, true)"
+                :title="getMenuTitle(item, 'menu')"
                 :prepend-icon="item.meta?.icon"
               ></v-list-item>
             </template>
@@ -51,7 +51,7 @@
                   <template #activator="{ props: subProps }">
                     <v-list-item
                       v-bind="subProps"
-                      :title="getMenuTitle(sub, true)"
+                      :title="getMenuTitle(sub, 'menu')"
                       :prepend-icon="sub.meta?.icon"
                     ></v-list-item>
                   </template>
@@ -61,7 +61,7 @@
                     :to="leaf.path"
                     v-show="!leaf.meta?.hiddenInMenu"
                     :prepend-icon="leaf.meta?.icon"
-                    :title="getMenuTitle(leaf, false)"
+                    :title="getMenuTitle(leaf, 'submenu')"
                   ></v-list-item>
                 </v-list-group>
               </template>
@@ -71,7 +71,7 @@
                 :to="sub.path"
                 v-show="!sub.meta?.hiddenInMenu"
                 :prepend-icon="sub.meta?.icon"
-                :title="getMenuTitle(sub, false)"
+                :title="getMenuTitle(sub, 'submenu')"
               ></v-list-item>
             </template>
           </v-list-group>
@@ -82,7 +82,7 @@
             :to="item.path"
             v-show="!item.meta?.hiddenInMenu"
             :prepend-icon="item.meta?.icon"
-            :title="getMenuTitle(item, true)"
+            :title="getMenuTitle(item, 'menu')"
           >
           </v-list-item>
         </template>
@@ -155,8 +155,8 @@ export default {
       const allMenus = routes[0].children || []
       const visibleMenus = allMenus
         .filter((menu) => !menu.hidden)
-        .filter((menu) => this.shouldIncludeMenu(menu.meta?.title))
-        .map((menu) => this.cloneMenu(menu))
+        .filter((menu) => this.isMenuVisible(menu.meta?.title))
+        .map((menu) => this.buildVisibleMenuTree(menu))
 
       if (this.isOrganizationMode) {
         return visibleMenus
@@ -226,12 +226,11 @@ export default {
     },
   },
   methods: {
-    getMenuTitle(item, isGroup) {
+    getMenuTitle(item, dictionary = 'menu') {
       const titleKey = item?.meta?.title
       if (!titleKey) {
         return ''
       }
-      const dictionary = isGroup ? 'menu' : 'submenu'
       const locale = this.$i18n?.locale
       const messages = this.$i18n?.messages?.[locale]?.[dictionary]
       if (messages && messages[titleKey]) {
@@ -242,7 +241,7 @@ export default {
     hasChildren(item) {
       return Array.isArray(item?.children) && item.children.length > 0
     },
-    cloneMenu(menu) {
+    buildVisibleMenuTree(menu) {
       if (!menu) return null
       const cloned = { ...menu }
       delete cloned.children
@@ -250,16 +249,16 @@ export default {
         const children = menu.children
           .filter((child) => !child.meta?.hiddenInMenu)
           .filter((child) =>
-            this.shouldIncludeChild(menu.meta?.title, child.meta?.title)
+            this.isChildMenuVisible(menu.meta?.title, child.meta?.title)
           )
-          .map((child) => this.cloneMenu(child))
+          .map((child) => this.buildVisibleMenuTree(child))
         if (children.length > 0) {
           cloned.children = children
         }
       }
       return cloned
     },
-    shouldIncludeMenu(title) {
+    isMenuVisible(title) {
       if (!title) {
         return false
       }
@@ -275,7 +274,7 @@ export default {
       const forbiddenMenuTitles = ['Organization IAM']
       return !forbiddenMenuTitles.includes(title)
     },
-    shouldIncludeChild(parentTitle, childTitle) {
+    isChildMenuVisible(parentTitle, childTitle) {
       if (!childTitle) {
         return false
       }
