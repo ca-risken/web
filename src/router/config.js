@@ -48,10 +48,7 @@ export const appRoute = [
   {
     path: '/',
     component: LayoutDefault,
-    meta: {
-      title: 'Home',
-      group: 'apps',
-    },
+    meta: { title: 'Home' },
     children: [
       {
         path: '/',
@@ -65,22 +62,14 @@ export const appRoute = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        meta: {
-          title: 'Dashboard',
-          group: 'apps',
-          icon: 'mdi-view-dashboard',
-        },
+        meta: { title: 'Dashboard' },
         component: () => import('@/view/Dashboard.vue'),
       },
       {
         path: '/finding',
         component: RouteWrapper,
         redirect: '/finding/resource',
-        meta: {
-          title: 'Finding',
-          icon: 'mdi-file-find-outline',
-          group: 'finding',
-        },
+        meta: { title: 'Finding' },
         children: [
           {
             path: '/finding/resource',
@@ -112,11 +101,7 @@ export const appRoute = [
         path: '/alert',
         component: RouteWrapper,
         redirect: '/alert/alert',
-        meta: {
-          title: 'Alert',
-          icon: 'mdi-alert',
-          group: 'alert',
-        },
+        meta: { title: 'Alert' },
         children: [
           {
             path: '/alert/alert',
@@ -156,11 +141,7 @@ export const appRoute = [
         path: '/aws',
         component: RouteWrapper,
         redirect: '/aws/aws',
-        meta: {
-          title: 'AWS',
-          icon: 'mdi-aws',
-          group: 'aws',
-        },
+        meta: { title: 'AWS' },
         children: [
           {
             path: '/aws/aws',
@@ -184,11 +165,7 @@ export const appRoute = [
         path: '/google',
         component: RouteWrapper,
         redirect: '/google/gcp',
-        meta: {
-          title: 'Google',
-          icon: 'mdi-google',
-          group: 'google',
-        },
+        meta: { title: 'Google' },
         children: [
           {
             path: '/google/gcp',
@@ -212,11 +189,7 @@ export const appRoute = [
         path: '/azure',
         component: RouteWrapper,
         redirect: '/azure/azure',
-        meta: {
-          title: 'Azure',
-          icon: 'mdi-microsoft-azure',
-          group: 'gooazuregle',
-        },
+        meta: { title: 'Azure' },
         children: [
           {
             path: '/azure/azure',
@@ -240,11 +213,7 @@ export const appRoute = [
         path: '/diagnosis',
         component: RouteWrapper,
         redirect: '/diagnosis/wpscan',
-        meta: {
-          title: 'Diagnosis',
-          icon: 'mdi-bug-check-outline',
-          group: 'diagnosis',
-        },
+        meta: { title: 'Diagnosis' },
         children: [
           {
             path: '/diagnosis/wpscan',
@@ -276,11 +245,7 @@ export const appRoute = [
         path: '/osint',
         component: RouteWrapper,
         redirect: '/osint/osint',
-        meta: {
-          title: 'OSINT',
-          icon: 'md:http',
-          group: 'osint',
-        },
+        meta: { title: 'OSINT' },
         children: [
           {
             path: '/osint/osint',
@@ -304,11 +269,7 @@ export const appRoute = [
         path: '/code',
         component: RouteWrapper,
         redirect: '/code/github',
-        meta: {
-          title: 'Code',
-          icon: 'mdi-github',
-          group: 'code',
-        },
+        meta: { title: 'Code' },
         children: [
           {
             path: '/code/github',
@@ -324,11 +285,7 @@ export const appRoute = [
         path: '/analysis',
         component: RouteWrapper,
         redirect: '/report',
-        meta: {
-          title: 'Analysis',
-          icon: 'mdi-file-chart',
-          group: 'analysis',
-        },
+        meta: { title: 'Analysis' },
         children: [
           {
             path: '/report',
@@ -360,11 +317,7 @@ export const appRoute = [
         path: '/iam',
         component: RouteWrapper,
         redirect: '/iam/user',
-        meta: {
-          title: 'IAM',
-          icon: 'mdi-account-multiple',
-          group: 'iam',
-        },
+        meta: { title: 'IAM' },
         children: [
           {
             path: '/iam/user',
@@ -421,11 +374,7 @@ export const appRoute = [
         path: '/project/',
         component: RouteWrapper,
         redirect: '/project/setting',
-        meta: {
-          title: 'Project',
-          icon: 'mdi-alpha-p-box',
-          group: 'project',
-        },
+        meta: { title: 'Project' },
         children: [
           {
             path: '/project/setting',
@@ -449,11 +398,7 @@ export const appRoute = [
         path: '/organization/',
         component: RouteWrapper,
         redirect: '/organization/setting',
-        meta: {
-          title: 'Organization',
-          icon: 'mdi-account-group',
-          group: 'organization',
-        },
+        meta: { title: 'Organization' },
         children: [
           {
             path: '/organization/project',
@@ -506,11 +451,7 @@ export const appRoute = [
         path: '/organization-iam/',
         component: RouteWrapper,
         redirect: '/organization-iam/user',
-        meta: {
-          title: 'Organization IAM',
-          icon: 'mdi-account-multiple',
-          group: 'organization-iam',
-        },
+        meta: { title: 'Organization IAM' },
         children: [
           {
             path: '/organization-iam/user',
@@ -559,12 +500,7 @@ export const appRoute = [
         component: RouteWrapper,
         redirect: '/admin/menu',
         hidden: true,
-        meta: {
-          title: 'Admin',
-          icon: 'mdi-account-multiple',
-          group: 'admin',
-          hiddenInMenu: true,
-        },
+        meta: { title: 'Admin', hiddenInMenu: true },
         children: [
           {
             path: '/admin/menu',
@@ -607,18 +543,3 @@ export const appRoute = [
     ],
   },
 ]
-
-export const staticRoutes = getStaticRoutes()
-
-function getStaticRoutes() {
-  const routes = [{ title: 'Document', url: 'https://docs.security-hub.jp/' }]
-  if (import.meta.env.VITE_STATIC_LINK == '') {
-    return routes
-  }
-  try {
-    const jsonRoutes = JSON.parse(import.meta.env.VITE_STATIC_LINK)
-    return jsonRoutes
-  } catch (e) {
-    return routes
-  }
-}

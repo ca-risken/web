@@ -140,7 +140,7 @@
   <bottom-snack-bar ref="snackbar" />
 </template>
 <script>
-import { staticRoutes } from '@/router/config'
+import { staticRoutes } from '@/router/menu'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import ProjectOrgSelectDialog from '@/component/dialog/ProjectOrgSelectDialog.vue'
 import Util from '@/util'
