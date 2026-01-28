@@ -1,11 +1,7 @@
-// Menu configuration separated from router
 import { MODE } from '@/constants/mode'
 
-// All modes for convenience
 const ALL_MODES = [MODE.PROJECT, MODE.ORGANIZATION]
 
-// Menu structure definition with mode visibility
-// - modes: array of modes where menu is visible (default: all modes)
 export const menuDefinition = [
   {
     title: 'Dashboard',
@@ -172,14 +168,12 @@ export const menuDefinition = [
   },
 ]
 
-// Helper function: Check if menu is visible for the given mode
 export function isMenuVisibleForMode(menu, mode) {
   if (!menu) return false
   const modes = menu.modes || ALL_MODES
   return modes.includes(mode)
 }
 
-// Helper function: Filter menu items by mode
 export function getMenuForMode(mode) {
   return menuDefinition
     .filter((menu) => isMenuVisibleForMode(menu, mode))
