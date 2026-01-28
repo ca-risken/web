@@ -84,7 +84,8 @@
   </v-navigation-drawer>
 </template>
 <script>
-import { staticRoutes, getMenuForMode } from '@/router/menu'
+import { staticRoutes } from '@/router/config'
+import { getMenuForMode } from '@/router/menu'
 import store from '@/store'
 import { MODE } from '@/constants/mode'
 

@@ -172,22 +172,6 @@ export const menuDefinition = [
   },
 ]
 
-// External links
-export const staticRoutes = getStaticRoutes()
-
-function getStaticRoutes() {
-  const routes = [{ title: 'Document', url: 'https://docs.security-hub.jp/' }]
-  if (import.meta.env.VITE_STATIC_LINK == '') {
-    return routes
-  }
-  try {
-    const jsonRoutes = JSON.parse(import.meta.env.VITE_STATIC_LINK)
-    return jsonRoutes
-  } catch (e) {
-    return routes
-  }
-}
-
 // Helper function: Check if menu is visible for the given mode
 export function isMenuVisibleForMode(menu, mode) {
   if (!menu) return false
