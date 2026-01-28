@@ -84,12 +84,7 @@
   </v-navigation-drawer>
 </template>
 <script>
-import {
-  menuDefinition,
-  staticRoutes,
-  isMenuVisibleForMode,
-  isChildMenuVisibleForMode,
-} from '@/router/menu'
+import { staticRoutes, getMenuForMode } from '@/router/menu'
 import store from '@/store'
 import { MODE } from '@/constants/mode'
 
@@ -128,26 +123,7 @@ export default {
       return this.isOrganizationMode ? 'light-blue' : 'primary'
     },
     computeMenu() {
-      return menuDefinition
-        .filter((menu) => {
-          if (menu.hiddenInMenu) return false
-          return isMenuVisibleForMode(menu.title, this.currentMode)
-        })
-        .map((menu) => {
-          if (menu.children && menu.children.length > 0) {
-            const cloned = { ...menu }
-            cloned.children = menu.children.filter((sub) => {
-              if (sub.hiddenInMenu) return false
-              return isChildMenuVisibleForMode(
-                menu.title,
-                sub.title,
-                this.currentMode
-              )
-            })
-            return cloned
-          }
-          return menu
-        })
+      return getMenuForMode(this.currentMode)
     },
   },
   watch: {

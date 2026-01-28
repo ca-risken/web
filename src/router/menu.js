@@ -1,34 +1,12 @@
 // Menu configuration separated from router
 import { MODE } from '@/constants/mode'
 
-// Menu visibility configuration
-export const menuVisibility = {
-  // Menus visible in Organization mode
-  organizationModeAllowed: [
-    'Finding',
-    'Organization',
-    'Organization IAM',
-    'User Reservation',
-  ],
-  // Menus forbidden in Project mode
-  projectModeForbidden: ['Organization IAM'],
-}
+// All modes for convenience
+const ALL_MODES = [MODE.PROJECT, MODE.ORGANIZATION]
 
-// Child menu visibility configuration
-export const childMenuVisibility = {
-  // Child menus forbidden in Project mode
-  projectModeForbidden: [
-    'New Organization',
-    'Organization Setting',
-    'ProjectInvitation',
-  ],
-  // Child menus forbidden in Organization mode
-  organizationModeForbidden: ['OrganizationInvitation'],
-  // Child menus forbidden under 'Finding' in Organization mode
-  findingOrganizationModeForbidden: ['Resource', 'Setting'],
-}
-
-// Menu structure definition (separated from routing)
+// Menu structure definition with mode visibility
+// - modes: array of modes where menu is visible (default: all modes)
+// - hiddenInMenu: if true, never shown in menu
 export const menuDefinition = [
   {
     title: 'Home',
@@ -40,21 +18,23 @@ export const menuDefinition = [
     title: 'Dashboard',
     icon: 'mdi-view-dashboard',
     path: '/dashboard',
+    modes: [MODE.PROJECT],
   },
   {
     title: 'Finding',
     icon: 'mdi-file-find-outline',
     path: '/finding',
     children: [
-      { title: 'Resource', path: '/finding/resource' },
+      { title: 'Resource', path: '/finding/resource', modes: [MODE.PROJECT] },
       { title: 'Finding', path: '/finding/finding' },
-      { title: 'Setting', path: '/finding/setting' },
+      { title: 'Setting', path: '/finding/setting', modes: [MODE.PROJECT] },
     ],
   },
   {
     title: 'Alert',
     icon: 'mdi-alert',
     path: '/alert',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'Alert', path: '/alert/alert' },
       { title: 'Condition', path: '/alert/condition' },
@@ -66,6 +46,7 @@ export const menuDefinition = [
     title: 'AWS',
     icon: 'mdi-aws',
     path: '/aws',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'AWS', path: '/aws/aws' },
       { title: 'AWS DataSource', path: '/aws/data-source' },
@@ -75,6 +56,7 @@ export const menuDefinition = [
     title: 'Google',
     icon: 'mdi-google',
     path: '/google',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'GCP', path: '/google/gcp' },
       { title: 'GCP DataSource', path: '/google/gcp-data-source' },
@@ -84,6 +66,7 @@ export const menuDefinition = [
     title: 'Azure',
     icon: 'mdi-microsoft-azure',
     path: '/azure',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'Azure', path: '/azure/azure' },
       { title: 'Azure DataSource', path: '/azure/azure-data-source' },
@@ -93,6 +76,7 @@ export const menuDefinition = [
     title: 'Diagnosis',
     icon: 'mdi-bug-check-outline',
     path: '/diagnosis',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'WPScan', path: '/diagnosis/wpscan' },
       { title: 'Portscan', path: '/diagnosis/portscan' },
@@ -103,6 +87,7 @@ export const menuDefinition = [
     title: 'OSINT',
     icon: 'md:http',
     path: '/osint',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'OSINT', path: '/osint/osint' },
       { title: 'OSINT DataSource', path: '/osint/data-source' },
@@ -112,12 +97,14 @@ export const menuDefinition = [
     title: 'Code',
     icon: 'mdi-github',
     path: '/code',
+    modes: [MODE.PROJECT],
     children: [{ title: 'GitHub', path: '/code/github' }],
   },
   {
     title: 'Analysis',
     icon: 'mdi-file-chart',
     path: '/analysis',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'Report', path: '/report' },
       { title: 'AttackFlow', path: '/analysis/attack-flow' },
@@ -128,6 +115,7 @@ export const menuDefinition = [
     title: 'IAM',
     icon: 'mdi-account-multiple',
     path: '/iam',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'User', path: '/iam/user' },
       { title: 'Role', path: '/iam/role' },
@@ -140,6 +128,7 @@ export const menuDefinition = [
     title: 'Project',
     icon: 'mdi-alpha-p-box',
     path: '/project',
+    modes: [MODE.PROJECT],
     children: [
       { title: 'ProjectSetting', path: '/project/setting' },
       { title: 'NewProject', path: '/project/new' },
@@ -150,16 +139,33 @@ export const menuDefinition = [
     icon: 'mdi-account-group',
     path: '/organization',
     children: [
-      { title: 'ProjectInvitation', path: '/organization/project' },
-      { title: 'Organization Setting', path: '/organization/setting' },
-      { title: 'New Organization', path: '/organization/new' },
-      { title: 'OrganizationInvitation', path: '/organization/list' },
+      {
+        title: 'ProjectInvitation',
+        path: '/organization/project',
+        modes: [MODE.ORGANIZATION],
+      },
+      {
+        title: 'Organization Setting',
+        path: '/organization/setting',
+        modes: [MODE.ORGANIZATION],
+      },
+      {
+        title: 'New Organization',
+        path: '/organization/new',
+        modes: [MODE.ORGANIZATION],
+      },
+      {
+        title: 'OrganizationInvitation',
+        path: '/organization/list',
+        modes: [MODE.PROJECT],
+      },
     ],
   },
   {
     title: 'Organization IAM',
     icon: 'mdi-account-multiple',
     path: '/organization-iam',
+    modes: [MODE.ORGANIZATION],
     children: [
       { title: 'User', path: '/organization-iam/user' },
       { title: 'Role', path: '/organization-iam/role' },
@@ -207,24 +213,25 @@ function getStaticRoutes() {
 }
 
 // Helper function: Check if menu is visible for the given mode
-export function isMenuVisibleForMode(title, mode) {
-  if (!title) return false
-  if (mode === MODE.ORGANIZATION) {
-    return menuVisibility.organizationModeAllowed.includes(title)
-  }
-  return !menuVisibility.projectModeForbidden.includes(title)
+export function isMenuVisibleForMode(menu, mode) {
+  if (!menu) return false
+  if (menu.hiddenInMenu) return false
+  const modes = menu.modes || ALL_MODES
+  return modes.includes(mode)
 }
 
-// Helper function: Check if child menu is visible for the given mode
-export function isChildMenuVisibleForMode(parentTitle, childTitle, mode) {
-  if (!childTitle) return false
-  if (mode !== MODE.ORGANIZATION) {
-    return !childMenuVisibility.projectModeForbidden.includes(childTitle)
-  }
-  if (parentTitle === 'Finding') {
-    return !childMenuVisibility.findingOrganizationModeForbidden.includes(
-      childTitle
-    )
-  }
-  return !childMenuVisibility.organizationModeForbidden.includes(childTitle)
+// Helper function: Filter menu items by mode
+export function getMenuForMode(mode) {
+  return menuDefinition
+    .filter((menu) => isMenuVisibleForMode(menu, mode))
+    .map((menu) => {
+      if (menu.children && menu.children.length > 0) {
+        const cloned = { ...menu }
+        cloned.children = menu.children.filter((child) =>
+          isMenuVisibleForMode(child, mode)
+        )
+        return cloned
+      }
+      return menu
+    })
 }
