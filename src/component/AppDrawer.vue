@@ -27,25 +27,24 @@
       <template v-for="(item, key) in computeMenu">
         <template v-if="item.children && item.children.length > 0">
           <v-list-group
-            :model-value="item.meta.title"
-            :prepend-icon="item.meta.icon"
+            :model-value="item.title"
+            :prepend-icon="item.icon"
             :key="key"
             v-show="!item.hidden"
           >
             <template v-slot:activator="{ props }">
               <v-list-item
                 v-bind="props"
-                :title="$t(`menu['` + item.meta.title + `']`)"
-                :prepend-icon="item.meta.icon"
+                :title="$t(`menu['` + item.title + `']`)"
+                :prepend-icon="item.icon"
               ></v-list-item>
             </template>
             <v-list-item
               v-for="sub in item.children"
-              :key="sub.name"
+              :key="sub.title"
               :to="sub.path"
-              :title="$t(`submenu['` + sub.meta.title + `']`)"
-              :prepend-icon="sub.meta.icon"
-              v-show="!sub.meta.hiddenInMenu"
+              :title="$t(`submenu['` + sub.title + `']`)"
+              :prepend-icon="sub.icon"
             ></v-list-item>
           </v-list-group>
         </template>
@@ -53,9 +52,8 @@
           <v-list-item
             :key="key"
             :to="item.path"
-            v-show="!item.meta.hiddenInMenu"
-            :prepend-icon="item.meta.icon"
-            :title="$t(`menu['` + item.meta.title + `']`)"
+            :prepend-icon="item.icon"
+            :title="$t(`menu['` + item.title + `']`)"
           >
           </v-list-item>
         </template>
@@ -86,7 +84,8 @@
   </v-navigation-drawer>
 </template>
 <script>
-import { appRoute as routes, staticRoutes } from '@/router/config'
+import { staticRoutes } from '@/router/config'
+import { getMenuForMode } from '@/router/menu'
 import store from '@/store'
 import { MODE } from '@/constants/mode'
 
@@ -125,48 +124,7 @@ export default {
       return this.isOrganizationMode ? 'light-blue' : 'primary'
     },
     computeMenu() {
-      const allMenus = routes[0].children
-      let filteredMenus = allMenus
-        .filter((menu) => {
-          if (this.isOrganizationMode) {
-            const allowedMenuTitles = [
-              'Finding',
-              'Organization',
-              'Organization IAM',
-              'User Reservation',
-            ]
-            return allowedMenuTitles.includes(menu.meta.title)
-          } else {
-            const forbiddenMenuTitles = ['Organization IAM']
-            return !forbiddenMenuTitles.includes(menu.meta.title)
-          }
-        })
-        .map((menu) => {
-          if (menu.children && menu.children.length > 0) {
-            menu = { ...menu }
-            menu.children = menu.children.filter((sub) => {
-              if (!this.isOrganizationMode) {
-                const projectModeForbiddenTitles = [
-                  'New Organization',
-                  'Organization Setting',
-                  'ProjectInvitation',
-                ]
-                return !projectModeForbiddenTitles.includes(sub.meta.title)
-              } else {
-                const organizationModeForbiddenTitles = [
-                  'OrganizationInvitation',
-                ]
-                if (menu.meta.title === 'Finding') {
-                  const findingForbiddenTitles = ['Resource', 'Setting']
-                  return !findingForbiddenTitles.includes(sub.meta.title)
-                }
-                return !organizationModeForbiddenTitles.includes(sub.meta.title)
-              }
-            })
-          }
-          return menu
-        })
-      return filteredMenus
+      return getMenuForMode(this.currentMode)
     },
   },
   watch: {
