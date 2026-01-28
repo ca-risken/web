@@ -6,14 +6,7 @@ const ALL_MODES = [MODE.PROJECT, MODE.ORGANIZATION]
 
 // Menu structure definition with mode visibility
 // - modes: array of modes where menu is visible (default: all modes)
-// - hiddenInMenu: if true, never shown in menu
 export const menuDefinition = [
-  {
-    title: 'Home',
-    icon: null,
-    path: '/',
-    hiddenInMenu: true,
-  },
   {
     title: 'Dashboard',
     icon: 'mdi-view-dashboard',
@@ -177,23 +170,6 @@ export const menuDefinition = [
       { title: 'User Reservation', path: '/organization-iam/user-reservation' },
     ],
   },
-  {
-    title: 'Admin',
-    icon: 'mdi-account-multiple',
-    path: '/admin',
-    hidden: true,
-    hiddenInMenu: true,
-    children: [
-      { title: 'Menu', path: '/admin/menu', hiddenInMenu: true },
-      { title: 'Role', path: '/admin/user', hiddenInMenu: true },
-      { title: 'Report', path: '/admin/report', hiddenInMenu: true },
-    ],
-  },
-  {
-    title: 'Access Denied',
-    path: '/403',
-    hiddenInMenu: true,
-  },
 ]
 
 // External links
@@ -215,7 +191,6 @@ function getStaticRoutes() {
 // Helper function: Check if menu is visible for the given mode
 export function isMenuVisibleForMode(menu, mode) {
   if (!menu) return false
-  if (menu.hiddenInMenu) return false
   const modes = menu.modes || ALL_MODES
   return modes.includes(mode)
 }
