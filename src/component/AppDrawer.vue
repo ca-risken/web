@@ -25,7 +25,6 @@
     </v-toolbar>
     <v-list class="pa-0" nav>
       <template v-for="(item, key) in computeMenu" :key="`menu-${key}`">
-        <!-- Menu with children -->
         <template v-if="hasChildren(item)">
           <v-list-group
             :model-value="item.title"
@@ -43,7 +42,6 @@
               v-for="(sub, subIndex) in item.children"
               :key="`sub-${key}-${subIndex}`"
             >
-              <!-- Nested group (category -> menu -> submenu) -->
               <template v-if="hasChildren(sub)">
                 <v-list-group :model-value="sub.title" :prepend-icon="sub.icon">
                   <template #activator="{ props: subProps }">
@@ -62,7 +60,6 @@
                   ></v-list-item>
                 </v-list-group>
               </template>
-              <!-- Direct child item -->
               <v-list-item
                 v-else
                 :to="sub.path"
@@ -72,7 +69,6 @@
             </template>
           </v-list-group>
         </template>
-        <!-- Single menu item without children -->
         <template v-else>
           <v-list-item
             :key="item.title"
@@ -127,7 +123,7 @@ export default {
   data() {
     return {
       mini: false,
-      drawerWidth: 263,
+      drawerWidth: 265,
       drawer: true,
       scrollSettings: {
         maxScrollbarLength: 160,
@@ -168,14 +164,12 @@ export default {
       if (!title) return ''
       const key = `menu['${title}']`
       const translated = this.$t(key)
-      // Return original title if translation key not found
       return translated === key ? title : translated
     },
     getSubmenuTitle(title) {
       if (!title) return ''
       const key = `submenu['${title}']`
       const translated = this.$t(key)
-      // Return original title if translation key not found
       return translated === key ? title : translated
     },
     toTop() {

@@ -2,10 +2,7 @@ import { MODE } from '@/constants/mode'
 
 const ALL_MODES = [MODE.PROJECT, MODE.ORGANIZATION]
 
-// Menu definitions - array order determines display order
-// Items without path but with children are category groups
 export const menuDefinition = [
-  // === Top-level menus ===
   {
     title: 'Dashboard',
     icon: 'mdi-view-dashboard',
@@ -20,18 +17,8 @@ export const menuDefinition = [
       { title: 'Finding', path: '/finding/finding' },
       { title: 'Resource', path: '/finding/resource', modes: [MODE.PROJECT] },
       { title: 'Setting', path: '/finding/setting', modes: [MODE.PROJECT] },
-      {
-        title: 'Analysis',
-        modes: [MODE.PROJECT],
-        children: [
-          { title: 'Report', path: '/report' },
-          { title: 'AttackFlow', path: '/analysis/attack-flow' },
-          { title: 'FindingSummary', path: '/analysis/finding' },
-        ],
-      },
     ],
   },
-  // === Setting category ===
   {
     title: 'Setting',
     icon: 'mdi-cog-outline',
@@ -99,7 +86,6 @@ export const menuDefinition = [
       },
     ],
   },
-  // === Data Source category ===
   {
     title: 'Data Source',
     icon: 'mdi-database-cog',
@@ -159,6 +145,16 @@ export const menuDefinition = [
       },
     ],
   },
+  {
+    title: 'Analysis',
+    icon: 'mdi-file-chart',
+    modes: [MODE.PROJECT],
+    children: [
+      { title: 'Report', path: '/report' },
+      { title: 'AttackFlow', path: '/analysis/attack-flow' },
+      { title: 'FindingSummary', path: '/analysis/finding' },
+    ],
+  },
 ]
 
 export function isMenuVisibleForMode(menu, mode) {
@@ -173,7 +169,6 @@ export function getMenuForMode(mode, menus = menuDefinition) {
     .map((menu) => {
       if (menu.children && menu.children.length > 0) {
         const filteredChildren = getMenuForMode(mode, menu.children)
-        // Skip category if no children after filtering
         if (!menu.path && filteredChildren.length === 0) {
           return null
         }
