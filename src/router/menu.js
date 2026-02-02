@@ -49,23 +49,6 @@ export const menuDefinition = [
         ],
       },
       {
-        title: 'Organization',
-        icon: 'mdi-account-group',
-        path: '/organization',
-        children: [
-          {
-            title: 'ProjectInvitation',
-            path: '/organization/project',
-            modes: [MODE.ORGANIZATION],
-          },
-          {
-            title: 'OrganizationInvitation',
-            path: '/organization/list',
-            modes: [MODE.PROJECT],
-          },
-        ],
-      },
-      {
         title: 'Organization IAM',
         icon: 'mdi-account-multiple',
         path: '/organization-iam',
@@ -81,6 +64,23 @@ export const menuDefinition = [
           {
             title: 'User Reservation',
             path: '/organization-iam/user-reservation',
+          },
+        ],
+      },
+      {
+        title: 'Organization',
+        icon: 'mdi-account-group',
+        path: '/organization',
+        children: [
+          {
+            title: 'ProjectInvitation',
+            path: '/organization/project',
+            modes: [MODE.ORGANIZATION],
+          },
+          {
+            title: 'OrganizationInvitation',
+            path: '/organization/list',
+            modes: [MODE.PROJECT],
           },
         ],
       },
