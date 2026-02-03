@@ -20,7 +20,7 @@ export const menuDefinition = [
     ],
   },
   {
-    title: 'Setting',
+    title: 'Settings',
     icon: 'mdi-cog-outline',
     children: [
       {
@@ -87,7 +87,7 @@ export const menuDefinition = [
     ],
   },
   {
-    title: 'Data Source',
+    title: 'Data Sources',
     icon: 'mdi-database-cog',
     modes: [MODE.PROJECT],
     children: [
