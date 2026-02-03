@@ -23,37 +23,58 @@
         </v-toolbar-title>
       </div>
     </v-toolbar>
-    <v-list class="pa-0">
-      <template v-for="(item, key) in computeMenu">
-        <template v-if="item.children && item.children.length > 0">
+    <v-list class="pa-0" nav>
+      <template v-for="(item, key) in computeMenu" :key="`menu-${key}`">
+        <template v-if="hasChildren(item)">
           <v-list-group
             :model-value="item.title"
             :prepend-icon="item.icon"
             :key="key"
-            v-show="!item.hidden"
           >
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
-                :title="$t(`menu['` + item.title + `']`)"
+                :title="getMenuTitle(item.title)"
                 :prepend-icon="item.icon"
               ></v-list-item>
             </template>
-            <v-list-item
-              v-for="sub in item.children"
-              :key="sub.title"
-              :to="sub.path"
-              :title="$t(`submenu['` + sub.title + `']`)"
-              :prepend-icon="sub.icon"
-            ></v-list-item>
+            <template
+              v-for="(sub, subIndex) in item.children"
+              :key="`sub-${key}-${subIndex}`"
+            >
+              <template v-if="hasChildren(sub)">
+                <v-list-group :model-value="sub.title" :prepend-icon="sub.icon">
+                  <template #activator="{ props: subProps }">
+                    <v-list-item
+                      v-bind="subProps"
+                      :title="getMenuTitle(sub.title)"
+                      :prepend-icon="sub.icon"
+                    ></v-list-item>
+                  </template>
+                  <v-list-item
+                    v-for="leaf in sub.children"
+                    :key="leaf.title"
+                    :to="leaf.path"
+                    :prepend-icon="leaf.icon"
+                    :title="getSubmenuTitle(leaf.title)"
+                  ></v-list-item>
+                </v-list-group>
+              </template>
+              <v-list-item
+                v-else
+                :to="sub.path"
+                :prepend-icon="sub.icon"
+                :title="getSubmenuTitle(sub.title)"
+              ></v-list-item>
+            </template>
           </v-list-group>
         </template>
         <template v-else>
           <v-list-item
-            :key="key"
+            :key="item.title"
             :to="item.path"
             :prepend-icon="item.icon"
-            :title="$t(`menu['` + item.title + `']`)"
+            :title="getMenuTitle(item.title)"
           >
           </v-list-item>
         </template>
@@ -102,7 +123,7 @@ export default {
   data() {
     return {
       mini: false,
-      drawerWidth: 260,
+      drawerWidth: 265,
       drawer: true,
       scrollSettings: {
         maxScrollbarLength: 160,
@@ -136,8 +157,20 @@ export default {
     },
   },
   methods: {
-    handleDrawerCollapse() {
-      this.drawerWidth = this.drawerWidth === 256 ? 64 : 256
+    hasChildren(item) {
+      return Array.isArray(item?.children) && item.children.length > 0
+    },
+    getMenuTitle(title) {
+      if (!title) return ''
+      const key = `menu['${title}']`
+      const translated = this.$t(key)
+      return translated === key ? title : translated
+    },
+    getSubmenuTitle(title) {
+      if (!title) return ''
+      const key = `submenu['${title}']`
+      const translated = this.$t(key)
+      return translated === key ? title : translated
     },
     toTop() {
       this.$router.push('/')
