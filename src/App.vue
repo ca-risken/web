@@ -30,15 +30,11 @@
 
 <script>
 import AIChat from '@/component/widget/chat/AI.vue'
-import { MODE } from '@/constants/mode'
+import organization_helper from '@/mixin/helper/organization_helper'
 
 export default {
+  mixins: [organization_helper],
   components: { AIChat },
-  computed: {
-    isOrganizationMode() {
-      return this.$store.state.mode === MODE.ORGANIZATION
-    },
-  },
   data() {
     return {
       rightDrawer: false,
