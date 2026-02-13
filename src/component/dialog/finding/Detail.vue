@@ -192,6 +192,7 @@
                 {{ $t(`btn['PEND']`) }}
               </v-btn>
               <v-btn
+                v-if="!isOrganizationMode"
                 color="blue-grey"
                 variant="outlined"
                 style="text-transform: none"
@@ -406,6 +407,7 @@
 
 <script>
 import mixin from '@/mixin'
+import organization_helper from '@/mixin/helper/organization_helper'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonView from '@/component/text/JsonView.vue'
 import AIPanel from '@/component/text/AIPanel.vue'
@@ -423,7 +425,7 @@ export default {
     CopyLink,
     Markdown,
   },
-  mixins: [mixin],
+  mixins: [mixin, organization_helper],
   props: {
     modelValue: {
       type: Boolean,

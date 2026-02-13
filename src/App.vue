@@ -24,13 +24,16 @@
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
-    <AIChat ref="aiChatRef" />
+    <AIChat v-if="!isOrganizationMode" ref="aiChatRef" />
   </v-app>
 </template>
 
 <script>
 import AIChat from '@/component/widget/chat/AI.vue'
+import organization_helper from '@/mixin/helper/organization_helper'
+
 export default {
+  mixins: [organization_helper],
   components: { AIChat },
   data() {
     return {
