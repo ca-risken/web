@@ -24,14 +24,21 @@
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>
-    <AIChat ref="aiChatRef" />
+    <AIChat v-if="!isOrganizationMode" ref="aiChatRef" />
   </v-app>
 </template>
 
 <script>
 import AIChat from '@/component/widget/chat/AI.vue'
+import { MODE } from '@/constants/mode'
+
 export default {
   components: { AIChat },
+  computed: {
+    isOrganizationMode() {
+      return this.$store.state.mode === MODE.ORGANIZATION
+    },
+  },
   data() {
     return {
       rightDrawer: false,
