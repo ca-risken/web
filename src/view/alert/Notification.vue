@@ -423,12 +423,13 @@
 <script>
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
+import organization_alert from '@/mixin/api/organization_alert'
 import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertNotification',
-  mixins: [mixin, alert, organization_helper],
+  mixins: [mixin, alert, organization_alert, organization_helper],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -584,13 +585,18 @@ export default {
     async refleshList() {
       this.loading = true
       this.clearList()
-      const listFn = this.isOrganizationMode
-        ? this.listOrgAlertNotification
-        : this.listAlertNotification
-      const notification = await listFn().catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      let notification
+      if (this.isOrganizationMode) {
+        notification = await this.listOrgNotification().catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        notification = await this.listAlertNotification().catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.table.items = notification
       this.loading = false
     },
@@ -600,25 +606,41 @@ export default {
 
     // delete
     async deleteItem() {
-      const deleteFn = this.isOrganizationMode
-        ? this.deleteOrgAlertNotification
-        : this.deleteAlertNotification
-      await deleteFn(this.dataModel.notification_id).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      if (this.isOrganizationMode) {
+        await this.deleteOrgNotification(this.dataModel.notification_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        await this.deleteAlertNotification(
+          this.dataModel.notification_id
+        ).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.finishSuccess('Success: Delete.')
     },
 
     // test
     async testNotification() {
-      const testFn = this.isOrganizationMode
-        ? this.testOrgAlertNotification
-        : this.testAlertNotification
-      await testFn(this.dataModel.notification_id).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      if (this.isOrganizationMode) {
+        await this.testOrgNotification(this.dataModel.notification_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      } else {
+        await this.testAlertNotification(this.dataModel.notification_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      }
       this.finishSuccess('Success: Send Test Notification.')
     },
 
@@ -634,19 +656,20 @@ export default {
         locale: this.dataModel.locale,
       })
 
-      let param
-      let putFn
       if (this.isOrganizationMode) {
-        param = {
+        const param = {
           organization_id: this.getCurrentOrganizationID(),
           notification_id: this.dataModel.notification_id,
           name: this.dataModel.name,
           type: this.dataModel.type,
           notify_setting: notifySetting,
         }
-        putFn = this.putOrgAlertNotification
+        await this.putOrgNotification(param).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
       } else {
-        param = {
+        const param = {
           project_id: this.getCurrentProjectID(),
           notification: {
             project_id: this.getCurrentProjectID(),
@@ -656,13 +679,11 @@ export default {
             notify_setting: notifySetting,
           },
         }
-        putFn = this.putAlertNotification
+        await this.putAlertNotification(param).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
       }
-
-      await putFn(param).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
       let msg = 'Success: Updated Notification.'
       if (this.form.new) {
         msg = 'Success: Created new Notification.'
