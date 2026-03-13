@@ -395,6 +395,22 @@ export const appRoute = [
         ],
       },
       {
+        path: '/organization-alert/',
+        component: RouteWrapper,
+        redirect: '/organization-alert/notification',
+        meta: { title: 'Organization Alert' },
+        children: [
+          {
+            path: '/organization-alert/notification',
+            name: 'OrganizationNotification',
+            meta: {
+              title: 'Notification',
+            },
+            component: () => import('@/view/alert/Notification.vue'),
+          },
+        ],
+      },
+      {
         path: '/organization/',
         component: RouteWrapper,
         redirect: '/organization/setting',
