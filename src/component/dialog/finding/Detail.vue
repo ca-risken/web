@@ -478,6 +478,12 @@ export default {
       return `${baseUrl}/finding/finding?from_score=0&status=0&project_id=${this.$route.query.project_id}&finding_id=${this.findingModel.finding_id}`
     },
   },
+  mounted() {
+    window.addEventListener('keydown', this.handleEscKey)
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleEscKey)
+  },
   methods: {
     close() {
       this.$emit('update:modelValue', false)
@@ -533,6 +539,12 @@ export default {
         return
       }
       this.$emit('update:modelValue', false)
+    },
+    handleEscKey(event) {
+      if (event.key === 'Escape' && this.modelValue) {
+        console.log('close')
+        this.close()
+      }
     },
   },
 }
