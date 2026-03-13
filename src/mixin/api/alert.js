@@ -288,7 +288,7 @@ const alert = {
     },
 
     // Organization AlertNotification
-    async listOrganizationAlertNotification() {
+    async listOrgAlertNotification() {
       const res = await this.$axios
         .get(
           '/alert/list-organization-notification/?organization_id=' +
@@ -303,7 +303,7 @@ const alert = {
       return res.data.data.org_notification
     },
 
-    async deleteOrganizationAlertNotification(notification_id) {
+    async deleteOrgAlertNotification(notification_id) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         notification_id: notification_id,
@@ -315,7 +315,7 @@ const alert = {
         })
     },
 
-    async putOrganizationAlertNotification(param) {
+    async putOrgAlertNotification(param) {
       await this.$axios
         .post('/alert/put-organization-notification/', param)
         .catch((err) => {
@@ -323,7 +323,7 @@ const alert = {
         })
     },
 
-    async testOrganizationAlertNotification(notification_id) {
+    async testOrgAlertNotification(notification_id) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         notification_id: notification_id,

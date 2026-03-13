@@ -406,7 +406,7 @@ export const appRoute = [
             meta: {
               title: 'Notification',
             },
-            component: () => import('@/view/organization/Notification.vue'),
+            component: () => import('@/view/alert/Notification.vue'),
           },
         ],
       },

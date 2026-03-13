@@ -423,11 +423,12 @@
 <script>
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertNotification',
-  mixins: [mixin, alert],
+  mixins: [mixin, alert, organization_helper],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -583,7 +584,10 @@ export default {
     async refleshList() {
       this.loading = true
       this.clearList()
-      const notification = await this.listAlertNotification().catch((err) => {
+      const listFn = this.isOrganizationMode
+        ? this.listOrgAlertNotification
+        : this.listAlertNotification
+      const notification = await listFn().catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
@@ -596,48 +600,66 @@ export default {
 
     // delete
     async deleteItem() {
-      await this.deleteAlertNotification(this.dataModel.notification_id).catch(
-        (err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        }
-      )
+      const deleteFn = this.isOrganizationMode
+        ? this.deleteOrgAlertNotification
+        : this.deleteAlertNotification
+      await deleteFn(this.dataModel.notification_id).catch((err) => {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
       this.finishSuccess('Success: Delete.')
     },
 
     // test
     async testNotification() {
-      await this.testAlertNotification(this.dataModel.notification_id).catch(
-        (err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        }
-      )
+      const testFn = this.isOrganizationMode
+        ? this.testOrgAlertNotification
+        : this.testAlertNotification
+      await testFn(this.dataModel.notification_id).catch((err) => {
+        this.finishError(err.response.data)
+        return Promise.reject(err)
+      })
       this.finishSuccess('Success: Send Test Notification.')
     },
 
     // put
     async putItem() {
-      const param = {
-        project_id: this.getCurrentProjectID(),
-        notification: {
-          project_id: this.getCurrentProjectID(),
-          notification_id: this.dataModel.notification_id,
-          type: this.dataModel.type,
-          name: this.dataModel.name,
-          notify_setting: JSON.stringify({
-            webhook_url: this.dataModel.webhook_url,
-            channel_id: this.dataModel.channel_id,
-            data: {
-              channel: this.dataModel.channel,
-              message: this.dataModel.custom_message,
-            },
-            locale: this.dataModel.locale,
-          }),
+      const notifySetting = JSON.stringify({
+        webhook_url: this.dataModel.webhook_url,
+        channel_id: this.dataModel.channel_id,
+        data: {
+          channel: this.dataModel.channel,
+          message: this.dataModel.custom_message,
         },
+        locale: this.dataModel.locale,
+      })
+
+      let param
+      let putFn
+      if (this.isOrganizationMode) {
+        param = {
+          organization_id: this.getCurrentOrganizationID(),
+          notification_id: this.dataModel.notification_id,
+          name: this.dataModel.name,
+          type: this.dataModel.type,
+          notify_setting: notifySetting,
+        }
+        putFn = this.putOrgAlertNotification
+      } else {
+        param = {
+          project_id: this.getCurrentProjectID(),
+          notification: {
+            project_id: this.getCurrentProjectID(),
+            notification_id: this.dataModel.notification_id,
+            type: this.dataModel.type,
+            name: this.dataModel.name,
+            notify_setting: notifySetting,
+          },
+        }
+        putFn = this.putAlertNotification
       }
 
-      await this.putAlertNotification(param).catch((err) => {
+      await putFn(param).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
       })
