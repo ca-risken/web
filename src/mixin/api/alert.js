@@ -287,6 +287,54 @@ const alert = {
         })
     },
 
+    // Organization AlertNotification
+    async listOrganizationAlertNotification() {
+      const res = await this.$axios
+        .get(
+          '/alert/list-organization-notification/?organization_id=' +
+            this.getCurrentOrganizationID()
+        )
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data.data.org_notification) {
+        return []
+      }
+      return res.data.data.org_notification
+    },
+
+    async deleteOrganizationAlertNotification(notification_id) {
+      const param = {
+        organization_id: this.getCurrentOrganizationID(),
+        notification_id: notification_id,
+      }
+      await this.$axios
+        .post('/alert/delete-organization-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
+    async putOrganizationAlertNotification(param) {
+      await this.$axios
+        .post('/alert/put-organization-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
+    async testOrganizationAlertNotification(notification_id) {
+      const param = {
+        organization_id: this.getCurrentOrganizationID(),
+        notification_id: notification_id,
+      }
+      await this.$axios
+        .post('/alert/test-organization-notification/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+    },
+
     // Analyze
     async analyzeAlert(alert_condition_id) {
       const cond_ids = [alert_condition_id]

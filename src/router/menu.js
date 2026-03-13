@@ -49,6 +49,18 @@ export const menuDefinition = [
         ],
       },
       {
+        title: 'Alert',
+        icon: 'mdi-alert',
+        path: '/organization-alert',
+        modes: [MODE.ORGANIZATION],
+        children: [
+          {
+            title: 'Notification',
+            path: '/organization-alert/notification',
+          },
+        ],
+      },
+      {
         title: 'Organization IAM',
         icon: 'mdi-account-multiple',
         path: '/organization-iam',
