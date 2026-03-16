@@ -51,12 +51,12 @@ export const menuDefinition = [
       {
         title: 'Alert',
         icon: 'mdi-alert',
-        path: '/organization/alert',
+        path: '/organization-alert',
         modes: [MODE.ORGANIZATION],
         children: [
           {
             title: 'Notification',
-            path: '/organization/alert/notification',
+            path: '/organization-alert/notification',
           },
         ],
       },

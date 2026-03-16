@@ -395,13 +395,13 @@ export const appRoute = [
         ],
       },
       {
-        path: '/organization/alert/',
+        path: '/organization-alert/',
         component: RouteWrapper,
-        redirect: '/organization/alert/notification',
+        redirect: '/organization-alert/notification',
         meta: { title: 'Organization Alert' },
         children: [
           {
-            path: '/organization/alert/notification',
+            path: '/organization-alert/notification',
             name: 'OrganizationNotification',
             meta: {
               title: 'Notification',
