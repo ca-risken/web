@@ -136,6 +136,6 @@ The platform provides:
 ## ルール
 - コメントは **英語** で記述する
 - 独自のCSSスタイルはなるべく避け、UIコンポーネントフレームワーク（Vuetify）で事前定義済みのスタイルを利用する
-- パス名に省略形を使用しない（例: `org` → `organization`）
+- URIパスに省略形を使用しない（例: `/api/v1/org-alert` → `/api/v1/organization-alert`）
 - 関数名には `Org` を使用する（例: `listOrgAlertNotification`）
 - APIリクエストのパラメータ構造は、バックエンドのProto定義（`core/proto/` や `datasource-api/proto/` 配下）を参照して合わせる
