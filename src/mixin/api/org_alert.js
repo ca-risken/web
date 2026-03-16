@@ -7,7 +7,7 @@ const org_alert = {
     async listOrgAlertNotification() {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-notification/?organization_id=' +
+          '/organization/alert/list-notification/?organization_id=' +
             this.getCurrentOrganizationID()
         )
         .catch((err) => {
@@ -25,7 +25,7 @@ const org_alert = {
         notification_id: notification_id,
       }
       await this.$axios
-        .post('/organization/delete-organization-notification/', param)
+        .post('/organization/alert/delete-notification/', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -33,7 +33,7 @@ const org_alert = {
 
     async putOrgAlertNotification(param) {
       await this.$axios
-        .post('/organization/put-organization-notification/', param)
+        .post('/organization/alert/put-notification/', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -45,7 +45,7 @@ const org_alert = {
         notification_id: notification_id,
       }
       await this.$axios
-        .post('/organization/test-organization-notification/', param)
+        .post('/organization/alert/test-notification/', param)
         .catch((err) => {
           return Promise.reject(err)
         })
