@@ -1,10 +1,10 @@
-const organization_alert = {
+const org_alert = {
   data: () => {
     return {}
   },
   methods: {
     // Organization Notification
-    async listOrgNotification() {
+    async listOrgAlertNotification() {
       const res = await this.$axios
         .get(
           '/organization/list-organization-notification/?organization_id=' +
@@ -13,13 +13,13 @@ const organization_alert = {
         .catch((err) => {
           return Promise.reject(err)
         })
-      if (!res.data.data.org_notification) {
+      if (!res.data.data.notification) {
         return []
       }
-      return res.data.data.org_notification
+      return res.data.data.notification
     },
 
-    async deleteOrgNotification(notification_id) {
+    async deleteOrgAlertNotification(notification_id) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         notification_id: notification_id,
@@ -31,7 +31,7 @@ const organization_alert = {
         })
     },
 
-    async putOrgNotification(param) {
+    async putOrgAlertNotification(param) {
       await this.$axios
         .post('/organization/put-organization-notification/', param)
         .catch((err) => {
@@ -39,7 +39,7 @@ const organization_alert = {
         })
     },
 
-    async testOrgNotification(notification_id) {
+    async testOrgAlertNotification(notification_id) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         notification_id: notification_id,
@@ -53,4 +53,4 @@ const organization_alert = {
   },
 }
 
-export default organization_alert
+export default org_alert

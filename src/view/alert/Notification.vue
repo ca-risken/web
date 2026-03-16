@@ -423,13 +423,13 @@
 <script>
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
-import organization_alert from '@/mixin/api/organization_alert'
+import org_alert from '@/mixin/api/org_alert'
 import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertNotification',
-  mixins: [mixin, alert, organization_alert, organization_helper],
+  mixins: [mixin, alert, org_alert, organization_helper],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -587,7 +587,7 @@ export default {
       this.clearList()
       let notification
       if (this.isOrganizationMode) {
-        notification = await this.listOrgNotification().catch((err) => {
+        notification = await this.listOrgAlertNotification().catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
@@ -607,12 +607,12 @@ export default {
     // delete
     async deleteItem() {
       if (this.isOrganizationMode) {
-        await this.deleteOrgNotification(this.dataModel.notification_id).catch(
-          (err) => {
-            this.finishError(err.response.data)
-            return Promise.reject(err)
-          }
-        )
+        await this.deleteOrgAlertNotification(
+          this.dataModel.notification_id
+        ).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
       } else {
         await this.deleteAlertNotification(
           this.dataModel.notification_id
@@ -627,12 +627,12 @@ export default {
     // test
     async testNotification() {
       if (this.isOrganizationMode) {
-        await this.testOrgNotification(this.dataModel.notification_id).catch(
-          (err) => {
-            this.finishError(err.response.data)
-            return Promise.reject(err)
-          }
-        )
+        await this.testOrgAlertNotification(
+          this.dataModel.notification_id
+        ).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
       } else {
         await this.testAlertNotification(this.dataModel.notification_id).catch(
           (err) => {
@@ -664,7 +664,7 @@ export default {
           type: this.dataModel.type,
           notify_setting: notifySetting,
         }
-        await this.putOrgNotification(param).catch((err) => {
+        await this.putOrgAlertNotification(param).catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
