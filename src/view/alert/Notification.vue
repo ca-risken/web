@@ -423,11 +423,13 @@
 <script>
 import mixin from '@/mixin'
 import alert from '@/mixin/api/alert'
+import org_alert from '@/mixin/api/org_alert'
+import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertNotification',
-  mixins: [mixin, alert],
+  mixins: [mixin, alert, org_alert, organization_helper],
   components: {
     BottomSnackBar,
     VDataTable,
@@ -583,10 +585,18 @@ export default {
     async refleshList() {
       this.loading = true
       this.clearList()
-      const notification = await this.listAlertNotification().catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
-      })
+      let notification
+      if (this.isOrganizationMode) {
+        notification = await this.listOrgAlertNotification().catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        notification = await this.listAlertNotification().catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.table.items = notification
       this.loading = false
     },
@@ -596,51 +606,84 @@ export default {
 
     // delete
     async deleteItem() {
-      await this.deleteAlertNotification(this.dataModel.notification_id).catch(
-        (err) => {
+      if (this.isOrganizationMode) {
+        await this.deleteOrgAlertNotification(
+          this.dataModel.notification_id
+        ).catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
-        }
-      )
+        })
+      } else {
+        await this.deleteAlertNotification(
+          this.dataModel.notification_id
+        ).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       this.finishSuccess('Success: Delete.')
     },
 
     // test
     async testNotification() {
-      await this.testAlertNotification(this.dataModel.notification_id).catch(
-        (err) => {
+      if (this.isOrganizationMode) {
+        await this.testOrgAlertNotification(
+          this.dataModel.notification_id
+        ).catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
-        }
-      )
+        })
+      } else {
+        await this.testAlertNotification(this.dataModel.notification_id).catch(
+          (err) => {
+            this.finishError(err.response.data)
+            return Promise.reject(err)
+          }
+        )
+      }
       this.finishSuccess('Success: Send Test Notification.')
     },
 
     // put
     async putItem() {
-      const param = {
-        project_id: this.getCurrentProjectID(),
-        notification: {
-          project_id: this.getCurrentProjectID(),
-          notification_id: this.dataModel.notification_id,
-          type: this.dataModel.type,
-          name: this.dataModel.name,
-          notify_setting: JSON.stringify({
-            webhook_url: this.dataModel.webhook_url,
-            channel_id: this.dataModel.channel_id,
-            data: {
-              channel: this.dataModel.channel,
-              message: this.dataModel.custom_message,
-            },
-            locale: this.dataModel.locale,
-          }),
+      const notifySetting = JSON.stringify({
+        webhook_url: this.dataModel.webhook_url,
+        channel_id: this.dataModel.channel_id,
+        data: {
+          channel: this.dataModel.channel,
+          message: this.dataModel.custom_message,
         },
-      }
-
-      await this.putAlertNotification(param).catch((err) => {
-        this.finishError(err.response.data)
-        return Promise.reject(err)
+        locale: this.dataModel.locale,
       })
+
+      if (this.isOrganizationMode) {
+        const param = {
+          organization_id: this.getCurrentOrganizationID(),
+          notification_id: this.dataModel.notification_id,
+          name: this.dataModel.name,
+          type: this.dataModel.type,
+          notify_setting: notifySetting,
+        }
+        await this.putOrgAlertNotification(param).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      } else {
+        const param = {
+          project_id: this.getCurrentProjectID(),
+          notification: {
+            project_id: this.getCurrentProjectID(),
+            notification_id: this.dataModel.notification_id,
+            type: this.dataModel.type,
+            name: this.dataModel.name,
+            notify_setting: notifySetting,
+          },
+        }
+        await this.putAlertNotification(param).catch((err) => {
+          this.finishError(err.response.data)
+          return Promise.reject(err)
+        })
+      }
       let msg = 'Success: Updated Notification.'
       if (this.form.new) {
         msg = 'Success: Created new Notification.'
