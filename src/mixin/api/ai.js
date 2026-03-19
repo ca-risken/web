@@ -16,6 +16,7 @@ const ai = {
     async chatAI(question, chat_history) {
       const param = {
         question: question,
+        project_id: this.getCurrentProjectID(),
       }
       if (chat_history) {
         param.chat_history = chat_history
