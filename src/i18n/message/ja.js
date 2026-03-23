@@ -43,6 +43,7 @@ const ja = {
     Recommendation: '推奨アクションを確認する',
     Upgrade: 'アップグレード',
     CHECK: '確認',
+    'Select Project': 'プロジェクトを選択',
     'Select Organization': 'Organizationを選択',
     'CREATE AUTO': '自動生成',
     'CREATE EMPTY REPORT': '空のレポートを作成',
@@ -105,6 +106,7 @@ const ja = {
     AttackFlow: 'アタックフロー',
     FindingSummary: 'Findingサマリー',
     NewProject: '新規プロジェクト',
+    ProjectSelect: 'プロジェクト選択',
     ProjectSetting: '設定',
     'New Organization': '新規Organization',
     'Organization Setting': 'Organization設定',
@@ -115,6 +117,7 @@ const ja = {
     Profile: 'プロフィール',
     Menu: 'メニュー',
     'Admin User': '管理者ユーザ',
+    ReportFinding: 'レポートFinding',
     Report: 'レポート',
   },
   item: {
@@ -308,7 +311,11 @@ const ja = {
     'AI will generate report content automatically':
       'AIが自動でレポートコンテンツを生成します(5分〜10分程度かかる場合があります)',
     'Do you really want to delete this?': '本当に削除してよろしいですか？',
+    'Let us start by selecting a project.':
+      'まずプロジェクトを選択しましょう。',
     'Please select an organization': 'Organizationを選択してください',
+    'You need to select a project to continue.':
+      '続けるにはプロジェクトの選択が必要です。',
     'You need to select an organization to continue.':
       '続行するにはOrganizationを選択する必要があります。',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
