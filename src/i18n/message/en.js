@@ -43,6 +43,7 @@ const en = {
     Recommendation: 'Recommendation',
     Upgrade: 'Upgrade',
     CHECK: 'CHECK',
+    'Select Project': 'Select Project',
     'Select Organization': 'Select Organization',
     'CREATE AUTO': 'CREATE AUTO',
     'CREATE EMPTY REPORT': 'CREATE EMPTY REPORT',
@@ -105,6 +106,7 @@ const en = {
     AttackFlow: 'AttackFlow', // Analysis
     FindingSummary: 'Finding Summary', // Analysis
     NewProject: 'New', // Project
+    ProjectSelect: 'Select Project',
     ProjectSetting: 'Setting', // Project
     'New Organization': 'New Organization',
     'Organization Setting': 'Organization Setting',
@@ -115,6 +117,7 @@ const en = {
     Profile: 'Profile',
     Menu: 'Menu',
     'Admin User': 'Admin User',
+    ReportFinding: 'Report Finding',
     Report: 'Report',
   },
   item: {
@@ -308,7 +311,11 @@ const en = {
     'AI will generate report content automatically':
       'AI will generate report content automatically (It may take 5-10 minutes)',
     'Do you really want to delete this?': 'Do you really want to delete this?',
+    'Let us start by selecting a project.':
+      'Let us start by selecting a project.',
     'Please select an organization': 'Please select an organization',
+    'You need to select a project to continue.':
+      'You need to select a project to continue.',
     'You need to select an organization to continue.':
       'You need to select an organization to continue.',
     'Disabling DataSource will cause your unsaved configuration to be lost. Do you want to continue?':
