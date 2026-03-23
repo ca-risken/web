@@ -198,12 +198,13 @@
 </template>
 
 <script>
+import mixin from '@/mixin'
 import ai from '@/mixin/api/ai'
 import MarkdownDisplay from '@/component/text/Markdown.vue'
 
 export default {
   name: 'AI',
-  mixins: [ai],
+  mixins: [mixin, ai],
   components: {
     MarkdownDisplay,
   },
