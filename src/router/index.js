@@ -90,6 +90,21 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (
+    store.state.mode === MODE.PROJECT &&
+    !to.path.startsWith('/project/select') &&
+    !to.path.startsWith('/project/new') &&
+    !to.path.startsWith('/iam/profile') &&
+    !to.path.startsWith('/admin/menu') &&
+    !to.path.startsWith('/auth/signin') &&
+    (!store.state.project ||
+      !store.state.project.project_id ||
+      Object.keys(store.state.project).length === 0)
+  ) {
+    next('/project/select')
+    return
+  }
+
+  if (
     store.state.mode === MODE.ORGANIZATION &&
     !to.path.startsWith('/organization/select') &&
     !to.path.startsWith('/organization/new') &&

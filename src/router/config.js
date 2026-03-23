@@ -377,6 +377,15 @@ export const appRoute = [
         meta: { title: 'Project' },
         children: [
           {
+            path: '/project/select',
+            name: 'ProjectSelect',
+            meta: {
+              title: 'ProjectSelect',
+              hiddenInMenu: true,
+            },
+            component: () => import('@/view/project/SelectProject.vue'),
+          },
+          {
             path: '/project/setting',
             name: 'ProjectSetting',
             meta: {
