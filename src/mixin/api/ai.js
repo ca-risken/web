@@ -16,7 +16,7 @@ const ai = {
     async chatAI(question, chat_history) {
       const param = {
         question: question,
-        project_id: this.$store?.state?.project?.project_id || '',
+        project_id: this.getCurrentProjectID(),
       }
       if (chat_history) {
         param.chat_history = chat_history
@@ -33,7 +33,7 @@ const ai = {
     // Generate Report API
     async generateReport(prompt, name) {
       const param = {
-        project_id: this.$store?.state?.project?.project_id || '',
+        project_id: this.getCurrentProjectID(),
         prompt: prompt,
         name: name,
       }
