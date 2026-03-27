@@ -443,15 +443,10 @@ export default {
     async putItem() {
       let param
       if (this.isOrganizationMode) {
-        param = {
-          organization_id: this.getCurrentOrganizationID(),
-          policy: {
-            name: this.policyModel.name,
-            organization_id: this.getCurrentOrganizationID(),
-            action_ptn: this.policyModel.action_ptn,
-          },
-        }
-        await this.putOrganizationPolicyAPI(param).catch((err) => {
+        await this.putOrganizationPolicyAPI(
+          this.policyModel.name,
+          this.policyModel.action_ptn
+        ).catch((err) => {
           this.$refs.snackbar.notifyError(err.response.data)
           return Promise.reject(err)
         })
