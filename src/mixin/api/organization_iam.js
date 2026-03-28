@@ -6,7 +6,7 @@ const organization_iam = {
     async listOrganizationRoleAPI(searchCond) {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-role/?organization_id=' +
+          '/organization-iam/list-role/?organization_id=' +
             this.getCurrentOrganizationID() +
             searchCond
         )
@@ -21,7 +21,7 @@ const organization_iam = {
     async listOrganizationPolicyAPI(searchCond) {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-policy/?organization_id=' +
+          '/organization-iam/list-policy/?organization_id=' +
             this.getCurrentOrganizationID() +
             searchCond
         )
@@ -36,7 +36,7 @@ const organization_iam = {
     async getOrganizationRoleAPI(role_id) {
       const res = await this.$axios
         .get(
-          '/organization/get-organization-role/?organization_id=' +
+          '/organization-iam/get-role/?organization_id=' +
             this.getCurrentOrganizationID() +
             '&role_id=' +
             role_id
@@ -55,7 +55,7 @@ const organization_iam = {
         name: name,
       }
       const res = await this.$axios
-        .post('/organization/put-organization-role', param)
+        .post('/organization-iam/put-role', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -70,7 +70,7 @@ const organization_iam = {
         role_id: role_id,
       }
       const res = await this.$axios
-        .post('/organization/delete-organization-role', param)
+        .post('/organization-iam/delete-role', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -79,7 +79,7 @@ const organization_iam = {
     async getOrganizationPolicyAPI(policy_id) {
       const res = await this.$axios
         .get(
-          '/organization/get-organization-policy/?organization_id=' +
+          '/organization-iam/get-policy/?organization_id=' +
             this.getCurrentOrganizationID() +
             '&policy_id=' +
             policy_id
@@ -99,7 +99,7 @@ const organization_iam = {
         action_ptn: action_ptn,
       }
       const res = await this.$axios
-        .post('/organization/put-organization-policy', param)
+        .post('/organization-iam/put-policy', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -114,7 +114,7 @@ const organization_iam = {
         policy_id: policy_id,
       }
       const res = await this.$axios
-        .post('/organization/delete-organization-policy', param)
+        .post('/organization-iam/delete-policy', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -127,7 +127,7 @@ const organization_iam = {
         organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
-        .post('/organization/attach-organization-role', param)
+        .post('/organization-iam/attach-role', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -143,7 +143,7 @@ const organization_iam = {
         organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
-        .post('/organization/detach-organization-role', param)
+        .post('/organization-iam/detach-role', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -156,7 +156,7 @@ const organization_iam = {
         organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
-        .post('/organization/attach-organization-policy', param)
+        .post('/organization-iam/attach-policy', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -169,7 +169,7 @@ const organization_iam = {
         organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
-        .post('/organization/detach-organization-policy', param)
+        .post('/organization-iam/detach-policy', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -178,7 +178,7 @@ const organization_iam = {
     async listOrganizationUserReservedAPI(searchCond) {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-user-reserved/?organization_id=' +
+          '/organization-iam/list-user-reserved/?organization_id=' +
             this.getCurrentOrganizationID() +
             searchCond
         )
@@ -198,7 +198,7 @@ const organization_iam = {
         role_id: role_id,
       }
       const res = await this.$axios
-        .post('/organization/put-organization-user-reserved/', param)
+        .post('/organization-iam/put-user-reserved/', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -210,7 +210,7 @@ const organization_iam = {
         organization_id: this.getCurrentOrganizationID(),
       }
       const res = await this.$axios
-        .post('/organization/delete-organization-user-reserved', param)
+        .post('/organization-iam/delete-user-reserved', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -219,7 +219,7 @@ const organization_iam = {
     async listOrgAccessTokenAPI(searchCond) {
       const res = await this.$axios
         .get(
-          '/organization/list-organization-access-token/?organization_id=' +
+          '/organization-iam/list-access-token/?organization_id=' +
             this.getCurrentOrganizationID() +
             searchCond
         )
@@ -233,7 +233,7 @@ const organization_iam = {
     },
     async generateOrgAccessTokenAPI(param) {
       const res = await this.$axios
-        .post('/organization/generate-organization-access-token', param)
+        .post('/organization-iam/generate-access-token', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -241,7 +241,7 @@ const organization_iam = {
     },
     async updateOrgAccessTokenAPI(param) {
       const res = await this.$axios
-        .post('/organization/update-organization-access-token', param)
+        .post('/organization-iam/update-access-token', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -253,7 +253,7 @@ const organization_iam = {
         access_token_id: accessTokenID,
       }
       const res = await this.$axios
-        .post('/organization/delete-organization-access-token', param)
+        .post('/organization-iam/delete-access-token', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -266,7 +266,7 @@ const organization_iam = {
         role_id: roleID,
       }
       const res = await this.$axios
-        .post('/organization/attach-organization-access-token-role', param)
+        .post('/organization-iam/attach-access-token-role', param)
         .catch((err) => {
           return Promise.reject(err)
         })
@@ -279,7 +279,7 @@ const organization_iam = {
         role_id: roleID,
       }
       const res = await this.$axios
-        .post('/organization/detach-organization-access-token-role', param)
+        .post('/organization-iam/detach-access-token-role', param)
         .catch((err) => {
           return Promise.reject(err)
         })
