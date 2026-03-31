@@ -71,7 +71,7 @@ export const menuDefinition = [
           { title: 'Policy', path: '/organization-iam/policy' },
           {
             title: 'AccessToken',
-            path: '/organization-iam/organization-access-token',
+            path: '/organization-iam/access-token',
           },
           {
             title: 'User Reservation',
