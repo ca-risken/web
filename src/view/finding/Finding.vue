@@ -136,8 +136,8 @@
           </v-col>
         </v-row>
         <transition name="fade">
-          <div>
-            <v-row v-show="searchMenuDetail">
+          <div v-show="searchMenuDetail">
+            <v-row>
               <v-col cols="3" class="px-1">
                 <v-combobox
                   multiple
