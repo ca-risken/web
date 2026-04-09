@@ -665,6 +665,9 @@ let mixin = {
       if (query.project_id && query.project_id != '') {
         project_id = parseInt(query.project_id)
       }
+      if (project_id === 0) {
+        return
+      }
       let user_id
       if (store.state && store.state.user && store.state.user.user_id) {
         user_id = store.state.user.user_id
@@ -674,29 +677,7 @@ let mixin = {
       if (!user_id) {
         return
       }
-      const userInProject = await this.UserInProject(project_id, user_id)
-      if (project_id === 0 || !userInProject) {
-        return
-      }
-      await this.putAlertFirstViewedAt(project_id, user_id)
-      return
-    },
-    async UserInProject(project_id, user_id) {
-      const searchCond = '&project_id=' + project_id + '&user_id=' + user_id
-      const userIDs = await this.listUserAPI(searchCond).catch((err) => {
-        return Promise.reject(err)
-      })
-      if (!userIDs) {
-        return false
-      }
-      const user = store.state.user
-      if (!user || !user.user_id) {
-        return false
-      }
-      if (userIDs.includes(user.user_id)) {
-        return true
-      }
-      return false
+      await this.putAlertFirstViewedAt(project_id)
     },
   },
 }
