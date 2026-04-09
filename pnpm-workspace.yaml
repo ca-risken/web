@@ -2,3 +2,4 @@ onlyBuiltDependencies:
   - esbuild
   - vue-demi
   - core-js
+minimumReleaseAge: 10080
