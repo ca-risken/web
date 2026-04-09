@@ -2,7 +2,7 @@ FROM node:lts-alpine as builder
 WORKDIR /app
 COPY ./ ./
 RUN corepack enable
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 RUN NODE_OPTIONS=--openssl-legacy-provider pnpm run build-prd
 
 FROM nginx:stable-alpine as production-stage
