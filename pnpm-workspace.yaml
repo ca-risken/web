@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - esbuild
+  - vue-demi
+  - core-js
