@@ -3,7 +3,6 @@ WORKDIR /app
 COPY ./ ./
 RUN corepack enable
 RUN pnpm install
-RUN pnpm config set ignore-engines true
 RUN NODE_OPTIONS=--openssl-legacy-provider pnpm run build-prd
 
 FROM nginx:stable-alpine as production-stage
