@@ -14,7 +14,7 @@ Please check [RISKEN Documentation](https://docs.security-hub.jp/).
 This module requires the following modules:
 
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-- [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
+- [pnpm](https://pnpm.io/installation)
 - [pip](https://pip.pypa.io/en/latest/installation/)
 
 ### Install packages

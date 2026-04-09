@@ -21,7 +21,7 @@ local-clean:
 
 .PHONY: install
 install:
-	yarn install
+	pnpm install
 	pip install pre-commit
 	pre-commit install
 
@@ -59,17 +59,17 @@ push-manifest:
 
 .PHONY: fmt
 fmt:
-	yarn prettier --write src
+	pnpm prettier --write src
 
 .PHONY: lint
 lint:
-	yarn prettier --check src
-	yarn lint
+	pnpm prettier --check src
+	pnpm lint
 
 .PHONY: run
 run: clean install fmt lint
-	yarn serve
+	pnpm serve
 
 .PHONY: clean
 clean:
-	yarn cache clean
+	pnpm store prune

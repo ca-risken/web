@@ -1,9 +1,9 @@
 FROM node:lts-alpine as builder
 WORKDIR /app
 COPY ./ ./
-RUN yarn config set ignore-engines true
-RUN yarn install
-RUN NODE_OPTIONS=--openssl-legacy-provider yarn run build-prd
+RUN corepack enable
+RUN pnpm install --frozen-lockfile
+RUN NODE_OPTIONS=--openssl-legacy-provider pnpm run build-prd
 
 FROM nginx:stable-alpine as production-stage
 COPY --from=builder /app/dist /usr/share/nginx/html

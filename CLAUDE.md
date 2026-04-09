@@ -7,23 +7,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Core Development
 ```bash
 # Install dependencies
-yarn install
+pnpm install
 # or
 make install
 
 # Run development server (http://localhost:8080)
-yarn serve
+pnpm serve
 # or
 make run  # includes clean, install, fmt, lint steps
 
 # Build for production
-yarn build
-yarn build-prd  # production mode
+pnpm build
+pnpm build-prd  # production mode
 
 # Linting and formatting
-yarn lint  # ESLint check
-yarn prettier --write src  # Format code
-yarn prettier --check src  # Check formatting
+pnpm lint  # ESLint check
+pnpm prettier --write src  # Format code
+pnpm prettier --check src  # Check formatting
 make fmt  # Format all source files
 make lint  # Check formatting and lint
 
