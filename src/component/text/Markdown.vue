@@ -8,6 +8,7 @@
   >
     <vue-markdown-it
       :source="source"
+      :html="false"
       :plugins="markdownPlugins"
       v-bind="$attrs"
     />
@@ -17,8 +18,24 @@
 <script>
 import VueMarkdownIt from 'vue3-markdown-it'
 import mermaid from 'mermaid'
-import MermaidPlugin from 'markdown-it-mermaid-plugin'
 import DOMPurify from 'dompurify'
+
+function SafeMermaidPlugin(md) {
+  const defaultFenceRenderer =
+    md.renderer.rules.fence?.bind(md.renderer.rules) ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options))
+
+  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+    const token = tokens[idx]
+    if (token.info.trim() !== 'mermaid') {
+      return defaultFenceRenderer(tokens, idx, options, env, self)
+    }
+
+    const escapedDefinition = md.utils.escapeHtml(token.content.trim())
+    return `<div class="mermaid">${escapedDefinition}</div>`
+  }
+}
 
 export default {
   name: 'MarkdownDisplay',
@@ -51,7 +68,7 @@ export default {
     return {
       markdownPlugins: [
         {
-          plugin: MermaidPlugin,
+          plugin: SafeMermaidPlugin,
         },
       ],
     }
