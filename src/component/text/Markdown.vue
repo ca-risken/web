@@ -18,7 +18,6 @@
 <script>
 import VueMarkdownIt from 'vue3-markdown-it'
 import mermaid from 'mermaid'
-import DOMPurify from 'dompurify'
 
 function SafeMermaidPlugin(md) {
   const defaultFenceRenderer =
@@ -32,8 +31,8 @@ function SafeMermaidPlugin(md) {
       return defaultFenceRenderer(tokens, idx, options, env, self)
     }
 
-    const escapedDefinition = md.utils.escapeHtml(token.content.trim())
-    return `<div class="mermaid">${escapedDefinition}</div>`
+    const encodedDefinition = encodeURIComponent(token.content.trim())
+    return `<div class="mermaid" data-mermaid-source="${encodedDefinition}"></div>`
   }
 }
 
@@ -100,23 +99,32 @@ export default {
         const element = mermaidElements[i]
 
         try {
-          const graphDefinition = element.textContent.trim()
+          const graphDefinition = this.getMermaidDefinition(element)
           const uniqueId = `mermaid-${Date.now()}-${i}`
 
           const { svg } = await mermaid.render(uniqueId, graphDefinition)
-          const cleanSvg = DOMPurify.sanitize(svg, {
-            USE_PROFILES: { svg: true, svgFilters: true },
-          })
-          element.innerHTML = cleanSvg
+          element.innerHTML = svg
           element.setAttribute('data-processed', 'true')
         } catch (error) {
           console.warn('Mermaid rendering failed:', error.message)
           const pre = document.createElement('pre')
           pre.style.textAlign = 'left'
-          pre.textContent = element.textContent || ''
+          pre.textContent = this.getMermaidDefinition(element)
           element.replaceChildren(pre)
           element.setAttribute('data-processed', 'true')
         }
+      }
+    },
+    getMermaidDefinition(element) {
+      const encodedDefinition = element.getAttribute('data-mermaid-source')
+      if (!encodedDefinition) {
+        return element.textContent.trim()
+      }
+
+      try {
+        return decodeURIComponent(encodedDefinition)
+      } catch {
+        return element.textContent.trim()
       }
     },
   },
