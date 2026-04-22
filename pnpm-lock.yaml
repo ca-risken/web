@@ -43,6 +43,9 @@ importers:
       core-js:
         specifier: ^3.6.5
         version: 3.49.0
+      dompurify:
+        specifier: ^3.3.3
+        version: 3.3.3
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1

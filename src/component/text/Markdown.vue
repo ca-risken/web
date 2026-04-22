@@ -8,6 +8,7 @@
   >
     <vue-markdown-it
       :source="source"
+      :html="false"
       :plugins="markdownPlugins"
       v-bind="$attrs"
     />
@@ -17,7 +18,24 @@
 <script>
 import VueMarkdownIt from 'vue3-markdown-it'
 import mermaid from 'mermaid'
-import MermaidPlugin from 'markdown-it-mermaid-plugin'
+import DOMPurify from 'dompurify'
+
+function SafeMermaidPlugin(md) {
+  const defaultFenceRenderer =
+    md.renderer.rules.fence?.bind(md.renderer.rules) ||
+    ((tokens, idx, options, env, self) =>
+      self.renderToken(tokens, idx, options))
+
+  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+    const token = tokens[idx]
+    if (token.info.trim() !== 'mermaid') {
+      return defaultFenceRenderer(tokens, idx, options, env, self)
+    }
+
+    const escapedDefinition = md.utils.escapeHtml(token.content.trim())
+    return `<div class="mermaid">${escapedDefinition}</div>`
+  }
+}
 
 export default {
   name: 'MarkdownDisplay',
@@ -50,7 +68,7 @@ export default {
     return {
       markdownPlugins: [
         {
-          plugin: MermaidPlugin,
+          plugin: SafeMermaidPlugin,
         },
       ],
     }
@@ -67,7 +85,7 @@ export default {
       mermaid.initialize({
         startOnLoad: false,
         theme: 'default',
-        securityLevel: 'loose',
+        securityLevel: 'strict',
       })
     },
 
@@ -86,11 +104,17 @@ export default {
           const uniqueId = `mermaid-${Date.now()}-${i}`
 
           const { svg } = await mermaid.render(uniqueId, graphDefinition)
-          element.innerHTML = svg
+          const cleanSvg = DOMPurify.sanitize(svg, {
+            USE_PROFILES: { svg: true, svgFilters: true },
+          })
+          element.innerHTML = cleanSvg
           element.setAttribute('data-processed', 'true')
         } catch (error) {
           console.warn('Mermaid rendering failed:', error.message)
-          element.innerHTML = `<pre style="text-align: left;">${element.textContent}</pre>`
+          const pre = document.createElement('pre')
+          pre.style.textAlign = 'left'
+          pre.textContent = element.textContent || ''
+          element.replaceChildren(pre)
           element.setAttribute('data-processed', 'true')
         }
       }
