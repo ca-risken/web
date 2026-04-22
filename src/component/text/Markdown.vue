@@ -18,6 +18,7 @@
 import VueMarkdownIt from 'vue3-markdown-it'
 import mermaid from 'mermaid'
 import MermaidPlugin from 'markdown-it-mermaid-plugin'
+import DOMPurify from 'dompurify'
 
 export default {
   name: 'MarkdownDisplay',
@@ -67,7 +68,7 @@ export default {
       mermaid.initialize({
         startOnLoad: false,
         theme: 'default',
-        securityLevel: 'loose',
+        securityLevel: 'strict',
       })
     },
 
@@ -86,11 +87,17 @@ export default {
           const uniqueId = `mermaid-${Date.now()}-${i}`
 
           const { svg } = await mermaid.render(uniqueId, graphDefinition)
-          element.innerHTML = svg
+          const cleanSvg = DOMPurify.sanitize(svg, {
+            USE_PROFILES: { svg: true, svgFilters: true },
+          })
+          element.innerHTML = cleanSvg
           element.setAttribute('data-processed', 'true')
         } catch (error) {
           console.warn('Mermaid rendering failed:', error.message)
-          element.innerHTML = `<pre style="text-align: left;">${element.textContent}</pre>`
+          const pre = document.createElement('pre')
+          pre.style.textAlign = 'left'
+          pre.textContent = element.textContent || ''
+          element.replaceChildren(pre)
           element.setAttribute('data-processed', 'true')
         }
       }
