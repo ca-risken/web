@@ -26,3 +26,6 @@ pnpm-debug.log*
 
 # Claude
 .claude
+
+# Browser testing
+.playwright-cli
