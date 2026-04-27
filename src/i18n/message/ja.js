@@ -207,6 +207,7 @@ const ja = {
     'Policy Name': 'ポリシー名',
     'Portscan Setting ID': 'ポートスキャン設定ID',
     'Portscan Target ID': 'ポートスキャン対象ID',
+    'Project Pattern': 'プロジェクトパターン',
     Recommend: '推奨',
     Recommendation: '推奨事項',
     'Recommend ID': 'レコメンドID',
