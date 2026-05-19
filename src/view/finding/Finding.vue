@@ -1512,7 +1512,10 @@ export default {
       }
     },
     async getPendUser(userID) {
-      const user = await this.getUserAPI(userID)
+      const user = await this.getUserAPI(userID).catch((err) => {
+        console.error(err)
+        return null
+      })
       return user?.name || ''
     },
 
