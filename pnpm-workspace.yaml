@@ -1,7 +1,7 @@
-onlyBuiltDependencies:
-  - esbuild
-  - vue-demi
-  - core-js
+allowBuilds:
+  core-js: true
+  esbuild: true
+  vue-demi: true
 minimumReleaseAge: 10080
 overrides:
   node-ipc: "9.2.1"
