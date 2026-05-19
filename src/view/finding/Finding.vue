@@ -1513,7 +1513,7 @@ export default {
     },
     async getPendUser(userID) {
       const user = await this.getUserAPI(userID)
-      return user.name
+      return user?.name || ''
     },
 
     // finish
