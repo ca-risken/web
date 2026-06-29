@@ -120,6 +120,7 @@
     :loading="loading"
     :current-entity-id="currentProjectID"
     :custom-filter="customFilter"
+    persistent-search
     @item-selected="handleProjectSelected"
     @edit-entity="handleSettingProject"
     @create-entity="handleNewProject"
@@ -132,6 +133,7 @@
     :items="organizationTable.item"
     :loading="loading"
     :current-entity-id="currentOrganizationID"
+    persistent-search
     @item-selected="handleOrganizationSelected"
     @edit-entity="handleOrganizationSetting"
     @create-entity="handleNewOrganization"

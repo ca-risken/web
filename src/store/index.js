@@ -17,6 +17,10 @@ const store = createStore({
       interval: {},
       locale: {},
       findingHistory: [],
+      projectOrgSearch: {
+        project: '',
+        organization: '',
+      },
     }
   },
   mutations: {
@@ -40,6 +44,15 @@ const store = createStore({
     },
     updateFindingHistory: (state, payload) => {
       state.findingHistory = payload
+    },
+    updateProjectOrgSearch: (state, payload) => {
+      if (!['project', 'organization'].includes(payload.entityType)) {
+        return
+      }
+      state.projectOrgSearch = {
+        ...state.projectOrgSearch,
+        [payload.entityType]: payload.searchText || '',
+      }
     },
   },
   plugins: [vuexLocal.plugin],
