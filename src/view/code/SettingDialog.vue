@@ -90,7 +90,7 @@
                   </v-row>
                   <v-row>
                     <v-col cols="2">
-                      <v-select
+                      <v-combobox
                         density="compact"
                         required
                         clearable
@@ -123,7 +123,7 @@
                   </v-row>
                   <v-row>
                     <v-col cols="3">
-                      <v-combobox
+                      <v-select
                         density="compact"
                         required
                         clearable
