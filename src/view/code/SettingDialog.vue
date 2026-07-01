@@ -279,7 +279,11 @@
                       color="blue-darken-1"
                       class="mr-2"
                       @click="handleGitHubAppResync"
-                      v-if="isGitHubAppAuth && isConfiguredGitHubSetting"
+                      v-if="
+                        !isReadOnly &&
+                        isGitHubAppAuth &&
+                        isConfiguredGitHubSetting
+                      "
                       :loading="loading"
                     >
                       {{ $t(`btn['RESYNC']`) }}
@@ -1363,6 +1367,40 @@ export default {
       }
       return status
     },
+    getErrorMessage(err) {
+      if (err && err.response && err.response.data) {
+        return err.response.data
+      }
+      if (err && err.message) {
+        return err.message
+      }
+      return 'Unexpected error occurred.'
+    },
+    isAllowedGitHubAppInstallURL(rawURL) {
+      try {
+        const url = new URL(rawURL)
+        return (
+          url.protocol === 'https:' &&
+          url.hostname === 'github.com' &&
+          url.pathname.startsWith('/apps/') &&
+          url.pathname.endsWith('/installations/select_target')
+        )
+      } catch {
+        return false
+      }
+    },
+    isAllowedGitHubAppOAuthURL(rawURL) {
+      try {
+        const url = new URL(rawURL)
+        return (
+          url.protocol === 'https:' &&
+          url.hostname === 'github.com' &&
+          url.pathname === '/login/oauth/authorize'
+        )
+      } catch {
+        return false
+      }
+    },
     applyGitHubSetting(gitHubSetting) {
       this.gitHubSetting = Object.assign(this.gitHubSetting, gitHubSetting, {
         auth_mode:
@@ -1390,7 +1428,7 @@ export default {
       this.loading = true
       const github_setting = await this.listGitHubSettingAPI(github_setting_id)
         .catch((err) => {
-          this.$emit('edit-notify', '', err.response.data)
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
           return
         })
         .finally(() => {
@@ -1539,7 +1577,7 @@ export default {
       this.loading = true
       const gitHubSetting = await this.editGitHubSetting()
         .catch((err) => {
-          this.$emit('edit-notify', '', err.response.data)
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
           return
         })
         .finally(() => {
@@ -1559,13 +1597,17 @@ export default {
       this.loading = true
       const installURL = await this.getGitHubAppInstallURLAPI()
         .catch((err) => {
-          this.$emit('edit-notify', '', err.response.data)
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
           return ''
         })
         .finally(() => {
           this.loading = false
         })
       if (!installURL) {
+        return
+      }
+      if (!this.isAllowedGitHubAppInstallURL(installURL)) {
+        this.$emit('edit-notify', '', 'GitHub App install URL is invalid.')
         return
       }
       window.location.href = installURL
@@ -1578,13 +1620,17 @@ export default {
         returnTo
       )
         .catch((err) => {
-          this.$emit('edit-notify', '', err.response.data)
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
           return ''
         })
         .finally(() => {
           this.loading = false
         })
       if (!oauthURL) {
+        return
+      }
+      if (!this.isAllowedGitHubAppOAuthURL(oauthURL)) {
+        this.$emit('edit-notify', '', 'GitHub App OAuth URL is invalid.')
         return
       }
       window.location.href = oauthURL
@@ -1601,7 +1647,7 @@ export default {
         this.gitHubSetting.github_setting_id
       )
         .catch((err) => {
-          this.$emit('edit-notify', '', err.response.data)
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
           return
         })
         .finally(() => {
