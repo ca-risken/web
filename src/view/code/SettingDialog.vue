@@ -20,19 +20,19 @@
           <v-tab
             class="mx-0 px-0"
             :value="2"
-            :disabled="!isConfiguredGitHubSetting"
+            :disabled="!isReadyGitHubSetting"
             >{{ $t(`item['Gitleaks Setting']`) }}</v-tab
           >
           <v-tab
             class="mx-0 px-0"
             :value="3"
-            :disabled="!isConfiguredGitHubSetting"
+            :disabled="!isReadyGitHubSetting"
             >{{ $t(`item['Dependency Setting']`) }}</v-tab
           >
           <v-tab
             class="mx-0 px-0"
             :value="4"
-            :disabled="!isConfiguredGitHubSetting"
+            :disabled="!isReadyGitHubSetting"
             >{{ $t(`item['CodeScan Setting']`) }}</v-tab
           >
         </v-tabs>
@@ -123,6 +123,22 @@
                   </v-row>
                   <v-row>
                     <v-col cols="3">
+                      <v-combobox
+                        density="compact"
+                        required
+                        clearable
+                        v-model="gitHubSetting.auth_mode_text"
+                        :rules="gitHubForm.auth_mode.validator"
+                        :label="
+                          $t(`item['` + gitHubForm.auth_mode.label + `']`) +
+                          ' *'
+                        "
+                        :placeholder="gitHubForm.auth_mode.placeholder"
+                        :items="gitHubForm.auth_mode.list"
+                        :disabled="isReadOnly"
+                      />
+                    </v-col>
+                    <v-col cols="3">
                       <v-text-field
                         density="compact"
                         v-model="gitHubSetting.github_user"
@@ -135,7 +151,7 @@
                         :disabled="isReadOnly"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="5">
+                    <v-col cols="5" v-if="!isGitHubAppAuth">
                       <v-text-field
                         density="compact"
                         v-model="gitHubSetting.personal_access_token"
@@ -155,11 +171,119 @@
                       ></v-text-field>
                     </v-col>
                   </v-row>
+                  <v-row v-if="isGitHubAppAuth">
+                    <v-col cols="3">
+                      <v-list-item two-line>
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Verification Status']`) }}
+                        </v-list-item-subtitle>
+                        <v-list-item-title>
+                          <v-chip
+                            label
+                            variant="flat"
+                            :color="
+                              getGitHubVerificationColor(
+                                gitHubSetting.verification_status
+                              )
+                            "
+                          >
+                            {{
+                              getGitHubVerificationText(
+                                gitHubSetting.verification_status
+                              )
+                            }}
+                          </v-chip>
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-list-item two-line>
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Installation ID']`) }}
+                        </v-list-item-subtitle>
+                        <v-list-item-title>
+                          {{ gitHubSetting.installation_id || '-' }}
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-col>
+                    <v-col cols="3">
+                      <v-list-item two-line>
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Verified GitHub User']`) }}
+                        </v-list-item-subtitle>
+                        <v-list-item-title>
+                          {{ gitHubSetting.verified_github_user || '-' }}
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-list-item two-line>
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Repository Count']`) }}
+                        </v-list-item-subtitle>
+                        <v-list-item-title>
+                          {{ githubAppRepositoryCount }}
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-list-item two-line>
+                        <v-list-item-subtitle>
+                          {{ $t(`item['Verified At']`) }}
+                        </v-list-item-subtitle>
+                        <v-list-item-title>
+                          {{
+                            gitHubSetting.verified_at
+                              ? formatTime(gitHubSetting.verified_at)
+                              : '-'
+                          }}
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-col>
+                  </v-row>
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-row>
                   <v-col class="text-right">
+                    <v-btn
+                      variant="outlined"
+                      color="cyan-darken-2"
+                      class="mr-2"
+                      @click="handleGitHubAppInstall"
+                      v-if="
+                        !isReadOnly &&
+                        isGitHubAppAuth &&
+                        isConfiguredGitHubSetting
+                      "
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['INSTALL GITHUB APP']`) }}
+                    </v-btn>
+                    <v-btn
+                      variant="outlined"
+                      color="green-darken-1"
+                      class="mr-2"
+                      @click="handleGitHubAppUserVerification"
+                      v-if="
+                        !isReadOnly &&
+                        isGitHubAppAuth &&
+                        isConfiguredGitHubSetting
+                      "
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['VERIFY GITHUB USER']`) }}
+                    </v-btn>
+                    <v-btn
+                      variant="outlined"
+                      color="blue-darken-1"
+                      class="mr-2"
+                      @click="handleGitHubAppResync"
+                      v-if="isGitHubAppAuth && isConfiguredGitHubSetting"
+                      :loading="loading"
+                    >
+                      {{ $t(`btn['RESYNC']`) }}
+                    </v-btn>
                     <v-btn
                       variant="outlined"
                       color="blue-darken-1"
@@ -432,7 +556,7 @@
                       variant="outlined"
                       color="blue-darken-1"
                       @click="handleGitleaksEditSubmit"
-                      :disabled="!isConfiguredGitHubSetting"
+                      :disabled="!isReadyGitHubSetting"
                       :loading="loading"
                       v-else
                       >{{ $t(`btn['SAVE']`) }}
@@ -633,7 +757,7 @@
                       variant="outlined"
                       color="blue-darken-1"
                       @click="handleDependencyEditSubmit"
-                      :disabled="!isConfiguredGitHubSetting"
+                      :disabled="!isReadyGitHubSetting"
                       :loading="loading"
                       v-else
                       >{{ $t(`btn['SAVE']`) }}
@@ -864,7 +988,7 @@
                       variant="outlined"
                       color="blue-darken-1"
                       @click="handleCodeScanEditSubmit"
-                      :disabled="!isConfiguredGitHubSetting"
+                      :disabled="!isReadyGitHubSetting"
                       :loading="loading"
                       v-else
                       >{{ $t(`btn['SAVE']`) }}
@@ -953,6 +1077,27 @@ export default {
       }
       return false
     },
+    isGitHubAppAuth() {
+      return (
+        this.getGitHubAuthModeCode(this.gitHubSetting.auth_mode_text) ===
+        'GITHUB_APP'
+      )
+    },
+    isReadyGitHubSetting() {
+      if (!this.isConfiguredGitHubSetting) {
+        return false
+      }
+      if (!this.isGitHubAppAuth) {
+        return true
+      }
+      return this.gitHubSetting.verification_status === 'SUCCESS'
+    },
+    githubAppRepositoryCount() {
+      if (!this.gitHubSetting.github_app_setting_repository) {
+        return 0
+      }
+      return this.gitHubSetting.github_app_setting_repository.length
+    },
   },
   watch: {
     isEnabledGitleaks: function () {
@@ -986,7 +1131,19 @@ export default {
   data() {
     return {
       e6: 1,
-      gitHubSetting: this.gitHubModel,
+      gitHubSetting: Object.assign(
+        {
+          auth_mode: 'PERSONAL_ACCESS_TOKEN',
+          auth_mode_text: 'Personal Access Token',
+          github_app_setting_repository: [],
+        },
+        this.gitHubModel,
+        {
+          auth_mode_text: this.getGitHubAuthModeText(
+            this.gitHubModel.auth_mode
+          ),
+        }
+      ),
       gitleaksSetting: this.gitHubModel.gitleaksSetting,
       dependencySetting: this.gitHubModel.dependencySetting,
       codeScanSetting: this.gitHubModel.codeScanSetting,
@@ -1001,6 +1158,19 @@ export default {
       loading: false,
       gitHubForm: {
         valid: false,
+        auth_mode: {
+          label: 'Auth Mode',
+          placeholder: '-',
+          list: ['Personal Access Token', 'GitHub App'],
+          validator: [
+            (v) => !!v || 'AuthMode is required',
+            (v) =>
+              !v ||
+              v === 'Personal Access Token' ||
+              v === 'GitHub App' ||
+              'AuthMode is invalid',
+          ],
+        },
         name: {
           label: 'Name',
           placeholder: 'GitHub setting name',
@@ -1147,6 +1317,63 @@ export default {
     }
   },
   methods: {
+    getGitHubAuthModeCode(authModeText) {
+      switch (authModeText) {
+        case 'GitHub App':
+        case 'GITHUB_APP':
+          return 'GITHUB_APP'
+        case 'Personal Access Token':
+        case 'PERSONAL_ACCESS_TOKEN':
+        case '':
+        case undefined:
+        case null:
+          return 'PERSONAL_ACCESS_TOKEN'
+        default:
+          return ''
+      }
+    },
+    getGitHubAuthModeText(authModeCode) {
+      switch (authModeCode) {
+        case 'GITHUB_APP':
+          return 'GitHub App'
+        case 'PERSONAL_ACCESS_TOKEN':
+        case '':
+        case undefined:
+        case null:
+          return 'Personal Access Token'
+        default:
+          return authModeCode
+      }
+    },
+    getGitHubVerificationColor(status) {
+      switch (status) {
+        case 'SUCCESS':
+          return 'green'
+        case 'FAILED':
+          return 'red'
+        case 'PENDING':
+          return 'orange'
+        default:
+          return 'grey'
+      }
+    },
+    getGitHubVerificationText(status) {
+      if (!status) {
+        return 'UNVERIFIED'
+      }
+      return status
+    },
+    applyGitHubSetting(gitHubSetting) {
+      this.gitHubSetting = Object.assign(this.gitHubSetting, gitHubSetting, {
+        auth_mode:
+          gitHubSetting.auth_mode == ''
+            ? 'PERSONAL_ACCESS_TOKEN'
+            : gitHubSetting.auth_mode,
+        auth_mode_text: this.getGitHubAuthModeText(gitHubSetting.auth_mode),
+        github_app_setting_repository:
+          gitHubSetting.github_app_setting_repository || [],
+      })
+    },
     getStatus(setting) {
       if (!setting) {
         return 0 // datasource is not configured
@@ -1186,7 +1413,12 @@ export default {
         base_url: this.gitHubSetting.base_url,
         target_resource: this.gitHubSetting.target_resource,
         github_user: this.gitHubSetting.github_user,
-        personal_access_token: this.gitHubSetting.personal_access_token,
+        personal_access_token: this.isGitHubAppAuth
+          ? ''
+          : this.gitHubSetting.personal_access_token,
+        auth_mode: this.getGitHubAuthModeCode(
+          this.gitHubSetting.auth_mode_text
+        ),
       }
       const gitHubSetting = await this.putGitHubSettingAPI(
         github_setting
@@ -1307,14 +1539,79 @@ export default {
       this.loading = true
       const gitHubSetting = await this.editGitHubSetting()
         .catch((err) => {
-          this.$emit('edit-notify', err)
+          this.$emit('edit-notify', '', err.response.data)
           return
         })
         .finally(() => {
           this.loading = false
         })
-      this.gitHubSetting.github_setting_id = gitHubSetting.github_setting_id
+      if (!gitHubSetting) {
+        return
+      }
+      this.applyGitHubSetting(gitHubSetting)
+      if (this.isGitHubAppAuth) {
+        this.$emit('edit-notify', 'Success: Updated.')
+        return
+      }
       this.e6 = 2
+    },
+    async handleGitHubAppInstall() {
+      this.loading = true
+      const installURL = await this.getGitHubAppInstallURLAPI()
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+          return ''
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      if (!installURL) {
+        return
+      }
+      window.location.href = installURL
+    },
+    async handleGitHubAppUserVerification() {
+      this.loading = true
+      const returnTo = this.buildGitHubAppOAuthReturnTo()
+      const oauthURL = await this.getGitHubAppOAuthStartURLAPI(
+        this.gitHubSetting.github_setting_id,
+        returnTo
+      )
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+          return ''
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      if (!oauthURL) {
+        return
+      }
+      window.location.href = oauthURL
+    },
+    buildGitHubAppOAuthReturnTo() {
+      const query = new URLSearchParams()
+      query.set('project_id', this.$route.query.project_id)
+      query.set('github_setting_id', this.gitHubSetting.github_setting_id)
+      return `${this.$route.path}?${query.toString()}`
+    },
+    async handleGitHubAppResync() {
+      this.loading = true
+      const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
+        this.gitHubSetting.github_setting_id
+      )
+        .catch((err) => {
+          this.$emit('edit-notify', '', err.response.data)
+          return
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      if (!gitHubSetting) {
+        return
+      }
+      this.applyGitHubSetting(gitHubSetting)
+      this.$emit('edit-notify', 'Success: Resynced GitHub App repositories.')
     },
     async handleGitleaksEditSubmit() {
       if (this.isEnabledGitleaks && !this.$refs.formGitleaks.validate()) {

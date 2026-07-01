@@ -63,6 +63,19 @@
           />
         </v-row>
       </v-form>
+      <v-row v-if="githubAppOAuthResult">
+        <v-col cols="12">
+          <v-alert
+            density="compact"
+            variant="tonal"
+            :type="githubAppOAuthResult.type"
+            closable
+            @click:close="githubAppOAuthResult = null"
+          >
+            {{ githubAppOAuthResult.message }}
+          </v-alert>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -96,6 +109,30 @@
                   <v-chip label variant="outlined" color="blue-darken-2">{{
                     item.value.type_text
                   }}</v-chip>
+                </template>
+                <template v-slot:[`item.auth_mode`]="{ item }">
+                  <v-chip label variant="outlined" color="cyan-darken-2">
+                    {{ getGitHubAuthModeText(item.value.auth_mode) }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.verification_status`]="{ item }">
+                  <v-chip
+                    label
+                    variant="flat"
+                    :color="
+                      getGitHubVerificationColor(
+                        item.value.auth_mode,
+                        item.value.verification_status
+                      )
+                    "
+                  >
+                    {{
+                      getGitHubVerificationText(
+                        item.value.auth_mode,
+                        item.value.verification_status
+                      )
+                    }}
+                  </v-chip>
                 </template>
                 <template v-slot:[`item.status_gitleaks`]="{ item }">
                   <scan-status
@@ -253,6 +290,7 @@ export default {
         max_score: '',
         updated_at: '',
       },
+      githubAppOAuthResult: null,
       gitHubModel: {
         github_setting_id: '',
         code_data_source_id: '',
@@ -263,6 +301,12 @@ export default {
         target_resource: '',
         github_user: '',
         personal_access_token: '',
+        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        installation_id: '',
+        verification_status: '',
+        verified_github_user: '',
+        verified_at: '',
+        github_app_setting_repository: [],
         updated_at: '',
         gitleaksSetting: {
           repository_pattern: '',
@@ -367,6 +411,18 @@ export default {
           key: 'type_text',
         },
         {
+          title: this.$i18n.t('item["Auth Mode"]'),
+          align: 'start',
+          sortable: true,
+          key: 'auth_mode',
+        },
+        {
+          title: this.$i18n.t('item["Verification Status"]'),
+          align: 'start',
+          sortable: true,
+          key: 'verification_status',
+        },
+        {
           title: this.$i18n.t('item["Target"]'),
           align: 'start',
           sortable: true,
@@ -403,6 +459,7 @@ export default {
     this.loading = true
     await this.getDataSource()
     await this.listGitHubSetting()
+    this.handleGitHubAppOAuthResult()
     this.loading = false
   },
   methods: {
@@ -453,6 +510,16 @@ export default {
           target_resource: github_setting.target_resource,
           github_user: github_setting.github_user,
           personal_access_token: github_setting.personal_access_token,
+          auth_mode:
+            github_setting.auth_mode == ''
+              ? 'PERSONAL_ACCESS_TOKEN'
+              : github_setting.auth_mode,
+          installation_id: github_setting.installation_id,
+          verification_status: github_setting.verification_status,
+          verified_github_user: github_setting.verified_github_user,
+          verified_at: github_setting.verified_at,
+          github_app_setting_repository:
+            github_setting.github_app_setting_repository || [],
           updated_at: github_setting.updated_at,
         }
         if (github_setting.gitleaks_setting) {
@@ -552,6 +619,84 @@ export default {
           return 'Unknown' // Unknown
       }
     },
+    getGitHubAuthModeText(authMode) {
+      switch (authMode) {
+        case 'GITHUB_APP':
+          return 'GitHub App'
+        case 'PERSONAL_ACCESS_TOKEN':
+        case '':
+        case undefined:
+        case null:
+          return 'PAT'
+        default:
+          return 'Unknown'
+      }
+    },
+    getGitHubVerificationColor(authMode, status) {
+      if (authMode !== 'GITHUB_APP') {
+        return 'grey'
+      }
+      switch (status) {
+        case 'SUCCESS':
+          return 'green'
+        case 'FAILED':
+          return 'red'
+        case 'PENDING':
+          return 'orange'
+        default:
+          return 'grey'
+      }
+    },
+    getGitHubVerificationText(authMode, status) {
+      if (authMode !== 'GITHUB_APP') {
+        return '-'
+      }
+      if (!status) {
+        return 'UNVERIFIED'
+      }
+      return status
+    },
+    handleGitHubAppOAuthResult() {
+      const result = this.$route.query.github_app_oauth
+      if (!result) {
+        return
+      }
+      const githubSettingID = this.$route.query.github_setting_id
+      const suffix = githubSettingID
+        ? `（GitHub Setting ID: ${githubSettingID}）`
+        : ''
+      if (result === 'success') {
+        this.githubAppOAuthResult = {
+          type: 'success',
+          message: `GitHubユーザー確認が完了しました。${suffix}`,
+        }
+        this.$refs.snackbar.notifySuccess('Success: GitHub App verified.')
+      } else if (result === 'session_expired') {
+        this.githubAppOAuthResult = {
+          type: 'warning',
+          message: `セッション切れのため、GitHubユーザー確認を完了できませんでした。${suffix}`,
+        }
+        this.$refs.snackbar.notifyError(
+          'Session expired. Please sign in again.'
+        )
+      } else if (result === 'unauthorized') {
+        this.githubAppOAuthResult = {
+          type: 'error',
+          message: `GitHubユーザー確認に失敗しました。RISKENプロジェクトの権限を確認してください。${suffix}`,
+        }
+        this.$refs.snackbar.notifyError('GitHub App verification failed.')
+      } else {
+        this.githubAppOAuthResult = {
+          type: 'error',
+          message: `GitHubユーザー確認に失敗しました。GitHub側の権限またはGitHub App設定を確認してください。${suffix}`,
+        }
+        this.$refs.snackbar.notifyError('GitHub App verification failed.')
+      }
+      const query = Object.assign({}, this.$route.query)
+      delete query.github_app_oauth
+      delete query.github_setting_id
+      this.$router.replace({ path: this.$route.path, query: query })
+    },
     // Handler
     async handleList() {
       this.loading = true
@@ -566,7 +711,10 @@ export default {
       this.settingDialog = true
     },
     handleNewGitHubSetting() {
-      this.gitHubModel = {}
+      this.gitHubModel = {
+        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        github_app_setting_repository: [],
+      }
       this.newGitleaksSetting()
       this.newDependencySetting()
       this.newCodeScanSetting()

@@ -45,6 +45,52 @@ const code = {
       }
       return res.data.data.github_setting
     },
+    async verifyGitHubAppInstallationAPI(github_setting_id) {
+      const param = {
+        project_id: this.getCurrentProjectID(),
+        github_setting_id: github_setting_id,
+      }
+      const res = await this.$axios
+        .post('/code/verify-github-app-installation/', param)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data || !res.data.data || !res.data.data.github_setting) {
+        return {}
+      }
+      return res.data.data.github_setting
+    },
+    async getGitHubAppInstallURLAPI() {
+      const query = '?project_id=' + this.getCurrentProjectID()
+      const res = await this.$axios
+        .get('/code/github-app/install-url/' + query)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data || !res.data.data || !res.data.data.url) {
+        return ''
+      }
+      return res.data.data.url
+    },
+    async getGitHubAppOAuthStartURLAPI(github_setting_id, return_to) {
+      let query =
+        '?project_id=' +
+        this.getCurrentProjectID() +
+        '&github_setting_id=' +
+        github_setting_id
+      if (return_to) {
+        query += '&return_to=' + encodeURIComponent(return_to)
+      }
+      const res = await this.$axios
+        .get('/code/github-app/oauth-start/' + query)
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data || !res.data.data || !res.data.data.url) {
+        return ''
+      }
+      return res.data.data.url
+    },
     async deleteGitHubSettingAPI(github_setting_id) {
       const param = {
         project_id: this.getCurrentProjectID(),
