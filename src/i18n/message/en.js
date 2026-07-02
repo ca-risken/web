@@ -55,6 +55,10 @@ const en = {
     'VERIFY GITHUB USER': 'VERIFY GITHUB USER',
     RESYNC: 'RESYNC',
   },
+  help: {
+    'GITHUB APP AUTH FLOW':
+      'To use GitHub App authentication, a GitHub organization owner must install the GitHub App in advance. When configuring scans, run "VERIFY GITHUB USER" first and complete OAuth authorization on GitHub as the setting user.',
+  },
   menu: {
     Home: 'Home',
     Project: 'Project',
@@ -172,6 +176,9 @@ const en = {
     'Verified GitHub User': 'Verified GitHub User',
     'Verified At': 'Verified At',
     'Verification Status': 'Verification Status',
+    Verified: 'Verified',
+    'Verification Failed': 'Verification Failed',
+    'GitHub User Verification Pending': 'GitHub User Verification Pending',
     'Repository Count': 'Repository Count',
     'Gitleaks Setting': 'Gitleaks Setting',
     'Gitleaks Status': 'Gitleaks Status',

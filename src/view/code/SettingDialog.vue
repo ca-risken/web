@@ -246,6 +246,29 @@
               <v-card-actions>
                 <v-row>
                   <v-col class="text-right">
+                    <v-tooltip
+                      v-if="
+                        !isReadOnly &&
+                        isGitHubAppAuth &&
+                        isConfiguredGitHubSetting
+                      "
+                      location="top"
+                      max-width="360"
+                    >
+                      <template v-slot:activator="{ props }">
+                        <v-btn
+                          v-bind="props"
+                          class="mr-1"
+                          color="grey-darken-1"
+                          icon="mdi-help-circle-outline"
+                          size="small"
+                          variant="text"
+                        ></v-btn>
+                      </template>
+                      <span>
+                        {{ $t(`help['GITHUB APP AUTH FLOW']`) }}
+                      </span>
+                    </v-tooltip>
                     <v-btn
                       variant="outlined"
                       color="cyan-darken-2"
@@ -1355,6 +1378,7 @@ export default {
           return 'green'
         case 'FAILED':
           return 'red'
+        case 'PENDING_USER_VERIFICATION':
         case 'PENDING':
           return 'orange'
         default:
@@ -1365,7 +1389,16 @@ export default {
       if (!status) {
         return 'UNVERIFIED'
       }
-      return status
+      switch (status) {
+        case 'SUCCESS':
+          return this.$t(`item['Verified']`)
+        case 'FAILED':
+          return this.$t(`item['Verification Failed']`)
+        case 'PENDING_USER_VERIFICATION':
+          return this.$t(`item['GitHub User Verification Pending']`)
+        default:
+          return status
+      }
     },
     getErrorMessage(err) {
       if (err && err.response && err.response.data) {

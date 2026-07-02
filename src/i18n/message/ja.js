@@ -55,6 +55,10 @@ const ja = {
     'VERIFY GITHUB USER': 'GitHubユーザー確認',
     RESYNC: '再同期',
   },
+  help: {
+    'GITHUB APP AUTH FLOW':
+      'GitHub App認証を利用するには、事前にGitHub組織のオーナーがGitHub Appをインストールしておく必要があります。スキャン設定時は、先に「GitHubユーザー確認」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
+  },
   menu: {
     Home: 'ホーム',
     Project: 'プロジェクト',
@@ -172,6 +176,9 @@ const ja = {
     'Verified GitHub User': '検証GitHubユーザ',
     'Verified At': '検証日時',
     'Verification Status': '検証ステータス',
+    Verified: '検証済み',
+    'Verification Failed': '検証失敗',
+    'GitHub User Verification Pending': 'GitHubユーザー確認待ち',
     'Repository Count': 'リポジトリ数',
     'Gitleaks Setting': 'Gitleaks設定',
     'CodeScan Setting': 'CodeScan設定',

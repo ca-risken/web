@@ -641,6 +641,7 @@ export default {
           return 'green'
         case 'FAILED':
           return 'red'
+        case 'PENDING_USER_VERIFICATION':
         case 'PENDING':
           return 'orange'
         default:
@@ -654,7 +655,16 @@ export default {
       if (!status) {
         return 'UNVERIFIED'
       }
-      return status
+      switch (status) {
+        case 'SUCCESS':
+          return this.$t(`item['Verified']`)
+        case 'FAILED':
+          return this.$t(`item['Verification Failed']`)
+        case 'PENDING_USER_VERIFICATION':
+          return this.$t(`item['GitHub User Verification Pending']`)
+        default:
+          return status
+      }
     },
     handleGitHubAppOAuthResult() {
       const result = this.$route.query.github_app_oauth
