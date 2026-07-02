@@ -1435,6 +1435,9 @@ export default {
       }
     },
     applyGitHubSetting(gitHubSetting) {
+      if (!gitHubSetting || !gitHubSetting.github_setting_id) {
+        return false
+      }
       this.gitHubSetting = Object.assign(this.gitHubSetting, gitHubSetting, {
         auth_mode:
           gitHubSetting.auth_mode == ''
@@ -1444,6 +1447,7 @@ export default {
         github_app_setting_repository:
           gitHubSetting.github_app_setting_repository || [],
       })
+      return true
     },
     getStatus(setting) {
       if (!setting) {
@@ -1616,10 +1620,10 @@ export default {
         .finally(() => {
           this.loading = false
         })
-      if (!gitHubSetting) {
+      if (!this.applyGitHubSetting(gitHubSetting)) {
+        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
         return
       }
-      this.applyGitHubSetting(gitHubSetting)
       if (this.isGitHubAppAuth) {
         this.$emit('edit-notify', 'Success: Updated.')
         return
@@ -1686,10 +1690,10 @@ export default {
         .finally(() => {
           this.loading = false
         })
-      if (!gitHubSetting) {
+      if (!this.applyGitHubSetting(gitHubSetting)) {
+        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
         return
       }
-      this.applyGitHubSetting(gitHubSetting)
       this.$emit('edit-notify', 'Success: Resynced GitHub App repositories.')
     },
     async handleGitleaksEditSubmit() {
