@@ -73,16 +73,14 @@ const code = {
       return res.data.data.url
     },
     async getGitHubAppOAuthStartURLAPI(github_setting_id, return_to) {
-      let query =
-        '?project_id=' +
-        this.getCurrentProjectID() +
-        '&github_setting_id=' +
-        github_setting_id
+      const query = new URLSearchParams()
+      query.set('project_id', this.getCurrentProjectID())
+      query.set('github_setting_id', github_setting_id)
       if (return_to) {
-        query += '&return_to=' + encodeURIComponent(return_to)
+        query.set('return_to', return_to)
       }
       const res = await this.$axios
-        .get('/code/github-app/oauth-start/' + query)
+        .get('/code/github-app/oauth-start/?' + query.toString())
         .catch((err) => {
           return Promise.reject(err)
         })
