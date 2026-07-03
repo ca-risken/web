@@ -673,34 +673,44 @@ export default {
       }
       const githubSettingID = this.$route.query.github_setting_id
       const suffix = githubSettingID
-        ? `（GitHub Setting ID: ${githubSettingID}）`
+        ? this.$t(`item['GitHub Setting ID Suffix']`, { id: githubSettingID })
         : ''
       if (result === 'success') {
         this.githubAppOAuthResult = {
           type: 'success',
-          message: `GitHubユーザー確認が完了しました。${suffix}`,
+          message:
+            this.$t(`item['GitHub User Verification Completed']`) + suffix,
         }
-        this.$refs.snackbar.notifySuccess('Success: GitHub App verified.')
+        this.$refs.snackbar.notifySuccess(
+          this.$t(`item['GitHub App Verified']`)
+        )
       } else if (result === 'session_expired') {
         this.githubAppOAuthResult = {
           type: 'warning',
-          message: `セッション切れのため、GitHubユーザー確認を完了できませんでした。${suffix}`,
+          message:
+            this.$t(`item['GitHub User Verification Session Expired']`) +
+            suffix,
         }
         this.$refs.snackbar.notifyError(
-          'Session expired. Please sign in again.'
+          this.$t(`item['Session Expired Please Sign In Again']`)
         )
       } else if (result === 'unauthorized') {
         this.githubAppOAuthResult = {
           type: 'error',
-          message: `GitHubユーザー確認に失敗しました。RISKENプロジェクトの権限を確認してください。${suffix}`,
+          message:
+            this.$t(`item['GitHub User Verification Unauthorized']`) + suffix,
         }
-        this.$refs.snackbar.notifyError('GitHub App verification failed.')
+        this.$refs.snackbar.notifyError(
+          this.$t(`item['GitHub App Verification Failed']`)
+        )
       } else {
         this.githubAppOAuthResult = {
           type: 'error',
-          message: `GitHubユーザー確認に失敗しました。GitHub側の権限またはGitHub App設定を確認してください。${suffix}`,
+          message: this.$t(`item['GitHub User Verification Failed']`) + suffix,
         }
-        this.$refs.snackbar.notifyError('GitHub App verification failed.')
+        this.$refs.snackbar.notifyError(
+          this.$t(`item['GitHub App Verification Failed']`)
+        )
       }
       const query = Object.assign({}, this.$route.query)
       delete query.github_app_oauth

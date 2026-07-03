@@ -179,6 +179,18 @@ const ja = {
     Verified: '検証済み',
     'Verification Failed': '検証失敗',
     'GitHub User Verification Pending': 'GitHubユーザー確認待ち',
+    'GitHub Setting ID Suffix': '（GitHub Setting ID: {id}）',
+    'GitHub User Verification Completed': 'GitHubユーザー確認が完了しました。',
+    'GitHub User Verification Session Expired':
+      'セッション切れのため、GitHubユーザー確認を完了できませんでした。',
+    'GitHub User Verification Unauthorized':
+      'GitHubユーザー確認に失敗しました。RISKENプロジェクトの権限を確認してください。',
+    'GitHub User Verification Failed':
+      'GitHubユーザー確認に失敗しました。GitHub側の権限またはGitHub App設定を確認してください。',
+    'GitHub App Verified': 'GitHub Appの確認が完了しました。',
+    'GitHub App Verification Failed': 'GitHub Appの確認に失敗しました。',
+    'Session Expired Please Sign In Again':
+      'セッション切れです。再度サインインしてください。',
     'Repository Count': 'リポジトリ数',
     'Gitleaks Setting': 'Gitleaks設定',
     'CodeScan Setting': 'CodeScan設定',

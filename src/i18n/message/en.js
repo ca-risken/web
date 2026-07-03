@@ -179,6 +179,19 @@ const en = {
     Verified: 'Verified',
     'Verification Failed': 'Verification Failed',
     'GitHub User Verification Pending': 'GitHub User Verification Pending',
+    'GitHub Setting ID Suffix': ' (GitHub Setting ID: {id})',
+    'GitHub User Verification Completed':
+      'GitHub user verification has been completed.',
+    'GitHub User Verification Session Expired':
+      'GitHub user verification could not be completed because the session expired.',
+    'GitHub User Verification Unauthorized':
+      'GitHub user verification failed. Please check the RISKEN project permission.',
+    'GitHub User Verification Failed':
+      'GitHub user verification failed. Please check the GitHub permission or GitHub App setting.',
+    'GitHub App Verified': 'GitHub App verification has been completed.',
+    'GitHub App Verification Failed': 'GitHub App verification failed.',
+    'Session Expired Please Sign In Again':
+      'Session expired. Please sign in again.',
     'Repository Count': 'Repository Count',
     'Gitleaks Setting': 'Gitleaks Setting',
     'Gitleaks Status': 'Gitleaks Status',
