@@ -61,9 +61,10 @@ const code = {
       return res.data.data.github_setting
     },
     async getGitHubAppInstallURLAPI() {
-      const query = '?project_id=' + this.getCurrentProjectID()
+      const query = new URLSearchParams()
+      query.set('project_id', this.getCurrentProjectID())
       const res = await this.$axios
-        .get('/code/github-app/install-url/' + query)
+        .get('/code/github-app/install-url/?' + query.toString())
         .catch((err) => {
           return Promise.reject(err)
         })
