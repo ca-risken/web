@@ -172,6 +172,18 @@
                     </v-col>
                   </v-row>
                   <v-row v-if="isGitHubAppAuth">
+                    <v-col cols="12">
+                      <v-alert
+                        class="github-app-install-alert"
+                        density="compact"
+                        type="info"
+                        variant="tonal"
+                      >
+                        {{ $t(`help['GITHUB APP INSTALL BEFORE SAVE']`) }}
+                      </v-alert>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="isGitHubAppAuth">
                     <v-col cols="3">
                       <v-list-item two-line>
                         <v-list-item-subtitle>
@@ -247,11 +259,7 @@
                 <v-row>
                   <v-col class="text-right">
                     <v-tooltip
-                      v-if="
-                        !isReadOnly &&
-                        isGitHubAppAuth &&
-                        isConfiguredGitHubSetting
-                      "
+                      v-if="!isReadOnly && isGitHubAppAuth"
                       location="top"
                       max-width="360"
                     >
@@ -274,11 +282,7 @@
                       color="cyan-darken-2"
                       class="mr-2"
                       @click="handleGitHubAppInstall"
-                      v-if="
-                        !isReadOnly &&
-                        isGitHubAppAuth &&
-                        isConfiguredGitHubSetting
-                      "
+                      v-if="!isReadOnly && isGitHubAppAuth"
                       :loading="loading"
                     >
                       {{ $t(`btn['INSTALL GITHUB APP']`) }}
@@ -1857,5 +1861,8 @@ export default {
 <style>
 .v-tab {
   text-transform: none !important;
+}
+.github-app-install-alert {
+  white-space: pre-line;
 }
 </style>

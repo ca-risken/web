@@ -57,7 +57,9 @@ const ja = {
   },
   help: {
     'GITHUB APP AUTH FLOW':
-      'GitHub App認証を利用するには、事前にGitHub組織のオーナーがGitHub Appをインストールしておく必要があります。スキャン設定時は、先に「GitHubユーザー確認」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
+      'GitHub App認証を利用するには、GitHub設定を保存する前に、GitHub組織のオーナーがGitHub Appを対象Organizationへインストールしてください。保存後は「GitHubユーザー確認」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
+    'GITHUB APP INSTALL BEFORE SAVE':
+      '対象OrganizationにGitHub Appがインストール済みか確認してください。\n不明な場合は、Organization管理者に確認してください。\n未インストールのまま保存すると、GitHub Appの検証に失敗します。',
   },
   menu: {
     Home: 'ホーム',

@@ -57,7 +57,9 @@ const en = {
   },
   help: {
     'GITHUB APP AUTH FLOW':
-      'To use GitHub App authentication, a GitHub organization owner must install the GitHub App in advance. When configuring scans, run "VERIFY GITHUB USER" first and complete OAuth authorization on GitHub as the setting user.',
+      'To use GitHub App authentication, install the GitHub App to the target organization before saving the GitHub setting. After saving, run "VERIFY GITHUB USER" and complete OAuth authorization on GitHub as the setting user.',
+    'GITHUB APP INSTALL BEFORE SAVE':
+      'Confirm that the GitHub App is installed to the target organization.\nIf you are not sure, ask the organization administrator.\nGitHub App verification will fail if you save before installing it.',
   },
   menu: {
     Home: 'Home',
