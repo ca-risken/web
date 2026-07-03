@@ -1615,11 +1615,14 @@ export default {
       const gitHubSetting = await this.editGitHubSetting()
         .catch((err) => {
           this.$emit('edit-notify', '', this.getErrorMessage(err))
-          return
+          return null
         })
         .finally(() => {
           this.loading = false
         })
+      if (gitHubSetting === null) {
+        return
+      }
       if (!this.applyGitHubSetting(gitHubSetting)) {
         this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
         return
@@ -1685,11 +1688,14 @@ export default {
       )
         .catch((err) => {
           this.$emit('edit-notify', '', this.getErrorMessage(err))
-          return
+          return null
         })
         .finally(() => {
           this.loading = false
         })
+      if (gitHubSetting === null) {
+        return
+      }
       if (!this.applyGitHubSetting(gitHubSetting)) {
         this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
         return
