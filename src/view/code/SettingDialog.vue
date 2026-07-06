@@ -179,7 +179,32 @@
                         type="info"
                         variant="tonal"
                       >
-                        {{ $t(`help['GITHUB APP INSTALL BEFORE SAVE']`) }}
+                        <div>
+                          {{ $t(`help['GITHUB APP INSTALL BEFORE SAVE']`) }}
+                        </div>
+                        <a
+                          :href="githubAppInstallGuideURL"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {{ $t(`help['GITHUB APP INSTALL DOCUMENT LINK']`) }}
+                        </a>
+                      </v-alert>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="isGitHubAppAuth && githubAppInstallationStatus">
+                    <v-col cols="12">
+                      <v-alert
+                        density="compact"
+                        :type="githubAppInstallationStatusAlertType"
+                        variant="tonal"
+                      >
+                        <div class="font-weight-medium">
+                          {{ githubAppInstallationStatusTitle }}
+                        </div>
+                        <div>
+                          {{ githubAppInstallationStatusMessage }}
+                        </div>
                       </v-alert>
                     </v-col>
                   </v-row>
@@ -208,16 +233,6 @@
                         </v-list-item-title>
                       </v-list-item>
                     </v-col>
-                    <v-col cols="2">
-                      <v-list-item two-line>
-                        <v-list-item-subtitle>
-                          {{ $t(`item['Installation ID']`) }}
-                        </v-list-item-subtitle>
-                        <v-list-item-title>
-                          {{ gitHubSetting.installation_id || '-' }}
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-col>
                     <v-col cols="3">
                       <v-list-item two-line>
                         <v-list-item-subtitle>
@@ -228,17 +243,25 @@
                         </v-list-item-title>
                       </v-list-item>
                     </v-col>
-                    <v-col cols="2">
+                    <v-col cols="3" v-if="isGitHubAppLinked">
                       <v-list-item two-line>
                         <v-list-item-subtitle>
-                          {{ $t(`item['Repository Count']`) }}
+                          {{ $t(`item['Target Repository List']`) }}
                         </v-list-item-subtitle>
                         <v-list-item-title>
-                          {{ githubAppRepositoryCount }}
+                          <v-btn
+                            color="cyan-darken-2"
+                            density="comfortable"
+                            size="small"
+                            variant="outlined"
+                            @click="githubAppRepositoryDialog = true"
+                          >
+                            {{ $t(`btn['CHECK']`) }}
+                          </v-btn>
                         </v-list-item-title>
                       </v-list-item>
                     </v-col>
-                    <v-col cols="2">
+                    <v-col cols="3">
                       <v-list-item two-line>
                         <v-list-item-subtitle>
                           {{ $t(`item['Verified At']`) }}
@@ -277,16 +300,6 @@
                         {{ $t(`help['GITHUB APP AUTH FLOW']`) }}
                       </span>
                     </v-tooltip>
-                    <v-btn
-                      variant="outlined"
-                      color="cyan-darken-2"
-                      class="mr-2"
-                      @click="handleGitHubAppInstall"
-                      v-if="!isReadOnly && isGitHubAppAuth"
-                      :loading="loading"
-                    >
-                      {{ $t(`btn['INSTALL GITHUB APP']`) }}
-                    </v-btn>
                     <v-btn
                       variant="outlined"
                       color="green-darken-1"
@@ -1042,6 +1055,31 @@
         <!-- dependency -->
       </v-card>
     </v-dialog>
+    <v-dialog v-model="githubAppRepositoryDialog" max-width="900">
+      <v-card>
+        <v-card-title class="text-h6">
+          {{ $t(`item['Target Repository List']`) }}
+        </v-card-title>
+        <v-card-text>
+          <v-data-table
+            density="compact"
+            :headers="githubAppRepositoryHeaders"
+            :items="githubAppRepositoryItems"
+            :items-per-page="10"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="grey-darken-1"
+            variant="outlined"
+            @click="githubAppRepositoryDialog = false"
+          >
+            {{ $t(`btn['CANCEL']`) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -1057,11 +1095,13 @@ import mixin from '@/mixin'
 import project from '@/mixin/api/project'
 import code from '@/mixin/api/code'
 import GitleaksCache from './GitleaksCache.vue'
+import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'SettingDialog',
   mixins: [mixin, project, code],
   components: {
     GitleaksCache,
+    VDataTable,
   },
   props: {
     isReadOnly: {
@@ -1123,11 +1163,55 @@ export default {
       }
       return this.gitHubSetting.verification_status === 'SUCCESS'
     },
-    githubAppRepositoryCount() {
-      if (!this.gitHubSetting.github_app_setting_repository) {
-        return 0
+    isGitHubAppLinked() {
+      return (
+        this.isGitHubAppAuth &&
+        this.gitHubSetting.verification_status === 'SUCCESS'
+      )
+    },
+    githubAppRepositoryHeaders() {
+      return [
+        { title: '#', key: 'index', width: '80px' },
+        {
+          title: this.$t(`item['Repository']`),
+          key: 'repository_full_name',
+        },
+      ]
+    },
+    githubAppRepositoryItems() {
+      const repositories =
+        this.gitHubSetting.github_app_setting_repository || []
+      return repositories.map((repository, index) => ({
+        index: index + 1,
+        repository_full_name:
+          repository.repository_full_name ||
+          repository.github_repository_full_name ||
+          repository.full_name ||
+          repository.name ||
+          '-',
+      }))
+    },
+    githubAppInstallationStatusAlertType() {
+      if (!this.githubAppInstallationStatus) {
+        return 'info'
       }
-      return this.gitHubSetting.github_app_setting_repository.length
+      if (this.githubAppInstallationStatus.installed) {
+        return 'success'
+      }
+      if (this.githubAppInstallationStatus.reason === 'NOT_INSTALLED') {
+        return 'warning'
+      }
+      return 'error'
+    },
+    githubAppInstallationStatusTitle() {
+      return this.getGitHubAppInstallationStatusTitle(
+        this.githubAppInstallationStatus
+      )
+    },
+    githubAppInstallationStatusMessage() {
+      return this.getGitHubAppInstallationStatusMessage(
+        this.githubAppInstallationStatus
+      )
     },
   },
   watch: {
@@ -1185,7 +1269,11 @@ export default {
       isDeleteDependency: false,
       isDeleteCodeScan: false,
       gitleaksCacheDialog: false,
+      githubAppRepositoryDialog: false,
+      githubAppInstallationStatus: null,
       githubSettingID: 0,
+      githubAppInstallGuideURL:
+        'https://example.com/docs/risken-github-app-installation',
       loading: false,
       gitHubForm: {
         valid: false,
@@ -1391,7 +1479,7 @@ export default {
     },
     getGitHubVerificationText(status) {
       if (!status) {
-        return 'UNVERIFIED'
+        return this.$t(`item['Unverified']`)
       }
       switch (status) {
         case 'SUCCESS':
@@ -1404,6 +1492,35 @@ export default {
           return status
       }
     },
+    getGitHubAppInstallationStatusTitle(status) {
+      if (!status) {
+        return ''
+      }
+      if (status.installed) {
+        return this.$t(`item['GitHub App Installation Installed']`)
+      }
+      switch (status.reason) {
+        case 'NOT_INSTALLED':
+          return this.$t(`item['GitHub App Installation Not Installed']`)
+        default:
+          return this.$t(`item['GitHub App Installation Check Failed']`)
+      }
+    },
+    getGitHubAppInstallationStatusMessage(status) {
+      if (!status) {
+        return ''
+      }
+      if (status.installed) {
+        return this.$t(`item['GitHub App Installation Installed Message']`, {
+          target: status.target_resource || this.gitHubSetting.target_resource,
+          selection: status.repository_selection || '-',
+        })
+      }
+      if (status.reason === 'NOT_INSTALLED') {
+        return this.$t(`item['GitHub App Installation Not Installed Message']`)
+      }
+      return this.$t(`item['GitHub App Installation Check Failed Message']`)
+    },
     getErrorMessage(err) {
       if (err && err.response && err.response.data) {
         return err.response.data
@@ -1412,19 +1529,6 @@ export default {
         return err.message
       }
       return 'Unexpected error occurred.'
-    },
-    isAllowedGitHubAppInstallURL(rawURL) {
-      try {
-        const url = new URL(rawURL)
-        return (
-          url.protocol === 'https:' &&
-          url.hostname === 'github.com' &&
-          url.pathname.startsWith('/apps/') &&
-          url.pathname.endsWith('/installations/select_target')
-        )
-      } catch {
-        return false
-      }
     },
     isAllowedGitHubAppOAuthURL(rawURL) {
       try {
@@ -1511,6 +1615,15 @@ export default {
         return Promise.reject(err)
       })
       return gitHubSetting
+    },
+    async refreshGitHubAppInstallationStatus() {
+      this.githubAppInstallationStatus =
+        await this.getGitHubAppInstallationStatusAPI(
+          this.gitHubSetting.github_setting_id
+        ).catch((err) => {
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
+          return null
+        })
     },
     async editGitleaksSetting(gitHubSettingID) {
       if (this.isDeleteGitleaks) {
@@ -1632,29 +1745,11 @@ export default {
         return
       }
       if (this.isGitHubAppAuth) {
+        await this.refreshGitHubAppInstallationStatus()
         this.$emit('edit-notify', 'Success: Updated.')
         return
       }
       this.e6 = 2
-    },
-    async handleGitHubAppInstall() {
-      this.loading = true
-      const installURL = await this.getGitHubAppInstallURLAPI()
-        .catch((err) => {
-          this.$emit('edit-notify', '', this.getErrorMessage(err))
-          return ''
-        })
-        .finally(() => {
-          this.loading = false
-        })
-      if (!installURL) {
-        return
-      }
-      if (!this.isAllowedGitHubAppInstallURL(installURL)) {
-        this.$emit('edit-notify', '', 'GitHub App install URL is invalid.')
-        return
-      }
-      window.location.href = installURL
     },
     async handleGitHubAppUserVerification() {
       this.loading = true

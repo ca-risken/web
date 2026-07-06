@@ -51,15 +51,16 @@ const en = {
     EDIT: 'EDIT',
     'Re-generate': 'Re-generate',
     DOWNLOAD_PDF: 'Download PDF',
-    'INSTALL GITHUB APP': 'INSTALL GITHUB APP',
-    'VERIFY GITHUB USER': 'VERIFY GITHUB USER',
+    'VERIFY GITHUB USER': 'LINK GITHUB',
     RESYNC: 'RESYNC',
   },
   help: {
     'GITHUB APP AUTH FLOW':
-      'To use GitHub App authentication, install the GitHub App to the target organization before saving the GitHub setting. After saving, run "VERIFY GITHUB USER" and complete OAuth authorization on GitHub as the setting user.',
+      'To use GitHub App authentication, install the GitHub App to the target organization before running a scan. After saving, run "LINK GITHUB" and complete OAuth authorization on GitHub as the setting user.',
     'GITHUB APP INSTALL BEFORE SAVE':
       'Confirm that the GitHub App is installed to the target organization.\nIf you are not sure, ask the organization administrator.\nGitHub App verification will fail if you save before installing it.',
+    'GITHUB APP INSTALL DOCUMENT LINK':
+      'GitHub App installation guide placeholder. Replace this with the official documentation URL later.',
   },
   menu: {
     Home: 'Home',
@@ -178,23 +179,34 @@ const en = {
     'Verified GitHub User': 'Verified GitHub User',
     'Verified At': 'Verified At',
     'Verification Status': 'Verification Status',
+    Unverified: 'Unverified',
     Verified: 'Verified',
     'Verification Failed': 'Verification Failed',
-    'GitHub User Verification Pending': 'GitHub User Verification Pending',
+    'GitHub User Verification Pending': 'GitHub Link Pending',
     'GitHub Setting ID Suffix': ' (GitHub Setting ID: {id})',
-    'GitHub User Verification Completed':
-      'GitHub user verification has been completed.',
+    'GitHub User Verification Completed': 'GitHub linking has been completed.',
     'GitHub User Verification Session Expired':
-      'GitHub user verification could not be completed because the session expired.',
+      'GitHub linking could not be completed because the session expired.',
     'GitHub User Verification Unauthorized':
-      'GitHub user verification failed. Please check the RISKEN project permission.',
+      'GitHub linking failed. Please check the RISKEN project permission.',
     'GitHub User Verification Failed':
-      'GitHub user verification failed. Please check the GitHub permission or GitHub App setting.',
+      'GitHub linking failed. Please check the GitHub permission or GitHub App setting.',
     'GitHub App Verified': 'GitHub App verification has been completed.',
     'GitHub App Verification Failed': 'GitHub App verification failed.',
+    'GitHub App Installation Installed': 'GitHub App is installed.',
+    'GitHub App Installation Not Installed': 'GitHub App is not installed.',
+    'GitHub App Installation Check Failed':
+      'Could not check the GitHub App installation status.',
+    'GitHub App Installation Installed Message':
+      'Confirmed the GitHub App installation for {target}. Repository selection: {selection}. Run LINK GITHUB to complete the scan setting.',
+    'GitHub App Installation Not Installed Message':
+      'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
+    'GitHub App Installation Check Failed Message':
+      'Check the GitHub App setting or the connection to the GitHub API.',
     'Session Expired Please Sign In Again':
       'Session expired. Please sign in again.',
     'Repository Count': 'Repository Count',
+    'Target Repository List': 'Target Repository List',
     'Gitleaks Setting': 'Gitleaks Setting',
     'Gitleaks Status': 'Gitleaks Status',
     'CodeScan Setting': 'CodeScan Setting',

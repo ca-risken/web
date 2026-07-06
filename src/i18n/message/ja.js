@@ -51,15 +51,16 @@ const ja = {
     EDIT: '編集',
     'Re-generate': '再生成',
     DOWNLOAD_PDF: 'PDFダウンロード',
-    'INSTALL GITHUB APP': 'GitHub Appをインストール',
-    'VERIFY GITHUB USER': 'GitHubユーザー確認',
+    'VERIFY GITHUB USER': 'GitHub連携',
     RESYNC: '再同期',
   },
   help: {
     'GITHUB APP AUTH FLOW':
-      'GitHub App認証を利用するには、GitHub設定を保存する前に、GitHub組織のオーナーがGitHub Appを対象Organizationへインストールしてください。保存後は「GitHubユーザー確認」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
+      'GitHub App認証を利用するには、スキャンを実施する前に、GitHub組織のオーナーがGitHub Appを対象Organizationへインストールしてください。保存後は「GitHub連携」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
     'GITHUB APP INSTALL BEFORE SAVE':
       '対象OrganizationにGitHub Appがインストール済みか確認してください。\n不明な場合は、Organization管理者に確認してください。\n未インストールのまま保存すると、GitHub Appの検証に失敗します。',
+    'GITHUB APP INSTALL DOCUMENT LINK':
+      'GitHub Appインストール手順はこちら（後で正式なドキュメントURLに差し替え予定）',
   },
   menu: {
     Home: 'ホーム',
@@ -178,22 +179,34 @@ const ja = {
     'Verified GitHub User': '検証GitHubユーザ',
     'Verified At': '検証日時',
     'Verification Status': '検証ステータス',
+    Unverified: '未検証',
     Verified: '検証済み',
     'Verification Failed': '検証失敗',
-    'GitHub User Verification Pending': 'GitHubユーザー確認待ち',
+    'GitHub User Verification Pending': 'GitHub連携待ち',
     'GitHub Setting ID Suffix': '（GitHub Setting ID: {id}）',
-    'GitHub User Verification Completed': 'GitHubユーザー確認が完了しました。',
+    'GitHub User Verification Completed': 'GitHub連携が完了しました。',
     'GitHub User Verification Session Expired':
-      'セッション切れのため、GitHubユーザー確認を完了できませんでした。',
+      'セッション切れのため、GitHub連携を完了できませんでした。',
     'GitHub User Verification Unauthorized':
-      'GitHubユーザー確認に失敗しました。RISKENプロジェクトの権限を確認してください。',
+      'GitHub連携に失敗しました。RISKENプロジェクトの権限を確認してください。',
     'GitHub User Verification Failed':
-      'GitHubユーザー確認に失敗しました。GitHub側の権限またはGitHub App設定を確認してください。',
+      'GitHub連携に失敗しました。GitHub側の権限またはGitHub App設定を確認してください。',
     'GitHub App Verified': 'GitHub Appの確認が完了しました。',
     'GitHub App Verification Failed': 'GitHub Appの確認に失敗しました。',
+    'GitHub App Installation Installed': 'GitHub Appはインストール済みです。',
+    'GitHub App Installation Not Installed': 'GitHub Appは未インストールです。',
+    'GitHub App Installation Check Failed':
+      'GitHub Appのインストール状態を確認できませんでした。',
+    'GitHub App Installation Installed Message':
+      '{target} へのGitHub Appインストールを確認しました。Repository選択: {selection}。GitHub連携を実行すると、スキャン設定を完了できます。',
+    'GitHub App Installation Not Installed Message':
+      '対象OrganizationまたはUserにGitHub Appがインストールされていません。Organization管理者にインストール状況を確認してください。',
+    'GitHub App Installation Check Failed Message':
+      'GitHub App設定またはGitHub APIとの通信状況を確認してください。',
     'Session Expired Please Sign In Again':
       'セッション切れです。再度サインインしてください。',
     'Repository Count': 'リポジトリ数',
+    'Target Repository List': '対象リポジトリ一覧',
     'Gitleaks Setting': 'Gitleaks設定',
     'CodeScan Setting': 'CodeScan設定',
     'Google Data Source': 'Google データソース',

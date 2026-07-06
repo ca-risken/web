@@ -653,7 +653,7 @@ export default {
         return '-'
       }
       if (!status) {
-        return 'UNVERIFIED'
+        return this.$t(`item['Unverified']`)
       }
       switch (status) {
         case 'SUCCESS':

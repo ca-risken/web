@@ -60,18 +60,23 @@ const code = {
       }
       return res.data.data.github_setting
     },
-    async getGitHubAppInstallURLAPI() {
+    async getGitHubAppInstallationStatusAPI(github_setting_id) {
       const query = new URLSearchParams()
       query.set('project_id', this.getCurrentProjectID())
+      query.set('github_setting_id', github_setting_id)
       const res = await this.$axios
-        .get('/code/github-app/install-url/?' + query.toString())
+        .get('/code/github-app/installation-status/?' + query.toString())
         .catch((err) => {
           return Promise.reject(err)
         })
-      if (!res.data || !res.data.data || !res.data.data.url) {
-        return ''
+      if (
+        !res.data ||
+        !res.data.data ||
+        !res.data.data.github_app_installation_status
+      ) {
+        return null
       }
-      return res.data.data.url
+      return res.data.data.github_app_installation_status
     },
     async getGitHubAppOAuthStartURLAPI(github_setting_id, return_to) {
       const query = new URLSearchParams()
