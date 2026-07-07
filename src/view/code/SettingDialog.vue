@@ -1729,27 +1729,27 @@ export default {
         return
       }
       this.loading = true
-      const gitHubSetting = await this.editGitHubSetting()
-        .catch((err) => {
+      try {
+        const gitHubSetting = await this.editGitHubSetting().catch((err) => {
           this.$emit('edit-notify', '', this.getErrorMessage(err))
           return null
         })
-        .finally(() => {
-          this.loading = false
-        })
-      if (gitHubSetting === null) {
-        return
+        if (gitHubSetting === null) {
+          return
+        }
+        if (!this.applyGitHubSetting(gitHubSetting)) {
+          this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
+          return
+        }
+        if (this.isGitHubAppAuth) {
+          await this.refreshGitHubAppInstallationStatus()
+          this.$emit('edit-notify', 'Success: Updated.')
+          return
+        }
+        this.e6 = 2
+      } finally {
+        this.loading = false
       }
-      if (!this.applyGitHubSetting(gitHubSetting)) {
-        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
-        return
-      }
-      if (this.isGitHubAppAuth) {
-        await this.refreshGitHubAppInstallationStatus()
-        this.$emit('edit-notify', 'Success: Updated.')
-        return
-      }
-      this.e6 = 2
     },
     async handleGitHubAppUserVerification() {
       this.loading = true
