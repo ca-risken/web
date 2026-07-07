@@ -1522,13 +1522,13 @@ export default {
       return this.$t(`item['GitHub App Installation Check Failed Message']`)
     },
     getErrorMessage(err) {
-      if (err && err.response && err.response.data) {
-        return err.response.data
+      if (err && err.response) {
+        return this.$t(`item['Request Failed Please Check Setting']`)
       }
       if (err && err.message) {
         return err.message
       }
-      return 'Unexpected error occurred.'
+      return this.$t(`item['Unexpected Error Occurred']`)
     },
     isAllowedGitHubAppOAuthURL(rawURL) {
       try {

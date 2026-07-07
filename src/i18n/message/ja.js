@@ -202,6 +202,9 @@ const ja = {
       '対象OrganizationまたはUserにGitHub Appがインストールされていません。Organization管理者にインストール状況を確認してください。',
     'GitHub App Installation Check Failed Message':
       'GitHub App設定またはGitHub APIとの通信状況を確認してください。',
+    'Request Failed Please Check Setting':
+      'リクエストに失敗しました。設定内容を確認してください。',
+    'Unexpected Error Occurred': '予期しないエラーが発生しました。',
     'Session Expired Please Sign In Again':
       'セッション切れです。再度サインインしてください。',
     'Repository Count': 'リポジトリ数',

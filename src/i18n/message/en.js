@@ -202,6 +202,9 @@ const en = {
       'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
     'GitHub App Installation Check Failed Message':
       'Check the GitHub App setting or the connection to the GitHub API.',
+    'Request Failed Please Check Setting':
+      'Request failed. Please check the setting.',
+    'Unexpected Error Occurred': 'Unexpected error occurred.',
     'Session Expired Please Sign In Again':
       'Session expired. Please sign in again.',
     'Repository Count': 'Repository Count',

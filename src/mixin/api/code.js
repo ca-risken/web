@@ -41,7 +41,7 @@ const code = {
           return Promise.reject(err)
         })
       if (!res.data || !res.data.data || !res.data.data.github_setting) {
-        return {}
+        return null
       }
       return res.data.data.github_setting
     },
@@ -56,7 +56,7 @@ const code = {
           return Promise.reject(err)
         })
       if (!res.data || !res.data.data || !res.data.data.github_setting) {
-        return {}
+        return null
       }
       return res.data.data.github_setting
     },
