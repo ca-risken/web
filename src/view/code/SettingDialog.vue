@@ -1273,7 +1273,7 @@ export default {
       githubAppInstallationStatus: null,
       githubSettingID: 0,
       githubAppInstallGuideURL:
-        'https://example.com/docs/risken-github-app-installation',
+        'https://docs.security-hub.jp/code/github_app_install/',
       loading: false,
       gitHubForm: {
         valid: false,

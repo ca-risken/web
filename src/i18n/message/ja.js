@@ -59,8 +59,7 @@ const ja = {
       'GitHub App認証を利用するには、スキャンを実施する前に、GitHub組織のオーナーがGitHub Appを対象Organizationへインストールしてください。保存後は「GitHub連携」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
     'GITHUB APP INSTALL BEFORE SAVE':
       '対象OrganizationにGitHub Appがインストール済みか確認してください。\n不明な場合は、Organization管理者に確認してください。\n未インストールのまま保存すると、GitHub Appの検証に失敗します。',
-    'GITHUB APP INSTALL DOCUMENT LINK':
-      'GitHub Appインストール手順はこちら（後で正式なドキュメントURLに差し替え予定）',
+    'GITHUB APP INSTALL DOCUMENT LINK': 'GitHub Appインストール手順はこちら',
   },
   menu: {
     Home: 'ホーム',

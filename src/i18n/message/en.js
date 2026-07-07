@@ -59,8 +59,7 @@ const en = {
       'To use GitHub App authentication, install the GitHub App to the target organization before running a scan. After saving, run "LINK GITHUB" and complete OAuth authorization on GitHub as the setting user.',
     'GITHUB APP INSTALL BEFORE SAVE':
       'Confirm that the GitHub App is installed to the target organization.\nIf you are not sure, ask the organization administrator.\nGitHub App verification will fail if you save before installing it.',
-    'GITHUB APP INSTALL DOCUMENT LINK':
-      'GitHub App installation guide placeholder. Replace this with the official documentation URL later.',
+    'GITHUB APP INSTALL DOCUMENT LINK': 'GitHub App installation guide',
   },
   menu: {
     Home: 'Home',
