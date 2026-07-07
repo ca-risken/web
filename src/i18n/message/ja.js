@@ -57,9 +57,6 @@ const ja = {
   help: {
     'GITHUB APP AUTH FLOW':
       'GitHub App認証を利用するには、スキャンを実施する前に、GitHub組織のオーナーがGitHub Appを対象Organizationへインストールしてください。保存後は「GitHub連携」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
-    'GITHUB APP INSTALL BEFORE SAVE':
-      '対象OrganizationにGitHub Appがインストール済みか確認してください。\n不明な場合は、Organization管理者に確認してください。\n未インストールのまま保存すると、GitHub Appの検証に失敗します。',
-    'GITHUB APP INSTALL DOCUMENT LINK': 'GitHub Appインストール手順はこちら',
   },
   menu: {
     Home: 'ホーム',
@@ -197,7 +194,7 @@ const ja = {
     'GitHub App Installation Check Failed':
       'GitHub Appのインストール状態を確認できませんでした。',
     'GitHub App Installation Installed Message':
-      '{target} へのGitHub Appインストールを確認しました。Repository選択: {selection}。GitHub連携を実行すると、スキャン設定を完了できます。',
+      '{target} へのGitHub Appインストールを確認しました。GitHub連携を実行すると、スキャン設定を完了できます。',
     'GitHub App Installation Not Installed Message':
       '対象OrganizationまたはUserにGitHub Appがインストールされていません。Organization管理者にインストール状況を確認してください。',
     'GitHub App Installation Check Failed Message':

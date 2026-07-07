@@ -57,9 +57,6 @@ const en = {
   help: {
     'GITHUB APP AUTH FLOW':
       'To use GitHub App authentication, install the GitHub App to the target organization before running a scan. After saving, run "LINK GITHUB" and complete OAuth authorization on GitHub as the setting user.',
-    'GITHUB APP INSTALL BEFORE SAVE':
-      'Confirm that the GitHub App is installed to the target organization.\nIf you are not sure, ask the organization administrator.\nGitHub App verification will fail if you save before installing it.',
-    'GITHUB APP INSTALL DOCUMENT LINK': 'GitHub App installation guide',
   },
   menu: {
     Home: 'Home',
@@ -197,7 +194,7 @@ const en = {
     'GitHub App Installation Check Failed':
       'Could not check the GitHub App installation status.',
     'GitHub App Installation Installed Message':
-      'Confirmed the GitHub App installation for {target}. Repository selection: {selection}. Run LINK GITHUB to complete the scan setting.',
+      'Confirmed the GitHub App installation for {target}. Run LINK GITHUB to complete the scan setting.',
     'GitHub App Installation Not Installed Message':
       'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
     'GitHub App Installation Check Failed Message':

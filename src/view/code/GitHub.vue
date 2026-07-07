@@ -459,7 +459,7 @@ export default {
     this.loading = true
     await this.getDataSource()
     await this.listGitHubSetting()
-    this.handleGitHubAppOAuthResult()
+    await this.handleGitHubAppOAuthResult()
     this.loading = false
   },
   methods: {
@@ -666,7 +666,22 @@ export default {
           return status
       }
     },
-    handleGitHubAppOAuthResult() {
+    async isVerifiedGitHubAppOAuthResult(githubSettingID) {
+      const settingID = Number(githubSettingID)
+      if (!Number.isInteger(settingID) || settingID <= 0) {
+        return false
+      }
+      const githubSettings = await this.listGitHubSettingAPI(settingID).catch(
+        () => {
+          return []
+        }
+      )
+      if (!githubSettings.length) {
+        return false
+      }
+      return githubSettings[0].verification_status === 'SUCCESS'
+    },
+    async handleGitHubAppOAuthResult() {
       const result = this.$route.query.github_app_oauth
       if (!result) {
         return
@@ -675,7 +690,10 @@ export default {
       const suffix = githubSettingID
         ? this.$t(`item['GitHub Setting ID Suffix']`, { id: githubSettingID })
         : ''
-      if (result === 'success') {
+      if (
+        result === 'success' &&
+        (await this.isVerifiedGitHubAppOAuthResult(githubSettingID))
+      ) {
         this.githubAppOAuthResult = {
           type: 'success',
           message:

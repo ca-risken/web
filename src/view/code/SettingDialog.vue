@@ -171,32 +171,12 @@
                       ></v-text-field>
                     </v-col>
                   </v-row>
-                  <v-row v-if="isGitHubAppAuth">
-                    <v-col cols="12">
-                      <v-alert
-                        class="github-app-install-alert"
-                        density="compact"
-                        type="info"
-                        variant="tonal"
-                      >
-                        <div>
-                          {{ $t(`help['GITHUB APP INSTALL BEFORE SAVE']`) }}
-                        </div>
-                        <a
-                          :href="githubAppInstallGuideURL"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {{ $t(`help['GITHUB APP INSTALL DOCUMENT LINK']`) }}
-                        </a>
-                      </v-alert>
-                    </v-col>
-                  </v-row>
                   <v-row v-if="isGitHubAppAuth && githubAppInstallationStatus">
                     <v-col cols="12">
                       <v-alert
                         density="compact"
                         :type="githubAppInstallationStatusAlertType"
+                        :class="githubAppInstallationStatusAlertClass"
                         variant="tonal"
                       >
                         <div class="font-weight-medium">
@@ -1203,6 +1183,12 @@ export default {
       }
       return 'error'
     },
+    githubAppInstallationStatusAlertClass() {
+      if (this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED') {
+        return 'github-app-installation-warning'
+      }
+      return ''
+    },
     githubAppInstallationStatusTitle() {
       return this.getGitHubAppInstallationStatusTitle(
         this.githubAppInstallationStatus
@@ -1272,8 +1258,6 @@ export default {
       githubAppRepositoryDialog: false,
       githubAppInstallationStatus: null,
       githubSettingID: 0,
-      githubAppInstallGuideURL:
-        'https://docs.security-hub.jp/code/github_app_install/',
       loading: false,
       gitHubForm: {
         valid: false,
@@ -1513,7 +1497,6 @@ export default {
       if (status.installed) {
         return this.$t(`item['GitHub App Installation Installed Message']`, {
           target: status.target_resource || this.gitHubSetting.target_resource,
-          selection: status.repository_selection || '-',
         })
       }
       if (status.reason === 'NOT_INSTALLED') {
@@ -1533,9 +1516,14 @@ export default {
     isAllowedGitHubAppOAuthURL(rawURL) {
       try {
         const url = new URL(rawURL)
+        const allowedHosts = ['github.com']
+        const baseURL = new URL(this.gitHubSetting.base_url)
+        if (baseURL.hostname !== 'api.github.com') {
+          allowedHosts.push(baseURL.hostname)
+        }
         return (
           url.protocol === 'https:' &&
-          url.hostname === 'github.com' &&
+          allowedHosts.includes(url.hostname) &&
           url.pathname === '/login/oauth/authorize'
         )
       } catch {
@@ -1743,7 +1731,9 @@ export default {
         }
         if (this.isGitHubAppAuth) {
           await this.refreshGitHubAppInstallationStatus()
-          this.$emit('edit-notify', 'Success: Updated.')
+          if (this.githubAppInstallationStatus?.installed) {
+            this.$emit('edit-notify', 'Success: Updated.')
+          }
           return
         }
         this.e6 = 2
@@ -1957,7 +1947,11 @@ export default {
 .v-tab {
   text-transform: none !important;
 }
-.github-app-install-alert {
-  white-space: pre-line;
+.github-app-installation-warning {
+  background-color: #fff4d6 !important;
+  color: #4d3600 !important;
+}
+.github-app-installation-warning .v-alert__prepend {
+  color: #8a6100 !important;
 }
 </style>
