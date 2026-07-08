@@ -51,6 +51,7 @@ const ja = {
     EDIT: '編集',
     'Re-generate': '再生成',
     DOWNLOAD_PDF: 'PDFダウンロード',
+    'OPEN INSTALL PAGE': 'インストールページを開く',
   },
   menu: {
     Home: 'ホーム',
@@ -98,6 +99,7 @@ const ja = {
     OSINT: 'OSINT',
     'OSINT DataSource': 'OSINTデータソース',
     GitHub: 'GitHub',
+    'GitHub App': 'GitHub App',
     User: 'ユーザ',
     'User Reservation': 'ユーザ予約',
     Role: 'ロール',
@@ -166,6 +168,25 @@ const ja = {
     'GitHub Setting ID': 'GitHub Setting ID',
     'Gitleaks Setting': 'Gitleaks設定',
     'CodeScan Setting': 'CodeScan設定',
+    'GitHub App Install Page Lead':
+      'Organization管理者またはUserのOwnerが実施する初回セットアップです。インストール完了後にGitHub設定からスキャン設定を進められます。',
+    'GitHub App Install Section Title': 'GitHub Appのインストール',
+    'GitHub App Install Section Lead':
+      '以下を確認した上で、GitHub Appのインストールページを開いてください。',
+    'GitHub App Install Owner Notice Primary':
+      'GitHub Appをインストールできるのは、対象GitHub OrganizationのOwner、または対象User本人のみです。',
+    'GitHub App Install Owner Notice Secondary':
+      '権限がない場合は、Organization Ownerにインストールを依頼してください。',
+    'GitHub App Install Checklist Owner':
+      '対象OrganizationまたはUserのOwner権限を持っていること',
+    'GitHub App Install Checklist Target':
+      'GitHub上でインストール対象のOrganizationまたはUserを選択すること',
+    'GitHub App Install Checklist After Before Link': 'インストール後、',
+    'GitHub App Install Checklist After Link Text': 'RISKEN上のGitHub設定画面',
+    'GitHub App Install Checklist After After Link':
+      'でGitHub App方式の設定保存とGitHub連携を実施すること',
+    'GitHub App Install Before Open Note':
+      'インストールページはGitHubの画面で開きます。',
     'Google Data Source': 'Google データソース',
     'Google Data Source ID': 'Google データソースID',
     Keyword: 'キーワード',

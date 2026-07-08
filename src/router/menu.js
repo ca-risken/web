@@ -96,6 +96,11 @@ export const menuDefinition = [
           },
         ],
       },
+      {
+        title: 'GitHub App',
+        icon: 'mdi-github',
+        path: '/settings/github-app',
+      },
     ],
   },
   {
