@@ -53,6 +53,7 @@ const en = {
     DOWNLOAD_PDF: 'Download PDF',
     'VERIFY GITHUB USER': 'LINK GITHUB',
     RESYNC: 'RESYNC',
+    'OPEN INSTALL PAGE': 'Open install page',
   },
   help: {
     'GITHUB APP AUTH FLOW':
@@ -104,6 +105,7 @@ const en = {
     OSINT: 'OSINT',
     'OSINT DataSource': 'OSINT DataSource',
     GitHub: 'GitHub',
+    'GitHub App': 'GitHub App',
     User: 'User', // IAM
     'User Reservation': 'User Reservation', //IAM
     Role: 'Role', // IAM
@@ -197,6 +199,8 @@ const en = {
       'Confirmed the GitHub App installation for {target}. Run LINK GITHUB to complete the scan setting.',
     'GitHub App Installation Not Installed Message':
       'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
+    'GitHub App Installation Open Install Page':
+      'Open GitHub App installation page',
     'GitHub App Installation Check Failed Message':
       'Check the GitHub App setting or the connection to the GitHub API.',
     'Request Failed Please Check Setting':
@@ -206,6 +210,23 @@ const en = {
       'Session expired. Please sign in again.',
     'Repository Count': 'Repository Count',
     'Target Repository List': 'Target Repository List',
+    'GitHub App Install Page Lead':
+      'This is the initial setup for an organization administrator or user owner. After installation, continue the scan setup from the GitHub setting page.',
+    'GitHub App Install Section Title': 'Install GitHub App',
+    'GitHub App Install Section Lead':
+      'Review the following items, then open the GitHub App installation page.',
+    'GitHub App Install Owner Notice Primary':
+      'Only the owner of the target GitHub organization, or the target user account owner, can install the GitHub App.',
+    'GitHub App Install Owner Notice Secondary':
+      'If you do not have permission, ask the organization owner to install it.',
+    'GitHub App Install Checklist Owner':
+      'You have owner permission for the target organization or user account.',
+    'GitHub App Install Checklist Target':
+      'Select the target organization or user on GitHub.',
+    'GitHub App Install Checklist After':
+      'After installation, save the GitHub App setting and run LINK GITHUB from the GitHub setting page.',
+    'GitHub App Install Before Open Note':
+      'The installation page opens on GitHub.',
     'Gitleaks Setting': 'Gitleaks Setting',
     'Gitleaks Status': 'Gitleaks Status',
     'CodeScan Setting': 'CodeScan Setting',

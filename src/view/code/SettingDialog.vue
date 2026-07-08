@@ -185,6 +185,21 @@
                         <div>
                           {{ githubAppInstallationStatusMessage }}
                         </div>
+                        <div
+                          v-if="shouldShowGitHubAppInstallPageLink"
+                          class="mt-2"
+                        >
+                          <router-link
+                            class="github-app-installation-warning-link"
+                            :to="githubAppInstallPageTo"
+                          >
+                            {{
+                              $t(
+                                `item['GitHub App Installation Open Install Page']`
+                              )
+                            }}
+                          </router-link>
+                        </div>
                       </v-alert>
                     </v-col>
                   </v-row>
@@ -1189,6 +1204,19 @@ export default {
       }
       return ''
     },
+    shouldShowGitHubAppInstallPageLink() {
+      return this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED'
+    },
+    githubAppInstallPageTo() {
+      const query = {}
+      if (this.$route.query.project_id) {
+        query.project_id = this.$route.query.project_id
+      }
+      return {
+        path: '/settings/github-app',
+        query,
+      }
+    },
     githubAppInstallationStatusTitle() {
       return this.getGitHubAppInstallationStatusTitle(
         this.githubAppInstallationStatus
@@ -1953,5 +1981,10 @@ export default {
 }
 .github-app-installation-warning .v-alert__prepend {
   color: #8a6100 !important;
+}
+.github-app-installation-warning-link {
+  color: #6b4900;
+  font-weight: 600;
+  text-decoration: underline;
 }
 </style>

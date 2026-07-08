@@ -53,6 +53,7 @@ const ja = {
     DOWNLOAD_PDF: 'PDFダウンロード',
     'VERIFY GITHUB USER': 'GitHub連携',
     RESYNC: '再同期',
+    'OPEN INSTALL PAGE': 'インストールページを開く',
   },
   help: {
     'GITHUB APP AUTH FLOW':
@@ -104,6 +105,7 @@ const ja = {
     OSINT: 'OSINT',
     'OSINT DataSource': 'OSINTデータソース',
     GitHub: 'GitHub',
+    'GitHub App': 'GitHub App',
     User: 'ユーザ',
     'User Reservation': 'ユーザ予約',
     Role: 'ロール',
@@ -197,6 +199,8 @@ const ja = {
       '{target} へのGitHub Appインストールを確認しました。GitHub連携を実行すると、スキャン設定を完了できます。',
     'GitHub App Installation Not Installed Message':
       '対象OrganizationまたはUserにGitHub Appがインストールされていません。Organization管理者にインストール状況を確認してください。',
+    'GitHub App Installation Open Install Page':
+      'GitHub Appインストールページを開く',
     'GitHub App Installation Check Failed Message':
       'GitHub App設定またはGitHub APIとの通信状況を確認してください。',
     'Request Failed Please Check Setting':
@@ -206,6 +210,23 @@ const ja = {
       'セッション切れです。再度サインインしてください。',
     'Repository Count': 'リポジトリ数',
     'Target Repository List': '対象リポジトリ一覧',
+    'GitHub App Install Page Lead':
+      'Organization管理者またはUserのOwnerが実施する初回セットアップです。インストール完了後にGitHub設定からスキャン設定を進められます。',
+    'GitHub App Install Section Title': 'GitHub Appのインストール',
+    'GitHub App Install Section Lead':
+      '以下を確認した上で、GitHub Appのインストールページを開いてください。',
+    'GitHub App Install Owner Notice Primary':
+      'GitHub Appをインストールできるのは、対象GitHub OrganizationのOwner、または対象User本人のみです。',
+    'GitHub App Install Owner Notice Secondary':
+      '権限がない場合は、Organization Ownerにインストールを依頼してください。',
+    'GitHub App Install Checklist Owner':
+      '対象OrganizationまたはUserのOwner権限を持っていること',
+    'GitHub App Install Checklist Target':
+      'GitHub上でインストール対象のOrganizationまたはUserを選択すること',
+    'GitHub App Install Checklist After':
+      'インストール後、GitHub設定画面でGitHub App方式の設定保存とGitHub連携を実施すること',
+    'GitHub App Install Before Open Note':
+      'インストールページはGitHubの画面で開きます。',
     'Gitleaks Setting': 'Gitleaks設定',
     'CodeScan Setting': 'CodeScan設定',
     'Google Data Source': 'Google データソース',
