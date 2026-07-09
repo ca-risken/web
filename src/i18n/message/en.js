@@ -51,6 +51,7 @@ const en = {
     EDIT: 'EDIT',
     'Re-generate': 'Re-generate',
     DOWNLOAD_PDF: 'Download PDF',
+    'OPEN INSTALL PAGE': 'Open install page',
   },
   menu: {
     Home: 'Home',
@@ -98,6 +99,7 @@ const en = {
     OSINT: 'OSINT',
     'OSINT DataSource': 'OSINT DataSource',
     GitHub: 'GitHub',
+    'GitHub App': 'GitHub App',
     User: 'User', // IAM
     'User Reservation': 'User Reservation', //IAM
     Role: 'Role', // IAM
@@ -168,6 +170,25 @@ const en = {
     'Gitleaks Status': 'Gitleaks Status',
     'CodeScan Setting': 'CodeScan Setting',
     'CodeScan Status': 'CodeScan Status',
+    'GitHub App Install Page Lead':
+      'This is the initial setup for an organization administrator or user owner. After installation, continue the scan setup from the GitHub setting page.',
+    'GitHub App Install Section Title': 'Install GitHub App',
+    'GitHub App Install Section Lead':
+      'Review the following items, then open the GitHub App installation page.',
+    'GitHub App Install Owner Notice Primary':
+      'Only the owner of the target GitHub organization, or the target user account owner, can install the GitHub App.',
+    'GitHub App Install Owner Notice Secondary':
+      'If you do not have permission, ask the organization owner to install it.',
+    'GitHub App Install Checklist Owner':
+      'You have owner permission for the target organization or user account.',
+    'GitHub App Install Checklist Target':
+      'Select the target organization or user on GitHub.',
+    'GitHub App Install Checklist After Before Link':
+      'After installation, save the GitHub App setting and run LINK GITHUB from the ',
+    'GitHub App Install Checklist After Link Text': 'GitHub setting page',
+    'GitHub App Install Checklist After After Link': '.',
+    'GitHub App Install Before Open Note':
+      'The installation page opens on GitHub.',
     'Google Data Source': 'Google Data Source',
     'Google Data Source ID': 'Google Data Source ID',
     Keyword: 'Keyword',

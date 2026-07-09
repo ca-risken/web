@@ -404,6 +404,14 @@ export const appRoute = [
         ],
       },
       {
+        path: '/settings/github-app',
+        name: 'GitHubAppInstall',
+        meta: {
+          title: 'GitHub App',
+        },
+        component: () => import('@/view/code/GitHubAppInstall.vue'),
+      },
+      {
         path: '/organization-alert/',
         component: RouteWrapper,
         redirect: '/organization-alert/notification',
