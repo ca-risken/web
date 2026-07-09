@@ -51,7 +51,13 @@ const ja = {
     EDIT: '編集',
     'Re-generate': '再生成',
     DOWNLOAD_PDF: 'PDFダウンロード',
+    'VERIFY GITHUB USER': 'GitHub連携',
+    RESYNC: '再同期',
     'OPEN INSTALL PAGE': 'インストールページを開く',
+  },
+  help: {
+    'GITHUB APP AUTH FLOW':
+      'GitHub App認証を利用するには、スキャンを実施する前に、GitHub組織のオーナーがGitHub Appを対象Organizationへインストールしてください。保存後は「GitHub連携」を実行し、GitHub上で設定者本人のOAuth認可を完了してください。',
   },
   menu: {
     Home: 'ホーム',
@@ -163,11 +169,55 @@ const ja = {
     'GCP ID': 'GCP ID',
     'GCP Project': 'GCPプロジェクト',
     'GCP ProjectID': 'GCPプロジェクトID',
+    'Auth Mode': '認証方式',
     GitHubUser: 'GitHubユーザ',
     'GitHub Setting': 'GitHub設定',
     'GitHub Setting ID': 'GitHub Setting ID',
-    'Gitleaks Setting': 'Gitleaks設定',
-    'CodeScan Setting': 'CodeScan設定',
+    'Installation ID': 'Installation ID',
+    'Verified GitHub User': '検証GitHubユーザ',
+    'GitHub Setting User': '設定者(GitHubユーザー)',
+    'Verified At': '検証日時',
+    'Verification Status': '検証ステータス',
+    'GitHub App Status': 'GitHub Appステータス',
+    Unverified: '未検証',
+    Verified: '検証済み',
+    'Verification Failed': '検証失敗',
+    'GitHub App Link Success': '連携成功',
+    'GitHub App Link Failed': '連携失敗',
+    'GitHub App Link Pending': 'GitHub連携待ち',
+    'GitHub App Link Pending Action Prefix': '',
+    'GitHub App Link Pending Action Link': 'GitHub連携',
+    'GitHub App Link Pending Action Suffix': 'を実施してください。',
+    'GitHub User Verification Pending': 'GitHub連携待ち',
+    'GitHub Setting ID Suffix': '（GitHub Setting ID: {id}）',
+    'GitHub User Verification Completed': 'GitHub連携が完了しました。',
+    'GitHub User Verification Session Expired':
+      'セッション切れのため、GitHub連携を完了できませんでした。',
+    'GitHub User Verification Unauthorized':
+      'GitHub連携に失敗しました。RISKENプロジェクトの権限を確認してください。',
+    'GitHub User Verification Failed':
+      'GitHub連携に失敗しました。GitHub側の権限またはGitHub App設定を確認してください。',
+    'GitHub App Verified': 'GitHub Appの確認が完了しました。',
+    'GitHub App Verification Failed': 'GitHub Appの確認に失敗しました。',
+    'GitHub App Installation Installed': 'GitHub Appはインストール済みです。',
+    'GitHub App Installation Not Installed': 'GitHub Appは未インストールです。',
+    'GitHub App Installation Check Failed':
+      'GitHub Appのインストール状態を確認できませんでした。',
+    'GitHub App Installation Installed Message':
+      '{target} へのGitHub Appインストールを確認しました。GitHub連携を実行すると、スキャン設定を完了できます。',
+    'GitHub App Installation Not Installed Message':
+      '対象OrganizationまたはUserにGitHub Appがインストールされていません。Organization管理者にインストール状況を確認してください。',
+    'GitHub App Installation Open Install Page':
+      'GitHub Appインストールページを開く',
+    'GitHub App Installation Check Failed Message':
+      'GitHub App設定またはGitHub APIとの通信状況を確認してください。',
+    'Request Failed Please Check Setting':
+      'リクエストに失敗しました。設定内容を確認してください。',
+    'Unexpected Error Occurred': '予期しないエラーが発生しました。',
+    'Session Expired Please Sign In Again':
+      'セッション切れです。再度サインインしてください。',
+    'Repository Count': 'リポジトリ数',
+    'Target Repository List': '対象リポジトリ一覧',
     'GitHub App Install Page Lead':
       'Organization管理者またはUserのOwnerが実施する初回セットアップです。インストール完了後にGitHub設定からスキャン設定を進められます。',
     'GitHub App Install Section Title': 'GitHub Appのインストール',
@@ -181,12 +231,16 @@ const ja = {
       '対象OrganizationまたはUserのOwner権限を持っていること',
     'GitHub App Install Checklist Target':
       'GitHub上でインストール対象のOrganizationまたはUserを選択すること',
+    'GitHub App Install Checklist After':
+      'インストール後、RISKEN上のGitHub設定画面でGitHub App方式の設定保存とGitHub連携を実施すること',
     'GitHub App Install Checklist After Before Link': 'インストール後、',
     'GitHub App Install Checklist After Link Text': 'RISKEN上のGitHub設定画面',
     'GitHub App Install Checklist After After Link':
       'でGitHub App方式の設定保存とGitHub連携を実施すること',
     'GitHub App Install Before Open Note':
       'インストールページはGitHubの画面で開きます。',
+    'Gitleaks Setting': 'Gitleaks設定',
+    'CodeScan Setting': 'CodeScan設定',
     'Google Data Source': 'Google データソース',
     'Google Data Source ID': 'Google データソースID',
     Keyword: 'キーワード',
