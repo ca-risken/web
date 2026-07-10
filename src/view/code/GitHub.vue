@@ -407,9 +407,6 @@ export default {
             this.$i18n.t('item["GitHub App Status"]')
           ),
           align: 'center',
-          cellProps: {
-            class: 'github-app-status-cell',
-          },
           sortable: true,
           key: 'verification_status',
         },
@@ -927,11 +924,5 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
-}
-
-.github-setting-table :deep(.github-app-status-cell) {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  text-align: center;
 }
 </style>
