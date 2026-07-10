@@ -102,7 +102,9 @@
               >
                 <template v-slot:[`item.type_text`]="{ item }">
                   <v-chip label variant="outlined" color="blue-darken-2">{{
-                    item.value.type_text
+                    item.value.type_text === 'Organization'
+                      ? 'Org'
+                      : item.value.type_text
                   }}</v-chip>
                 </template>
                 <template v-slot:[`item.auth_mode`]="{ item }">
@@ -612,7 +614,7 @@ export default {
     getGitHubTypeText(typeCode) {
       switch (typeCode) {
         case 1:
-          return 'Org'
+          return 'Organization'
         case 2:
           return 'User'
         default:
