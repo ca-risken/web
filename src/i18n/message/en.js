@@ -51,7 +51,13 @@ const en = {
     EDIT: 'EDIT',
     'Re-generate': 'Re-generate',
     DOWNLOAD_PDF: 'Download PDF',
+    'VERIFY GITHUB USER': 'LINK GITHUB',
+    RESYNC: 'RESYNC',
     'OPEN INSTALL PAGE': 'Open install page',
+  },
+  help: {
+    'GITHUB APP AUTH FLOW':
+      'To use GitHub App authentication, install the GitHub App to the target organization before running a scan. After saving, run "LINK GITHUB" and complete OAuth authorization on GitHub as the setting user.',
   },
   menu: {
     Home: 'Home',
@@ -163,13 +169,55 @@ const en = {
     'GCP ID': 'GCP ID',
     'GCP Project': 'GCP Project',
     'GCP ProjectID': 'GCP ProjectID',
+    'Auth Mode': 'Auth Mode',
     'GitHub Setting': 'GitHub Setting',
     'GitHub Setting ID': 'GitHub Setting ID',
     GitHubUser: 'GitHubUser',
-    'Gitleaks Setting': 'Gitleaks Setting',
-    'Gitleaks Status': 'Gitleaks Status',
-    'CodeScan Setting': 'CodeScan Setting',
-    'CodeScan Status': 'CodeScan Status',
+    'Installation ID': 'Installation ID',
+    'Verified GitHub User': 'Verified GitHub User',
+    'GitHub Setting User': 'Setting User (GitHub User)',
+    'Verified At': 'Verified At',
+    'Verification Status': 'Verification Status',
+    'GitHub App Status': 'GitHub App Status',
+    Unverified: 'Unverified',
+    Verified: 'Verified',
+    'Verification Failed': 'Verification Failed',
+    'GitHub App Link Success': 'Linked',
+    'GitHub App Link Failed': 'Link Failed',
+    'GitHub App Link Pending': 'GitHub Link Pending',
+    'GitHub App Link Pending Action Prefix': 'Run ',
+    'GitHub App Link Pending Action Link': 'LINK GITHUB',
+    'GitHub App Link Pending Action Suffix': '.',
+    'GitHub User Verification Pending': 'GitHub Link Pending',
+    'GitHub Setting ID Suffix': ' (GitHub Setting ID: {id})',
+    'GitHub User Verification Completed': 'GitHub linking has been completed.',
+    'GitHub User Verification Session Expired':
+      'GitHub linking could not be completed because the session expired.',
+    'GitHub User Verification Unauthorized':
+      'GitHub linking failed. Please check the RISKEN project permission.',
+    'GitHub User Verification Failed':
+      'GitHub linking failed. Please check the GitHub permission or GitHub App setting.',
+    'GitHub App Verified': 'GitHub App verification has been completed.',
+    'GitHub App Verification Failed': 'GitHub App verification failed.',
+    'GitHub App Installation Installed': 'GitHub App is installed.',
+    'GitHub App Installation Not Installed': 'GitHub App is not installed.',
+    'GitHub App Installation Check Failed':
+      'Could not check the GitHub App installation status.',
+    'GitHub App Installation Installed Message':
+      'Confirmed the GitHub App installation for {target}. Run LINK GITHUB to complete the scan setting.',
+    'GitHub App Installation Not Installed Message':
+      'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
+    'GitHub App Installation Open Install Page':
+      'Open GitHub App installation page',
+    'GitHub App Installation Check Failed Message':
+      'Check the GitHub App setting or the connection to the GitHub API.',
+    'Request Failed Please Check Setting':
+      'Request failed. Please check the setting.',
+    'Unexpected Error Occurred': 'Unexpected error occurred.',
+    'Session Expired Please Sign In Again':
+      'Session expired. Please sign in again.',
+    'Repository Count': 'Repository Count',
+    'Target Repository List': 'Target Repository List',
     'GitHub App Install Page Lead':
       'This is the initial setup for an organization administrator or user owner. After installation, continue the scan setup from the GitHub setting page.',
     'GitHub App Install Section Title': 'Install GitHub App',
@@ -183,12 +231,18 @@ const en = {
       'You have owner permission for the target organization or user account.',
     'GitHub App Install Checklist Target':
       'Select the target organization or user on GitHub.',
+    'GitHub App Install Checklist After':
+      'After installation, save the GitHub App setting and run LINK GITHUB from the GitHub setting page.',
     'GitHub App Install Checklist After Before Link':
       'After installation, save the GitHub App setting and run LINK GITHUB from the ',
     'GitHub App Install Checklist After Link Text': 'GitHub setting page',
     'GitHub App Install Checklist After After Link': '.',
     'GitHub App Install Before Open Note':
       'The installation page opens on GitHub.',
+    'Gitleaks Setting': 'Gitleaks Setting',
+    'Gitleaks Status': 'Gitleaks Status',
+    'CodeScan Setting': 'CodeScan Setting',
+    'CodeScan Status': 'CodeScan Status',
     'Google Data Source': 'Google Data Source',
     'Google Data Source ID': 'Google Data Source ID',
     Keyword: 'Keyword',

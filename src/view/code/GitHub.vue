@@ -63,6 +63,19 @@
           />
         </v-row>
       </v-form>
+      <v-row v-if="githubAppOAuthResult">
+        <v-col cols="12">
+          <v-alert
+            density="compact"
+            variant="tonal"
+            :type="githubAppOAuthResult.type"
+            closable
+            @click:close="githubAppOAuthResult = null"
+          >
+            {{ githubAppOAuthResult.message }}
+          </v-alert>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12">
           <v-card>
@@ -83,19 +96,49 @@
                 locale="ja-jp"
                 loading-text="Loading..."
                 no-data-text="No data."
-                class="elevation-1"
+                class="github-setting-table elevation-1"
                 item-key="diagnosis_id"
                 @click:row="handleRowClick"
               >
-                <template v-slot:[`item.avator`]>
-                  <v-avatar class="ma-3" size="48px">
-                    <v-icon color="black" size="36px" icon="mdi-github" />
-                  </v-avatar>
-                </template>
                 <template v-slot:[`item.type_text`]="{ item }">
                   <v-chip label variant="outlined" color="blue-darken-2">{{
-                    item.value.type_text
+                    item.value.type_text === 'Organization'
+                      ? 'Org'
+                      : item.value.type_text
                   }}</v-chip>
+                </template>
+                <template v-slot:[`item.auth_mode`]="{ item }">
+                  <v-chip label variant="outlined" color="cyan-darken-2">
+                    {{ getGitHubAuthModeText(item.value.auth_mode) }}
+                  </v-chip>
+                </template>
+                <template v-slot:[`item.verification_status`]="{ item }">
+                  <div class="github-app-status-icon">
+                    <v-icon
+                      v-if="item.value.auth_mode === 'GITHUB_APP'"
+                      :color="
+                        getGitHubVerificationColor(
+                          item.value.auth_mode,
+                          item.value.verification_status
+                        )
+                      "
+                      :icon="
+                        getGitHubVerificationIcon(
+                          item.value.verification_status
+                        )
+                      "
+                    >
+                      <v-tooltip activator="parent" location="bottom">
+                        {{
+                          getGitHubVerificationText(
+                            item.value.auth_mode,
+                            item.value.verification_status
+                          )
+                        }}
+                      </v-tooltip>
+                    </v-icon>
+                    <span v-else>-</span>
+                  </div>
                 </template>
                 <template v-slot:[`item.status_gitleaks`]="{ item }">
                   <scan-status
@@ -203,6 +246,7 @@
       :dependencyDataSourceModel="dependencyDataSourceModel"
       :codeScanDataSourceModel="codeScanDataSourceModel"
       @closeDialog="closeDialogEdit"
+      @editGitHubSetting="handleEditGitHubSettingFromDetail"
       v-on:edit-notify="handleEditFinish"
     ></setting-dialog>
 
@@ -253,6 +297,7 @@ export default {
         max_score: '',
         updated_at: '',
       },
+      githubAppOAuthResult: null,
       gitHubModel: {
         github_setting_id: '',
         code_data_source_id: '',
@@ -263,6 +308,12 @@ export default {
         target_resource: '',
         github_user: '',
         personal_access_token: '',
+        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        installation_id: '',
+        verification_status: '',
+        verified_github_user: '',
+        verified_at: '',
+        github_app_setting_repository: [],
         updated_at: '',
         gitleaksSetting: {
           repository_pattern: '',
@@ -342,23 +393,24 @@ export default {
     headers() {
       return [
         {
-          title: this.$i18n.t('item[""]'),
-          align: 'center',
-          width: '10%',
-          sortable: false,
-          key: 'avator',
-        },
-        {
-          title: this.$i18n.t('item["ID"]'),
-          align: 'start',
-          sortable: true,
-          key: 'github_setting_id',
-        },
-        {
           title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
           key: 'name',
+        },
+        {
+          title: this.$i18n.t('item["Auth Mode"]'),
+          align: 'start',
+          sortable: true,
+          key: 'auth_mode',
+        },
+        {
+          title: this.formatStatusHeader(
+            this.$i18n.t('item["GitHub App Status"]')
+          ),
+          align: 'center',
+          sortable: true,
+          key: 'verification_status',
         },
         {
           title: this.$i18n.t('item["Type"]'),
@@ -373,19 +425,25 @@ export default {
           key: 'target_resource',
         },
         {
-          title: this.$i18n.t('item["Gitleaks Status"]'),
+          title: this.formatStatusHeader(
+            this.$i18n.t('item["Gitleaks Status"]')
+          ),
           align: 'start',
           sortable: true,
           key: 'status_gitleaks',
         },
         {
-          title: this.$i18n.t('item["Dependency Status"]'),
+          title: this.formatStatusHeader(
+            this.$i18n.t('item["Dependency Status"]')
+          ),
           align: 'start',
           sortable: true,
           key: 'status_dependency',
         },
         {
-          title: this.$i18n.t('item["CodeScan Status"]'),
+          title: this.formatStatusHeader(
+            this.$i18n.t('item["CodeScan Status"]')
+          ),
           align: 'start',
           sortable: true,
           key: 'status_code_scan',
@@ -403,6 +461,7 @@ export default {
     this.loading = true
     await this.getDataSource()
     await this.listGitHubSetting()
+    await this.handleGitHubAppOAuthResult()
     this.loading = false
   },
   methods: {
@@ -453,6 +512,16 @@ export default {
           target_resource: github_setting.target_resource,
           github_user: github_setting.github_user,
           personal_access_token: github_setting.personal_access_token,
+          auth_mode:
+            github_setting.auth_mode == ''
+              ? 'PERSONAL_ACCESS_TOKEN'
+              : github_setting.auth_mode,
+          installation_id: github_setting.installation_id,
+          verification_status: github_setting.verification_status,
+          verified_github_user: github_setting.verified_github_user,
+          verified_at: github_setting.verified_at,
+          github_app_setting_repository:
+            github_setting.github_app_setting_repository || [],
           updated_at: github_setting.updated_at,
         }
         if (github_setting.gitleaks_setting) {
@@ -552,6 +621,144 @@ export default {
           return 'Unknown' // Unknown
       }
     },
+    getGitHubAuthModeText(authMode) {
+      switch (authMode) {
+        case 'GITHUB_APP':
+          return 'App'
+        case 'PERSONAL_ACCESS_TOKEN':
+        case '':
+        case undefined:
+        case null:
+          return 'PAT'
+        default:
+          return 'Unknown'
+      }
+    },
+    formatStatusHeader(label) {
+      return String(label)
+        .replace('ステータス', '\nステータス')
+        .replace(' Status', '\nStatus')
+    },
+    getGitHubVerificationColor(authMode, status) {
+      if (authMode !== 'GITHUB_APP') {
+        return 'grey'
+      }
+      switch (status) {
+        case 'SUCCESS':
+          return 'green'
+        case 'FAILED':
+          return 'red'
+        case 'PENDING_USER_VERIFICATION':
+        case 'PENDING':
+          return 'orange'
+        default:
+          return 'grey'
+      }
+    },
+    getGitHubVerificationText(authMode, status) {
+      if (authMode !== 'GITHUB_APP') {
+        return '-'
+      }
+      if (!status) {
+        return this.$t(`item['GitHub App Link Pending']`)
+      }
+      switch (status) {
+        case 'SUCCESS':
+          return this.$t(`item['GitHub App Link Success']`)
+        case 'FAILED':
+          return this.$t(`item['GitHub App Link Failed']`)
+        case 'PENDING_USER_VERIFICATION':
+        case 'PENDING':
+          return this.$t(`item['GitHub App Link Pending']`)
+        default:
+          return status
+      }
+    },
+    getGitHubVerificationIcon(status) {
+      switch (status) {
+        case 'SUCCESS':
+          return 'mdi-check-circle'
+        case 'FAILED':
+          return 'mdi-alert-circle'
+        case 'PENDING_USER_VERIFICATION':
+        case 'PENDING':
+        case '':
+        case undefined:
+        case null:
+          return 'mdi-clock-outline'
+        default:
+          return 'mdi-help-circle-outline'
+      }
+    },
+    async isVerifiedGitHubAppOAuthResult(githubSettingID) {
+      const settingID = Number(githubSettingID)
+      if (!Number.isInteger(settingID) || settingID <= 0) {
+        return false
+      }
+      const githubSettings = await this.listGitHubSettingAPI(settingID).catch(
+        () => {
+          return []
+        }
+      )
+      if (!githubSettings.length) {
+        return false
+      }
+      return githubSettings[0].verification_status === 'SUCCESS'
+    },
+    async handleGitHubAppOAuthResult() {
+      const result = this.$route.query.github_app_oauth
+      if (!result) {
+        return
+      }
+      const githubSettingID = this.$route.query.github_setting_id
+      const suffix = githubSettingID
+        ? this.$t(`item['GitHub Setting ID Suffix']`, { id: githubSettingID })
+        : ''
+      if (
+        result === 'success' &&
+        (await this.isVerifiedGitHubAppOAuthResult(githubSettingID))
+      ) {
+        this.githubAppOAuthResult = {
+          type: 'success',
+          message:
+            this.$t(`item['GitHub User Verification Completed']`) + suffix,
+        }
+        this.$refs.snackbar.notifySuccess(
+          this.$t(`item['GitHub App Verified']`)
+        )
+      } else if (result === 'session_expired') {
+        this.githubAppOAuthResult = {
+          type: 'warning',
+          message:
+            this.$t(`item['GitHub User Verification Session Expired']`) +
+            suffix,
+        }
+        this.$refs.snackbar.notifyError(
+          this.$t(`item['Session Expired Please Sign In Again']`)
+        )
+      } else if (result === 'unauthorized') {
+        this.githubAppOAuthResult = {
+          type: 'error',
+          message:
+            this.$t(`item['GitHub User Verification Unauthorized']`) + suffix,
+        }
+        this.$refs.snackbar.notifyError(
+          this.$t(`item['GitHub App Verification Failed']`)
+        )
+      } else {
+        this.githubAppOAuthResult = {
+          type: 'error',
+          message: this.$t(`item['GitHub User Verification Failed']`) + suffix,
+        }
+        this.$refs.snackbar.notifyError(
+          this.$t(`item['GitHub App Verification Failed']`)
+        )
+      }
+      const query = Object.assign({}, this.$route.query)
+      delete query.github_app_oauth
+      delete query.github_setting_id
+      this.$router.replace({ path: this.$route.path, query: query })
+    },
     // Handler
     async handleList() {
       this.loading = true
@@ -566,7 +773,10 @@ export default {
       this.settingDialog = true
     },
     handleNewGitHubSetting() {
-      this.gitHubModel = {}
+      this.gitHubModel = {
+        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        github_app_setting_repository: [],
+      }
       this.newGitleaksSetting()
       this.newDependencySetting()
       this.newCodeScanSetting()
@@ -597,6 +807,9 @@ export default {
       this.assignDataModel(item.value)
       this.isReadOnlyForm = false
       this.settingDialog = true
+    },
+    handleEditGitHubSettingFromDetail() {
+      this.isReadOnlyForm = false
     },
     handleDeleteGitHubSetting(item) {
       this.assignDataModel(item.value)
@@ -702,3 +915,16 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.github-setting-table :deep(thead th .v-data-table-header__content) {
+  white-space: pre-line;
+}
+
+.github-app-status-icon {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+</style>
