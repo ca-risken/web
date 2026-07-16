@@ -205,7 +205,7 @@
                             href="#"
                             @click.prevent="handleGitHubAppLinkFromDetail"
                           >
-                            {{ $t(`btn['VERIFY GITHUB USER']`) }}
+                            {{ $t(`btn['GO TO GITHUB LINK']`) }}
                           </a>
                         </div>
                       </v-alert>
@@ -1312,8 +1312,8 @@ export default {
       e6: 1,
       gitHubSetting: Object.assign(
         {
-          auth_mode: 'PERSONAL_ACCESS_TOKEN',
-          auth_mode_text: 'Personal Access Token',
+          auth_mode: 'GITHUB_APP',
+          auth_mode_text: 'GitHub App',
           github_app_setting_repository: [],
         },
         this.gitHubModel,

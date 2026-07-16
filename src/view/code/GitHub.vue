@@ -308,7 +308,7 @@ export default {
         target_resource: '',
         github_user: '',
         personal_access_token: '',
-        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        auth_mode: 'GITHUB_APP',
         installation_id: '',
         verification_status: '',
         verified_github_user: '',
@@ -780,7 +780,7 @@ export default {
     },
     handleNewGitHubSetting() {
       this.gitHubModel = {
-        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        auth_mode: 'GITHUB_APP',
         github_app_setting_repository: [],
       }
       this.newGitleaksSetting()

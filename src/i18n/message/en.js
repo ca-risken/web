@@ -52,6 +52,7 @@ const en = {
     'Re-generate': 'Re-generate',
     DOWNLOAD_PDF: 'Download PDF',
     'VERIFY GITHUB USER': 'LINK GITHUB',
+    'GO TO GITHUB LINK': 'PROCEED TO GITHUB LINK',
     RESYNC: 'RESYNC',
     'OPEN INSTALL PAGE': 'Open install page',
   },
