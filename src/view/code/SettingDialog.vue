@@ -200,6 +200,14 @@
                             }}
                           </router-link>
                         </div>
+                        <div v-if="shouldShowGitHubAppLink" class="mt-2">
+                          <a
+                            href="#"
+                            @click.prevent="handleGitHubAppUserVerification"
+                          >
+                            {{ $t(`btn['VERIFY GITHUB USER']`) }}
+                          </a>
+                        </div>
                       </v-alert>
                     </v-col>
                   </v-row>
@@ -1240,6 +1248,12 @@ export default {
     shouldShowGitHubAppInstallPageLink() {
       return this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED'
     },
+    shouldShowGitHubAppLink() {
+      return (
+        this.githubAppInstallationStatus?.installed &&
+        this.gitHubSetting.verification_status !== 'SUCCESS'
+      )
+    },
     githubAppInstallPageTo() {
       const query = {}
       if (this.$route.query.project_id) {
@@ -1921,6 +1935,10 @@ export default {
         this.codeScanSetting = codeScanSetting
       }
       this.$emit('edit-notify', 'Success: Updated.')
+      if (this.isGitHubAppAuth) {
+        this.e6 = 1
+        return
+      }
       this.$emit('closeDialog')
     },
 

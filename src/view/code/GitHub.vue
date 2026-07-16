@@ -393,6 +393,12 @@ export default {
     headers() {
       return [
         {
+          title: this.$i18n.t('item["ID"]'),
+          align: 'start',
+          sortable: true,
+          key: 'github_setting_id',
+        },
+        {
           title: this.$i18n.t('item["Name"]'),
           align: 'start',
           sortable: true,
@@ -614,7 +620,7 @@ export default {
     getGitHubTypeText(typeCode) {
       switch (typeCode) {
         case 1:
-          return 'Organization'
+          return 'Org'
         case 2:
           return 'User'
         default:
@@ -917,6 +923,11 @@ export default {
 </script>
 
 <style scoped>
+.github-setting-table :deep(th),
+.github-setting-table :deep(td) {
+  font-size: 12px;
+}
+
 .github-setting-table :deep(thead th .v-data-table-header__content) {
   white-space: pre-line;
 }
