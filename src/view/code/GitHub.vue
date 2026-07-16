@@ -308,7 +308,7 @@ export default {
         target_resource: '',
         github_user: '',
         personal_access_token: '',
-        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        auth_mode: 'GITHUB_APP',
         installation_id: '',
         verification_status: '',
         verified_github_user: '',
@@ -392,6 +392,12 @@ export default {
   computed: {
     headers() {
       return [
+        {
+          title: this.$i18n.t('item["ID"]'),
+          align: 'start',
+          sortable: true,
+          key: 'github_setting_id',
+        },
         {
           title: this.$i18n.t('item["Name"]'),
           align: 'start',
@@ -774,7 +780,7 @@ export default {
     },
     handleNewGitHubSetting() {
       this.gitHubModel = {
-        auth_mode: 'PERSONAL_ACCESS_TOKEN',
+        auth_mode: 'GITHUB_APP',
         github_app_setting_repository: [],
       }
       this.newGitleaksSetting()
@@ -917,6 +923,11 @@ export default {
 </script>
 
 <style scoped>
+.github-setting-table :deep(th),
+.github-setting-table :deep(td) {
+  font-size: 12px;
+}
+
 .github-setting-table :deep(thead th .v-data-table-header__content) {
   white-space: pre-line;
 }

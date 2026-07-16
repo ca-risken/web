@@ -138,7 +138,7 @@
                         :disabled="isReadOnly"
                       />
                     </v-col>
-                    <v-col cols="3">
+                    <v-col cols="3" v-if="!isGitHubAppAuth">
                       <v-text-field
                         density="compact"
                         v-model="gitHubSetting.github_user"
@@ -199,6 +199,14 @@
                               )
                             }}
                           </router-link>
+                        </div>
+                        <div v-if="shouldShowGitHubAppLink" class="mt-2">
+                          <a
+                            href="#"
+                            @click.prevent="handleGitHubAppLinkFromDetail"
+                          >
+                            {{ $t(`btn['GO TO GITHUB LINK']`) }}
+                          </a>
                         </div>
                       </v-alert>
                     </v-col>
@@ -347,7 +355,7 @@
                       variant="outlined"
                       color="blue-darken-1"
                       @click="handleGitHubEditSubmit"
-                      v-if="!isReadOnly"
+                      v-if="!isReadOnly && !hasCompletedGitHubAppSettingFlow"
                       :loading="loading"
                     >
                       {{ $t(`btn['SAVE']`) }}
@@ -1240,6 +1248,12 @@ export default {
     shouldShowGitHubAppInstallPageLink() {
       return this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED'
     },
+    shouldShowGitHubAppLink() {
+      return (
+        this.githubAppInstallationStatus?.installed &&
+        this.gitHubSetting.verification_status !== 'SUCCESS'
+      )
+    },
     githubAppInstallPageTo() {
       const query = {}
       if (this.$route.query.project_id) {
@@ -1298,8 +1312,8 @@ export default {
       e6: 1,
       gitHubSetting: Object.assign(
         {
-          auth_mode: 'PERSONAL_ACCESS_TOKEN',
-          auth_mode_text: 'Personal Access Token',
+          auth_mode: 'GITHUB_APP',
+          auth_mode_text: 'GitHub App',
           github_app_setting_repository: [],
         },
         this.gitHubModel,
@@ -1318,6 +1332,7 @@ export default {
       isDeleteGitleaks: false,
       isDeleteDependency: false,
       isDeleteCodeScan: false,
+      hasCompletedGitHubAppSettingFlow: false,
       gitleaksCacheDialog: false,
       githubAppRepositoryDialog: false,
       githubAppInstallationStatus: null,
@@ -1838,6 +1853,27 @@ export default {
       }
       window.location.href = oauthURL
     },
+    async handleGitHubAppLinkFromDetail() {
+      this.loading = true
+      const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
+        this.gitHubSetting.github_setting_id
+      )
+        .catch((err) => {
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
+          return null
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      if (gitHubSetting === null) {
+        return
+      }
+      if (!this.applyGitHubSetting(gitHubSetting)) {
+        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
+        return
+      }
+      this.$emit('editGitHubSetting')
+    },
     buildGitHubAppOAuthReturnTo() {
       const query = new URLSearchParams()
       query.set('project_id', this.$route.query.project_id)
@@ -1921,6 +1957,11 @@ export default {
         this.codeScanSetting = codeScanSetting
       }
       this.$emit('edit-notify', 'Success: Updated.')
+      if (this.isGitHubAppAuth) {
+        this.hasCompletedGitHubAppSettingFlow = true
+        this.e6 = 1
+        return
+      }
       this.$emit('closeDialog')
     },
 
