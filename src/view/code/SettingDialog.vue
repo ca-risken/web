@@ -138,7 +138,7 @@
                         :disabled="isReadOnly"
                       />
                     </v-col>
-                    <v-col cols="3">
+                    <v-col cols="3" v-if="!isGitHubAppAuth">
                       <v-text-field
                         density="compact"
                         v-model="gitHubSetting.github_user"
