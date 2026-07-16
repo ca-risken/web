@@ -620,7 +620,7 @@ export default {
     getGitHubTypeText(typeCode) {
       switch (typeCode) {
         case 1:
-          return 'Org'
+          return 'Organization'
         case 2:
           return 'User'
         default:
