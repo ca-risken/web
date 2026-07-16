@@ -355,7 +355,7 @@
                       variant="outlined"
                       color="blue-darken-1"
                       @click="handleGitHubEditSubmit"
-                      v-if="!isReadOnly"
+                      v-if="!isReadOnly && !hasCompletedGitHubAppSettingFlow"
                       :loading="loading"
                     >
                       {{ $t(`btn['SAVE']`) }}
@@ -1332,6 +1332,7 @@ export default {
       isDeleteGitleaks: false,
       isDeleteDependency: false,
       isDeleteCodeScan: false,
+      hasCompletedGitHubAppSettingFlow: false,
       gitleaksCacheDialog: false,
       githubAppRepositoryDialog: false,
       githubAppInstallationStatus: null,
@@ -1957,6 +1958,7 @@ export default {
       }
       this.$emit('edit-notify', 'Success: Updated.')
       if (this.isGitHubAppAuth) {
+        this.hasCompletedGitHubAppSettingFlow = true
         this.e6 = 1
         return
       }
