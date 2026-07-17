@@ -52,7 +52,6 @@ const ja = {
     'Re-generate': '再生成',
     DOWNLOAD_PDF: 'PDFダウンロード',
     'VERIFY GITHUB USER': 'GitHub連携',
-    'GO TO GITHUB LINK': 'GitHub連携へ進む',
     RESYNC: '再同期',
     'OPEN INSTALL PAGE': 'インストールページを開く',
   },
