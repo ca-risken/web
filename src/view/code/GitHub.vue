@@ -103,7 +103,9 @@
                 <template v-slot:[`item.type_text`]="{ item }">
                   <v-chip label variant="outlined" color="blue-darken-2">{{
                     item.value.type_text === 'Organization'
-                      ? 'Org'
+                      ? 'O'
+                      : item.value.type_text === 'User'
+                      ? 'U'
                       : item.value.type_text
                   }}</v-chip>
                 </template>
