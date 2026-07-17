@@ -10,6 +10,7 @@ env:
     VITE_RUM_TOKEN: '/build/datadog/VITE_RUM_TOKEN'
     VITE_STATIC_LINK: '/build/web/VITE_STATIC_LINK'
     VITE_GENERATIVE_AI_ENABLED: '/build/web/VITE_GENERATIVE_AI_ENABLED'
+    VITE_GITHUB_APP_INSTALL_URL: '/build/web/VITE_GITHUB_APP_INSTALL_URL'
 
 phases:
   pre_build:
@@ -37,6 +38,7 @@ phases:
       - echo "VITE_RUM_TOKEN=${VITE_RUM_TOKEN}" >> .env.prd
       - echo "VITE_STATIC_LINK='${VITE_STATIC_LINK}'" >> .env.prd
       - echo "VITE_GENERATIVE_AI_ENABLED='${VITE_GENERATIVE_AI_ENABLED}'" >> .env.prd
+      - echo "VITE_GITHUB_APP_INSTALL_URL='${VITE_GITHUB_APP_INSTALL_URL}'" >> .env.prd
 
       - echo Building the Docker images...
       - make build-ci -j BUILD_OPT="${BUILD_OPT}" IMAGE_PREFIX=${IMAGE_PREFIX} IMAGE_TAG=${TAG} IMAGE_REGISTRY=${REGISTRY}

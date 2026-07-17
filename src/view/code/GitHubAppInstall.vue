@@ -116,6 +116,7 @@ export default {
   data() {
     return {
       installURL:
+        import.meta.env.VITE_GITHUB_APP_INSTALL_URL ||
         'https://github.com/apps/risken-code-app/installations/select_target',
       checklist: [
         'GitHub App Install Checklist Owner',
