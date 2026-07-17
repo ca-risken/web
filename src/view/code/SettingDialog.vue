@@ -101,7 +101,7 @@
                         "
                         :placeholder="gitHubForm.type.placeholder"
                         :items="gitHubForm.type.list"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       />
                     </v-col>
                     <v-col cols="6">
@@ -117,7 +117,7 @@
                           ) + ' *'
                         "
                         :placeholder="gitHubForm.target_resource.placeholder"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -140,7 +140,7 @@
                         "
                         :placeholder="gitHubForm.auth_mode.placeholder"
                         :items="gitHubForm.auth_mode.list"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       />
                     </v-col>
                     <v-col cols="3" v-if="!isGitHubAppAuth">
