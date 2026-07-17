@@ -84,7 +84,7 @@
                         :rules="gitHubForm.base_url.validator"
                         :label="$t(`item['` + gitHubForm.base_url.label + `']`)"
                         :placeholder="gitHubForm.base_url.placeholder"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       ></v-text-field>
                     </v-col>
                   </v-row>
