@@ -217,7 +217,7 @@
                           }}</span
                           ><a
                             href="#"
-                            @click.prevent="$emit('editGitHubSetting')"
+                            @click.prevent="handleGitHubAppLinkFromDetail"
                             >{{
                               $t(`item['GitHub App Link Pending Action Link']`)
                             }}</a
@@ -1841,6 +1841,27 @@ export default {
         return
       }
       window.location.href = oauthURL
+    },
+    async handleGitHubAppLinkFromDetail() {
+      this.loading = true
+      const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
+        this.gitHubSetting.github_setting_id
+      )
+        .catch((err) => {
+          this.$emit('edit-notify', '', this.getErrorMessage(err))
+          return null
+        })
+        .finally(() => {
+          this.loading = false
+        })
+      if (gitHubSetting === null) {
+        return
+      }
+      if (!this.applyGitHubSetting(gitHubSetting)) {
+        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
+        return
+      }
+      this.$emit('editGitHubSetting')
     },
     buildGitHubAppOAuthReturnTo() {
       const query = new URLSearchParams()
