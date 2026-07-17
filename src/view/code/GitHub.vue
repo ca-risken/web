@@ -101,13 +101,19 @@
                 @click:row="handleRowClick"
               >
                 <template v-slot:[`item.type_text`]="{ item }">
-                  <v-chip label variant="outlined" color="blue-darken-2">{{
-                    item.value.type_text === 'Organization'
-                      ? 'O'
-                      : item.value.type_text === 'User'
-                      ? 'U'
-                      : item.value.type_text
-                  }}</v-chip>
+                  <v-tooltip :text="item.value.type_text" location="top">
+                    <template v-slot:activator="{ props }">
+                      <v-icon
+                        v-bind="props"
+                        color="blue-darken-2"
+                        :icon="
+                          item.value.type_text === 'Organization'
+                            ? 'mdi-domain'
+                            : 'mdi-account'
+                        "
+                      ></v-icon>
+                    </template>
+                  </v-tooltip>
                 </template>
                 <template v-slot:[`item.auth_mode`]="{ item }">
                   <v-chip label variant="outlined" color="cyan-darken-2">
