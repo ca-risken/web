@@ -122,7 +122,7 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="4">
+                    <v-col cols="3">
                       <v-select
                         :class="{
                           'personal-access-token-auth-mode':
