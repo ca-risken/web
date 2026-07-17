@@ -425,6 +425,7 @@ export default {
           align: 'center',
           sortable: true,
           key: 'verification_status',
+          headerProps: { class: 'status-split-header' },
         },
         {
           title: this.$i18n.t('item["Type"]'),
@@ -445,6 +446,7 @@ export default {
           align: 'center',
           sortable: true,
           key: 'status_gitleaks',
+          headerProps: { class: 'status-split-header' },
         },
         {
           title: this.formatStatusHeader(
@@ -453,6 +455,7 @@ export default {
           align: 'center',
           sortable: true,
           key: 'status_dependency',
+          headerProps: { class: 'status-split-header' },
         },
         {
           title: this.formatStatusHeader(
@@ -461,6 +464,7 @@ export default {
           align: 'center',
           sortable: true,
           key: 'status_code_scan',
+          headerProps: { class: 'status-split-header' },
         },
         {
           title: this.$i18n.t('item["Action"]'),
@@ -936,8 +940,17 @@ export default {
   font-size: 12px;
 }
 
-.github-setting-table :deep(thead th .v-data-table-header__content) {
-  white-space: pre-line;
+.github-setting-table :deep(thead th) {
+  white-space: nowrap;
+}
+
+.github-setting-table :deep(thead th.status-split-header) {
+  white-space: normal;
+}
+
+.github-setting-table
+  :deep(thead th.status-split-header .v-data-table-header__content) {
+  white-space: pre;
 }
 
 .github-app-status-icon {
