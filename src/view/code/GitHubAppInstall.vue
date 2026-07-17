@@ -94,6 +94,8 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 append-icon="mdi-open-in-new"
+                :loading="loadingInstallURL"
+                :disabled="!installURL"
               >
                 {{ $t(`btn['OPEN INSTALL PAGE']`) }}
               </v-btn>
@@ -107,22 +109,32 @@
 
 <script>
 import PageHeader from '@/component/widget/toolbar/PageHeader.vue'
+import mixin from '@/mixin'
+import code from '@/mixin/api/code'
 
 export default {
   name: 'GitHubAppInstall',
+  mixins: [mixin, code],
   components: {
     PageHeader,
   },
   data() {
     return {
-      installURL:
-        'https://github.com/apps/risken-code-app/installations/select_target',
+      installURL: '',
+      loadingInstallURL: true,
       checklist: [
         'GitHub App Install Checklist Owner',
         'GitHub App Install Checklist Target',
         'GitHub App Install Checklist After',
       ],
     }
+  },
+  async mounted() {
+    const installURL = await this.getGitHubAppInstallURLAPI().catch(() => '')
+    if (this.isAllowedGitHubAppInstallURL(installURL)) {
+      this.installURL = installURL
+    }
+    this.loadingInstallURL = false
   },
   computed: {
     githubSettingListTo() {
@@ -133,6 +145,22 @@ export default {
       return {
         path: '/code/github',
         query,
+      }
+    },
+  },
+  methods: {
+    isAllowedGitHubAppInstallURL(rawURL) {
+      try {
+        const url = new URL(rawURL)
+        return (
+          url.protocol === 'https:' &&
+          url.hostname === 'github.com' &&
+          /^\/apps\/[a-z0-9-]+\/installations\/select_target$/.test(
+            url.pathname
+          )
+        )
+      } catch {
+        return false
       }
     },
   },

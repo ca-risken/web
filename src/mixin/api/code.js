@@ -95,6 +95,19 @@ const code = {
       }
       return res.data.data.url
     },
+    async getGitHubAppInstallURLAPI() {
+      const query = new URLSearchParams()
+      query.set('project_id', this.getCurrentProjectID())
+      const res = await this.$axios
+        .get('/code/github-app/install-url/?' + query.toString())
+        .catch((err) => {
+          return Promise.reject(err)
+        })
+      if (!res.data || !res.data.data || !res.data.data.url) {
+        return ''
+      }
+      return res.data.data.url
+    },
     async deleteGitHubSettingAPI(github_setting_id) {
       const param = {
         project_id: this.getCurrentProjectID(),
