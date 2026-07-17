@@ -407,7 +407,7 @@ export default {
           key: 'name',
         },
         {
-          title: this.$i18n.t('item["Auth Mode"]'),
+          title: this.$i18n.t('item["Auth"]'),
           align: 'start',
           sortable: true,
           key: 'auth_mode',

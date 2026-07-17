@@ -170,6 +170,7 @@ const ja = {
     'GCP Project': 'GCPプロジェクト',
     'GCP ProjectID': 'GCPプロジェクトID',
     'Auth Mode': '認証方式',
+    Auth: '認証',
     GitHubUser: 'GitHubユーザ',
     'GitHub Setting': 'GitHub設定',
     'GitHub Setting ID': 'GitHub Setting ID',

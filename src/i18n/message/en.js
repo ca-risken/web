@@ -170,6 +170,7 @@ const en = {
     'GCP Project': 'GCP Project',
     'GCP ProjectID': 'GCP ProjectID',
     'Auth Mode': 'Auth Mode',
+    Auth: 'Auth',
     'GitHub Setting': 'GitHub Setting',
     'GitHub Setting ID': 'GitHub Setting ID',
     GitHubUser: 'GitHubUser',
