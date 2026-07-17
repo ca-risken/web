@@ -52,7 +52,6 @@ const en = {
     'Re-generate': 'Re-generate',
     DOWNLOAD_PDF: 'Download PDF',
     'VERIFY GITHUB USER': 'LINK GITHUB',
-    'GO TO GITHUB LINK': 'PROCEED TO GITHUB LINK',
     RESYNC: 'RESYNC',
     'OPEN INSTALL PAGE': 'Open install page',
   },
@@ -205,7 +204,7 @@ const en = {
     'GitHub App Installation Check Failed':
       'Could not check the GitHub App installation status.',
     'GitHub App Installation Installed Message':
-      'Confirmed the GitHub App installation for {target}. Run LINK GITHUB to complete the scan setting.',
+      'Run LINK GITHUB to complete the scan setting.',
     'GitHub App Installation Not Installed Message':
       'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
     'GitHub App Installation Open Install Page':

@@ -84,7 +84,7 @@
                         :rules="gitHubForm.base_url.validator"
                         :label="$t(`item['` + gitHubForm.base_url.label + `']`)"
                         :placeholder="gitHubForm.base_url.placeholder"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -101,7 +101,7 @@
                         "
                         :placeholder="gitHubForm.type.placeholder"
                         :items="gitHubForm.type.list"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       />
                     </v-col>
                     <v-col cols="6">
@@ -117,7 +117,7 @@
                           ) + ' *'
                         "
                         :placeholder="gitHubForm.target_resource.placeholder"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -140,7 +140,7 @@
                         "
                         :placeholder="gitHubForm.auth_mode.placeholder"
                         :items="gitHubForm.auth_mode.list"
-                        :disabled="isReadOnly"
+                        :disabled="isReadOnly || isConfiguredGitHubSetting"
                       />
                     </v-col>
                     <v-col cols="3" v-if="!isGitHubAppAuth">
@@ -187,7 +187,7 @@
                         <div class="font-weight-medium">
                           {{ githubAppInstallationStatusTitle }}
                         </div>
-                        <div>
+                        <div v-if="githubAppInstallationStatusMessage">
                           {{ githubAppInstallationStatusMessage }}
                         </div>
                         <div
@@ -204,14 +204,6 @@
                               )
                             }}
                           </router-link>
-                        </div>
-                        <div v-if="shouldShowGitHubAppLink" class="mt-2">
-                          <a
-                            href="#"
-                            @click.prevent="handleGitHubAppLinkFromDetail"
-                          >
-                            {{ $t(`btn['GO TO GITHUB LINK']`) }}
-                          </a>
                         </div>
                       </v-alert>
                     </v-col>
@@ -1253,12 +1245,6 @@ export default {
     shouldShowGitHubAppInstallPageLink() {
       return this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED'
     },
-    shouldShowGitHubAppLink() {
-      return (
-        this.githubAppInstallationStatus?.installed &&
-        this.gitHubSetting.verification_status !== 'SUCCESS'
-      )
-    },
     githubAppInstallPageTo() {
       const query = {}
       if (this.$route.query.project_id) {
@@ -1580,9 +1566,7 @@ export default {
         return ''
       }
       if (status.installed) {
-        return this.$t(`item['GitHub App Installation Installed Message']`, {
-          target: status.target_resource || this.gitHubSetting.target_resource,
-        })
+        return this.$t(`item['GitHub App Installation Installed Message']`)
       }
       if (status.reason === 'NOT_INSTALLED') {
         return this.$t(`item['GitHub App Installation Not Installed Message']`)
@@ -1857,27 +1841,6 @@ export default {
         return
       }
       window.location.href = oauthURL
-    },
-    async handleGitHubAppLinkFromDetail() {
-      this.loading = true
-      const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
-        this.gitHubSetting.github_setting_id
-      )
-        .catch((err) => {
-          this.$emit('edit-notify', '', this.getErrorMessage(err))
-          return null
-        })
-        .finally(() => {
-          this.loading = false
-        })
-      if (gitHubSetting === null) {
-        return
-      }
-      if (!this.applyGitHubSetting(gitHubSetting)) {
-        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
-        return
-      }
-      this.$emit('editGitHubSetting')
     },
     buildGitHubAppOAuthReturnTo() {
       const query = new URLSearchParams()
