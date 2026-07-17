@@ -187,7 +187,7 @@
                         <div class="font-weight-medium">
                           {{ githubAppInstallationStatusTitle }}
                         </div>
-                        <div>
+                        <div v-if="githubAppInstallationStatusMessage">
                           {{ githubAppInstallationStatusMessage }}
                         </div>
                         <div
@@ -1566,9 +1566,7 @@ export default {
         return ''
       }
       if (status.installed) {
-        return this.$t(`item['GitHub App Installation Installed Message']`, {
-          target: status.target_resource || this.gitHubSetting.target_resource,
-        })
+        return ''
       }
       if (status.reason === 'NOT_INSTALLED') {
         return this.$t(`item['GitHub App Installation Not Installed Message']`)

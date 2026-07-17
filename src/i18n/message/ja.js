@@ -203,8 +203,6 @@ const ja = {
     'GitHub App Installation Not Installed': 'GitHub Appは未インストールです。',
     'GitHub App Installation Check Failed':
       'GitHub Appのインストール状態を確認できませんでした。',
-    'GitHub App Installation Installed Message':
-      '{target} へのGitHub Appインストールを確認しました。GitHub連携を実行すると、スキャン設定を完了できます。',
     'GitHub App Installation Not Installed Message':
       '対象OrganizationまたはUserにGitHub Appがインストールされていません。Organization管理者にインストール状況を確認してください。',
     'GitHub App Installation Open Install Page':
