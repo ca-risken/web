@@ -210,7 +210,11 @@
                   </v-row>
                   <v-row v-if="shouldShowGitHubAppLinkPendingInfo">
                     <v-col cols="12">
-                      <v-alert density="compact" type="info" variant="tonal">
+                      <v-alert
+                        density="compact"
+                        type="success"
+                        variant="tonal"
+                      >
                         <div class="font-weight-medium">
                           <span>{{
                             $t(`item['GitHub App Link Pending Action Prefix']`)
