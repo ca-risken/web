@@ -203,6 +203,8 @@ const en = {
     'GitHub App Installation Not Installed': 'GitHub App is not installed.',
     'GitHub App Installation Check Failed':
       'Could not check the GitHub App installation status.',
+    'GitHub App Installation Installed Message':
+      'Run LINK GITHUB to complete the scan setting.',
     'GitHub App Installation Not Installed Message':
       'The GitHub App is not installed to the target organization or user. Ask the organization administrator to confirm the installation.',
     'GitHub App Installation Open Install Page':

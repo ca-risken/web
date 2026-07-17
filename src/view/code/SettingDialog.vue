@@ -1566,7 +1566,7 @@ export default {
         return ''
       }
       if (status.installed) {
-        return ''
+        return this.$t(`item['GitHub App Installation Installed Message']`)
       }
       if (status.reason === 'NOT_INSTALLED') {
         return this.$t(`item['GitHub App Installation Not Installed Message']`)
