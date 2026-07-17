@@ -402,19 +402,19 @@ export default {
       return [
         {
           title: this.$i18n.t('item["ID"]'),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'github_setting_id',
         },
         {
           title: this.$i18n.t('item["Name"]'),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'name',
         },
         {
           title: this.$i18n.t('item["Auth"]'),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'auth_mode',
         },
@@ -428,13 +428,13 @@ export default {
         },
         {
           title: this.$i18n.t('item["Type"]'),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'type_text',
         },
         {
           title: this.$i18n.t('item["Target"]'),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'target_resource',
         },
@@ -442,7 +442,7 @@ export default {
           title: this.formatStatusHeader(
             this.$i18n.t('item["Gitleaks Status"]')
           ),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'status_gitleaks',
         },
@@ -450,7 +450,7 @@ export default {
           title: this.formatStatusHeader(
             this.$i18n.t('item["Dependency Status"]')
           ),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'status_dependency',
         },
@@ -458,7 +458,7 @@ export default {
           title: this.formatStatusHeader(
             this.$i18n.t('item["CodeScan Status"]')
           ),
-          align: 'start',
+          align: 'center',
           sortable: true,
           key: 'status_code_scan',
         },
