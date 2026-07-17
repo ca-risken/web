@@ -220,18 +220,7 @@
                     <v-col cols="12">
                       <v-alert density="compact" type="info" variant="tonal">
                         <div class="font-weight-medium">
-                          <span>{{
-                            $t(`item['GitHub App Link Pending Action Prefix']`)
-                          }}</span
-                          ><a
-                            href="#"
-                            @click.prevent="$emit('editGitHubSetting')"
-                            >{{
-                              $t(`item['GitHub App Link Pending Action Link']`)
-                            }}</a
-                          ><span>{{
-                            $t(`item['GitHub App Link Pending Action Suffix']`)
-                          }}</span>
+                          {{ $t(`item['GitHub App Link Pending']`) }}
                         </div>
                       </v-alert>
                     </v-col>
