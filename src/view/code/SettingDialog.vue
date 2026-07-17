@@ -124,6 +124,11 @@
                   <v-row>
                     <v-col cols="3">
                       <v-select
+                        :class="{
+                          'personal-access-token-auth-mode':
+                            gitHubSetting.auth_mode_text ===
+                            'Personal Access Token',
+                        }"
                         density="compact"
                         required
                         clearable
@@ -2073,5 +2078,9 @@ export default {
   color: #6b4900;
   font-weight: 600;
   text-decoration: underline;
+}
+.personal-access-token-auth-mode .v-select__selection-text {
+  font-size: 14px;
+  white-space: nowrap;
 }
 </style>
