@@ -155,20 +155,50 @@
                 <template v-slot:[`item.status_gitleaks`]="{ item }">
                   <scan-status
                     :status="getStatus(item.value.gitleaksSetting)"
-                    icon-only
+                    v-if="getStatus(item.value.gitleaksSetting)"
+                    class="github-scan-status"
                   />
+                  <v-chip
+                    v-else
+                    variant="flat"
+                    color="grey"
+                    class="github-scan-status"
+                  >
+                    <v-icon>mdi-minus-circle-outline</v-icon>
+                    Disabled
+                  </v-chip>
                 </template>
                 <template v-slot:[`item.status_dependency`]="{ item }">
                   <scan-status
                     :status="getStatus(item.value.dependencySetting)"
-                    icon-only
+                    v-if="getStatus(item.value.dependencySetting)"
+                    class="github-scan-status"
                   />
+                  <v-chip
+                    v-else
+                    variant="flat"
+                    color="grey"
+                    class="github-scan-status"
+                  >
+                    <v-icon>mdi-minus-circle-outline</v-icon>
+                    Disabled
+                  </v-chip>
                 </template>
                 <template v-slot:[`item.status_code_scan`]="{ item }">
                   <scan-status
                     :status="getStatus(item.value.codeScanSetting)"
-                    icon-only
+                    v-if="getStatus(item.value.codeScanSetting)"
+                    class="github-scan-status"
                   />
+                  <v-chip
+                    v-else
+                    variant="flat"
+                    color="grey"
+                    class="github-scan-status"
+                  >
+                    <v-icon>mdi-minus-circle-outline</v-icon>
+                    Disabled
+                  </v-chip>
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
@@ -943,5 +973,14 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
+}
+
+.github-setting-table :deep(.github-scan-status) {
+  font-size: 11px;
+  padding-inline: 8px;
+}
+
+.github-setting-table :deep(.github-scan-status .v-icon) {
+  margin-right: 2px !important;
 }
 </style>
