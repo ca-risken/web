@@ -122,55 +122,53 @@
                 </template>
                 <template v-slot:[`item.verification_status`]="{ item }">
                   <div class="github-app-status-icon">
-                    <v-icon
+                    <v-tooltip
                       v-if="item.value.auth_mode === 'GITHUB_APP'"
-                      :color="
-                        getGitHubVerificationColor(
+                      :text="
+                        getGitHubVerificationText(
                           item.value.auth_mode,
                           item.value.verification_status
                         )
                       "
-                      :icon="
-                        getGitHubVerificationIcon(
-                          item.value.verification_status
-                        )
-                      "
+                      location="top"
                     >
-                      <v-tooltip activator="parent" location="bottom">
-                        {{
-                          getGitHubVerificationText(
-                            item.value.auth_mode,
-                            item.value.verification_status
-                          )
-                        }}
-                      </v-tooltip>
-                    </v-icon>
+                      <template v-slot:activator="{ props }">
+                        <v-icon
+                          v-bind="props"
+                          :color="
+                            getGitHubVerificationColor(
+                              item.value.auth_mode,
+                              item.value.verification_status
+                            )
+                          "
+                          :icon="
+                            getGitHubVerificationIcon(
+                              item.value.verification_status
+                            )
+                          "
+                        />
+                      </template>
+                    </v-tooltip>
                     <span v-else>-</span>
                   </div>
                 </template>
                 <template v-slot:[`item.status_gitleaks`]="{ item }">
                   <scan-status
                     :status="getStatus(item.value.gitleaksSetting)"
-                    v-if="getStatus(item.value.gitleaksSetting)"
-                  >
-                  </scan-status>
-                  <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
+                    icon-only
+                  />
                 </template>
                 <template v-slot:[`item.status_dependency`]="{ item }">
                   <scan-status
                     :status="getStatus(item.value.dependencySetting)"
-                    v-if="getStatus(item.value.dependencySetting)"
-                  >
-                  </scan-status>
-                  <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
+                    icon-only
+                  />
                 </template>
                 <template v-slot:[`item.status_code_scan`]="{ item }">
                   <scan-status
                     :status="getStatus(item.value.codeScanSetting)"
-                    v-if="getStatus(item.value.codeScanSetting)"
-                  >
-                  </scan-status>
-                  <v-chip variant="flat" color="grey" v-else> Disabled </v-chip>
+                    icon-only
+                  />
                 </template>
                 <template v-slot:[`item.action`]="{ item }">
                   <v-menu>
