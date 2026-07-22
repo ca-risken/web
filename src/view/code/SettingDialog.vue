@@ -1821,6 +1821,22 @@ export default {
     },
     async handleGitHubAppUserVerification() {
       this.loading = true
+      const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
+        this.gitHubSetting.github_setting_id
+      ).catch(async (err) => {
+        this.$emit('edit-notify', '', this.getErrorMessage(err))
+        await this.refreshGitHubAppInstallationStatus()
+        return null
+      })
+      if (gitHubSetting === null) {
+        this.loading = false
+        return
+      }
+      if (!this.applyGitHubSetting(gitHubSetting)) {
+        this.$emit('edit-notify', '', 'GitHub setting response is invalid.')
+        this.loading = false
+        return
+      }
       const returnTo = this.buildGitHubAppOAuthReturnTo()
       const oauthURL = await this.getGitHubAppOAuthStartURLAPI(
         this.gitHubSetting.github_setting_id,
