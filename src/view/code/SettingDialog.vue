@@ -1689,6 +1689,12 @@ export default {
           this.$emit('edit-notify', '', this.getErrorMessage(err))
           return null
         })
+      if (this.githubAppInstallationStatus) {
+        this.$emit('github-app-installation-status-updated', {
+          github_setting_id: this.gitHubSetting.github_setting_id,
+          status: this.githubAppInstallationStatus,
+        })
+      }
     },
     async refreshGitHubAppInstallationStatusForConfiguredSetting() {
       if (!this.isConfiguredGitHubSetting || !this.isGitHubAppAuth) {
