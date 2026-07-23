@@ -240,13 +240,13 @@
                             variant="flat"
                             :color="
                               getGitHubVerificationColor(
-                                gitHubSetting.verification_status
+                                displayedGitHubVerificationStatus
                               )
                             "
                           >
                             {{
                               getGitHubVerificationText(
-                                gitHubSetting.verification_status
+                                displayedGitHubVerificationStatus
                               )
                             }}
                           </v-chip>
@@ -1185,6 +1185,12 @@ export default {
         this.isGitHubAppAuth &&
         this.gitHubSetting.verification_status === 'SUCCESS'
       )
+    },
+    displayedGitHubVerificationStatus() {
+      if (this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED') {
+        return 'FAILED'
+      }
+      return this.gitHubSetting.verification_status
     },
     isGitHubAppLinkPending() {
       return (
