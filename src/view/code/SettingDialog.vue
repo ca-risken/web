@@ -1267,7 +1267,7 @@ export default {
     },
   },
   mounted() {
-    this.refreshGitHubAppInstallationStatusForReadOnly()
+    this.refreshGitHubAppInstallationStatusForConfiguredSetting()
   },
   watch: {
     isEnabledGitleaks: function () {
@@ -1684,13 +1684,8 @@ export default {
           return null
         })
     },
-    async refreshGitHubAppInstallationStatusForReadOnly() {
-      if (
-        !this.isReadOnly ||
-        !this.isConfiguredGitHubSetting ||
-        !this.isGitHubAppAuth ||
-        this.gitHubSetting.verification_status !== 'FAILED'
-      ) {
+    async refreshGitHubAppInstallationStatusForConfiguredSetting() {
+      if (!this.isConfiguredGitHubSetting || !this.isGitHubAppAuth) {
         return
       }
       await this.refreshGitHubAppInstallationStatus()
