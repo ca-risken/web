@@ -283,6 +283,9 @@
       :codeScanDataSourceModel="codeScanDataSourceModel"
       @closeDialog="closeDialogEdit"
       @editGitHubSetting="handleEditGitHubSettingFromDetail"
+      @github-app-installation-status-updated="
+        handleGitHubAppInstallationStatusUpdated
+      "
       v-on:edit-notify="handleEditFinish"
     ></setting-dialog>
 
@@ -334,6 +337,7 @@ export default {
         updated_at: '',
       },
       githubAppOAuthResult: null,
+      githubAppVerificationStatusOverrides: {},
       gitHubModel: {
         github_setting_id: '',
         code_data_source_id: '',
@@ -559,7 +563,10 @@ export default {
               ? 'PERSONAL_ACCESS_TOKEN'
               : github_setting.auth_mode,
           installation_id: github_setting.installation_id,
-          verification_status: github_setting.verification_status,
+          verification_status:
+            this.githubAppVerificationStatusOverrides[
+              github_setting.github_setting_id
+            ] || github_setting.verification_status,
           verified_github_user: github_setting.verified_github_user,
           verified_at: github_setting.verified_at,
           github_app_setting_repository:
@@ -852,6 +859,26 @@ export default {
     },
     handleEditGitHubSettingFromDetail() {
       this.isReadOnlyForm = false
+    },
+    handleGitHubAppInstallationStatusUpdated({ github_setting_id, status }) {
+      if (!github_setting_id || !status) {
+        return
+      }
+      if (status.reason === 'NOT_INSTALLED') {
+        this.githubAppVerificationStatusOverrides[github_setting_id] = 'FAILED'
+        const item = this.table.items.find(
+          (setting) => setting.github_setting_id === github_setting_id
+        )
+        if (item) {
+          item.verification_status = 'FAILED'
+        }
+        return
+      }
+      if (!status.installed) {
+        return
+      }
+      delete this.githubAppVerificationStatusOverrides[github_setting_id]
+      this.listGitHubSetting()
     },
     handleDeleteGitHubSetting(item) {
       this.assignDataModel(item.value)
