@@ -215,7 +215,13 @@
                           <span>{{
                             $t(`item['GitHub App Link Pending Action Prefix']`)
                           }}</span
+                          ><span
+                            v-if="loading || githubAppInstallationStatusLoading"
+                            >{{
+                              $t(`item['GitHub App Link Pending Action Link']`)
+                            }}</span
                           ><a
+                            v-else
                             href="#"
                             @click.prevent="handleGitHubAppLinkFromDetail"
                             >{{
@@ -330,7 +336,8 @@
                         isGitHubAppAuth &&
                         isConfiguredGitHubSetting
                       "
-                      :loading="loading"
+                      :loading="loading || githubAppInstallationStatusLoading"
+                      :disabled="loading || githubAppInstallationStatusLoading"
                     >
                       {{ $t(`btn['VERIFY GITHUB USER']`) }}
                     </v-btn>
@@ -1333,6 +1340,7 @@ export default {
       gitleaksCacheDialog: false,
       githubAppRepositoryDialog: false,
       githubAppInstallationStatus: null,
+      githubAppInstallationStatusLoading: false,
       githubSettingID: 0,
       loading: false,
       gitHubForm: {
@@ -1682,18 +1690,32 @@ export default {
       return gitHubSetting
     },
     async refreshGitHubAppInstallationStatus() {
-      this.githubAppInstallationStatus =
-        await this.getGitHubAppInstallationStatusAPI(
-          this.gitHubSetting.github_setting_id
-        ).catch((err) => {
-          this.$emit('edit-notify', '', this.getErrorMessage(err))
-          return null
-        })
-      if (this.githubAppInstallationStatus) {
-        this.$emit('github-app-installation-status-updated', {
-          github_setting_id: this.gitHubSetting.github_setting_id,
-          status: this.githubAppInstallationStatus,
-        })
+      if (this.githubAppInstallationStatusLoading) {
+        return
+      }
+      this.githubAppInstallationStatusLoading = true
+      try {
+        this.githubAppInstallationStatus =
+          await this.getGitHubAppInstallationStatusAPI(
+            this.gitHubSetting.github_setting_id
+          ).catch((err) => {
+            this.$emit('edit-notify', '', this.getErrorMessage(err))
+            return null
+          })
+        if (this.githubAppInstallationStatus) {
+          if (
+            this.githubAppInstallationStatus.reason === 'INSTALLED' &&
+            this.gitHubSetting.verification_status === 'FAILED'
+          ) {
+            this.gitHubSetting.verification_status = 'PENDING_USER_VERIFICATION'
+          }
+          this.$emit('github-app-installation-status-updated', {
+            github_setting_id: this.gitHubSetting.github_setting_id,
+            status: this.githubAppInstallationStatus,
+          })
+        }
+      } finally {
+        this.githubAppInstallationStatusLoading = false
       }
     },
     async refreshGitHubAppInstallationStatusForConfiguredSetting() {
@@ -1827,6 +1849,9 @@ export default {
       }
     },
     async handleGitHubAppUserVerification() {
+      if (this.loading || this.githubAppInstallationStatusLoading) {
+        return
+      }
       this.loading = true
       const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
         this.gitHubSetting.github_setting_id
@@ -1848,24 +1873,25 @@ export default {
       const oauthURL = await this.getGitHubAppOAuthStartURLAPI(
         this.gitHubSetting.github_setting_id,
         returnTo
-      )
-        .catch((err) => {
-          this.$emit('edit-notify', '', this.getErrorMessage(err))
-          return ''
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      ).catch((err) => {
+        this.$emit('edit-notify', '', this.getErrorMessage(err))
+        return ''
+      })
       if (!oauthURL) {
+        this.loading = false
         return
       }
       if (!this.isAllowedGitHubAppOAuthURL(oauthURL)) {
         this.$emit('edit-notify', '', 'GitHub App OAuth URL is invalid.')
+        this.loading = false
         return
       }
       window.location.href = oauthURL
     },
     async handleGitHubAppLinkFromDetail() {
+      if (this.loading || this.githubAppInstallationStatusLoading) {
+        return
+      }
       this.loading = true
       const gitHubSetting = await this.verifyGitHubAppInstallationAPI(
         this.gitHubSetting.github_setting_id
