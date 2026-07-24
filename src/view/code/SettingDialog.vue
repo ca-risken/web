@@ -216,9 +216,7 @@
                             $t(`item['GitHub App Link Pending Action Prefix']`)
                           }}</span
                           ><span
-                            v-if="
-                              loading || githubAppInstallationStatusLoading
-                            "
+                            v-if="loading || githubAppInstallationStatusLoading"
                             >{{
                               $t(`item['GitHub App Link Pending Action Link']`)
                             }}</span
@@ -339,9 +337,7 @@
                         isConfiguredGitHubSetting
                       "
                       :loading="loading || githubAppInstallationStatusLoading"
-                      :disabled="
-                        loading || githubAppInstallationStatusLoading
-                      "
+                      :disabled="loading || githubAppInstallationStatusLoading"
                     >
                       {{ $t(`btn['VERIFY GITHUB USER']`) }}
                     </v-btn>
@@ -1711,8 +1707,7 @@ export default {
             this.githubAppInstallationStatus.reason === 'INSTALLED' &&
             this.gitHubSetting.verification_status === 'FAILED'
           ) {
-            this.gitHubSetting.verification_status =
-              'PENDING_USER_VERIFICATION'
+            this.gitHubSetting.verification_status = 'PENDING_USER_VERIFICATION'
           }
           this.$emit('github-app-installation-status-updated', {
             github_setting_id: this.gitHubSetting.github_setting_id,
