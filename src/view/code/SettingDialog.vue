@@ -176,7 +176,12 @@
                       ></v-text-field>
                     </v-col>
                   </v-row>
-                  <v-row v-if="isGitHubAppAuth && githubAppInstallationStatus">
+                  <v-row
+                    v-if="
+                      isGitHubAppAuth &&
+                      shouldShowGitHubAppInstallationStatusAlert
+                    "
+                  >
                     <v-col cols="12">
                       <v-alert
                         density="compact"
@@ -1254,6 +1259,17 @@ export default {
         return 'github-app-installation-warning'
       }
       return ''
+    },
+    shouldShowGitHubAppInstallationStatusAlert() {
+      if (!this.githubAppInstallationStatus) {
+        return false
+      }
+      if (!this.githubAppInstallationStatus.installed) {
+        return true
+      }
+      return !['SUCCESS', 'PENDING_USER_VERIFICATION', 'PENDING'].includes(
+        this.gitHubSetting.verification_status
+      )
     },
     shouldShowGitHubAppInstallPageLink() {
       return this.githubAppInstallationStatus?.reason === 'NOT_INSTALLED'
