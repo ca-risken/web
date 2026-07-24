@@ -91,6 +91,7 @@
 
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import store from '@/store'
 
 export default {
   name: 'ProjectOrgSelectDialog',
@@ -123,10 +124,14 @@ export default {
       type: Function,
       default: null,
     },
+    persistentSearch: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      searchText: '',
+      localSearchText: '',
       options: {
         itemsPerPage: 10,
         page: 1,
@@ -144,6 +149,25 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value)
+      },
+    },
+    searchText: {
+      get() {
+        if (!this.persistentSearch) {
+          return this.localSearchText
+        }
+        return store.state.projectOrgSearch?.[this.entityType] || ''
+      },
+      set(value) {
+        const searchText = value || ''
+        if (!this.persistentSearch) {
+          this.localSearchText = searchText
+          return
+        }
+        store.commit('updateProjectOrgSearch', {
+          entityType: this.entityType,
+          searchText,
+        })
       },
     },
     entityTitle() {
@@ -217,7 +241,6 @@ export default {
   methods: {
     handleClose() {
       this.dialog = false
-      this.searchText = ''
     },
     handleItemClick(event, item) {
       this.$emit('item-selected', item.item.value)
