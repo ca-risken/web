@@ -152,6 +152,7 @@
                   :placeholder="searchForm.tag.placeholder"
                   :items="searchForm.tagList"
                   :loading="loading"
+                  :disabled="isOrganizationMode"
                   v-model="searchModel.tag"
                   ref="refTag"
                 />
@@ -169,6 +170,7 @@
                   bg-color="white"
                   v-model="searchModel.resourceName"
                   :loading="loading"
+                  :disabled="isOrganizationMode"
                   :label="$t(`item['` + searchForm.resourceName.label + `']`)"
                   :placeholder="searchForm.resourceName.placeholder"
                   :items="resourceNameCombobox"
@@ -188,7 +190,7 @@
               <v-col class="pb-10">
                 <v-slide-group show-arrows>
                   <v-slide-group-item
-                    v-for="history in sortedFindingHistory"
+                    v-for="history in availableFindingHistory"
                     :key="history.search_at"
                   >
                     <v-chip
@@ -220,7 +222,7 @@
         <v-col class="pb-10">
           <v-slide-group>
             <v-slide-group-item
-              v-for="cond in popularSearchConditions"
+              v-for="cond in availablePopularSearchConditions"
               :key="cond.label"
             >
               <v-chip
@@ -662,6 +664,26 @@ export default {
         return b.search_at - a.search_at // desc
       })
     },
+    availableFindingHistory() {
+      if (!this.isOrganizationMode) {
+        return this.sortedFindingHistory
+      }
+      return this.sortedFindingHistory.filter(
+        (history) =>
+          !history.search_condition?.tag?.length &&
+          !history.search_condition?.resourceName?.length
+      )
+    },
+    availablePopularSearchConditions() {
+      if (!this.isOrganizationMode) {
+        return this.popularSearchConditions
+      }
+      return this.popularSearchConditions.filter(
+        (condition) =>
+          !condition.search_condition?.tag?.length &&
+          !condition.search_condition?.resourceName?.length
+      )
+    },
     formatScore() {
       return (score) => {
         if (!Number.isInteger(score)) {
@@ -977,10 +999,14 @@ export default {
       if (query.data_source && query.data_source != '') {
         this.searchModel.dataSource = String(query.data_source).split(',')
       }
-      if (query.tag && query.tag != '') {
+      if (!this.isOrganizationMode && query.tag && query.tag != '') {
         this.searchModel.tag = String(query.tag).split(',')
       }
-      if (query.resource_name && query.resource_name != '') {
+      if (
+        !this.isOrganizationMode &&
+        query.resource_name &&
+        query.resource_name != ''
+      ) {
         this.searchModel.resourceName = String(query.resource_name).split(',')
       }
       this.searchModel.scoreFrom = 0.5
@@ -1011,11 +1037,11 @@ export default {
           '&data_source=' + encodeURIComponent(this.searchModel.dataSource)
         queryNew.data_source = this.searchModel.dataSource
       }
-      if (this.searchModel.tag) {
+      if (!this.isOrganizationMode && this.searchModel.tag) {
         searchCond += '&tag=' + encodeURIComponent(this.searchModel.tag)
         queryNew.tag = this.searchModel.tag
       }
-      if (this.searchModel.resourceName) {
+      if (!this.isOrganizationMode && this.searchModel.resourceName) {
         searchCond +=
           '&resource_name=' + encodeURIComponent(this.searchModel.resourceName)
         queryNew.resource_name = this.searchModel.resourceName
