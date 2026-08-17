@@ -98,6 +98,50 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-row v-if="isOrganizationMode">
+        <v-col cols="12">
+          <v-card>
+            <v-card-title class="text-h6">
+              {{ $t(`view.alert['Organization notification relations']`) }}
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="pa-0">
+              <v-data-table
+                :headers="relationHeaders"
+                :items="relationTable.items"
+                :loading="loading"
+                :items-per-page="relationTable.options.itemsPerPage"
+                :items-per-page-options="table.footer.itemsPerPageOptions"
+                locale="ja-jp"
+                loading-text="Loading..."
+                no-data-text="No data."
+                class="elevation-1"
+              >
+                <template v-slot:[`item.cache_second`]="{ item }">
+                  <v-select
+                    :model-value="Number(item.value.cache_second)"
+                    :items="getCacheOptions(item.value.cache_second)"
+                    item-title="title"
+                    item-value="value"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    :loading="isCacheUpdating(item.value)"
+                    :disabled="isCacheUpdating(item.value)"
+                    @update:modelValue="handleCacheUpdate(item.value, $event)"
+                  />
+                </template>
+                <template v-slot:[`item.notified_at`]="{ item }">
+                  {{ formatLastNotifiedAt(item.value.notified_at) }}
+                </template>
+                <template v-slot:[`item.next_notifiable_at`]="{ item }">
+                  {{ formatNextNotifiableAt(item.value) }}
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
 
     <v-dialog v-model="editDialog" max-width="600px">
@@ -528,6 +572,11 @@ export default {
         },
         items: [],
       },
+      relationTable: {
+        items: [],
+        options: { itemsPerPage: 20 },
+      },
+      cacheUpdating: {},
       deleteDialog: false,
       editDialog: false,
       testDialog: false,
@@ -576,6 +625,41 @@ export default {
         },
       ]
     },
+    relationHeaders() {
+      return [
+        {
+          title: this.$i18n.t('item["Project ID"]'),
+          key: 'project_id',
+          sortable: true,
+        },
+        {
+          title: this.$i18n.t('item["Alert Condition ID"]'),
+          key: 'alert_condition_id',
+          sortable: true,
+        },
+        {
+          title: this.$i18n.t('item["Notification ID"]'),
+          key: 'notification_id',
+          sortable: true,
+        },
+        {
+          title: this.$i18n.t('item["Notification throttle"]'),
+          key: 'cache_second',
+          sortable: true,
+          width: '220px',
+        },
+        {
+          title: this.$i18n.t('item["Last notified at"]'),
+          key: 'notified_at',
+          sortable: true,
+        },
+        {
+          title: this.$i18n.t('item["Next notification at"]'),
+          key: 'next_notifiable_at',
+          sortable: false,
+        },
+      ]
+    },
   },
   mounted() {
     this.refleshList()
@@ -591,6 +675,10 @@ export default {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
+        await this.refleshOrgAlertCondNotificationList().catch((err) => {
+          this.finishError(this.getRequestError(err))
+          return Promise.reject(err)
+        })
       } else {
         notification = await this.listAlertNotification().catch((err) => {
           this.finishError(err.response.data)
@@ -602,6 +690,92 @@ export default {
     },
     clearList() {
       this.table.items = []
+      if (this.isOrganizationMode) {
+        this.relationTable.items = []
+      }
+    },
+
+    async refleshOrgAlertCondNotificationList() {
+      this.relationTable.items = await this.listOrgAlertCondNotification()
+    },
+
+    getCacheOptions(currentValue) {
+      const options = [
+        { title: 'None', value: 1 },
+        { title: '30 minutes', value: 30 * 60 },
+        { title: '1 hour', value: 60 * 60 },
+        { title: '1 day', value: 60 * 60 * 24 },
+        { title: '1 week', value: 60 * 60 * 24 * 7 },
+        { title: '30 days', value: 60 * 60 * 24 * 30 },
+        { title: '90 days', value: 60 * 60 * 24 * 90 },
+        { title: '1 year', value: 60 * 60 * 24 * 365 },
+      ]
+      const current = Number(currentValue)
+      if (!options.some((option) => option.value === current)) {
+        options.unshift({
+          title: this.$t(`view.alert['seconds']`, { seconds: current }),
+          value: current,
+        })
+      }
+      return options
+    },
+
+    relationKey(relation) {
+      return [
+        relation.organization_id,
+        relation.project_id,
+        relation.alert_condition_id,
+        relation.notification_id,
+      ].join(':')
+    },
+
+    isCacheUpdating(relation) {
+      return this.cacheUpdating[this.relationKey(relation)] === true
+    },
+
+    async handleCacheUpdate(relation, cacheSecond) {
+      const key = this.relationKey(relation)
+      this.cacheUpdating[key] = true
+      try {
+        await this.updateOrgAlertCondNotificationCache(
+          relation,
+          Number(cacheSecond)
+        )
+        await this.refleshOrgAlertCondNotificationList()
+        this.$refs.snackbar.notifySuccess(
+          this.$t(`view.alert['Notification cache updated']`)
+        )
+      } catch (err) {
+        this.$refs.snackbar.notifyError(this.getRequestError(err))
+      } finally {
+        delete this.cacheUpdating[key]
+      }
+    },
+
+    formatLastNotifiedAt(notifiedAt) {
+      if (Number(notifiedAt) === 0) {
+        return this.$t(`view.alert['Never notified']`)
+      }
+      return this.formatTime(Number(notifiedAt))
+    },
+
+    formatNextNotifiableAt(relation) {
+      if (Number(relation.notified_at) === 0) {
+        return this.$t(`view.alert['Available now']`)
+      }
+      return this.formatTime(
+        Number(relation.notified_at) + Number(relation.cache_second)
+      )
+    },
+
+    getRequestError(err) {
+      if (err && err.response) {
+        return err.response.data
+      }
+      if (err && err.message) {
+        return err.message
+      }
+      return err
     },
 
     // delete

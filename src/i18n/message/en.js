@@ -137,6 +137,7 @@ const en = {
     'Alert ID': 'Alert ID',
     'Alert Condition ID': 'Alert Condition ID',
     'Alert Rule ID': 'Alert Rule ID',
+    'Project ID': 'Project ID',
     'And Or': 'And Or',
     'Application Scan ID': 'Application Scan ID',
     'Application Scan Basic Setting ID': 'Application Scan Basic Setting ID',
@@ -273,6 +274,8 @@ const en = {
     'Notification ID': 'Notification ID',
     'Notification Language': 'Notification Language',
     'Notification throttle': 'Notification throttle',
+    'Last notified at': 'Last notified at',
+    'Next notification at': 'Next notification at',
     'Original Score': 'Original Score',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT Reration ID',
@@ -507,6 +510,12 @@ const en = {
         '... It is recommended to use the default channels.',
       'The next notification will be after':
         'The next notification will be after',
+      'Organization notification relations':
+        'Organization notification relations',
+      'Never notified': 'Never notified',
+      'Available now': 'Available now',
+      seconds: '{seconds} seconds',
+      'Notification cache updated': 'Notification cache updated.',
       'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
         'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.',
       'Running ANALYZE will move to the alert screen.':

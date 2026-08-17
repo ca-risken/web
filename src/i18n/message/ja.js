@@ -137,6 +137,7 @@ const ja = {
     'Alert ID': 'アラートID',
     'Alert Condition ID': 'アラート条件ID',
     'Alert Rule ID': 'アラートルールID',
+    'Project ID': 'プロジェクトID',
     'And Or': 'And Or',
     'Application Scan ID': 'アプリケーションスキャンID',
     'Application Scan Basic Setting ID': 'アプリケーションスキャン基本設定ID',
@@ -273,6 +274,8 @@ const ja = {
     'Notification ID': '通知ID',
     'Notification Language': '通知の言語',
     'Notification throttle': '通知の抑制期間',
+    'Last notified at': '最終通知日時',
+    'Next notification at': '次回通知可能日時',
     'Original Score': 'オリジナルスコア',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT関連ID',
@@ -505,6 +508,11 @@ const ja = {
         '特別な理由がない場合はデフォルトチャンネルをご利用ください.',
       'The next notification will be after':
         '次の日時まで通知はOFFになります: ',
+      'Organization notification relations': 'Organization通知関連',
+      'Never notified': '未通知',
+      'Available now': '通知可能',
+      seconds: '{seconds}秒',
+      'Notification cache updated': '通知の抑制期間を更新しました。',
       'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
         'ルール条件を確認したい場合は、ANALYZEボタンで関連するFindingを見ることができます。',
       'Running ANALYZE will move to the alert screen.':
