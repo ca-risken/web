@@ -752,15 +752,19 @@ export default {
       }
     },
 
+    isNeverNotified(notifiedAt) {
+      return notifiedAt == null || Number(notifiedAt) === 0
+    },
+
     formatLastNotifiedAt(notifiedAt) {
-      if (Number(notifiedAt) === 0) {
+      if (this.isNeverNotified(notifiedAt)) {
         return this.$t(`view.alert['Never notified']`)
       }
       return this.formatTime(Number(notifiedAt))
     },
 
     formatNextNotifiableAt(relation) {
-      if (Number(relation.notified_at) === 0) {
+      if (this.isNeverNotified(relation.notified_at)) {
         return this.$t(`view.alert['Available now']`)
       }
       return this.formatTime(
