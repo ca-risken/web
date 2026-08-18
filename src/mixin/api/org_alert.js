@@ -52,18 +52,32 @@ const org_alert = {
     },
 
     async listOrgAlertCondNotification() {
-      const res = await this.$axios
-        .get(
-          '/organization-alert/list-alert-cond-notification/?organization_id=' +
-            this.getCurrentOrganizationID()
-        )
-        .catch((err) => {
-          return Promise.reject(err)
-        })
-      if (!res.data.data.alert_cond_notification) {
-        return []
+      const relations = []
+      let pageOffset = 0
+      let hasNext = true
+
+      while (hasNext) {
+        const res = await this.$axios
+          .get('/organization-alert/list-alert-cond-notification/', {
+            params: {
+              organization_id: this.getCurrentOrganizationID(),
+              page_size: 100,
+              page_offset: pageOffset,
+            },
+          })
+          .catch((err) => {
+            return Promise.reject(err)
+          })
+        const data = res.data.data
+        relations.push(...(data.alert_cond_notification || []))
+        hasNext = data.has_next === true
+        if (hasNext && data.next_page_offset <= pageOffset) {
+          throw new Error('Organization alert pagination did not advance')
+        }
+        pageOffset = data.next_page_offset
       }
-      return res.data.data.alert_cond_notification
+
+      return relations
     },
 
     async updateOrgAlertCondNotificationCache(relation, cache_second) {
