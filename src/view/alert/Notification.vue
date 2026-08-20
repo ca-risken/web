@@ -119,7 +119,7 @@
               >
                 <template v-slot:[`item.cache_second`]="{ item }">
                   <v-select
-                    :model-value="Number(item.value.cache_second)"
+                    :model-value="getValidCacheSecond(item.value.cache_second)"
                     :items="getCacheOptions(item.value.cache_second)"
                     item-title="title"
                     item-value="value"
@@ -710,14 +710,29 @@ export default {
         { title: '90 days', value: 60 * 60 * 24 * 90 },
         { title: '1 year', value: 60 * 60 * 24 * 365 },
       ]
-      const current = Number(currentValue)
-      if (!options.some((option) => option.value === current)) {
+      const current = this.getValidCacheSecond(currentValue)
+      if (
+        current !== null &&
+        !options.some((option) => option.value === current)
+      ) {
         options.unshift({
           title: this.$t(`view.alert['seconds']`, { seconds: current }),
           value: current,
         })
       }
       return options
+    },
+
+    getValidCacheSecond(value) {
+      const cacheSecond = Number(value)
+      if (
+        !Number.isInteger(cacheSecond) ||
+        cacheSecond < 1 ||
+        cacheSecond > 31536000
+      ) {
+        return null
+      }
+      return cacheSecond
     },
 
     relationKey(relation) {
@@ -734,19 +749,28 @@ export default {
     },
 
     async handleCacheUpdate(relation, cacheSecond) {
+      const validCacheSecond = this.getValidCacheSecond(cacheSecond)
+      if (validCacheSecond === null) {
+        this.$refs.snackbar.notifyError(
+          this.$t(`view.alert['Failed to update notification cache']`)
+        )
+        return
+      }
       const key = this.relationKey(relation)
       this.cacheUpdating[key] = true
       try {
         await this.updateOrgAlertCondNotificationCache(
           relation,
-          Number(cacheSecond)
+          validCacheSecond
         )
         await this.refleshOrgAlertCondNotificationList()
         this.$refs.snackbar.notifySuccess(
           this.$t(`view.alert['Notification cache updated']`)
         )
       } catch (err) {
-        this.$refs.snackbar.notifyError(this.getRequestError(err))
+        this.$refs.snackbar.notifyError(
+          this.$t(`view.alert['Failed to update notification cache']`)
+        )
       } finally {
         delete this.cacheUpdating[key]
       }
@@ -760,16 +784,22 @@ export default {
       if (this.isNeverNotified(notifiedAt)) {
         return this.$t(`view.alert['Never notified']`)
       }
-      return this.formatTime(Number(notifiedAt))
+      const timestamp = Number(notifiedAt)
+      return Number.isFinite(timestamp) && timestamp > 0
+        ? this.formatTime(timestamp)
+        : '-'
     },
 
     formatNextNotifiableAt(relation) {
       if (this.isNeverNotified(relation.notified_at)) {
         return this.$t(`view.alert['Available now']`)
       }
-      return this.formatTime(
-        Number(relation.notified_at) + Number(relation.cache_second)
-      )
+      const notifiedAt = Number(relation.notified_at)
+      const cacheSecond = this.getValidCacheSecond(relation.cache_second)
+      if (!Number.isFinite(notifiedAt) || notifiedAt <= 0 || cacheSecond === null) {
+        return '-'
+      }
+      return this.formatTime(notifiedAt + cacheSecond)
     },
 
     getRequestError(err) {

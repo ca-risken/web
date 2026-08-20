@@ -71,7 +71,11 @@ const org_alert = {
         const data = res.data.data
         relations.push(...(data.alert_cond_notification || []))
         hasNext = data.has_next === true
-        if (hasNext && data.next_page_offset <= pageOffset) {
+        if (
+          hasNext &&
+          (!Number.isInteger(data.next_page_offset) ||
+            data.next_page_offset <= pageOffset)
+        ) {
           throw new Error('Organization alert pagination did not advance')
         }
         pageOffset = data.next_page_offset
@@ -81,6 +85,13 @@ const org_alert = {
     },
 
     async updateOrgAlertCondNotificationCache(relation, cache_second) {
+      if (
+        !Number.isInteger(cache_second) ||
+        cache_second < 1 ||
+        cache_second > 31536000
+      ) {
+        throw new Error('Invalid notification cache')
+      }
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         project_id: relation.project_id,
