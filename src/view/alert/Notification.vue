@@ -774,10 +774,14 @@ export default {
           relation,
           validCacheSecond
         )
-        await this.refleshOrgAlertCondNotificationList()
         this.$refs.snackbar.notifySuccess(
           this.$t(`view.alert['Notification cache updated']`)
         )
+        await this.refleshOrgAlertCondNotificationList().catch(() => {
+          this.$refs.snackbar.notifyError(
+            this.$t(`view.alert['Failed to load notification relations']`)
+          )
+        })
       } catch (err) {
         this.$refs.snackbar.notifyError(
           this.$t(`view.alert['Failed to update notification cache']`)

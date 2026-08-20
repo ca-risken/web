@@ -55,8 +55,13 @@ const org_alert = {
       const relations = []
       let pageOffset = 0
       let hasNext = true
+      let pageCount = 0
+      const maxPages = 1000
 
       while (hasNext) {
+        if (pageCount >= maxPages) {
+          throw new Error('Organization alert pagination exceeded the limit')
+        }
         const res = await this.$axios
           .get('/organization-alert/list-alert-cond-notification/', {
             params: {
@@ -69,6 +74,7 @@ const org_alert = {
             return Promise.reject(err)
           })
         const data = res.data.data
+        pageCount += 1
         relations.push(...(data.alert_cond_notification || []))
         hasNext = data.has_next === true
         if (
