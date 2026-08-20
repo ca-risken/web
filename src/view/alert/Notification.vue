@@ -119,7 +119,9 @@
               >
                 <template v-slot:[`item.cache_second`]="{ item }">
                   <v-select
-                    :model-value="getValidCacheSecond(item.value.cache_second)"
+                    :model-value="
+                      getDisplayCacheSecond(item.value.cache_second)
+                    "
                     :items="getCacheOptions(item.value.cache_second)"
                     item-title="title"
                     item-value="value"
@@ -675,17 +677,19 @@ export default {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
-        await this.refleshOrgAlertCondNotificationList().catch((err) => {
-          this.finishError(this.getRequestError(err))
-          return Promise.reject(err)
+        this.table.items = notification
+        await this.refleshOrgAlertCondNotificationList().catch(() => {
+          this.finishError(
+            this.$t(`view.alert['Failed to load notification relations']`)
+          )
         })
       } else {
         notification = await this.listAlertNotification().catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
+        this.table.items = notification
       }
-      this.table.items = notification
       this.loading = false
     },
     clearList() {
@@ -710,7 +714,7 @@ export default {
         { title: '90 days', value: 60 * 60 * 24 * 90 },
         { title: '1 year', value: 60 * 60 * 24 * 365 },
       ]
-      const current = this.getValidCacheSecond(currentValue)
+      const current = this.getDisplayCacheSecond(currentValue)
       if (
         current !== null &&
         !options.some((option) => option.value === current)
@@ -733,6 +737,13 @@ export default {
         return null
       }
       return cacheSecond
+    },
+
+    getDisplayCacheSecond(value) {
+      const cacheSecond = Number(value)
+      return Number.isInteger(cacheSecond) && cacheSecond >= 1
+        ? cacheSecond
+        : null
     },
 
     relationKey(relation) {
@@ -795,21 +806,15 @@ export default {
         return this.$t(`view.alert['Available now']`)
       }
       const notifiedAt = Number(relation.notified_at)
-      const cacheSecond = this.getValidCacheSecond(relation.cache_second)
-      if (!Number.isFinite(notifiedAt) || notifiedAt <= 0 || cacheSecond === null) {
+      const cacheSecond = this.getDisplayCacheSecond(relation.cache_second)
+      if (
+        !Number.isFinite(notifiedAt) ||
+        notifiedAt <= 0 ||
+        cacheSecond === null
+      ) {
         return '-'
       }
       return this.formatTime(notifiedAt + cacheSecond)
-    },
-
-    getRequestError(err) {
-      if (err && err.response) {
-        return err.response.data
-      }
-      if (err && err.message) {
-        return err.message
-      }
-      return err
     },
 
     // delete
