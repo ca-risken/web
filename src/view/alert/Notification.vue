@@ -100,7 +100,10 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="editDialog" max-width="600px">
+    <v-dialog
+      v-model="editDialog"
+      :max-width="isOrganizationMode && tab === 3 ? '1000px' : '600px'"
+    >
       <v-card>
         <v-card-title>
           <v-icon large class="pr-2" color="red-lighten-2">mdi-alert</v-icon>
@@ -153,6 +156,13 @@
             >
               <v-tab :value="1">Slack App</v-tab>
               <v-tab :value="2">Webhook URL</v-tab>
+              <v-tab
+                v-if="isOrganizationMode"
+                :value="3"
+                :disabled="form.new"
+              >
+                {{ $t(`submenu['OrganizationNotificationProjectSelect']`) }}
+              </v-tab>
             </v-tabs>
             <v-window v-model="tab">
               <v-window-item :value="1">
@@ -288,6 +298,13 @@
                     </v-expansion-panel-text>
                   </v-expansion-panel>
                 </v-expansion-panels>
+              </v-window-item>
+
+              <v-window-item v-if="isOrganizationMode" :value="3">
+                <organization-project
+                  embedded
+                  :notification-id="dataModel.notification_id"
+                />
               </v-window-item>
             </v-window>
 
@@ -426,12 +443,14 @@ import alert from '@/mixin/api/alert'
 import org_alert from '@/mixin/api/org_alert'
 import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import OrganizationProject from '@/view/alert/OrganizationProject.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 export default {
   name: 'AlertNotification',
   mixins: [mixin, alert, org_alert, organization_helper],
   components: {
     BottomSnackBar,
+    OrganizationProject,
     VDataTable,
   },
   data() {
@@ -707,6 +726,7 @@ export default {
       }
       this.form.valid = false
       this.form.new = true
+      this.tab = 1
       this.editDialog = true
     },
     handleRowClick(event, notifications) {
@@ -718,6 +738,7 @@ export default {
       this.dataModel.webhook_url = ''
       this.form.valid = false
       this.form.new = false
+      this.tab = 1
       this.editDialog = true
     },
     handleEditSubmit() {

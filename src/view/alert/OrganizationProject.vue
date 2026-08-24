@@ -1,7 +1,12 @@
 <template>
   <div>
-    <v-container>
-      <v-row dense justify="center" align-content="center">
+    <v-container :class="{ 'pa-0': embedded }">
+      <v-row
+        v-if="!embedded"
+        dense
+        justify="center"
+        align-content="center"
+      >
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
@@ -13,7 +18,12 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-row dense justify="center" align-content="center">
+      <v-row
+        v-if="!embedded"
+        dense
+        justify="center"
+        align-content="center"
+      >
         <v-col cols="12" sm="6" md="6">
           <v-text-field
             v-model="search"
@@ -31,12 +41,21 @@
       <v-row>
         <v-col cols="12">
           <v-progress-linear v-if="loading" indeterminate color="primary" />
-          <v-expansion-panels v-else multiple>
+          <v-expansion-panels
+            v-else
+            multiple
+            :model-value="expandedPanels"
+          >
             <v-expansion-panel
-              v-for="notification in notificationGroups"
+              v-for="notification in displayedNotificationGroups"
               :key="notification.notification_id"
+              :value="notification.notification_id"
             >
-              <v-expansion-panel-title v-slot="{ expanded }" hide-actions>
+              <v-expansion-panel-title
+                v-if="!embedded"
+                v-slot="{ expanded }"
+                hide-actions
+              >
                 <span class="font-weight-bold">
                   {{ $t(`submenu['OrganizationNotificationName']`) }}
                   {{ notification.name }}
@@ -140,7 +159,7 @@
             </v-expansion-panel>
           </v-expansion-panels>
           <v-alert
-            v-if="!loading && notificationGroups.length === 0"
+            v-if="!loading && displayedNotificationGroups.length === 0"
             type="info"
             variant="tonal"
           >
@@ -162,6 +181,16 @@ import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 
 export default {
   name: 'OrganizationAlertProject',
+  props: {
+    embedded: {
+      type: Boolean,
+      default: false,
+    },
+    notificationId: {
+      type: Number,
+      default: 0,
+    },
+  },
   mixins: [mixin, org_alert, project, organization_helper],
   components: {
     BottomSnackBar,
@@ -174,6 +203,20 @@ export default {
       cacheUpdating: {},
       selectionUpdating: {},
     }
+  },
+  computed: {
+    expandedPanels() {
+      return this.embedded ? [this.notificationId] : undefined
+    },
+    displayedNotificationGroups() {
+      if (!this.notificationId) {
+        return this.notificationGroups
+      }
+      return this.notificationGroups.filter(
+        (notification) =>
+          notification.notification_id === this.notificationId
+      )
+    },
   },
   mounted() {
     this.refreshList()
