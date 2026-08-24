@@ -75,6 +75,7 @@
                     </template>
                     <v-list-item-title>
                       <span class="font-weight-medium">
+                        {{ $t(`item['Project Name']`) }}:
                         {{ projectItem.name }}
                       </span>
                       <v-chip class="ml-3" size="x-small">

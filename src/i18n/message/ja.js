@@ -288,6 +288,7 @@ const ja = {
     PersonalAccessToken: 'パーソナルアクセストークン',
     Policies: 'ポリシー設定',
     'Policy Name': 'ポリシー名',
+    'Project Name': 'プロジェクト名',
     'Portscan Setting ID': 'ポートスキャン設定ID',
     'Portscan Target ID': 'ポートスキャン対象ID',
     Recommend: '推奨',

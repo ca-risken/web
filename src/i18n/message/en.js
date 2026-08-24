@@ -288,6 +288,7 @@ const en = {
     PersonalAccessToken: 'PersonalAccessToken',
     Policies: 'Policies',
     'Policy Name': 'Policy Name',
+    'Project Name': 'Project Name',
     'Portscan Setting ID': 'Portscan Setting ID',
     'Portscan Target ID': 'Portscan Target ID',
     Recommend: 'Recommend',
