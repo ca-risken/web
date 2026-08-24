@@ -43,6 +43,10 @@
                 <v-chip class="ml-3" size="small">
                   ID: {{ notification.notification_id }}
                 </v-chip>
+                <v-spacer />
+                <span class="text-caption text-medium-emphasis mr-3">
+                  {{ $t(`submenu['OrganizationProject']`) }}
+                </span>
               </v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-list>
@@ -75,7 +79,6 @@
                     </template>
                     <v-list-item-title>
                       <span class="font-weight-medium">
-                        {{ $t(`item['Project Name']`) }}:
                         {{ projectItem.name }}
                       </span>
                       <v-chip class="ml-3" size="x-small">
