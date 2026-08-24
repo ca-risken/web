@@ -36,7 +36,7 @@
               v-for="notification in notificationGroups"
               :key="notification.notification_id"
             >
-              <v-expansion-panel-title>
+              <v-expansion-panel-title hide-actions>
                 <span class="font-weight-bold">
                   {{ notification.name }}
                 </span>
@@ -44,9 +44,10 @@
                   ID: {{ notification.notification_id }}
                 </v-chip>
                 <v-spacer />
-                <span class="text-caption text-medium-emphasis mr-3">
+                <v-chip size="small" variant="outlined" class="mr-3">
+                  <v-icon start size="small"> mdi-chevron-down </v-icon>
                   {{ $t(`submenu['OrganizationProject']`) }}
-                </span>
+                </v-chip>
               </v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-list>
