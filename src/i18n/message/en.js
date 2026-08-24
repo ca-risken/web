@@ -116,6 +116,7 @@ const en = {
     NewProject: 'New', // Project
     ProjectSelect: 'Select Project',
     OrganizationNotificationProjectSelect: 'Select Notification Projects',
+    OrganizationNotificationName: 'Organization Notification Name:',
     ProjectSetting: 'Setting', // Project
     'New Organization': 'New Organization',
     'Organization Setting': 'Organization Setting',

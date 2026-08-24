@@ -38,6 +38,7 @@
             >
               <v-expansion-panel-title hide-actions>
                 <span class="font-weight-bold">
+                  {{ $t(`submenu['OrganizationNotificationName']`) }}
                   {{ notification.name }}
                 </span>
                 <v-chip class="ml-3" size="small">

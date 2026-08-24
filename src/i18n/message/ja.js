@@ -116,6 +116,7 @@ const ja = {
     NewProject: '新規プロジェクト',
     ProjectSelect: 'プロジェクト選択',
     OrganizationNotificationProjectSelect: '通知プロジェクト選択',
+    OrganizationNotificationName: 'Org通知名：',
     ProjectSetting: '設定',
     'New Organization': '新規Organization',
     'Organization Setting': 'Organization設定',
