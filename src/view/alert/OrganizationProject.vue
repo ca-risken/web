@@ -38,11 +38,10 @@
             >
               <v-expansion-panel-title>
                 <span class="font-weight-bold">
-                  {{ $t(`item['Organization Notification ID']`) }}:
-                  {{ notification.notification_id }}
+                  {{ notification.name }}
                 </span>
                 <v-chip class="ml-3" size="small">
-                  {{ notification.name }}
+                  ID: {{ notification.notification_id }}
                 </v-chip>
               </v-expansion-panel-title>
               <v-expansion-panel-text>
