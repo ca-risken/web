@@ -100,10 +100,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog
-      v-model="editDialog"
-      :max-width="isOrganizationMode && tab === 3 ? '1000px' : '600px'"
-    >
+    <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title>
           <v-icon large class="pr-2" color="red-lighten-2">mdi-alert</v-icon>
