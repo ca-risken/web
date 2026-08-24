@@ -36,7 +36,7 @@
               v-for="notification in notificationGroups"
               :key="notification.notification_id"
             >
-              <v-expansion-panel-title hide-actions>
+              <v-expansion-panel-title v-slot="{ expanded }" hide-actions>
                 <span class="font-weight-bold">
                   {{ $t(`submenu['OrganizationNotificationName']`) }}
                   {{ notification.name }}
@@ -46,7 +46,14 @@
                 </v-chip>
                 <v-spacer />
                 <v-chip size="small" variant="outlined" class="mr-3">
-                  <v-icon start size="small"> mdi-chevron-down </v-icon>
+                  <v-icon
+                    start
+                    size="small"
+                    class="project-list-icon"
+                    :class="{ 'project-list-icon--expanded': expanded }"
+                  >
+                    mdi-chevron-down
+                  </v-icon>
                   {{ $t(`submenu['OrganizationProject']`) }}
                 </v-chip>
               </v-expansion-panel-title>
@@ -414,5 +421,13 @@ export default {
 
 .project-row {
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.project-list-icon {
+  transition: transform 0.2s ease;
+}
+
+.project-list-icon--expanded {
+  transform: rotate(180deg);
 }
 </style>
