@@ -115,6 +115,7 @@ const en = {
     FindingSummary: 'Finding Summary', // Analysis
     NewProject: 'New', // Project
     ProjectSelect: 'Select Project',
+    OrganizationNotificationProjectSelect: 'Select Notification Projects',
     ProjectSetting: 'Setting', // Project
     'New Organization': 'New Organization',
     'Organization Setting': 'Organization Setting',
@@ -272,8 +273,11 @@ const en = {
       'Enter report content in Markdown format',
     Optional: 'Optional',
     'Notification ID': 'Notification ID',
+    'Organization Notification ID': 'Org Notification ID',
     'Notification Language': 'Notification Language',
     'Notification throttle': 'Notification throttle',
+    'Notification Destinations': 'Notification Destinations',
+    'Suppression time': 'Suppression time',
     'Last notified at': 'Last notified at',
     'Next notification at': 'Next notification at',
     'Original Score': 'Original Score',
@@ -512,9 +516,19 @@ const en = {
         'The next notification will be after',
       'Organization notification relations':
         'Organization notification relations',
+      'Organization notification projects':
+        'Organization notification projects',
       'Never notified': 'Never notified',
       'Available now': 'Available now',
       seconds: '{seconds} seconds',
+      minutes: '{count} minutes',
+      hours: '{count} hours',
+      days: '{count} days',
+      'No suppression': 'None',
+      'Multiple suppression settings': 'Multiple settings',
+      'Notification target updated': 'Notification target project updated.',
+      'Failed to update notification target':
+        'Failed to update notification target project.',
       'Notification cache updated': 'Notification cache updated.',
       'Failed to update notification cache':
         'Failed to update notification cache.',

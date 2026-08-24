@@ -425,6 +425,14 @@ export const appRoute = [
             },
             component: () => import('@/view/alert/Notification.vue'),
           },
+          {
+            path: '/organization-alert/project',
+            name: 'OrganizationAlertProjectSelect',
+            meta: {
+              title: 'OrganizationNotificationProjectSelect',
+            },
+            component: () => import('@/view/alert/OrganizationProject.vue'),
+          },
         ],
       },
       {

@@ -58,6 +58,10 @@ export const menuDefinition = [
             title: 'Notification',
             path: '/organization-alert/notification',
           },
+          {
+            title: 'OrganizationNotificationProjectSelect',
+            path: '/organization-alert/project',
+          },
         ],
       },
       {

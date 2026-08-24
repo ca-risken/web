@@ -90,7 +90,27 @@ const org_alert = {
       return relations
     },
 
-    async updateOrgAlertCondNotificationCache(relation, cache_second) {
+    async updateOrgAlertProjectNotificationEnabled(
+      project_id,
+      notification_id,
+      enabled
+    ) {
+      const param = {
+        organization_id: this.getCurrentOrganizationID(),
+        project_id: project_id,
+        notification_id: notification_id,
+        enabled: enabled === true,
+      }
+      await this.$axios
+        .post('/organization-alert/update-project-notification-enabled/', param)
+        .catch((err) => Promise.reject(err))
+    },
+
+    async updateOrgAlertProjectNotificationCache(
+      project_id,
+      notification_id,
+      cache_second
+    ) {
       if (
         !Number.isInteger(cache_second) ||
         cache_second < 1 ||
@@ -100,19 +120,13 @@ const org_alert = {
       }
       const param = {
         organization_id: this.getCurrentOrganizationID(),
-        project_id: relation.project_id,
-        alert_condition_id: relation.alert_condition_id,
-        notification_id: relation.notification_id,
+        project_id: project_id,
+        notification_id: notification_id,
         cache_second: cache_second,
       }
       await this.$axios
-        .post(
-          '/organization-alert/update-alert-cond-notification-cache/',
-          param
-        )
-        .catch((err) => {
-          return Promise.reject(err)
-        })
+        .post('/organization-alert/update-project-notification-cache/', param)
+        .catch((err) => Promise.reject(err))
     },
   },
 }
