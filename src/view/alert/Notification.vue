@@ -107,7 +107,7 @@
           <span class="mx-4 text-h5">{{ $t(`submenu['Notification']`) }}</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="form.valid" ref="form">
+          <v-form v-model="form.valid" ref="form" :disabled="loading">
             <v-text-field
               v-model="dataModel.notification_id"
               :label="$t(`item['` + form.notification_id.label + `']`) + ' *'"
@@ -298,6 +298,7 @@
                   ref="organizationProject"
                   embedded
                   :notification-id="dataModel.notification_id"
+                  :saving="loading"
                 />
               </v-window-item>
             </v-window>
@@ -318,6 +319,7 @@
                 text
                 variant="outlined"
                 color="grey-darken-1"
+                :disabled="loading"
                 @click="handleEditCancel"
               >
                 {{ $t(`btn['CANCEL']`) }}

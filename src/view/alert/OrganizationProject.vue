@@ -87,6 +87,7 @@
                           )
                         "
                         :disabled="
+                          saving ||
                           isSelectionUpdating(
                             notification.notification_id,
                             projectItem.project_id
@@ -132,6 +133,7 @@
                             )
                           "
                           :disabled="
+                            saving ||
                             isCacheUpdating(
                               notification.notification_id,
                               projectItem.project_id
@@ -198,6 +200,10 @@ export default {
       type: Number,
       default: 0,
     },
+    saving: {
+      type: Boolean,
+      default: false,
+    },
   },
   mixins: [mixin, org_alert, project, organization_helper],
   components: {
@@ -236,8 +242,10 @@ export default {
     search() {
       this.resetProjectPages()
     },
-    notificationId() {
+    async notificationId() {
       this.resetProjectPages()
+      this.discardPendingSelections()
+      await this.refreshList()
     },
   },
   methods: {
@@ -306,7 +314,7 @@ export default {
     },
 
     filterProjects(projects) {
-      const keyword = this.search.trim().toLowerCase()
+      const keyword = (this.search || '').trim().toLowerCase()
       if (!keyword) {
         return projects
       }
