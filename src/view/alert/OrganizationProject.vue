@@ -1,12 +1,7 @@
 <template>
   <div>
     <v-container :class="{ 'pa-0': embedded }">
-      <v-row
-        v-if="!embedded"
-        dense
-        justify="center"
-        align-content="center"
-      >
+      <v-row v-if="!embedded" dense justify="center" align-content="center">
         <v-col cols="12">
           <v-toolbar color="background" flat>
             <v-toolbar-title class="grey--text text--darken-4">
@@ -18,12 +13,7 @@
           </v-toolbar>
         </v-col>
       </v-row>
-      <v-row
-        v-if="!embedded"
-        dense
-        justify="center"
-        align-content="center"
-      >
+      <v-row v-if="!embedded" dense justify="center" align-content="center">
         <v-col cols="12" sm="6" md="6">
           <v-text-field
             v-model="search"
@@ -41,11 +31,7 @@
       <v-row>
         <v-col cols="12">
           <v-progress-linear v-if="loading" indeterminate color="primary" />
-          <v-expansion-panels
-            v-else
-            multiple
-            :model-value="expandedPanels"
-          >
+          <v-expansion-panels v-else multiple :model-value="expandedPanels">
             <v-expansion-panel
               v-for="notification in displayedNotificationGroups"
               :key="notification.notification_id"
@@ -234,8 +220,7 @@ export default {
         return this.notificationGroups
       }
       return this.notificationGroups.filter(
-        (notification) =>
-          notification.notification_id === this.notificationId
+        (notification) => notification.notification_id === this.notificationId
       )
     },
   },

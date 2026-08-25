@@ -153,11 +153,7 @@
             >
               <v-tab :value="1">Slack App</v-tab>
               <v-tab :value="2">Webhook URL</v-tab>
-              <v-tab
-                v-if="isOrganizationMode"
-                :value="3"
-                :disabled="form.new"
-              >
+              <v-tab v-if="isOrganizationMode" :value="3" :disabled="form.new">
                 {{ $t(`submenu['OrganizationNotificationProjectSelect']`) }}
               </v-tab>
             </v-tabs>
