@@ -110,10 +110,14 @@
                       <div class="suppression-select" @click.stop>
                         <v-select
                           :model-value="
-                            getUniformCacheSecond(projectItem.cache_seconds)
+                            getUniformCacheSecond(
+                              getProjectCacheSeconds(notification, projectItem)
+                            )
                           "
                           :items="
-                            getSuppressionOptions(projectItem.cache_seconds)
+                            getSuppressionOptions(
+                              getProjectCacheSeconds(notification, projectItem)
+                            )
                           "
                           item-title="title"
                           item-value="value"
@@ -207,6 +211,7 @@ export default {
       projectPages: {},
       projectsPerPage: 10,
       pendingSelections: {},
+      pendingCacheUpdates: {},
       cacheUpdating: {},
       selectionUpdating: {},
     }
@@ -390,6 +395,10 @@ export default {
 
     async savePendingSelections() {
       const selections = Object.values(this.pendingSelections)
+      const cacheUpdates = Object.values(this.pendingCacheUpdates)
+      let errorMessage = this.$t(
+        `view.alert['Failed to update notification target']`
+      )
       try {
         for (const selection of selections) {
           const { notification, projectItem, enabled } = selection
@@ -406,20 +415,42 @@ export default {
           for (const relation of projectItem.relations) {
             relation.enabled = enabled
           }
+          delete this.pendingSelections[key]
           delete this.selectionUpdating[key]
         }
-        this.pendingSelections = {}
-      } catch (err) {
-        this.$refs.snackbar.notifyError(
-          this.$t(`view.alert['Failed to update notification target']`)
+        errorMessage = this.$t(
+          `view.alert['Failed to update notification cache']`
         )
+        for (const cacheUpdate of cacheUpdates) {
+          const { notification, projectItem, cacheSecond } = cacheUpdate
+          const key = this.cacheUpdatingKey(
+            notification.notification_id,
+            projectItem.project_id
+          )
+          this.cacheUpdating[key] = true
+          await this.updateOrgAlertProjectNotificationCache(
+            projectItem.project_id,
+            notification.notification_id,
+            cacheSecond
+          )
+          delete this.pendingCacheUpdates[key]
+          delete this.cacheUpdating[key]
+        }
+        if (selections.length > 0 || cacheUpdates.length > 0) {
+          await this.refreshList()
+        }
+      } catch (err) {
+        this.$refs.snackbar.notifyError(errorMessage)
         this.selectionUpdating = {}
+        this.cacheUpdating = {}
+        await this.refreshList()
         throw err
       }
     },
 
     discardPendingSelections() {
       this.pendingSelections = {}
+      this.pendingCacheUpdates = {}
     },
 
     selectionUpdatingKey(notificationID, projectID) {
@@ -436,6 +467,19 @@ export default {
 
     getUniformCacheSecond(cacheSeconds) {
       return cacheSeconds.length === 1 ? cacheSeconds[0] : null
+    },
+
+    getProjectCacheSeconds(notification, projectItem) {
+      const pendingCacheUpdate =
+        this.pendingCacheUpdates[
+          this.cacheUpdatingKey(
+            notification.notification_id,
+            projectItem.project_id
+          )
+        ]
+      return pendingCacheUpdate
+        ? [pendingCacheUpdate.cacheSecond]
+        : projectItem.cache_seconds
     },
 
     getSuppressionOptions(cacheSeconds) {
@@ -504,7 +548,7 @@ export default {
       )
     },
 
-    async handleCacheUpdate(notification, projectItem, cacheSecond) {
+    handleCacheUpdate(notification, projectItem, cacheSecond) {
       if (!Number.isInteger(cacheSecond)) {
         return
       }
@@ -512,27 +556,10 @@ export default {
         notification.notification_id,
         projectItem.project_id
       )
-      this.cacheUpdating[key] = true
-      try {
-        await this.updateOrgAlertProjectNotificationCache(
-          projectItem.project_id,
-          notification.notification_id,
-          cacheSecond
-        )
-        for (const relation of projectItem.relations) {
-          relation.cache_second = cacheSecond
-        }
-        projectItem.cache_seconds = [cacheSecond]
-        this.$refs.snackbar.notifySuccess(
-          this.$t(`view.alert['Notification cache updated']`)
-        )
-      } catch (err) {
-        this.$refs.snackbar.notifyError(
-          this.$t(`view.alert['Failed to update notification cache']`)
-        )
-        await this.refreshList()
-      } finally {
-        delete this.cacheUpdating[key]
+      this.pendingCacheUpdates[key] = {
+        notification,
+        projectItem,
+        cacheSecond,
       }
     },
   },
