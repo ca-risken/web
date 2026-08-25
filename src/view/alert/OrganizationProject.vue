@@ -79,7 +79,10 @@
               <v-expansion-panel-text>
                 <v-list>
                   <v-list-item
-                    v-for="projectItem in filterProjects(notification.projects)"
+                    v-for="projectItem in paginatedProjects(
+                      notification.projects,
+                      notification.notification_id
+                    )"
                     :key="projectItem.project_id"
                     class="project-row"
                   >
@@ -148,6 +151,17 @@
                     </template>
                   </v-list-item>
                 </v-list>
+                <v-pagination
+                  v-if="projectPageCount(notification.projects) > 1"
+                  :model-value="getProjectPage(notification.notification_id)"
+                  :length="projectPageCount(notification.projects)"
+                  :total-visible="5"
+                  density="compact"
+                  class="mt-4"
+                  @update:modelValue="
+                    setProjectPage(notification.notification_id, $event)
+                  "
+                />
                 <v-alert
                   v-if="filterProjects(notification.projects).length === 0"
                   type="info"
@@ -200,6 +214,8 @@ export default {
       loading: false,
       search: '',
       notificationGroups: [],
+      projectPages: {},
+      projectsPerPage: 10,
       cacheUpdating: {},
       selectionUpdating: {},
     }
@@ -220,6 +236,14 @@ export default {
   },
   mounted() {
     this.refreshList()
+  },
+  watch: {
+    search() {
+      this.resetProjectPages()
+    },
+    notificationId() {
+      this.resetProjectPages()
+    },
   },
   methods: {
     async refreshList() {
@@ -296,6 +320,31 @@ export default {
           projectItem.name.toLowerCase().includes(keyword) ||
           String(projectItem.project_id).includes(keyword)
       )
+    },
+
+    paginatedProjects(projects, notificationID) {
+      const filteredProjects = this.filterProjects(projects)
+      const start =
+        (this.getProjectPage(notificationID) - 1) * this.projectsPerPage
+      return filteredProjects.slice(start, start + this.projectsPerPage)
+    },
+
+    projectPageCount(projects) {
+      return Math.ceil(
+        this.filterProjects(projects).length / this.projectsPerPage
+      )
+    },
+
+    getProjectPage(notificationID) {
+      return this.projectPages[notificationID] || 1
+    },
+
+    setProjectPage(notificationID, page) {
+      this.projectPages[notificationID] = page
+    },
+
+    resetProjectPages() {
+      this.projectPages = {}
     },
 
     isProjectChecked(projectItem) {
