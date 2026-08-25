@@ -88,8 +88,12 @@
                   >
                     <template v-slot:prepend>
                       <v-checkbox-btn
-                        :model-value="isProjectChecked(projectItem)"
-                        :indeterminate="isProjectIndeterminate(projectItem)"
+                        :model-value="
+                          isProjectChecked(notification, projectItem)
+                        "
+                        :indeterminate="
+                          isProjectIndeterminate(notification, projectItem)
+                        "
                         :loading="
                           isSelectionUpdating(
                             notification.notification_id,
@@ -216,6 +220,7 @@ export default {
       notificationGroups: [],
       projectPages: {},
       projectsPerPage: 10,
+      pendingSelections: {},
       cacheUpdating: {},
       selectionUpdating: {},
     }
@@ -347,46 +352,89 @@ export default {
       this.projectPages = {}
     },
 
-    isProjectChecked(projectItem) {
+    pendingSelectionKey(notificationID, projectID) {
+      return `${notificationID}:${projectID}`
+    },
+
+    getPendingSelection(notificationID, projectID) {
+      return this.pendingSelections[
+        this.pendingSelectionKey(notificationID, projectID)
+      ]
+    },
+
+    isProjectChecked(notification, projectItem) {
+      const pendingSelection = this.getPendingSelection(
+        notification.notification_id,
+        projectItem.project_id
+      )
+      if (pendingSelection) {
+        return pendingSelection.enabled
+      }
       return (
         projectItem.relations.length > 0 &&
         projectItem.relations.every((relation) => relation.enabled === true)
       )
     },
 
-    isProjectIndeterminate(projectItem) {
+    isProjectIndeterminate(notification, projectItem) {
+      if (
+        this.getPendingSelection(
+          notification.notification_id,
+          projectItem.project_id
+        )
+      ) {
+        return false
+      }
       const enabledCount = projectItem.relations.filter(
         (relation) => relation.enabled === true
       ).length
       return enabledCount > 0 && enabledCount < projectItem.relations.length
     },
 
-    async handleProjectCheck(notification, projectItem, enabled) {
-      const key = this.selectionUpdatingKey(
+    handleProjectCheck(notification, projectItem, enabled) {
+      const key = this.pendingSelectionKey(
         notification.notification_id,
         projectItem.project_id
       )
-      this.selectionUpdating[key] = true
+      this.pendingSelections[key] = {
+        notification,
+        projectItem,
+        enabled: enabled === true,
+      }
+    },
+
+    async savePendingSelections() {
+      const selections = Object.values(this.pendingSelections)
       try {
-        await this.updateOrgAlertProjectNotificationEnabled(
-          projectItem.project_id,
-          notification.notification_id,
-          enabled
-        )
-        for (const relation of projectItem.relations) {
-          relation.enabled = enabled === true
+        for (const selection of selections) {
+          const { notification, projectItem, enabled } = selection
+          const key = this.selectionUpdatingKey(
+            notification.notification_id,
+            projectItem.project_id
+          )
+          this.selectionUpdating[key] = true
+          await this.updateOrgAlertProjectNotificationEnabled(
+            projectItem.project_id,
+            notification.notification_id,
+            enabled
+          )
+          for (const relation of projectItem.relations) {
+            relation.enabled = enabled
+          }
+          delete this.selectionUpdating[key]
         }
-        this.$refs.snackbar.notifySuccess(
-          this.$t(`view.alert['Notification target updated']`)
-        )
+        this.pendingSelections = {}
       } catch (err) {
         this.$refs.snackbar.notifyError(
           this.$t(`view.alert['Failed to update notification target']`)
         )
-        await this.refreshList()
-      } finally {
-        delete this.selectionUpdating[key]
+        this.selectionUpdating = {}
+        throw err
       }
+    },
+
+    discardPendingSelections() {
+      this.pendingSelections = {}
     },
 
     selectionUpdatingKey(notificationID, projectID) {

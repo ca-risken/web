@@ -299,6 +299,7 @@
 
               <v-window-item v-if="isOrganizationMode" :value="3">
                 <organization-project
+                  ref="organizationProject"
                   embedded
                   :notification-id="dataModel.notification_id"
                 />
@@ -321,7 +322,7 @@
                 text
                 variant="outlined"
                 color="grey-darken-1"
-                @click="editDialog = false"
+                @click="handleEditCancel"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
@@ -593,6 +594,13 @@ export default {
       ]
     },
   },
+  watch: {
+    editDialog(value) {
+      if (!value) {
+        this.$refs.organizationProject?.discardPendingSelections()
+      }
+    },
+  },
   mounted() {
     this.refleshList()
   },
@@ -738,12 +746,24 @@ export default {
       this.tab = 1
       this.editDialog = true
     },
-    handleEditSubmit() {
-      if (!this.$refs.form.validate()) {
+    async handleEditSubmit() {
+      const { valid } = await this.$refs.form.validate()
+      if (!valid) {
         return
       }
       this.loading = true
-      this.putItem()
+      try {
+        if (this.isOrganizationMode && !this.form.new) {
+          await this.$refs.organizationProject?.savePendingSelections()
+        }
+        await this.putItem()
+      } catch (err) {
+        this.loading = false
+      }
+    },
+    handleEditCancel() {
+      this.$refs.organizationProject?.discardPendingSelections()
+      this.editDialog = false
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
