@@ -755,18 +755,11 @@ export default {
         }
         await this.putItem()
       } catch (err) {
-        const serverMessage =
-          typeof err.response?.data === 'string'
-            ? err.response.data
-            : err.response?.data?.message
         datadogRum.addError(new Error('Failed to update notification'), {
+          operation: 'update_notification',
           status: err.response?.status,
-          serverMessage:
-            typeof serverMessage === 'string'
-              ? serverMessage
-                  .replace(/https?:\/\/\S+/gi, '[REDACTED_URL]')
-                  .slice(0, 1000)
-              : undefined,
+          errorCode: err.code,
+          requestId: err.response?.headers?.['x-request-id'],
         })
         if (
           this.isOrganizationMode &&
