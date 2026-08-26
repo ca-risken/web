@@ -687,10 +687,7 @@ export default {
           type: this.dataModel.type,
           notify_setting: notifySetting,
         }
-        await this.putOrgAlertNotification(param).catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
+        await this.putOrgAlertNotification(param)
       } else {
         const param = {
           project_id: this.getCurrentProjectID(),
@@ -702,10 +699,7 @@ export default {
             notify_setting: notifySetting,
           },
         }
-        await this.putAlertNotification(param).catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
+        await this.putAlertNotification(param)
       }
       let msg = 'Success: Updated Notification.'
       if (this.form.new) {
@@ -750,13 +744,31 @@ export default {
         return
       }
       this.loading = true
+      let organizationProjectSaveCompleted = false
+      let organizationProjectUpdates = 0
       try {
         if (this.isOrganizationMode && !this.form.new) {
-          await this.$refs.organizationProject?.savePendingSelections()
+          organizationProjectUpdates =
+            (await this.$refs.organizationProject?.savePendingSelections()) || 0
+          organizationProjectSaveCompleted = true
         }
         await this.putItem()
       } catch (err) {
-        this.loading = false
+        if (
+          this.isOrganizationMode &&
+          !this.form.new &&
+          !organizationProjectSaveCompleted
+        ) {
+          this.loading = false
+          return
+        }
+        await this.finishError(
+          organizationProjectUpdates > 0
+            ? this.$t(
+                `view.alert['Some notification settings may have been updated']`
+              )
+            : err.response?.data || err.message
+        )
       }
     },
     handleEditCancel() {

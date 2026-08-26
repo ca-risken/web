@@ -254,7 +254,9 @@ export default {
       try {
         const [projects, notifications, relations] = await Promise.all([
           this.listProjectAPI(
-            `?organization_id=${this.getCurrentOrganizationID()}`
+            `?organization_id=${encodeURIComponent(
+              this.getCurrentOrganizationID()
+            )}`
           ),
           this.listOrgAlertNotification(),
           this.listOrgAlertCondNotification(),
@@ -404,6 +406,7 @@ export default {
     async savePendingSelections() {
       const selections = Object.values(this.pendingSelections)
       const cacheUpdates = Object.values(this.pendingCacheUpdates)
+      let completedUpdates = 0
       let errorMessage = this.$t(
         `view.alert['Failed to update notification target']`
       )
@@ -420,6 +423,7 @@ export default {
             notification.notification_id,
             enabled
           )
+          completedUpdates += 1
           for (const relation of projectItem.relations) {
             relation.enabled = enabled
           }
@@ -441,17 +445,26 @@ export default {
             notification.notification_id,
             cacheSecond
           )
+          completedUpdates += 1
           delete this.pendingCacheUpdates[key]
           delete this.cacheUpdating[key]
         }
         if (selections.length > 0 || cacheUpdates.length > 0) {
           await this.refreshList()
         }
+        return completedUpdates
       } catch (err) {
-        this.$refs.snackbar.notifyError(errorMessage)
         this.selectionUpdating = {}
         this.cacheUpdating = {}
+        this.discardPendingSelections()
         await this.refreshList()
+        this.$refs.snackbar.notifyError(
+          completedUpdates > 0
+            ? this.$t(
+                `view.alert['Some notification settings may have been updated']`
+              )
+            : errorMessage
+        )
         throw err
       }
     },

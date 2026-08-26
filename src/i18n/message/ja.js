@@ -529,6 +529,8 @@ const ja = {
       'Notification cache updated': '通知の抑制期間を更新しました。',
       'Failed to update notification cache':
         '通知の抑制期間を更新できませんでした。',
+      'Some notification settings may have been updated':
+        '保存に失敗する前に一部の設定が更新されました。現在の設定を確認して再度保存してください。',
       'Failed to load notification relations':
         'Organization通知設定を取得できませんでした。',
       'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':

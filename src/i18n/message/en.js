@@ -533,6 +533,8 @@ const en = {
       'Notification cache updated': 'Notification cache updated.',
       'Failed to update notification cache':
         'Failed to update notification cache.',
+      'Some notification settings may have been updated':
+        'Some settings were updated before the save failed. Review the current settings and try again.',
       'Failed to load notification relations':
         'Failed to load organization notification settings.',
       'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
