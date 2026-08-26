@@ -95,6 +95,8 @@ const org_alert = {
       notification_id,
       enabled
     ) {
+      project_id = Number(project_id)
+      notification_id = Number(notification_id)
       if (
         !Number.isInteger(project_id) ||
         project_id < 1 ||
@@ -119,6 +121,8 @@ const org_alert = {
       notification_id,
       cache_second
     ) {
+      project_id = Number(project_id)
+      notification_id = Number(notification_id)
       if (
         !Number.isInteger(project_id) ||
         project_id < 1 ||

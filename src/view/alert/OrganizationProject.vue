@@ -231,6 +231,7 @@ export default {
       pendingCacheUpdates: {},
       cacheUpdating: {},
       selectionUpdating: {},
+      refreshSequence: 0,
     }
   },
   computed: {
@@ -261,6 +262,7 @@ export default {
   },
   methods: {
     async refreshList() {
+      const refreshSequence = ++this.refreshSequence
       this.loading = true
       try {
         const [projects, notifications, relations] = await Promise.all([
@@ -272,6 +274,9 @@ export default {
           this.listOrgAlertNotification(),
           this.listOrgAlertCondNotification(),
         ])
+        if (refreshSequence !== this.refreshSequence) {
+          return
+        }
         this.notificationGroups = this.aggregateNotifications(
           projects,
           notifications,
@@ -279,34 +284,45 @@ export default {
         )
         this.resetProjectPages()
       } catch {
+        if (refreshSequence !== this.refreshSequence) {
+          return
+        }
         this.notificationGroups = []
         this.resetProjectPages()
         this.$refs.snackbar.notifyError(
           this.$t(`view.alert['Failed to load notification relations']`)
         )
       } finally {
-        this.loading = false
+        if (refreshSequence === this.refreshSequence) {
+          this.loading = false
+        }
       }
     },
 
     aggregateNotifications(projects, notifications, relations) {
       const projectByID = new Map(
-        projects.map((projectItem) => [projectItem.project_id, projectItem])
+        projects.map((projectItem) => [
+          Number(projectItem.project_id),
+          projectItem,
+        ])
       )
 
       return notifications.map((notification) => {
+        const notificationID = Number(notification.notification_id)
         const relationsByProject = new Map()
         for (const relation of relations) {
-          if (relation.notification_id !== notification.notification_id) {
+          const relationNotificationID = Number(relation.notification_id)
+          const relationProjectID = Number(relation.project_id)
+          if (relationNotificationID !== notificationID) {
             continue
           }
-          if (!projectByID.has(relation.project_id)) {
+          if (!projectByID.has(relationProjectID)) {
             continue
           }
-          if (!relationsByProject.has(relation.project_id)) {
-            relationsByProject.set(relation.project_id, [])
+          if (!relationsByProject.has(relationProjectID)) {
+            relationsByProject.set(relationProjectID, [])
           }
-          relationsByProject.get(relation.project_id).push(relation)
+          relationsByProject.get(relationProjectID).push(relation)
         }
 
         const notificationProjects = [...relationsByProject.entries()]
@@ -330,7 +346,7 @@ export default {
           .sort((left, right) => left.project_id - right.project_id)
 
         return {
-          notification_id: notification.notification_id,
+          notification_id: notificationID,
           name: notification.name,
           projects: notificationProjects,
         }
