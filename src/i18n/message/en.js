@@ -280,7 +280,6 @@ const en = {
     'Notification Destinations': 'Notification Destinations',
     'Suppression time': 'Suppression time',
     'Last notified at': 'Last notified at',
-    'Next notification at': 'Next notification at',
     'Original Score': 'Original Score',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT Reration ID',
@@ -520,7 +519,6 @@ const en = {
       'Organization notification projects':
         'Organization notification projects',
       'Never notified': 'Never notified',
-      'Available now': 'Available now',
       seconds: '{seconds} seconds',
       minutes: '{count} minutes',
       hours: '{count} hours',

@@ -105,7 +105,7 @@
                         {{ projectItem.name }}
                       </span>
                       <v-chip class="ml-3" size="x-small">
-                        {{ $t(`item['Project ID']`) }}:
+                        {{ $t(`item['ID']`) }}:
                         {{ projectItem.project_id }}
                       </v-chip>
                       <v-chip class="ml-2" size="x-small" variant="outlined">
@@ -113,18 +113,14 @@
                         {{ projectItem.relations.length }}
                       </v-chip>
                     </v-list-item-title>
-                    <v-list-item-subtitle
+                    <div
                       v-for="relation in projectItem.relations"
                       :key="relation.alert_condition_id"
-                      class="mt-1"
+                      class="notification-timing text-body-2 text-medium-emphasis mt-1"
                     >
-                      {{ $t(`item['Alert Condition ID']`) }}:
-                      {{ relation.alert_condition_id }} /
                       {{ $t(`item['Last notified at']`) }}:
-                      {{ formatLastNotifiedAt(relation) }} /
-                      {{ $t(`item['Next notification at']`) }}:
-                      {{ formatNextNotifiableAt(relation) }}
-                    </v-list-item-subtitle>
+                      {{ formatLastNotifiedAt(relation) }}
+                    </div>
                     <template v-slot:append>
                       <div class="suppression-select" @click.stop>
                         <v-select
@@ -607,22 +603,6 @@ export default {
       return this.formatTime(notifiedAt)
     },
 
-    formatNextNotifiableAt(relation) {
-      const notifiedAt = Number(relation.notified_at)
-      const cacheSecond = Number(relation.cache_second)
-      if (!Number.isFinite(notifiedAt) || notifiedAt <= 0) {
-        return this.$t(`view.alert['Available now']`)
-      }
-      if (!Number.isFinite(cacheSecond)) {
-        return '-'
-      }
-      const nextNotifiableAt = notifiedAt + cacheSecond
-      if (nextNotifiableAt <= Math.floor(Date.now() / 1000)) {
-        return this.$t(`view.alert['Available now']`)
-      }
-      return this.formatTime(nextNotifiableAt)
-    },
-
     cacheUpdatingKey(notificationID, projectID) {
       return `${notificationID}:${projectID}`
     },
@@ -658,7 +638,13 @@ export default {
 
 <style scoped>
 .suppression-select {
-  width: 220px;
+  width: 160px;
+}
+
+.notification-timing {
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
 }
 
 .project-row {
