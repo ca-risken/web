@@ -521,6 +521,7 @@ const ja = {
       'No suppression': 'なし',
       'Multiple suppression settings': '複数設定',
       'Notification target updated': '通知対象プロジェクトを更新しました。',
+      'Failed to update notification': '通知を更新できませんでした。',
       'Failed to update notification target':
         '通知対象プロジェクトを更新できませんでした。',
       'Notification cache updated': '通知の抑制期間を更新しました。',

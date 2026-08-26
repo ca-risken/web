@@ -525,6 +525,7 @@ const en = {
       'No suppression': 'None',
       'Multiple suppression settings': 'Multiple settings',
       'Notification target updated': 'Notification target project updated.',
+      'Failed to update notification': 'Failed to update notification.',
       'Failed to update notification target':
         'Failed to update notification target project.',
       'Notification cache updated': 'Notification cache updated.',

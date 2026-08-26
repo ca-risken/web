@@ -753,7 +753,7 @@ export default {
           organizationProjectSaveCompleted = true
         }
         await this.putItem()
-      } catch (err) {
+      } catch {
         if (
           this.isOrganizationMode &&
           !this.form.new &&
@@ -767,7 +767,7 @@ export default {
             ? this.$t(
                 `view.alert['Some notification settings may have been updated']`
               )
-            : err.response?.data || err.message
+            : this.$t(`view.alert['Failed to update notification']`)
         )
       }
     },

@@ -278,7 +278,9 @@ export default {
           relations
         )
         this.resetProjectPages()
-      } catch (err) {
+      } catch {
+        this.notificationGroups = []
+        this.resetProjectPages()
         this.$refs.snackbar.notifyError(
           this.$t(`view.alert['Failed to load notification relations']`)
         )
