@@ -95,6 +95,14 @@ const org_alert = {
       notification_id,
       enabled
     ) {
+      if (
+        !Number.isInteger(project_id) ||
+        project_id < 1 ||
+        !Number.isInteger(notification_id) ||
+        notification_id < 1
+      ) {
+        throw new Error('Invalid notification target')
+      }
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         project_id: project_id,
@@ -112,6 +120,10 @@ const org_alert = {
       cache_second
     ) {
       if (
+        !Number.isInteger(project_id) ||
+        project_id < 1 ||
+        !Number.isInteger(notification_id) ||
+        notification_id < 1 ||
         !Number.isInteger(cache_second) ||
         cache_second < 1 ||
         cache_second > 31536000

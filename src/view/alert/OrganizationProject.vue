@@ -321,7 +321,12 @@ export default {
               ...new Set(
                 projectRelations
                   .map((relation) => Number(relation.cache_second))
-                  .filter((cacheSecond) => Number.isInteger(cacheSecond))
+                  .filter(
+                    (cacheSecond) =>
+                      Number.isInteger(cacheSecond) &&
+                      cacheSecond >= 1 &&
+                      cacheSecond <= 31536000
+                  )
               ),
             ],
           }))
@@ -554,6 +559,8 @@ export default {
       ]
       if (
         cacheSeconds.length === 1 &&
+        cacheSeconds[0] >= 1 &&
+        cacheSeconds[0] <= 31536000 &&
         !options.some((option) => option.value === cacheSeconds[0])
       ) {
         options.unshift({
@@ -628,7 +635,11 @@ export default {
     },
 
     handleCacheUpdate(notification, projectItem, cacheSecond) {
-      if (!Number.isInteger(cacheSecond)) {
+      if (
+        !Number.isInteger(cacheSecond) ||
+        cacheSecond < 1 ||
+        cacheSecond > 31536000
+      ) {
         return
       }
       const key = this.cacheUpdatingKey(
