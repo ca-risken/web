@@ -47,7 +47,8 @@
                   {{ notification.name }}
                 </span>
                 <v-chip class="ml-3" size="small">
-                  ID: {{ notification.notification_id }}
+                  {{ $t(`item['Organization Notification ID']`) }}:
+                  {{ notification.notification_id }}
                 </v-chip>
                 <v-spacer />
                 <v-chip size="small" variant="outlined" class="mr-3">
@@ -104,9 +105,26 @@
                         {{ projectItem.name }}
                       </span>
                       <v-chip class="ml-3" size="x-small">
-                        ID: {{ projectItem.project_id }}
+                        {{ $t(`item['Project ID']`) }}:
+                        {{ projectItem.project_id }}
+                      </v-chip>
+                      <v-chip class="ml-2" size="x-small" variant="outlined">
+                        {{ $t(`item['Notification Destinations']`) }}:
+                        {{ projectItem.relations.length }}
                       </v-chip>
                     </v-list-item-title>
+                    <v-list-item-subtitle
+                      v-for="relation in projectItem.relations"
+                      :key="relation.alert_condition_id"
+                      class="mt-1"
+                    >
+                      {{ $t(`item['Alert Condition ID']`) }}:
+                      {{ relation.alert_condition_id }} /
+                      {{ $t(`item['Last notified at']`) }}:
+                      {{ formatLastNotifiedAt(relation) }} /
+                      {{ $t(`item['Next notification at']`) }}:
+                      {{ formatNextNotifiableAt(relation) }}
+                    </v-list-item-subtitle>
                     <template v-slot:append>
                       <div class="suppression-select" @click.stop>
                         <v-select
@@ -122,6 +140,7 @@
                           "
                           item-title="title"
                           item-value="value"
+                          item-props
                           density="compact"
                           variant="outlined"
                           hide-details
@@ -266,6 +285,7 @@ export default {
           notifications,
           relations
         )
+        this.resetProjectPages()
       } catch (err) {
         this.$refs.snackbar.notifyError(
           this.$t(`view.alert['Failed to load notification relations']`)
@@ -545,13 +565,18 @@ export default {
         options.unshift({
           title: this.$t(`view.alert['Multiple suppression settings']`),
           value: null,
-          disabled: true,
+          props: { disabled: true },
         })
       }
       return options
     },
 
     formatCacheSecond(cacheSecond) {
+      if (cacheSecond % 60 !== 0) {
+        return this.$t(`view.alert['seconds']`, {
+          seconds: cacheSecond,
+        })
+      }
       if (cacheSecond % (60 * 60 * 24) === 0) {
         return this.$t(`view.alert['days']`, {
           count: cacheSecond / (60 * 60 * 24),
@@ -565,6 +590,30 @@ export default {
       return this.$t(`view.alert['minutes']`, {
         count: cacheSecond / 60,
       })
+    },
+
+    formatLastNotifiedAt(relation) {
+      const notifiedAt = Number(relation.notified_at)
+      if (!Number.isFinite(notifiedAt) || notifiedAt <= 0) {
+        return this.$t(`view.alert['Never notified']`)
+      }
+      return this.formatTime(notifiedAt)
+    },
+
+    formatNextNotifiableAt(relation) {
+      const notifiedAt = Number(relation.notified_at)
+      const cacheSecond = Number(relation.cache_second)
+      if (!Number.isFinite(notifiedAt) || notifiedAt <= 0) {
+        return this.$t(`view.alert['Available now']`)
+      }
+      if (!Number.isFinite(cacheSecond)) {
+        return '-'
+      }
+      const nextNotifiableAt = notifiedAt + cacheSecond
+      if (nextNotifiableAt <= Math.floor(Date.now() / 1000)) {
+        return this.$t(`view.alert['Available now']`)
+      }
+      return this.formatTime(nextNotifiableAt)
     },
 
     cacheUpdatingKey(notificationID, projectID) {
