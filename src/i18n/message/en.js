@@ -277,7 +277,6 @@ const en = {
     'Organization Notification ID': 'Org Notification ID',
     'Notification Language': 'Notification Language',
     'Notification throttle': 'Notification throttle',
-    'Notification Destinations': 'Notification Destinations',
     'Suppression time': 'Suppression time',
     'Last notified at': 'Last notified at',
     'Original Score': 'Original Score',

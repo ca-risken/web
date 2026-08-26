@@ -108,10 +108,6 @@
                         {{ $t(`item['ID']`) }}:
                         {{ projectItem.project_id }}
                       </v-chip>
-                      <v-chip class="ml-2" size="x-small" variant="outlined">
-                        {{ $t(`item['Notification Destinations']`) }}:
-                        {{ projectItem.relations.length }}
-                      </v-chip>
                     </v-list-item-title>
                     <div
                       v-for="relation in projectItem.relations"

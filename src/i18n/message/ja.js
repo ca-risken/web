@@ -277,7 +277,6 @@ const ja = {
     'Organization Notification ID': 'Org通知ID',
     'Notification Language': '通知の言語',
     'Notification throttle': '通知の抑制期間',
-    'Notification Destinations': '通知先数',
     'Suppression time': '通知の抑制期間',
     'Last notified at': '最終通知日時',
     'Original Score': 'オリジナルスコア',
