@@ -441,6 +441,7 @@ import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import OrganizationProject from '@/view/alert/OrganizationProject.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import { datadogRum } from '@datadog/browser-rum'
 export default {
   name: 'AlertNotification',
   mixins: [mixin, alert, org_alert, organization_helper],
@@ -753,7 +754,20 @@ export default {
           organizationProjectSaveCompleted = true
         }
         await this.putItem()
-      } catch {
+      } catch (err) {
+        const serverMessage =
+          typeof err.response?.data === 'string'
+            ? err.response.data
+            : err.response?.data?.message
+        datadogRum.addError(new Error('Failed to update notification'), {
+          status: err.response?.status,
+          serverMessage:
+            typeof serverMessage === 'string'
+              ? serverMessage
+                  .replace(/https?:\/\/\S+/gi, '[REDACTED_URL]')
+                  .slice(0, 1000)
+              : undefined,
+        })
         if (
           this.isOrganizationMode &&
           !this.form.new &&
