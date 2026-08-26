@@ -532,6 +532,15 @@ export default {
           value: 60 * 60 * 24 * 365,
         },
       ]
+      if (
+        cacheSeconds.length === 1 &&
+        !options.some((option) => option.value === cacheSeconds[0])
+      ) {
+        options.unshift({
+          title: this.formatCacheSecond(cacheSeconds[0]),
+          value: cacheSeconds[0],
+        })
+      }
       if (cacheSeconds.length > 1) {
         options.unshift({
           title: this.$t(`view.alert['Multiple suppression settings']`),
