@@ -110,12 +110,10 @@
                       </v-chip>
                     </v-list-item-title>
                     <div
-                      v-for="relation in projectItem.relations"
-                      :key="relation.alert_condition_id"
                       class="notification-timing text-body-2 text-medium-emphasis mt-1"
                     >
                       {{ $t(`item['Last notified at']`) }}:
-                      {{ formatLastNotifiedAt(relation) }}
+                      {{ formatLastNotifiedAt(projectItem.relations) }}
                     </div>
                     <template v-slot:append>
                       <div class="suppression-select" @click.stop>
@@ -612,9 +610,14 @@ export default {
       })
     },
 
-    formatLastNotifiedAt(relation) {
-      const notifiedAt = Number(relation.notified_at)
-      if (!Number.isFinite(notifiedAt) || notifiedAt <= 0) {
+    formatLastNotifiedAt(relations) {
+      const notifiedAt = Math.max(
+        0,
+        ...relations
+          .map((relation) => Number(relation.notified_at))
+          .filter((value) => Number.isFinite(value) && value > 0)
+      )
+      if (notifiedAt === 0) {
         return this.$t(`view.alert['Never notified']`)
       }
       return this.formatTime(notifiedAt)
