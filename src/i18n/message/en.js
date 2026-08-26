@@ -115,6 +115,8 @@ const en = {
     FindingSummary: 'Finding Summary', // Analysis
     NewProject: 'New', // Project
     ProjectSelect: 'Select Project',
+    OrganizationNotificationProjectSelect: 'Select Notification Projects',
+    OrganizationNotificationName: 'Organization Notification Name:',
     ProjectSetting: 'Setting', // Project
     'New Organization': 'New Organization',
     'Organization Setting': 'Organization Setting',
@@ -137,6 +139,7 @@ const en = {
     'Alert ID': 'Alert ID',
     'Alert Condition ID': 'Alert Condition ID',
     'Alert Rule ID': 'Alert Rule ID',
+    'Project ID': 'Project ID',
     'And Or': 'And Or',
     'Application Scan ID': 'Application Scan ID',
     'Application Scan Basic Setting ID': 'Application Scan Basic Setting ID',
@@ -271,8 +274,11 @@ const en = {
       'Enter report content in Markdown format',
     Optional: 'Optional',
     'Notification ID': 'Notification ID',
+    'Organization Notification ID': 'Org Notification ID',
     'Notification Language': 'Notification Language',
     'Notification throttle': 'Notification throttle',
+    'Suppression time': 'Suppression time',
+    'Last notified at': 'Last notified at',
     'Original Score': 'Original Score',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT Reration ID',
@@ -507,6 +513,28 @@ const en = {
         '... It is recommended to use the default channels.',
       'The next notification will be after':
         'The next notification will be after',
+      'Organization notification relations':
+        'Organization notification relations',
+      'Organization notification projects':
+        'Organization notification projects',
+      'Never notified': 'Never notified',
+      seconds: '{seconds} seconds',
+      minutes: '{count} minutes',
+      hours: '{count} hours',
+      days: '{count} days',
+      'No suppression': 'None',
+      'Multiple suppression settings': 'Multiple settings',
+      'Notification target updated': 'Notification target project updated.',
+      'Failed to update notification': 'Failed to update notification.',
+      'Failed to update notification target':
+        'Failed to update notification target project.',
+      'Notification cache updated': 'Notification cache updated.',
+      'Failed to update notification cache':
+        'Failed to update notification cache.',
+      'Some notification settings may have been updated':
+        'Some settings were updated before the save failed. Review the current settings and try again.',
+      'Failed to load notification relations':
+        'Failed to load organization notification settings.',
       'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
         'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.',
       'Running ANALYZE will move to the alert screen.':

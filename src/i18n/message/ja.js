@@ -115,6 +115,8 @@ const ja = {
     FindingSummary: 'Findingサマリー',
     NewProject: '新規プロジェクト',
     ProjectSelect: 'プロジェクト選択',
+    OrganizationNotificationProjectSelect: '通知プロジェクト選択',
+    OrganizationNotificationName: 'Org通知名：',
     ProjectSetting: '設定',
     'New Organization': '新規Organization',
     'Organization Setting': 'Organization設定',
@@ -137,6 +139,7 @@ const ja = {
     'Alert ID': 'アラートID',
     'Alert Condition ID': 'アラート条件ID',
     'Alert Rule ID': 'アラートルールID',
+    'Project ID': 'プロジェクトID',
     'And Or': 'And Or',
     'Application Scan ID': 'アプリケーションスキャンID',
     'Application Scan Basic Setting ID': 'アプリケーションスキャン基本設定ID',
@@ -271,8 +274,11 @@ const ja = {
       'Markdown形式でレポートコンテンツを入力',
     Optional: '任意',
     'Notification ID': '通知ID',
+    'Organization Notification ID': 'Org通知ID',
     'Notification Language': '通知の言語',
     'Notification throttle': '通知の抑制期間',
+    'Suppression time': '通知の抑制期間',
+    'Last notified at': '最終通知日時',
     'Original Score': 'オリジナルスコア',
     'OSINT ID': 'OSINT ID',
     'OSINT Relation ID': 'OSINT関連ID',
@@ -505,6 +511,26 @@ const ja = {
         '特別な理由がない場合はデフォルトチャンネルをご利用ください.',
       'The next notification will be after':
         '次の日時まで通知はOFFになります: ',
+      'Organization notification relations': 'Organization通知関連',
+      'Organization notification projects': 'Organization通知対象プロジェクト',
+      'Never notified': '未通知',
+      seconds: '{seconds}秒',
+      minutes: '{count}分',
+      hours: '{count}時間',
+      days: '{count}日',
+      'No suppression': 'なし',
+      'Multiple suppression settings': '複数設定',
+      'Notification target updated': '通知対象プロジェクトを更新しました。',
+      'Failed to update notification': '通知を更新できませんでした。',
+      'Failed to update notification target':
+        '通知対象プロジェクトを更新できませんでした。',
+      'Notification cache updated': '通知の抑制期間を更新しました。',
+      'Failed to update notification cache':
+        '通知の抑制期間を更新できませんでした。',
+      'Some notification settings may have been updated':
+        '保存に失敗する前に一部の設定が更新されました。現在の設定を確認して再度保存してください。',
+      'Failed to load notification relations':
+        'Organization通知設定を取得できませんでした。',
       'If you want to check the alert rule conditions, you can use the ANALYZE button to see the related findings.':
         'ルール条件を確認したい場合は、ANALYZEボタンで関連するFindingを見ることができます。',
       'Running ANALYZE will move to the alert screen.':
