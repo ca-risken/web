@@ -302,6 +302,9 @@ export default {
           if (relation.notification_id !== notification.notification_id) {
             continue
           }
+          if (!projectByID.has(relation.project_id)) {
+            continue
+          }
           if (!relationsByProject.has(relation.project_id)) {
             relationsByProject.set(relation.project_id, [])
           }
