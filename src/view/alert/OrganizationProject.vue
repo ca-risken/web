@@ -100,14 +100,18 @@
                         "
                       />
                     </template>
-                    <v-list-item-title>
-                      <span class="font-weight-medium">
-                        {{ projectItem.name }}
-                      </span>
-                      <v-chip class="ml-3" size="x-small">
-                        {{ $t(`item['ID']`) }}:
-                        {{ projectItem.project_id }}
-                      </v-chip>
+                    <v-list-item-title class="project-info">
+                      <div class="project-title-row">
+                        <v-chip class="project-id" size="x-small">
+                          {{ $t(`item['ID']`) }}:
+                          {{ projectItem.project_id }}
+                        </v-chip>
+                        <span
+                          class="project-name text-body-2 font-weight-medium"
+                        >
+                          {{ projectItem.name }}
+                        </span>
+                      </div>
                     </v-list-item-title>
                     <div
                       class="notification-timing text-body-2 text-medium-emphasis mt-1"
@@ -143,6 +147,7 @@
                           "
                           :disabled="
                             saving ||
+                            !isProjectChecked(notification, projectItem) ||
                             isCacheUpdating(
                               notification.notification_id,
                               projectItem.project_id
@@ -658,7 +663,31 @@ export default {
 
 <style scoped>
 .suppression-select {
-  width: 160px;
+  flex-shrink: 0;
+  width: 140px;
+}
+
+.project-info {
+  min-width: 0;
+  overflow: visible;
+}
+
+.project-title-row {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+.project-id {
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.project-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .notification-timing {
