@@ -107,7 +107,7 @@
           <span class="mx-4 text-h5">{{ $t(`submenu['Notification']`) }}</span>
         </v-card-title>
         <v-card-text>
-          <v-form v-model="form.valid" ref="form">
+          <v-form v-model="form.valid" ref="form" :disabled="loading">
             <v-text-field
               v-model="dataModel.notification_id"
               :label="$t(`item['` + form.notification_id.label + `']`) + ' *'"
@@ -153,6 +153,9 @@
             >
               <v-tab :value="1">Slack App</v-tab>
               <v-tab :value="2">Webhook URL</v-tab>
+              <v-tab v-if="isOrganizationMode" :value="3" :disabled="form.new">
+                {{ $t(`submenu['OrganizationNotificationProjectSelect']`) }}
+              </v-tab>
             </v-tabs>
             <v-window v-model="tab">
               <v-window-item :value="1">
@@ -289,6 +292,15 @@
                   </v-expansion-panel>
                 </v-expansion-panels>
               </v-window-item>
+
+              <v-window-item v-if="isOrganizationMode" :value="3">
+                <organization-project
+                  ref="organizationProject"
+                  embedded
+                  :notification-id="dataModel.notification_id"
+                  :saving="loading"
+                />
+              </v-window-item>
             </v-window>
 
             <v-divider class="mt-3 mb-3"></v-divider>
@@ -307,7 +319,8 @@
                 text
                 variant="outlined"
                 color="grey-darken-1"
-                @click="editDialog = false"
+                :disabled="loading"
+                @click="handleEditCancel"
               >
                 {{ $t(`btn['CANCEL']`) }}
               </v-btn>
@@ -426,12 +439,15 @@ import alert from '@/mixin/api/alert'
 import org_alert from '@/mixin/api/org_alert'
 import organization_helper from '@/mixin/helper/organization_helper'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
+import OrganizationProject from '@/view/alert/OrganizationProject.vue'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import { datadogRum } from '@datadog/browser-rum'
 export default {
   name: 'AlertNotification',
   mixins: [mixin, alert, org_alert, organization_helper],
   components: {
     BottomSnackBar,
+    OrganizationProject,
     VDataTable,
   },
   data() {
@@ -577,6 +593,13 @@ export default {
       ]
     },
   },
+  watch: {
+    editDialog(value) {
+      if (!value) {
+        this.$refs.organizationProject?.discardPendingSelections()
+      }
+    },
+  },
   mounted() {
     this.refleshList()
   },
@@ -591,13 +614,14 @@ export default {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
+        this.table.items = notification
       } else {
         notification = await this.listAlertNotification().catch((err) => {
           this.finishError(err.response.data)
           return Promise.reject(err)
         })
+        this.table.items = notification
       }
-      this.table.items = notification
       this.loading = false
     },
     clearList() {
@@ -664,10 +688,7 @@ export default {
           type: this.dataModel.type,
           notify_setting: notifySetting,
         }
-        await this.putOrgAlertNotification(param).catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
+        await this.putOrgAlertNotification(param)
       } else {
         const param = {
           project_id: this.getCurrentProjectID(),
@@ -679,10 +700,7 @@ export default {
             notify_setting: notifySetting,
           },
         }
-        await this.putAlertNotification(param).catch((err) => {
-          this.finishError(err.response.data)
-          return Promise.reject(err)
-        })
+        await this.putAlertNotification(param)
       }
       let msg = 'Success: Updated Notification.'
       if (this.form.new) {
@@ -706,6 +724,7 @@ export default {
       }
       this.form.valid = false
       this.form.new = true
+      this.tab = 1
       this.editDialog = true
     },
     handleRowClick(event, notifications) {
@@ -717,14 +736,51 @@ export default {
       this.dataModel.webhook_url = ''
       this.form.valid = false
       this.form.new = false
+      this.tab = 1
       this.editDialog = true
     },
-    handleEditSubmit() {
-      if (!this.$refs.form.validate()) {
+    async handleEditSubmit() {
+      const { valid } = await this.$refs.form.validate()
+      if (!valid) {
         return
       }
       this.loading = true
-      this.putItem()
+      let organizationProjectSaveCompleted = false
+      let organizationProjectUpdates = 0
+      try {
+        if (this.isOrganizationMode && !this.form.new) {
+          organizationProjectUpdates =
+            (await this.$refs.organizationProject?.savePendingSelections()) || 0
+          organizationProjectSaveCompleted = true
+        }
+        await this.putItem()
+      } catch (err) {
+        datadogRum.addError(new Error('Failed to update notification'), {
+          operation: 'update_notification',
+          status: err.response?.status,
+          errorCode: err.code,
+          requestId: err.response?.headers?.['x-request-id'],
+        })
+        if (
+          this.isOrganizationMode &&
+          !this.form.new &&
+          !organizationProjectSaveCompleted
+        ) {
+          this.loading = false
+          return
+        }
+        await this.finishError(
+          organizationProjectUpdates > 0
+            ? this.$t(
+                `view.alert['Some notification settings may have been updated']`
+              )
+            : this.$t(`view.alert['Failed to update notification']`)
+        )
+      }
+    },
+    handleEditCancel() {
+      this.$refs.organizationProject?.discardPendingSelections()
+      this.editDialog = false
     },
     handleDeleteItem(item) {
       this.assignDataModel(item)
