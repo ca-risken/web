@@ -289,6 +289,7 @@ const en = {
     'Policy Name': 'Policy Name',
     'Portscan Setting ID': 'Portscan Setting ID',
     'Portscan Target ID': 'Portscan Target ID',
+    'Project Pattern': 'Project Pattern',
     Recommend: 'Recommend',
     Recommendation: 'Recommendation',
     'Recommend ID': 'Recommend ID',
