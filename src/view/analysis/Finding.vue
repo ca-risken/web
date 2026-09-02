@@ -393,9 +393,13 @@ export default {
   },
   methods: {
     async loadOrganizationProjects() {
-      this.projectList = await this.listProjectAPI(
-        `?organization_id=${this.getCurrentOrganizationID()}`
-      )
+      try {
+        this.projectList = await this.listProjectAPI(
+          `?organization_id=${this.getCurrentOrganizationID()}`
+        )
+      } catch (err) {
+        this.$refs.snackbar.notifyError(err)
+      }
     },
     getReportFindingURL(searchCond) {
       if (!this.isOrganizationMode) {
@@ -409,7 +413,7 @@ export default {
         '/report/get-report-finding-for-organization/?organization_id=' +
         this.getCurrentOrganizationID()
       this.selectedProjectIDs.forEach((projectID) => {
-        url += '&project_id=' + projectID
+        url += '&project_id=' + encodeURIComponent(projectID)
       })
       return url + searchCond
     },
