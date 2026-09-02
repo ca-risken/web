@@ -349,6 +349,7 @@ export default {
       ],
       projectList: [],
       selectedProjectIDs: [],
+      refreshSequence: 0,
       // PieChart
       pieChart: {
         labels: [],
@@ -369,6 +370,10 @@ export default {
   },
   async mounted() {
     if (this.isOrganizationMode) {
+      if (!this.getCurrentOrganizationID()) {
+        this.$refs.snackbar.notifyError('Error: Organization is not selected.')
+        return
+      }
       await this.loadOrganizationProjects()
     } else {
       this.setFlagAdmin()
@@ -563,11 +568,22 @@ export default {
     },
     // -- Raw Data ---------------------------------
     async setData() {
+      const refreshSequence = ++this.refreshSequence
       this.clearList()
-      await this.setReportFinding()
+      try {
+        await this.setReportFinding(refreshSequence)
+      } catch (err) {
+        if (refreshSequence === this.refreshSequence) {
+          this.$refs.snackbar.notifyError(err)
+        }
+        return
+      }
+      if (refreshSequence !== this.refreshSequence) {
+        return
+      }
       this.setReport()
     },
-    async setReportFinding() {
+    async setReportFinding(refreshSequence) {
       const res = await this.$axios
         .get(
           this.getReportFindingURL(
@@ -578,6 +594,9 @@ export default {
           return Promise.reject(err)
         })
       if (!res.data || !res.data.data || !res.data.data.report_finding) {
+        return
+      }
+      if (refreshSequence !== this.refreshSequence) {
         return
       }
       var category = ''
