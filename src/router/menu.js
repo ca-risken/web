@@ -165,10 +165,13 @@ export const menuDefinition = [
   {
     title: 'Analysis',
     icon: 'mdi-file-chart',
-    modes: [MODE.PROJECT],
     children: [
-      { title: 'Report', path: '/report' },
-      { title: 'AttackFlow', path: '/analysis/attack-flow' },
+      { title: 'Report', path: '/report', modes: [MODE.PROJECT] },
+      {
+        title: 'AttackFlow',
+        path: '/analysis/attack-flow',
+        modes: [MODE.PROJECT],
+      },
       { title: 'FindingSummary', path: '/analysis/finding' },
     ],
   },

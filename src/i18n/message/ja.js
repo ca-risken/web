@@ -36,6 +36,8 @@ const ja = {
     'CREATE NEW RULE': '新規ルール',
     'CREATE NEW NOTIFICATION': '新規通知先',
     'DOWNLOAD REPORT (PROJECT)': 'レポート ダウンロード (現在のプロジェクト)',
+    'DOWNLOAD REPORT (ORGANIZATION)':
+      'レポート ダウンロード (現在のOrganization)',
     'DOWNLOAD REPORT (ALL)': 'レポート ダウンロード (全てのプロジェクト)',
     'AUTO GENERATE EXTERNAL ID': '外部IDを自動生成する',
     'AUTO GENERATE VERIFICATION CODE': '検証コードを自動生成する',
