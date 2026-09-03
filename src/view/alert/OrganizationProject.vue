@@ -65,6 +65,22 @@
               </v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-list>
+                  <v-list-item class="project-row pl-0">
+                    <template v-slot:prepend>
+                      <v-checkbox-btn
+                        :model-value="areAllProjectsChecked(notification)"
+                        :indeterminate="areSomeProjectsChecked(notification)"
+                        :disabled="saving"
+                        class="mr-3"
+                        @update:modelValue="
+                          handleAllProjectsCheck(notification, $event)
+                        "
+                      />
+                    </template>
+                    <v-list-item-title class="font-weight-medium">
+                      {{ $t(`btn['All Projects']`) }}
+                    </v-list-item-title>
+                  </v-list-item>
                   <v-list-item
                     v-for="projectItem in paginatedProjects(
                       notification.projects,
@@ -229,7 +245,7 @@ export default {
       search: '',
       notificationGroups: [],
       projectPages: {},
-      projectsPerPage: 10,
+      projectsPerPage: 5,
       pendingSelections: {},
       pendingCacheUpdates: {},
       cacheUpdating: {},
@@ -441,6 +457,38 @@ export default {
         notification,
         projectItem,
         enabled: enabled === true,
+      }
+    },
+
+    areAllProjectsChecked(notification) {
+      return (
+        notification.projects.length > 0 &&
+        notification.projects.every((projectItem) =>
+          this.isProjectChecked(notification, projectItem)
+        )
+      )
+    },
+
+    areSomeProjectsChecked(notification) {
+      return (
+        !this.areAllProjectsChecked(notification) &&
+        notification.projects.some(
+          (projectItem) =>
+            this.isProjectChecked(notification, projectItem) ||
+            this.isProjectIndeterminate(notification, projectItem)
+        )
+      )
+    },
+
+    handleAllProjectsCheck(notification, enabled) {
+      const checked = enabled === true
+      for (const projectItem of notification.projects) {
+        if (
+          this.isProjectChecked(notification, projectItem) !== checked ||
+          this.isProjectIndeterminate(notification, projectItem)
+        ) {
+          this.handleProjectCheck(notification, projectItem, checked)
+        }
       }
     },
 

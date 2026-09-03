@@ -101,13 +101,18 @@
     </v-container>
 
     <v-dialog v-model="editDialog" max-width="600px">
-      <v-card>
+      <v-card class="edit-dialog-card">
         <v-card-title>
           <v-icon large class="pr-2" color="red-lighten-2">mdi-alert</v-icon>
           <span class="mx-4 text-h5">{{ $t(`submenu['Notification']`) }}</span>
         </v-card-title>
-        <v-card-text>
-          <v-form v-model="form.valid" ref="form" :disabled="loading">
+        <v-form
+          v-model="form.valid"
+          ref="form"
+          :disabled="loading"
+          class="edit-dialog-form"
+        >
+          <v-card-text class="edit-dialog-content">
             <v-text-field
               v-model="dataModel.notification_id"
               :label="$t(`item['` + form.notification_id.label + `']`) + ' *'"
@@ -302,41 +307,40 @@
                 />
               </v-window-item>
             </v-window>
-
-            <v-divider class="mt-3 mb-3"></v-divider>
-            <v-card-actions>
-              <v-btn
-                text
-                variant="outlined"
-                color="blue-darken-1"
-                @click="handleTestSubmit"
-                :disabled="form.new"
-              >
-                {{ $t(`btn['TEST NOTIFICATION']`) }}
-              </v-btn>
-              <v-spacer />
-              <v-btn
-                text
-                variant="outlined"
-                color="grey-darken-1"
-                :disabled="loading"
-                @click="handleEditCancel"
-              >
-                {{ $t(`btn['CANCEL']`) }}
-              </v-btn>
-              <v-btn
-                text
-                variant="outlined"
-                color="green-darken-1"
-                :loading="loading"
-                @click="handleEditSubmit"
-              >
-                <template v-if="form.new">{{ $t(`btn['REGIST']`) }}</template>
-                <template v-else>{{ $t(`btn['SAVE']`) }}</template>
-              </v-btn>
-            </v-card-actions>
-          </v-form>
-        </v-card-text>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions class="edit-dialog-actions">
+            <v-btn
+              text
+              variant="outlined"
+              color="blue-darken-1"
+              @click="handleTestSubmit"
+              :disabled="form.new"
+            >
+              {{ $t(`btn['TEST NOTIFICATION']`) }}
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              text
+              variant="outlined"
+              color="grey-darken-1"
+              :disabled="loading"
+              @click="handleEditCancel"
+            >
+              {{ $t(`btn['CANCEL']`) }}
+            </v-btn>
+            <v-btn
+              text
+              variant="outlined"
+              color="green-darken-1"
+              :loading="loading"
+              @click="handleEditSubmit"
+            >
+              <template v-if="form.new">{{ $t(`btn['REGIST']`) }}</template>
+              <template v-else>{{ $t(`btn['SAVE']`) }}</template>
+            </v-btn>
+          </v-card-actions>
+        </v-form>
       </v-card>
     </v-dialog>
 
@@ -848,3 +852,23 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.edit-dialog-card {
+  max-height: 90vh;
+}
+
+.edit-dialog-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.edit-dialog-content {
+  overflow-y: auto;
+}
+
+.edit-dialog-actions {
+  flex-shrink: 0;
+}
+</style>
