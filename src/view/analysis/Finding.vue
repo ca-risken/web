@@ -12,6 +12,24 @@
           </v-toolbar>
         </v-col>
       </v-row>
+      <v-row v-if="isOrganizationMode">
+        <v-col cols="12">
+          <v-select
+            v-model="selectedProjectIDs"
+            bg-color="white"
+            :items="projectList"
+            item-title="name"
+            item-value="project_id"
+            :label="$t(`btn['Select Project']`)"
+            multiple
+            chips
+            closable-chips
+            variant="outlined"
+            density="compact"
+            @update:modelValue="setData"
+          ></v-select>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="2">
           <v-select
@@ -262,6 +280,8 @@ import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
+import project from '@/mixin/api/project'
+import organization_helper from '@/mixin/helper/organization_helper'
 import PieChart from '@/component/widget/chart/PieChart.vue'
 import LineChart from '@/component/widget/chart/LineChart.vue'
 import colors from 'vuetify/lib/util/colors'
@@ -271,7 +291,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import ReportNumberStatistic from '@/component/widget/statistic/ReportNumberStatistic.vue'
 export default {
   name: 'ReportFinding',
-  mixins: [mixin, finding, alert, iam],
+  mixins: [mixin, finding, alert, iam, project, organization_helper],
   components: {
     BottomSnackBar,
     PieChart,
@@ -327,6 +347,9 @@ export default {
         'code',
         'google',
       ],
+      projectList: [],
+      selectedProjectIDs: [],
+      refreshSequence: 0,
       // PieChart
       pieChart: {
         labels: [],
@@ -345,8 +368,16 @@ export default {
       loadedLine: false,
     }
   },
-  mounted() {
-    this.setFlagAdmin()
+  async mounted() {
+    if (this.isOrganizationMode) {
+      if (!this.getCurrentOrganizationID()) {
+        this.$refs.snackbar.notifyError('Error: Organization is not selected.')
+        return
+      }
+      await this.loadOrganizationProjects()
+    } else {
+      this.setFlagAdmin()
+    }
     const now = new Date()
 
     // latest
@@ -363,9 +394,34 @@ export default {
     this.toDate = this.latest
     this.fromDate = lastMonth
 
-    this.setData()
+    await this.setData()
   },
   methods: {
+    async loadOrganizationProjects() {
+      try {
+        this.projectList = await this.listProjectAPI(
+          `?organization_id=${this.getCurrentOrganizationID()}`
+        )
+      } catch (err) {
+        this.$refs.snackbar.notifyError(err)
+      }
+    },
+    getReportFindingURL(searchCond) {
+      if (!this.isOrganizationMode) {
+        return (
+          '/report/get-report-finding/?project_id=' +
+          this.getCurrentProjectID() +
+          searchCond
+        )
+      }
+      let url =
+        '/report/get-report-finding-for-organization/?organization_id=' +
+        this.getCurrentOrganizationID()
+      this.selectedProjectIDs.forEach((projectID) => {
+        url += '&project_id=' + encodeURIComponent(projectID)
+      })
+      return url + searchCond
+    },
     async setFlagAdmin() {
       if (!store.state.user || !store.state.user.user_id) {
         this.$refs.snackbar.notifyError('Error: Try again after signin.')
@@ -384,10 +440,8 @@ export default {
       return
     },
     async getReportFinding(searchCond) {
-      let url = ''
-      url = '/report/get-report-finding/?project_id='
       const res = await this.$axios
-        .get(url + this.getCurrentProjectID() + searchCond)
+        .get(this.getReportFindingURL(searchCond))
         .catch((err) => {
           this.clearList()
           return Promise.reject(err)
@@ -514,24 +568,35 @@ export default {
     },
     // -- Raw Data ---------------------------------
     async setData() {
+      const refreshSequence = ++this.refreshSequence
       this.clearList()
-      await this.setReportFinding()
+      try {
+        await this.setReportFinding(refreshSequence)
+      } catch (err) {
+        if (refreshSequence === this.refreshSequence) {
+          this.$refs.snackbar.notifyError(err)
+        }
+        return
+      }
+      if (refreshSequence !== this.refreshSequence) {
+        return
+      }
       this.setReport()
     },
-    async setReportFinding() {
+    async setReportFinding(refreshSequence) {
       const res = await this.$axios
         .get(
-          '/report/get-report-finding/?project_id=' +
-            this.getCurrentProjectID() +
-            '&from_date=' +
-            this.fromDate +
-            '&to_date=' +
-            this.toDate
+          this.getReportFindingURL(
+            '&from_date=' + this.fromDate + '&to_date=' + this.toDate
+          )
         )
         .catch((err) => {
           return Promise.reject(err)
         })
       if (!res.data || !res.data.data || !res.data.data.report_finding) {
+        return
+      }
+      if (refreshSequence !== this.refreshSequence) {
         return
       }
       var category = ''
@@ -721,7 +786,10 @@ export default {
     },
     getFindingNumber(category) {
       let count = this.categoryFinding[category].High
-      if (this.visibleScore.value == 'Medium') {
+      if (
+        this.visibleScore.value == 'Medium' ||
+        this.visibleScore.value == 'Low'
+      ) {
         count += this.categoryFinding[category].Medium
       }
       if (this.visibleScore.value == 'Low') {
@@ -731,17 +799,20 @@ export default {
     },
     getDownloadActionList() {
       let list = []
+      const downloadTarget = this.isOrganizationMode
+        ? `btn['DOWNLOAD REPORT (ORGANIZATION)']`
+        : `btn['DOWNLOAD REPORT (PROJECT)']`
       list.push({
-        text: this.$t(`btn['DOWNLOAD REPORT (PROJECT)']`) + ' (csv)',
+        text: this.$t(downloadTarget) + ' (csv)',
         icon: 'mdi-file-download',
         click: () => this.handleGet('', 'csv'),
       })
       list.push({
-        text: this.$t(`btn['DOWNLOAD REPORT (PROJECT)']`) + ' (json)',
+        text: this.$t(downloadTarget) + ' (json)',
         icon: 'mdi-file-download',
         click: () => this.handleGet('', 'json'),
       })
-      if (this.flagAdmin) {
+      if (!this.isOrganizationMode && this.flagAdmin) {
         list.push({
           text: this.$t(`btn['DOWNLOAD REPORT (ALL)']`) + ' (csv)',
           icon: 'mdi-file-download',
