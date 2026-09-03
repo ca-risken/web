@@ -26,8 +26,24 @@
             closable-chips
             variant="outlined"
             density="compact"
-            @update:modelValue="setData"
-          ></v-select>
+            @update:modelValue="onSelectedProjectsChange"
+          >
+            <template #prepend-item>
+              <v-list-item @click="toggleAllProjects">
+                <template #prepend>
+                  <v-checkbox-btn
+                    :model-value="allProjectsSelected"
+                    :indeterminate="someProjectsSelected"
+                    @click.stop="toggleAllProjects"
+                  ></v-checkbox-btn>
+                </template>
+                <v-list-item-title>
+                  {{ $t(`btn['All Projects']`) }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-divider></v-divider>
+            </template>
+          </v-select>
         </v-col>
       </v-row>
       <v-row>
@@ -300,6 +316,15 @@ export default {
     ReportNumberStatistic,
   },
   computed: {
+    allProjectsSelected() {
+      return (
+        this.projectList.length > 0 &&
+        this.selectedProjectIDs.length === this.projectList.length
+      )
+    },
+    someProjectsSelected() {
+      return this.selectedProjectIDs.length > 0 && !this.allProjectsSelected
+    },
     findingNumber() {
       return (category) => {
         return this.getFindingNumber(category)
@@ -402,9 +427,21 @@ export default {
         this.projectList = await this.listProjectAPI(
           `?organization_id=${this.getCurrentOrganizationID()}`
         )
+        this.selectedProjectIDs = this.projectList.map(
+          (projectItem) => projectItem.project_id
+        )
       } catch (err) {
         this.$refs.snackbar.notifyError(err)
       }
+    },
+    async toggleAllProjects() {
+      this.selectedProjectIDs = this.allProjectsSelected
+        ? []
+        : this.projectList.map((projectItem) => projectItem.project_id)
+      await this.setData()
+    },
+    async onSelectedProjectsChange() {
+      await this.setData()
     },
     getReportFindingURL(searchCond) {
       if (!this.isOrganizationMode) {
@@ -514,7 +551,9 @@ export default {
         searchCond += '&data_source=' + this.visibleDataSource
       }
       searchCond += '&score=' + this.getScoreBySeverity(this.visibleScore.value)
-      if (target == 'all') {
+      if (this.isOrganizationMode && this.selectedProjectIDs.length === 0) {
+        // Keep the downloaded result consistent with the empty UI selection.
+      } else if (target == 'all') {
         await this.getReportFindingAll(searchCond, this.fromDate, this.toDate)
       } else {
         if (this.toDate) {
@@ -570,6 +609,10 @@ export default {
     async setData() {
       const refreshSequence = ++this.refreshSequence
       this.clearList()
+      if (this.isOrganizationMode && this.selectedProjectIDs.length === 0) {
+        this.setReport()
+        return
+      }
       try {
         await this.setReportFinding(refreshSequence)
       } catch (err) {
