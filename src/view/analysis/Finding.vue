@@ -29,7 +29,7 @@
             @update:modelValue="onSelectedProjectsChange"
           >
             <template #prepend-item>
-              <v-list-item @click="toggleAllProjects">
+              <v-list-item class="pl-0" @click="toggleAllProjects">
                 <template #prepend>
                   <v-checkbox-btn
                     :model-value="allProjectsSelected"
