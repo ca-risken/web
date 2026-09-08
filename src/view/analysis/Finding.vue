@@ -651,7 +651,9 @@ export default {
           category = reportFinding.data_source.split(':')[0]
           if (reportFinding.score > 0) {
             this.categoryFinding.total[severity] += reportFinding.count
-            this.categoryFinding[category][severity] += reportFinding.count
+            if (this.category.includes(category) || category === 'RISKEN') {
+              this.categoryFinding[category][severity] += reportFinding.count
+            }
           }
         }
       }
