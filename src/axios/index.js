@@ -34,6 +34,9 @@ axios.interceptors.response.use(
   },
   (error) => {
     PENDING_REQUESTS = Math.max(0, PENDING_REQUESTS - 1)
+    if (error.config?.skipErrorNavigation) {
+      return Promise.reject(error)
+    }
     // Timeout
     if (error.code && error.code === 'ECONNABORTED') {
       console.log('Timeout error:', error)

@@ -4,7 +4,7 @@
       <v-layout>
         <v-main>
           <div class="text-md-center">
-            <h1>Timeout</h1>
+            <h1>{{ title }}</h1>
             <h2 class="my-3 text-h5">
               {{ $t(`error['Sorry, Please access again after a while.']`) }}
             </h2>
@@ -23,6 +23,7 @@
 <script>
 export default {
   name: 'ErrorTimeout',
+  props: { title: { type: String, default: 'Timeout' } },
   methods: {
     goHome() {
       this.$router.push({ path: '/' })

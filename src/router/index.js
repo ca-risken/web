@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  isNavigationFailure,
+  NavigationFailureType,
+} from 'vue-router'
 import { commonRoute, appRoute } from './config'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -12,82 +17,128 @@ const router = createRouter({
   routes: routes,
 })
 
-const handleAPIError = (error) => {
-  console.log(
-    'Error: status=' + error.response.status + ', reponse=' + error.response
-  )
-  router.push({ path: '/' })
-}
+let navigationId = 0
+const reloadRoutes = new WeakSet()
 
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
+  const currentNavigationId = ++navigationId
   NProgress.start()
-  const project_id = to.query.project_id
-  const organization_id = to.query.organization_id
-  const current_project_id = store.state.project.project_id
-  const current_organization_id = store.state.organization.organization_id
-  const user_id = store.state.user.user_id
-
+  // Authentication and error pages must not retry a failed scope lookup.
   if (
-    typeof organization_id != 'undefined' &&
-    typeof user_id != 'undefined' &&
-    organization_id != current_organization_id
+    to.path === '/' ||
+    to.path.startsWith('/auth/') ||
+    ['/403', '/404', '/error', '/timeout', '/iam/profile'].includes(to.path)
   ) {
-    const admin = await axios
-      .get('/iam/is-admin/?user_id=' + user_id)
-      .catch((err) => {
-        handleAPIError(err)
-        return
-      })
-    let q = 'organization_id=' + organization_id
-    if (!admin.data.data.ok) {
-      q += '&user_id=' + user_id
+    next()
+    return
+  }
+
+  const organization_id = to.query.organization_id
+  const project_id = to.query.project_id
+  const user_id = store.state.user.user_id
+  const hasOrganization = typeof organization_id !== 'undefined'
+  const hasProject = typeof project_id !== 'undefined'
+
+  if ((hasOrganization || hasProject) && !user_id) {
+    next({ path: '/', query: { ...to.query, returnTo: to.fullPath } })
+    return
+  }
+
+  if (hasOrganization && hasProject) {
+    const query = { ...to.query }
+    const projectOnly =
+      /^\/(dashboard|alert|aws|google|azure|diagnosis|osint|code|iam|project|report)(\/|$)/.test(
+        to.path
+      ) ||
+      [
+        '/finding/resource',
+        '/finding/setting',
+        '/analysis/attack-flow',
+        '/organization/list',
+      ].includes(to.path.replace(/\/$/, ''))
+    delete query[projectOnly ? 'organization_id' : 'project_id']
+    next({ ...to, query, replace: true })
+    return
+  }
+
+  if (hasOrganization || hasProject) {
+    // Mixed IDs have already been resolved according to the destination screen.
+    const scope = hasOrganization ? 'organization' : 'project'
+    const mode = hasOrganization ? MODE.ORGANIZATION : MODE.PROJECT
+    const key = scope + '_id'
+    const id = to.query[key]
+    const changed = store.state.mode !== mode || store.state[scope][key] != id
+    if (typeof id !== 'string' || !/^[1-9]\d*$/.test(id)) {
+      next('/403')
+      return
     }
-    const res = await axios
-      .get('/organization/list-organization/?' + q)
-      .catch((err) => {
-        handleAPIError(err)
+    if (changed) {
+      try {
+        // This guard owns lookup redirects; the global interceptor must not
+        // navigate after this request has been superseded.
+        const config = { skipErrorNavigation: true }
+        const admin = await axios.get(
+          '/iam/is-admin/?user_id=' + user_id,
+          config
+        )
+        if (currentNavigationId !== navigationId) {
+          next(false)
+          return
+        }
+        let q = key + '=' + id
+        if (!admin.data.data.ok) {
+          q += '&user_id=' + user_id
+        }
+        const res = await axios.get(
+          '/' + scope + '/list-' + scope + '/?' + q,
+          config
+        )
+        if (currentNavigationId !== navigationId) {
+          next(false)
+          return
+        }
+        const target = res.data.data[scope]?.find((item) => item[key] == id)
+        if (!target) {
+          next('/403')
+          return
+        }
+        store.commit(
+          hasOrganization ? 'updateOrganization' : 'updateProject',
+          target
+        )
+        store.commit('updateMode', mode)
+        if (from.matched.length > 0) {
+          reloadRoutes.add(to)
+        }
+      } catch (error) {
+        if (currentNavigationId !== navigationId) {
+          next(false)
+          return
+        }
+        const status = error.response?.status
+        if (status === 303 || status === 401) {
+          next({
+            path: status === 303 ? '/' : '/iam/profile',
+            query:
+              status === 303
+                ? { ...to.query, returnTo: to.fullPath }
+                : to.query,
+          })
+        } else if (status === 403) {
+          next('/403')
+        } else if (error.code === 'ECONNABORTED') {
+          next('/timeout')
+        } else {
+          next('/error')
+        }
         return
-      })
-    if (res.data.data.organization) {
-      await store.commit('updateOrganization', res.data.data.organization[0])
-      const query = {
-        ...to.query,
-        organization_id: store.state.organization.organization_id,
       }
-      router.push({ query: query })
-      router.go({ path: to.currentRoute })
-      next()
-      return
-    }
-  } else if (
-    typeof project_id != 'undefined' &&
-    typeof user_id != 'undefined' &&
-    project_id != current_project_id
-  ) {
-    const admin = await axios
-      .get('/iam/is-admin/?user_id=' + user_id)
-      .catch((err) => {
-        handleAPIError(err)
-        return
-      })
-    let q = 'project_id=' + project_id
-    if (!admin.data.data.ok) {
-      q += '&user_id=' + user_id
-    }
-    const res = await axios.get('/project/list-project/?' + q).catch((err) => {
-      handleAPIError(err)
-      return
-    })
-    if (res.data.data.project) {
-      await store.commit('updateProject', res.data.data.project[0])
-      const query = { ...to.query, project_id: store.state.project.project_id }
-      router.push({ query: query })
-      router.go({ path: to.currentRoute })
-      next()
-      return
     }
   }
+
+  const current_project_id = store.state.project.project_id
+  const current_organization_id = store.state.organization.organization_id
 
   if (
     store.state.mode === MODE.PROJECT &&
@@ -119,7 +170,6 @@ router.beforeEach(async (to, from, next) => {
 
   if (
     store.state.mode === MODE.ORGANIZATION &&
-    to.path.startsWith('/organization') &&
     !to.path.startsWith('/organization/new') &&
     !to.path.startsWith('/organization/select') &&
     !to.query.organization_id &&
@@ -145,12 +195,23 @@ router.beforeEach(async (to, from, next) => {
 })
 
 // Global after hook
-router.afterEach(() => {
+router.afterEach((to, from, failure) => {
+  // Duplicate navigations supersede pending work without entering beforeEach.
+  if (
+    failure &&
+    isNavigationFailure(failure, NavigationFailureType.duplicated)
+  ) {
+    navigationId++
+  }
   if (store.state.interval.id) {
     clearInterval(store.state.interval.id)
   }
   store.commit('updateInterval', {}) // clear set interval
   NProgress.done()
+  if (!failure && reloadRoutes.has(to)) {
+    router.go(0)
+  }
+  reloadRoutes.delete(to)
 })
 
 export default router
