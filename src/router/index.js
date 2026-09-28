@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, isNavigationFailure, NavigationFailureType } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  isNavigationFailure,
+  NavigationFailureType,
+} from 'vue-router'
 import { commonRoute, appRoute } from './config'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -42,13 +47,23 @@ router.beforeEach(async (to, from, next) => {
 
   if (hasOrganization && hasProject) {
     const query = { ...to.query }
-    delete query.project_id
+    const projectOnly =
+      /^\/(dashboard|alert|aws|google|azure|diagnosis|osint|code|iam|project|report)(\/|$)/.test(
+        to.path
+      ) ||
+      [
+        '/finding/resource',
+        '/finding/setting',
+        '/analysis/attack-flow',
+        '/organization/list',
+      ].includes(to.path.replace(/\/$/, ''))
+    delete query[projectOnly ? 'organization_id' : 'project_id']
     next({ ...to, query, replace: true })
     return
   }
 
   if (hasOrganization || hasProject) {
-    // Organization takes precedence in legacy links containing both IDs.
+    // Mixed IDs have already been resolved according to the destination screen.
     const scope = hasOrganization ? 'organization' : 'project'
     const mode = hasOrganization ? MODE.ORGANIZATION : MODE.PROJECT
     const key = scope + '_id'
@@ -63,7 +78,10 @@ router.beforeEach(async (to, from, next) => {
         // This guard owns lookup redirects; the global interceptor must not
         // navigate after this request has been superseded.
         const config = { skipErrorNavigation: true }
-        const admin = await axios.get('/iam/is-admin/?user_id=' + user_id, config)
+        const admin = await axios.get(
+          '/iam/is-admin/?user_id=' + user_id,
+          config
+        )
         if (currentNavigationId !== navigationId) {
           next(false)
           return
@@ -72,7 +90,10 @@ router.beforeEach(async (to, from, next) => {
         if (!admin.data.data.ok) {
           q += '&user_id=' + user_id
         }
-        const res = await axios.get('/' + scope + '/list-' + scope + '/?' + q, config)
+        const res = await axios.get(
+          '/' + scope + '/list-' + scope + '/?' + q,
+          config
+        )
         if (currentNavigationId !== navigationId) {
           next(false)
           return
@@ -82,7 +103,10 @@ router.beforeEach(async (to, from, next) => {
           next('/403')
           return
         }
-        store.commit(hasOrganization ? 'updateOrganization' : 'updateProject', target)
+        store.commit(
+          hasOrganization ? 'updateOrganization' : 'updateProject',
+          target
+        )
         store.commit('updateMode', mode)
         if (from.matched.length > 0) {
           reloadRoutes.add(to)
@@ -95,8 +119,12 @@ router.beforeEach(async (to, from, next) => {
         const status = error.response?.status
         if (status === 303 || status === 401) {
           next({ path: status === 303 ? '/' : '/iam/profile', query: to.query })
+        } else if (status === 403) {
+          next('/403')
+        } else if (error.code === 'ECONNABORTED') {
+          next('/timeout')
         } else {
-          next(status === 403 ? '/403' : '/timeout')
+          next(error)
         }
         return
       }
@@ -163,7 +191,10 @@ router.beforeEach(async (to, from, next) => {
 // Global after hook
 router.afterEach((to, from, failure) => {
   // Duplicate navigations supersede pending work without entering beforeEach.
-  if (failure && isNavigationFailure(failure, NavigationFailureType.duplicated)) {
+  if (
+    failure &&
+    isNavigationFailure(failure, NavigationFailureType.duplicated)
+  ) {
     navigationId++
   }
   if (store.state.interval.id) {

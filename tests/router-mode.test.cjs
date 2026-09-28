@@ -5,7 +5,7 @@ const vm = require('node:vm')
 
 const MODE = { PROJECT: 'project', ORGANIZATION: 'organization' }
 const source = readFileSync('src/router/index.js', 'utf8')
-  .replace(/^import .*\n/gm, '')
+  .replace(/^import[\s\S]*?from [^\n]+\n/gm, '').replace(/^import ['"][^\n]+\n/gm, '')
   .replace('export default router', '')
 
 function setup({ mode = MODE.PROJECT, authenticated = true, result, error } = {}) {
@@ -59,6 +59,7 @@ function setup({ mode = MODE.PROJECT, authenticated = true, result, error } = {}
         router.after(to, from)
         return JSON.parse(JSON.stringify(to))
       }
+      if (outcome instanceof Error || outcome?.response || outcome?.code) return outcome
       if (typeof outcome === 'string' || outcome.path !== to.path) return JSON.parse(JSON.stringify(outcome))
       to = { ...to, ...outcome, query: Object.fromEntries(Object.entries(outcome.query).map(([key, value]) => [key, String(value)])) }
     }
@@ -124,7 +125,7 @@ for (const result of [[], null, [{ organization_id: 999 }]]) {
     assert.equal(app.state.mode, MODE.PROJECT)
   })
 }
-for (const [error, path] of [[new Error('network'), '/timeout'], [{ response: { status: 403 } }, '/403'], [{ response: { status: 303 } }, '/'], [{ response: { status: 401 } }, '/iam/profile']]) {
+for (const [error, path] of [[{ code: 'ECONNABORTED' }, '/timeout'], [{ response: { status: 403 } }, '/403'], [{ response: { status: 303 } }, '/'], [{ response: { status: 401 } }, '/iam/profile']]) {
   test(`lookup failure routes to ${path} exactly once`, async () => {
     const app = setup({ error })
     const query = { organization_id: '2' }
@@ -151,7 +152,7 @@ for (const path of ['/', '/auth/signin', '/403', '/timeout', '/iam/profile']) {
 test('Signin and Home preserve the shared query through authentication', async () => {
   function component(path) {
     const script = readFileSync(path, 'utf8').match(/<script>([\s\S]*?)<\/script>/)[1]
-      .replace(/^import .*\n/gm, '').replace('export default', 'module.exports =')
+      .replace(/^import[\s\S]*?from [^\n]+\n/gm, '').replace(/^import ['"][^\n]+\n/gm, '').replace('export default', 'module.exports =')
     const context = { module: {}, mixin: {}, signin: {}, iam: {}, setTimeout: fn => fn() }
     vm.runInNewContext(script, context)
     return context.module.exports
@@ -177,7 +178,7 @@ function integration(adapter) {
     Axios, setInterval, clearInterval, console,
     router: { push: (...args) => router.push(...args), get currentRoute() { return router.currentRoute } },
   }
-  const axiosSource = readFileSync('src/axios/index.js', 'utf8').replace(/^import .*\n/gm, '').replace('export default axios', 'globalThis.client = axios')
+  const axiosSource = readFileSync('src/axios/index.js', 'utf8').replace(/^import[\s\S]*?from [^\n]+\n/gm, '').replace(/^import ['"][^\n]+\n/gm, '').replace('export default axios', 'globalThis.client = axios')
   vm.runInNewContext(axiosSource, axiosContext)
   const client = axiosContext.client
   client.defaults.adapter = adapter
@@ -282,4 +283,40 @@ test('real router duplicate navigation cancels pending scope lookup', async () =
   assert.equal(app.router.currentRoute.value.fullPath, '/analysis/finding?project_id=1')
   assert.equal(app.state.mode, MODE.PROJECT)
   assert.deepEqual(app.reloads, [])
+})
+
+for (const path of ['/dashboard', '/finding/resource', '/finding/setting/', '/alert/notification', '/aws/aws', '/google/gcp', '/azure/azure', '/diagnosis/portscan', '/osint/osint', '/code/github', '/iam/user', '/project/setting', '/report', '/analysis/attack-flow', '/organization/list']) {
+  test(`mixed IDs prefer the project on ${path}`, async () => {
+    const app = setup({ mode: MODE.ORGANIZATION })
+    const route = await app.navigate({ project_id: '11', organization_id: '2', filter: 'keep' }, { path })
+    assert.deepEqual(route.query, { project_id: '11', filter: 'keep' })
+    assert.equal(app.state.mode, MODE.PROJECT)
+    assert.equal(app.state.project.project_id, 11)
+  })
+}
+for (const path of ['/finding/finding', '/analysis/finding', '/organization/project', '/organization-alert/notification', '/settings/github-app']) {
+  test(`mixed IDs retain organization scope on ${path}`, async () => {
+    const app = setup()
+    const route = await app.navigate({ project_id: '11', organization_id: '2' }, { path })
+    assert.deepEqual(route.query, { organization_id: '2' })
+    assert.equal(app.state.mode, MODE.ORGANIZATION)
+  })
+}
+for (const error of [new Error('network'), new TypeError('malformed response'), { response: { status: 404 } }, { response: { status: 500 } }]) {
+  test(`non-timeout lookup error remains an error: ${error.message || error.response.status}`, async () => {
+    const app = setup({ error })
+    assert.equal(await app.navigate({ organization_id: '2' }), error)
+    assert.deepEqual(app.commits, [])
+    assert.deepEqual(app.reloads, [])
+  })
+}
+test('real router keeps the previous route on a non-timeout server error', async () => {
+  const app = integration(async config => { throw Object.assign(new Error('server error'), { config, response: { status: 500 } }) })
+  const errors = []
+  app.router.onError(error => errors.push(error))
+  await app.router.push('/analysis/finding?project_id=1')
+  await assert.rejects(app.router.push('/analysis/finding?organization_id=2'))
+  assert.equal(app.router.currentRoute.value.fullPath, '/analysis/finding?project_id=1')
+  assert.equal(app.state.mode, MODE.PROJECT)
+  assert.equal(errors.length, 1)
 })
