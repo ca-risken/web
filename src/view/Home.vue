@@ -7,7 +7,11 @@ import iam from '@/mixin/api/iam'
 export default {
   name: 'AppHome',
   async mounted() {
-    await this.reSign()
+    if (!this.$store.state.user.user_id) {
+      await this.signinUser()
+    } else {
+      await this.reSign()
+    }
     this.redirectDashBoard()
   },
   mixins: [mixin, signin, iam],

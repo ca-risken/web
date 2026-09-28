@@ -159,7 +159,7 @@ test('Signin and Home preserve the shared query through authentication', async (
   }
   const destinations = []
   const query = { organization_id: '2', filter: 'keep' }
-  const instance = { $route: { query }, $router: { push: route => destinations.push(JSON.parse(JSON.stringify(route))) }, reSign: async () => {} }
+  const instance = { $store: { state: { user: { user_id: 7 } } }, $route: { query }, $router: { push: route => destinations.push(JSON.parse(JSON.stringify(route))) }, reSign: async () => {} }
   component('src/view/auth/Signin.vue').methods.signin.call(instance)
   const home = component('src/view/Home.vue')
   instance.redirectDashBoard = home.methods.redirectDashBoard.bind(instance)
@@ -319,4 +319,39 @@ test('real router keeps the previous route on a non-timeout server error', async
   assert.equal(app.router.currentRoute.value.fullPath, '/analysis/finding?project_id=1')
   assert.equal(app.state.mode, MODE.PROJECT)
   assert.equal(errors.length, 1)
+})
+
+for (const cookie of ['', 'XSRF-TOKEN=existing']) {
+  for (const userPresent of [false, true]) {
+    test(`Home restores user before redirect: cookie=${!!cookie}, user=${userPresent}`, async () => {
+      const script = readFileSync('src/view/Home.vue', 'utf8').match(/<script>([\s\S]*?)<\/script>/)[1]
+        .replace(/^import .*\n/gm, '').replace('export default', 'module.exports =')
+      const context = { module: {}, mixin: {}, signin: {}, iam: {} }
+      vm.runInNewContext(script, context)
+      const reSignBody = readFileSync('src/mixin/index.js', 'utf8').match(/async reSign\(\) \{([\s\S]*?)\n    \},/)[1]
+      const reSign = vm.runInNewContext(`(async function () {${reSignBody}})`, { document: { cookie } })
+      const calls = []
+      const state = { user: userPresent ? { user_id: 7 } : {} }
+      const query = { organization_id: '2' }
+      const instance = {
+        $store: { state }, $route: { query }, reSign,
+        signinUser: async () => { calls.push('signin'); state.user = { user_id: 7 } },
+        $router: { push(route) { assert.equal(state.user.user_id, 7); assert.equal(route.query, query); calls.push('redirect') } },
+      }
+      instance.redirectDashBoard = context.module.exports.methods.redirectDashBoard.bind(instance)
+      await context.module.exports.mounted.call(instance)
+      assert.deepEqual(calls, cookie && userPresent ? ['redirect'] : ['signin', 'redirect'])
+    })
+  }
+}
+test('Home does not redirect when restoring the user fails', async () => {
+  const script = readFileSync('src/view/Home.vue', 'utf8').match(/<script>([\s\S]*?)<\/script>/)[1]
+    .replace(/^import .*\n/gm, '').replace('export default', 'module.exports =')
+  const context = { module: {}, mixin: {}, signin: {}, iam: {} }
+  vm.runInNewContext(script, context)
+  await assert.rejects(context.module.exports.mounted.call({
+    $store: { state: { user: {} } },
+    signinUser: async () => { throw new Error('signin failed') },
+    redirectDashBoard: () => assert.fail('must not redirect'),
+  }), /signin failed/)
 })
