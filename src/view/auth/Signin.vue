@@ -42,7 +42,7 @@ export default {
     signin() {
       this.loading = true
       setTimeout(() => {
-        this.$router.push('/')
+        this.$router.push({ path: '/', query: this.$route.query })
       }, 1000)
     },
   },

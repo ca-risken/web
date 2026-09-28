@@ -13,7 +13,7 @@ export default {
   mixins: [mixin, signin, iam],
   methods: {
     async redirectDashBoard() {
-      this.$router.push('/dashboard')
+      this.$router.push({ path: '/dashboard', query: this.$route.query })
     },
   },
 }
