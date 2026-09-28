@@ -48,7 +48,7 @@ function setup({ mode = MODE.PROJECT, authenticated = true, result, error } = {}
     },
   })
   async function navigate(query, { path = '/analysis/finding', mounted = false } = {}) {
-    let to = { path, query, hash: '', matched: [{}] }
+    let to = { fullPath: path + '?' + new URLSearchParams(query), path, query, hash: '', matched: [{}] }
     const from = { path: mounted ? path : '/', matched: mounted ? [{}] : [] }
     for (let i = 0; i < 5; i++) {
       const outcomes = []
@@ -96,7 +96,7 @@ for (const [scope, other, id] of [['project', 'organization', 1], ['organization
   test(`${scope} unauthenticated link preserves query`, async () => {
     const app = setup({ authenticated: false })
     const query = { [scope + '_id']: String(id) }
-    assert.deepEqual(await app.navigate(query), { path: '/', query })
+    assert.deepEqual(await app.navigate(query), { path: '/', query: { ...query, returnTo: '/analysis/finding?' + new URLSearchParams(query) } })
     assert.deepEqual(app.calls, [])
   })
 }
@@ -130,7 +130,7 @@ for (const [error, path] of [[{ code: 'ECONNABORTED' }, '/timeout'], [{ response
     const app = setup({ error })
     const query = { organization_id: '2' }
     const outcome = await app.navigate(query)
-    assert.deepEqual(outcome, path === '/' || path === '/iam/profile' ? { path, query } : path)
+    assert.deepEqual(outcome, path === '/' || path === '/iam/profile' ? { path, query: path === '/' ? { ...query, returnTo: '/analysis/finding?' + new URLSearchParams(query) } : query } : path)
     assert.deepEqual(app.commits, [])
   })
 }
@@ -243,7 +243,7 @@ for (const stage of ['/iam/', '/organization/']) {
     })
   }
 }
-for (const [status, destination] of [[303, '/?organization_id=2'], [401, '/iam/profile?organization_id=2'], [403, '/403']]) {
+for (const [status, destination] of [[303, '/?organization_id=2&returnTo=/analysis/finding?organization_id=2'], [401, '/iam/profile?organization_id=2'], [403, '/403']]) {
   test(`real Axios lookup ${status} keeps intended destination`, async () => {
     const app = integration(async config => { throw { config, response: { status } } })
     await app.router.push('/analysis/finding?project_id=1')
@@ -303,22 +303,22 @@ for (const path of ['/finding/finding', '/analysis/finding', '/organization/proj
   })
 }
 for (const error of [new Error('network'), new TypeError('malformed response'), { response: { status: 404 } }, { response: { status: 500 } }]) {
-  test(`non-timeout lookup error remains an error: ${error.message || error.response.status}`, async () => {
+  test(`non-timeout lookup error displays error page: ${error.message || error.response.status}`, async () => {
     const app = setup({ error })
-    assert.equal(await app.navigate({ organization_id: '2' }), error)
+    assert.equal(await app.navigate({ organization_id: '2' }), '/error')
     assert.deepEqual(app.commits, [])
     assert.deepEqual(app.reloads, [])
   })
 }
-test('real router keeps the previous route on a non-timeout server error', async () => {
+test('real router displays error page on a non-timeout server error', async () => {
   const app = integration(async config => { throw Object.assign(new Error('server error'), { config, response: { status: 500 } }) })
   const errors = []
   app.router.onError(error => errors.push(error))
   await app.router.push('/analysis/finding?project_id=1')
-  await assert.rejects(app.router.push('/analysis/finding?organization_id=2'))
-  assert.equal(app.router.currentRoute.value.fullPath, '/analysis/finding?project_id=1')
+  await app.router.push('/analysis/finding?organization_id=2')
+  assert.equal(app.router.currentRoute.value.fullPath, '/error')
   assert.equal(app.state.mode, MODE.PROJECT)
-  assert.equal(errors.length, 1)
+  assert.equal(errors.length, 0)
 })
 
 for (const cookie of ['', 'XSRF-TOKEN=existing']) {
@@ -336,7 +336,7 @@ for (const cookie of ['', 'XSRF-TOKEN=existing']) {
       const instance = {
         $store: { state }, $route: { query }, reSign,
         signinUser: async () => { calls.push('signin'); state.user = { user_id: 7 } },
-        $router: { push(route) { assert.equal(state.user.user_id, 7); assert.equal(route.query, query); calls.push('redirect') } },
+        $router: { push(route) { assert.equal(state.user.user_id, 7); assert.deepEqual(JSON.parse(JSON.stringify(route.query)), query); calls.push('redirect') } },
       }
       instance.redirectDashBoard = context.module.exports.methods.redirectDashBoard.bind(instance)
       await context.module.exports.mounted.call(instance)
@@ -349,9 +349,52 @@ test('Home does not redirect when restoring the user fails', async () => {
     .replace(/^import .*\n/gm, '').replace('export default', 'module.exports =')
   const context = { module: {}, mixin: {}, signin: {}, iam: {} }
   vm.runInNewContext(script, context)
-  await assert.rejects(context.module.exports.mounted.call({
+  await context.module.exports.mounted.call({
+    $router: { push: path => assert.equal(path, '/error') },
     $store: { state: { user: {} } },
     signinUser: async () => { throw new Error('signin failed') },
     redirectDashBoard: () => assert.fail('must not redirect'),
-  }), /signin failed/)
+  })
 })
+
+function homeComponent() {
+  const script = readFileSync('src/view/Home.vue', 'utf8').match(/<script>([\s\S]*?)<\/script>/)[1]
+    .replace(/^import .*\n/gm, '').replace('export default', 'module.exports =')
+  const context = { module: {}, mixin: {}, signin: {}, iam: {} }
+  vm.runInNewContext(script, context)
+  return context.module.exports
+}
+for (const target of ['/analysis/finding?organization_id=2&filter=keep#result', '/finding/finding?project_id=11#result']) {
+  test(`login returns to full shared destination ${target}`, async () => {
+    const app = integration(async config => response(config))
+    app.state.user = {}
+    await app.router.push(target)
+    assert.equal(app.router.currentRoute.value.path, '/')
+    assert.equal(app.router.currentRoute.value.query.returnTo, target)
+    const home = homeComponent()
+    const instance = { $store: { state: app.state }, $router: app.router, $route: app.router.currentRoute.value,
+      signinUser: async () => { app.state.user = { user_id: 7 } } }
+    instance.redirectDashBoard = home.methods.redirectDashBoard.bind(instance)
+    await home.mounted.call(instance)
+    assert.equal(app.router.currentRoute.value.fullPath, target)
+  })
+}
+for (const returnTo of ['https://example.com', '//example.com', '/\\example.com', '/', '/auth/signin', ['//example.com']]) {
+  test(`invalid return destination falls back safely: ${JSON.stringify(returnTo)}`, async () => {
+    const app = integration(async config => response(config))
+    const destinations = []
+    await homeComponent().methods.redirectDashBoard.call({
+      $route: { query: { returnTo, project_id: '1' } },
+      $router: { resolve: app.router.resolve, push: route => destinations.push(JSON.parse(JSON.stringify(route))) },
+    })
+    assert.deepEqual(destinations, [{ path: '/dashboard', query: { project_id: '1' } }])
+  })
+}
+for (const error of [new Error('offline'), { response: { status: 500 } }]) {
+  test(`initial navigation shows error page: ${error.message || error.response.status}`, async () => {
+    const app = integration(async config => { throw Object.assign(error, { config }) })
+    await app.router.push('/analysis/finding?organization_id=2')
+    assert.equal(app.router.currentRoute.value.path, '/error')
+    assert.deepEqual(app.reloads, [])
+  })
+}

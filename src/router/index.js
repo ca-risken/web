@@ -28,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
   if (
     to.path === '/' ||
     to.path.startsWith('/auth/') ||
-    ['/403', '/404', '/timeout', '/iam/profile'].includes(to.path)
+    ['/403', '/404', '/error', '/timeout', '/iam/profile'].includes(to.path)
   ) {
     next()
     return
@@ -41,7 +41,7 @@ router.beforeEach(async (to, from, next) => {
   const hasProject = typeof project_id !== 'undefined'
 
   if ((hasOrganization || hasProject) && !user_id) {
-    next({ path: '/', query: to.query })
+    next({ path: '/', query: { ...to.query, returnTo: to.fullPath } })
     return
   }
 
@@ -118,13 +118,19 @@ router.beforeEach(async (to, from, next) => {
         }
         const status = error.response?.status
         if (status === 303 || status === 401) {
-          next({ path: status === 303 ? '/' : '/iam/profile', query: to.query })
+          next({
+            path: status === 303 ? '/' : '/iam/profile',
+            query:
+              status === 303
+                ? { ...to.query, returnTo: to.fullPath }
+                : to.query,
+          })
         } else if (status === 403) {
           next('/403')
         } else if (error.code === 'ECONNABORTED') {
           next('/timeout')
         } else {
-          next(error)
+          next('/error')
         }
         return
       }
