@@ -276,7 +276,6 @@ export default {
 <style scoped>
 .asset-name {
   display: block;
-  margin-inline: auto;
   text-align: left;
   min-width: 280px;
   max-width: 320px;
