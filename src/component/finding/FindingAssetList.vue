@@ -29,9 +29,11 @@
       <template v-slot:[`item.asset_name`]="{ item }">
         <span class="asset-name">{{ item.raw.asset_name }}</span>
       </template>
-      <template v-slot:[`item.score`]="{ item }">{{
-        item.raw.max_score || 0
-      }}</template>
+      <template v-slot:[`item.score`]="{ item }">
+        <v-chip variant="flat" :color="scoreColor(item.raw.max_score || 0)">
+          {{ formatScore(item.raw.max_score || 0) }}
+        </v-chip>
+      </template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length" class="pa-4">
@@ -130,6 +132,8 @@ import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
   components: { VDataTableServer },
   props: {
+    scoreColor: { type: Function, required: true },
+    formatScore: { type: Function, required: true },
     loadAssets: { type: Function, required: true },
     loadDetails: { type: Function, required: true },
     actions: { type: Function, required: true },

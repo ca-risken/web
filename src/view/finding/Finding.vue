@@ -284,6 +284,8 @@
         :load-assets="loadAssets"
         :load-details="loadAssetDetails"
         :actions="getActionList"
+        :score-color="getColorByScore"
+        :format-score="formatScore"
         :organization-mode="isOrganizationMode"
       />
       <v-row v-if="displayMode === 'finding'">
