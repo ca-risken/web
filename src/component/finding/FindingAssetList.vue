@@ -157,7 +157,7 @@ export default {
     headers() {
       return [
         { title: this.$t('assetView.type'), key: 'asset_type' },
-        { title: this.$t('assetView.name'), key: 'asset_name' },
+        { title: this.$t('assetView.name'), key: 'asset_name', width: 352 },
         ...(this.organizationMode
           ? [{ title: this.$t('assetView.project'), key: 'project_id' }]
           : []),
