@@ -18,10 +18,10 @@
               true-value="asset"
               false-value="finding"
               :label="$t('assetView.assets')"
-              color="primary"
+              color="blue"
               density="compact"
               hide-details
-              class="ml-4 flex-grow-0"
+              class="asset-view-switch ml-4 flex-grow-0"
               @update:modelValue="changeDisplayMode"
             />
           </v-toolbar>
@@ -1737,5 +1737,11 @@ export default {
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
+}
+.asset-view-switch .v-switch__thumb {
+  background-color: rgb(var(--v-theme-surface));
+}
+.asset-view-switch .v-selection-control--dirty .v-switch__track {
+  opacity: 1;
 }
 </style>
