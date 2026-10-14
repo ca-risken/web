@@ -163,7 +163,7 @@ export default {
           : []),
         { title: this.$t('assetView.score'), key: 'score' },
         { title: this.$t('assetView.count'), key: 'finding_count' },
-      ]
+      ].map((header) => ({ ...header, align: 'center' }))
     },
   },
   beforeUnmount() {
@@ -276,6 +276,7 @@ export default {
 <style scoped>
 .asset-name {
   display: block;
+  margin-inline: auto;
   min-width: 280px;
   max-width: 320px;
   overflow-wrap: anywhere;
