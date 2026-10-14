@@ -4,7 +4,10 @@
       <v-row>
         <v-col cols="12">
           <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4" style="flex: none">
+            <v-toolbar-title
+              class="grey--text text--darken-4"
+              style="flex: none"
+            >
               <v-icon large class="pr-2" color="blue-lighten-2"
                 >mdi-file-find-outline</v-icon
               >
