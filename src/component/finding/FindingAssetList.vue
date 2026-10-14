@@ -163,7 +163,10 @@ export default {
           : []),
         { title: this.$t('assetView.score'), key: 'score' },
         { title: this.$t('assetView.count'), key: 'finding_count' },
-      ].map((header) => ({ ...header, align: 'center' }))
+      ].map((header) => ({
+        ...header,
+        align: header.key === 'asset_name' ? 'start' : 'center',
+      }))
     },
   },
   beforeUnmount() {
