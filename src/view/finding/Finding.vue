@@ -2,9 +2,9 @@
   <div>
     <v-container>
       <v-row>
-        <v-col cols="9">
+        <v-col cols="12">
           <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
+            <v-toolbar-title class="grey--text text--darken-4" style="flex: none">
               <v-icon large class="pr-2" color="blue-lighten-2"
                 >mdi-file-find-outline</v-icon
               >
@@ -13,6 +13,17 @@
                 >(Organization)</span
               >
             </v-toolbar-title>
+            <v-switch
+              v-model="displayMode"
+              true-value="asset"
+              false-value="finding"
+              :label="$t('assetView.assets')"
+              color="primary"
+              density="compact"
+              hide-details
+              class="ml-4 flex-grow-0"
+              @update:modelValue="changeDisplayMode"
+            />
           </v-toolbar>
         </v-col>
       </v-row>
@@ -217,15 +228,6 @@
         </transition>
       </v-form>
 
-      <v-btn-toggle
-        v-model="displayMode"
-        mandatory
-        class="mt-4"
-        @update:modelValue="changeDisplayMode"
-      >
-        <v-btn value="finding">{{ $t('assetView.findings') }}</v-btn>
-        <v-btn value="asset">{{ $t('assetView.assets') }}</v-btn>
-      </v-btn-toggle>
       <p v-if="displayMode === 'asset'" class="text-caption mt-2">
         {{ $t('assetView.scope') }}
       </p>

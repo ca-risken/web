@@ -32,9 +32,6 @@
       <template v-slot:[`item.score`]="{ item }">{{
         item.raw.max_score || 0
       }}</template>
-      <template v-slot:[`item.updated_at`]="{ item }">{{
-        date(item.raw.updated_at)
-      }}</template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length" class="pa-4">
@@ -157,10 +154,11 @@ export default {
       return [
         { title: this.$t('assetView.type'), key: 'asset_type' },
         { title: this.$t('assetView.name'), key: 'asset_name' },
-        { title: this.$t('assetView.project'), key: 'project_id' },
+        ...(this.organizationMode
+          ? [{ title: this.$t('assetView.project'), key: 'project_id' }]
+          : []),
         { title: this.$t('assetView.score'), key: 'score' },
         { title: this.$t('assetView.count'), key: 'finding_count' },
-        { title: this.$t('assetView.updated'), key: 'updated_at' },
       ]
     },
   },
@@ -222,9 +220,6 @@ export default {
         entry.loading = false
       }
     },
-    date(value) {
-      return value ? new Date(value * 1000).toLocaleString() : ''
-    },
     vulnerability(data) {
       try {
         const report = typeof data === 'string' ? JSON.parse(data) : data
@@ -284,11 +279,7 @@ export default {
 .asset-table :deep(th) {
   white-space: nowrap;
 }
-.asset-table :deep(td:last-of-type),
-.asset-table :deep(td:nth-of-type(6)) {
+.asset-table :deep(td:last-of-type) {
   white-space: nowrap;
-}
-.asset-table :deep(table) {
-  min-width: 900px;
 }
 </style>

@@ -1,8 +1,7 @@
 const en = {
   assetView: {
     fixedPackage: 'Fixed package / version',
-    findings: 'Findings',
-    assets: 'Assets',
+    assets: 'Asset view',
     scope:
       'SCC vulnerability findings grouped by asset. Counts and maximum scores reflect the current search conditions.',
     type: 'Asset type',
@@ -10,7 +9,6 @@ const en = {
     project: 'Project ID',
     score: 'Maximum score',
     count: 'Finding count',
-    updated: 'Updated',
     details: 'Details',
     open: 'Open finding',
     package: 'Package / version',
