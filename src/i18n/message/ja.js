@@ -1,4 +1,26 @@
 const ja = {
+  assetView: {
+    fixedPackage: '修正版パッケージ / バージョン',
+    findings: 'Finding別',
+    assets: 'アセット別',
+    scope:
+      'SCCの脆弱性Findingをアセットごとに表示します。件数・最大スコアは現在の検索条件に一致するFindingから算出します。',
+    type: 'アセット種別',
+    name: 'アセット名',
+    project: 'プロジェクトID',
+    score: '最大スコア',
+    count: 'Finding件数',
+    updated: '最終更新',
+    details: '内訳',
+    open: 'Findingを開く',
+    package: 'パッケージ / バージョン',
+    image: 'イメージ',
+    files: 'ファイル',
+    error: '読み込みに失敗しました。',
+    retry: '再試行',
+    previous: '前へ',
+    next: '次へ',
+  },
   btn: {
     SIGNIN: 'サインイン',
     'REQUEST PROJECT ROLE': '権限をリクエストする',

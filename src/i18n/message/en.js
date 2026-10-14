@@ -1,4 +1,26 @@
 const en = {
+  assetView: {
+    fixedPackage: 'Fixed package / version',
+    findings: 'Findings',
+    assets: 'Assets',
+    scope:
+      'SCC vulnerability findings grouped by asset. Counts and maximum scores reflect the current search conditions.',
+    type: 'Asset type',
+    name: 'Asset name',
+    project: 'Project ID',
+    score: 'Maximum score',
+    count: 'Finding count',
+    updated: 'Updated',
+    details: 'Details',
+    open: 'Open finding',
+    package: 'Package / version',
+    image: 'Image',
+    files: 'Files',
+    error: 'Unable to load findings.',
+    retry: 'Retry',
+    previous: 'Previous',
+    next: 'Next',
+  },
   btn: {
     SIGNIN: 'SIGNIN',
     'REQUEST PROJECT ROLE': 'REQUEST PROJECT ROLE',
