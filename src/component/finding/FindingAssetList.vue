@@ -7,6 +7,7 @@
       }}</v-btn>
     </v-alert>
     <v-data-table-server
+      class="asset-table"
       :headers="headers"
       :items="assets"
       :items-length="total"
@@ -25,6 +26,9 @@
       @update:options="refresh"
       @update:expanded="expand"
     >
+      <template v-slot:[`item.asset_name`]="{ item }">
+        <span class="asset-name">{{ item.raw.asset_name }}</span>
+      </template>
       <template v-slot:[`item.score`]="{ item }">{{
         item.raw.max_score || 0
       }}</template>
@@ -270,3 +274,21 @@ export default {
   },
 }
 </script>
+<style scoped>
+.asset-name {
+  display: block;
+  min-width: 280px;
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+.asset-table :deep(th) {
+  white-space: nowrap;
+}
+.asset-table :deep(td:last-of-type),
+.asset-table :deep(td:nth-of-type(6)) {
+  white-space: nowrap;
+}
+.asset-table :deep(table) {
+  min-width: 900px;
+}
+</style>
