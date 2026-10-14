@@ -94,6 +94,21 @@
                     </v-card-text>
                   </v-card>
                 </template>
+                <template
+                  v-if="isOrganizationMode"
+                  v-slot:[`item.project_ptn`]="{ item }"
+                >
+                  <v-card
+                    label
+                    elevation="1"
+                    color="amber-lighten-5"
+                    class="mx-auto"
+                  >
+                    <v-card-text class="font-weight-bold">
+                      {{ item.value.project_ptn }}
+                    </v-card-text>
+                  </v-card>
+                </template>
                 <template v-slot:[`item.updated_at`]="{ item }">
                   <v-chip>{{ formatTime(item.value.updated_at) }}</v-chip>
                 </template>
@@ -176,6 +191,14 @@
               "
               :placeholder="policyForm.resource_ptn.placeholder"
               disabled
+            ></v-text-field>
+            <v-text-field
+              v-if="isOrganizationMode"
+              v-model="policyModel.project_ptn"
+              :rules="policyForm.project_ptn.validator"
+              :label="$t(`item['` + policyForm.project_ptn.label + `']`) + ' *'"
+              :placeholder="policyForm.project_ptn.placeholder"
+              required
             ></v-text-field>
             <v-divider class="mt-3 mb-3"></v-divider>
             <v-card-actions>
@@ -276,6 +299,16 @@ export default {
               'Resource Pattern must be compilable regular expression',
           ],
         },
+        project_ptn: {
+          label: 'Project Pattern',
+          placeholder: '`.*` for all projects',
+          validator: [
+            (v) => !!v || 'Project Pattern is required',
+            (v) =>
+              this.compilableRegexp(v) ||
+              'Project Pattern must be compilable regular expression',
+          ],
+        },
       },
       policyNameList: [],
       policyModel: {
@@ -283,6 +316,7 @@ export default {
         name: '',
         action_ptn: '',
         resource_ptn: '.*', // fixed
+        project_ptn: '.*',
         updated_at: '',
       },
       table: {
@@ -348,6 +382,13 @@ export default {
           align: 'start',
           sortable: false,
           key: 'resource_ptn',
+        })
+      } else {
+        baseHeaders.push({
+          title: this.$i18n.t('item["Project Pattern"]'),
+          align: 'start',
+          sortable: false,
+          key: 'project_ptn',
         })
       }
 
@@ -445,7 +486,8 @@ export default {
       if (this.isOrganizationMode) {
         await this.putOrganizationPolicyAPI(
           this.policyModel.name,
-          this.policyModel.action_ptn
+          this.policyModel.action_ptn,
+          this.policyModel.project_ptn
         ).catch((err) => {
           this.$refs.snackbar.notifyError(err.response.data)
           return Promise.reject(err)
@@ -484,6 +526,7 @@ export default {
         name: '',
         action_ptn: '',
         resource_ptn: '.*',
+        project_ptn: '.*',
         updated_at: '',
       }
       this.policyForm.newPolicy = true
@@ -514,6 +557,7 @@ export default {
         name: '',
         action_ptn: '',
         resource_ptn: '.*',
+        project_ptn: '.*',
         updated_at: '',
       }
       this.policyModel = Object.assign(this.policyModel, item)

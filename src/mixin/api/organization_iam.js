@@ -92,11 +92,12 @@ const organization_iam = {
       }
       return res.data.data.policy
     },
-    async putOrganizationPolicyAPI(name, action_ptn) {
+    async putOrganizationPolicyAPI(name, action_ptn, project_ptn) {
       const param = {
         organization_id: this.getCurrentOrganizationID(),
         name: name,
         action_ptn: action_ptn,
+        project_ptn: project_ptn,
       }
       const res = await this.$axios
         .post('/organization-iam/put-policy', param)
