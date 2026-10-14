@@ -277,6 +277,7 @@ export default {
 .asset-name {
   display: block;
   margin-inline: auto;
+  text-align: left;
   min-width: 280px;
   max-width: 320px;
   overflow-wrap: anywhere;
