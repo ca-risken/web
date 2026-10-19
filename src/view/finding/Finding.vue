@@ -2,9 +2,12 @@
   <div>
     <v-container>
       <v-row>
-        <v-col cols="9">
+        <v-col cols="12">
           <v-toolbar color="background" flat>
-            <v-toolbar-title class="grey--text text--darken-4">
+            <v-toolbar-title
+              class="grey--text text--darken-4"
+              style="flex: none"
+            >
               <v-icon large class="pr-2" color="blue-lighten-2"
                 >mdi-file-find-outline</v-icon
               >
@@ -13,6 +16,17 @@
                 >(Organization)</span
               >
             </v-toolbar-title>
+            <v-switch
+              v-model="displayMode"
+              true-value="asset"
+              false-value="finding"
+              :label="$t('assetView.assets')"
+              color="blue"
+              density="compact"
+              hide-details
+              class="asset-view-switch ml-4 flex-grow-0"
+              @update:modelValue="changeDisplayMode"
+            />
           </v-toolbar>
         </v-col>
       </v-row>
@@ -105,7 +119,7 @@
               </template>
               <span>search</span>
             </v-tooltip>
-            <v-menu>
+            <v-menu v-if="displayMode === 'finding'">
               <template v-slot:activator="{ props }">
                 <v-btn
                   v-bind="props"
@@ -217,6 +231,9 @@
         </transition>
       </v-form>
 
+      <p v-if="displayMode === 'asset'" class="text-caption mt-2">
+        {{ $t('assetView.scope') }}
+      </p>
       <!-- Popular Search -->
       <v-row>
         <v-col class="pb-10">
@@ -264,7 +281,19 @@
           </v-tabs>
         </v-col>
       </v-row>
-      <v-row>
+      <FindingAssetList
+        v-if="displayMode === 'asset' && !isInitializing"
+        :key="assetScope + assetRevision"
+        :load-assets="loadAssets"
+        :load-details="loadAssetDetails"
+        :actions="getActionList"
+        :score-color="getColorByScore"
+        :data-source-icon="getDataSourceIcon"
+        :data-source-icon-color="getDataSourceIconColor"
+        :format-score="formatScore"
+        :organization-mode="isOrganizationMode"
+      />
+      <v-row v-if="displayMode === 'finding'">
         <v-col cols="12">
           <v-card>
             <v-divider></v-divider>
@@ -421,6 +450,7 @@ import FindingRecommendDialog from '@/component/dialog/finding/Recommend.vue'
 import FindingPendDialog from '@/component/dialog/finding/Pend.vue'
 import FindingDeleteDialog from '@/component/dialog/finding/Delete.vue'
 import FindingTagDialog from '@/component/dialog/finding/Tag.vue'
+import FindingAssetList from '@/component/finding/FindingAssetList.vue'
 import FindingDetailDialog from '@/component/dialog/finding/Detail.vue'
 
 export default {
@@ -434,9 +464,13 @@ export default {
     FindingDeleteDialog,
     FindingTagDialog,
     FindingDetailDialog,
+    FindingAssetList,
   },
   data() {
     return {
+      displayMode: 'finding',
+      assetRevision: 0,
+      listSequence: 0,
       loading: false,
       searchMenuDetail: false,
       searchModel: {
@@ -603,7 +637,21 @@ export default {
     }
   },
   filters: {},
+  watch: {
+    assetScope() {
+      this.listSequence++
+      this.table.selected = []
+      if (!this.isInitializing) this.refleshList(true)
+    },
+  },
   computed: {
+    assetScope() {
+      return JSON.stringify([
+        this.isOrganizationMode,
+        this.getCurrentProjectID(),
+        this.getCurrentOrganizationID(),
+      ])
+    },
     headers() {
       return [
         {
@@ -757,7 +805,58 @@ export default {
       this.table.options.itemsPerPage = options.itemsPerPage
       this.loadList(true)
     },
+    changeDisplayMode() {
+      this.table.selected = []
+      this.listSequence++
+      this.refleshList()
+    },
+    async loadAssets(options) {
+      return this.loadAssetPage(options, null)
+    },
+    async loadAssetDetails(asset, page) {
+      const scope = this.assetScope
+      const list = await this.loadAssetPage(
+        {
+          page,
+          itemsPerPage: 20,
+          sortBy: [{ key: 'finding_id', order: 'asc' }],
+        },
+        asset
+      )
+      if (scope !== this.assetScope) return { items: [], total: 0 }
+      const items = this.isOrganizationMode
+        ? (list.findings || []).map(this.organizationFindingModel)
+        : await Promise.all((list.finding_id || []).map(this.getFindingDetail))
+      return { items, total: list.total || 0 }
+    },
+    async loadAssetPage(options, asset) {
+      const params = new URLSearchParams(this.getSearchCondition(false))
+      params.set('offset', (options.page - 1) * options.itemsPerPage)
+      params.set('limit', options.itemsPerPage)
+      params.set('sort', options.sortBy?.[0]?.key || 'score')
+      params.set('direction', options.sortBy?.[0]?.order || 'desc')
+      params.set('asset_view', asset ? 'false' : 'true')
+      if (asset) {
+        params.set('asset_type', asset.asset_type)
+        params.set('asset_key', asset.asset_key)
+        params.set('asset_project_id', asset.project_id)
+      }
+      const condition = '&' + params.toString()
+      return this.isOrganizationMode
+        ? this.listFindingForOrganization(
+            this.getCurrentOrganizationID(),
+            condition
+          )
+        : this.listFinding(condition)
+    },
     async loadList(parse) {
+      if (this.displayMode === 'asset') {
+        if (parse) this.parseQuery()
+        this.getSearchCondition()
+        this.assetRevision++
+        this.loading = false
+        return
+      }
       if (this.isOrganizationMode) {
         await this.loadListForOrganization(parse)
       } else {
@@ -765,12 +864,14 @@ export default {
       }
     },
     async loadProjectList(parse) {
+      const sequence = ++this.listSequence
       this.loading = true
       this.clearList()
       if (parse) {
         this.parseQuery()
       }
       const list = await this.listFinding(this.getSearchCondition())
+      if (sequence !== this.listSequence) return
       if (!list.finding_id || list.finding_id.length == 0) {
         this.loading = false
         return
@@ -780,10 +881,13 @@ export default {
       for (const id of list.finding_id) {
         findings.push(this.getFindingDetail(id))
       }
-      this.table.items = await Promise.all(findings) // Parallel API call
+      const items = await Promise.all(findings)
+      if (sequence !== this.listSequence) return
+      this.table.items = items
       this.loading = false
     },
     async loadListForOrganization(parse) {
+      const sequence = ++this.listSequence
       this.loading = true
       this.clearList()
       if (parse) {
@@ -793,12 +897,17 @@ export default {
         this.getCurrentOrganizationID(),
         this.getSearchCondition()
       )
+      if (sequence !== this.listSequence) return
       if (!list.findings || list.findings.length == 0) {
         this.loading = false
         return
       }
       this.table.total = list.total
-      this.table.items = list.findings.map((findingDetail) => ({
+      this.table.items = list.findings.map(this.organizationFindingModel)
+      this.loading = false
+    },
+    organizationFindingModel(findingDetail) {
+      return {
         finding_id: findingDetail.finding.finding_id,
         project_id: findingDetail.finding.project_id,
         status: findingDetail.pend_info
@@ -827,8 +936,7 @@ export default {
             ? findingDetail.pend_info.expired_at
             : null,
         },
-      }))
-      this.loading = false
+      }
     },
     async getFindingDetail(id) {
       const [finding, tag, pend] = await Promise.all([
@@ -963,7 +1071,12 @@ export default {
       this.aiLoading = false
     },
     overrideRecommend() {
-      const d = JSON.parse(this.findingModel.data)
+      let d
+      try {
+        d = JSON.parse(this.findingModel.data) || {}
+      } catch {
+        return
+      }
       switch (this.findingModel.data_source) {
         case 'google:scc':
           if (d.source_properties && d.source_properties.Recommendation) {
@@ -1020,10 +1133,13 @@ export default {
       }
       this.setStatusTab()
     },
-    getSearchCondition() {
+    getSearchCondition(updateRoute = true) {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
+      for (const key of ['project_id', 'organization_id', 'mode']) {
+        if (queryOld[key] !== undefined) queryNew[key] = queryOld[key]
+      }
       if (this.searchModel.findingID) {
         searchCond += '&finding_id=' + this.searchModel.findingID
         queryNew.finding_id = this.searchModel.findingID
@@ -1070,14 +1186,16 @@ export default {
         '&direction=' +
         direction
       if (
+        updateRoute &&
         Object.entries(queryNew).sort().toString() !=
-        Object.entries(queryOld).sort().toString()
+          Object.entries(queryOld).sort().toString()
       ) {
         this.$router.push({ query: queryNew })
       }
       return searchCond
     },
     handleSort(newSort) {
+      if (!newSort.length) return
       const newSortKey = newSort[0].key
       const oldKey = this.table.sort.key
       const oldDirection = this.table.sort.direction
@@ -1626,5 +1744,11 @@ export default {
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
+}
+.asset-view-switch .v-switch__thumb {
+  background-color: rgb(var(--v-theme-surface));
+}
+.asset-view-switch .v-selection-control--dirty .v-switch__track {
+  opacity: 1;
 }
 </style>
