@@ -6,6 +6,18 @@
         $t('assetView.retry')
       }}</v-btn>
     </v-alert>
+    <p
+      v-if="!loading && !error && totalFindingCount !== null"
+      class="text-body-2 my-3"
+      role="status"
+    >
+      {{
+        $t('assetView.summary', {
+          findings: Number(totalFindingCount).toLocaleString(),
+          assets: total.toLocaleString(),
+        })
+      }}
+    </p>
     <v-data-table-server
       class="asset-table"
       :headers="headers"
@@ -50,15 +62,33 @@
           {{ $t('assetView.countValue', { count: item.raw.finding_count }) }}
         </v-btn>
       </template>
-      <template v-slot:[`item.data_source`]>
-        <v-icon
-          :color="dataSourceIconColor('google:scc')"
-          title="google:scc"
-          aria-label="google:scc"
-          role="img"
+      <template v-slot:[`item.data_source`]="{ item }">
+        <span v-if="!item.raw.data_sources?.length">—</span>
+        <v-tooltip
+          v-for="source in item.raw.data_sources || []"
+          :key="source"
+          :text="source"
         >
-          {{ dataSourceIcon('google:scc') }}
-        </v-icon>
+          <template v-slot:activator="{ props }">
+            <v-avatar
+              v-if="source === 'RISKEN'"
+              v-bind="props"
+              size="30"
+              class="mx-1"
+            >
+              <img src="/static/m.png" :alt="source" />
+            </v-avatar>
+            <v-icon
+              v-else
+              v-bind="props"
+              :color="dataSourceIconColor(source)"
+              :aria-label="source"
+              class="mx-1"
+            >
+              {{ dataSourceIcon(source) }}
+            </v-icon>
+          </template>
+        </v-tooltip>
       </template>
       <template v-slot:[`item.score`]="{ item }">
         <v-chip variant="flat" :color="scoreColor(item.raw.max_score || 0)">
@@ -195,6 +225,7 @@ export default {
     sortBy: [{ key: 'score', order: 'desc' }],
     assets: [],
     total: 0,
+    totalFindingCount: null,
     loading: false,
     error: false,
     details: {},
@@ -234,6 +265,7 @@ export default {
       const sequence = ++this.sequence
       this.loading = true
       this.error = false
+      this.totalFindingCount = null
       this.assets = []
       this.details = {}
       this.expanded = []
@@ -245,6 +277,7 @@ export default {
           rowKey: JSON.stringify([a.project_id, a.asset_type, a.asset_key]),
         }))
         this.total = list.total || 0
+        this.totalFindingCount = list.total_finding_count ?? null
       } catch {
         if (this.alive && sequence === this.sequence) this.error = true
       } finally {

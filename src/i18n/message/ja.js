@@ -1,5 +1,6 @@
 const ja = {
   assetView: {
+    summary: '{findings}件のFindingを{assets}アセットに集約',
     dataSource: 'データソース',
     countValue: '{count}件',
     showFindings: '{count}件のFindingの内訳を表示',

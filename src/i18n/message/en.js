@@ -1,5 +1,6 @@
 const en = {
   assetView: {
+    summary: '{findings} Findings grouped into {assets} assets',
     dataSource: 'Data source',
     countValue: '{count}',
     showFindings: 'Show {count} Findings',
