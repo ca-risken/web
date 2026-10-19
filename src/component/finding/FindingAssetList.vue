@@ -38,14 +38,21 @@
       @update:expanded="expand"
     >
       <template v-slot:[`item.asset_name`]="{ item, isExpanded, toggleExpand }">
-        <button
-          class="asset-name"
-          :title="item.raw.asset_name"
-          :aria-expanded="isExpanded(item)"
-          @click="toggleExpand(item)"
+        <v-tooltip
+          :text="item.raw.asset_name"
+          content-class="asset-name-tooltip"
         >
-          {{ displayName(item.raw) }}
-        </button>
+          <template v-slot:activator="{ props }">
+            <button
+              v-bind="props"
+              class="asset-name"
+              :aria-expanded="isExpanded(item)"
+              @click="toggleExpand(item)"
+            >
+              {{ displayName(item.raw) }}
+            </button>
+          </template>
+        </v-tooltip>
       </template>
       <template
         v-slot:[`item.finding_count`]="{ item, isExpanded, toggleExpand }"
@@ -419,6 +426,11 @@ summary {
   color: inherit;
 }
 .wrap {
+  overflow-wrap: anywhere;
+}
+:global(.asset-name-tooltip) {
+  max-width: min(640px, calc(100vw - 32px));
+  white-space: normal;
   overflow-wrap: anywhere;
 }
 </style>
