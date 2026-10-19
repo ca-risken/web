@@ -1,5 +1,9 @@
 const en = {
   assetView: {
+    copyName: 'Copy asset name',
+    nameCopied: 'Asset name copied.',
+    copyFailed: 'Could not copy asset name.',
+
     summary: '{findings} Findings grouped into {assets} assets',
     dataSource: 'Data source',
     countValue: '{count}',

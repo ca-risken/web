@@ -1,5 +1,9 @@
 const ja = {
   assetView: {
+    copyName: 'アセット名をコピー',
+    nameCopied: 'アセット名をコピーしました。',
+    copyFailed: 'アセット名をコピーできませんでした。',
+
     summary: '{findings}件のFindingを{assets}アセットに集約しました。',
     dataSource: 'データソース',
     countValue: '{count}件',
