@@ -1,5 +1,6 @@
 const en = {
   assetView: {
+    dataSource: 'Data source',
     countValue: '{count}',
     showFindings: 'Show {count} Findings',
     locations: 'Show images and detection locations',

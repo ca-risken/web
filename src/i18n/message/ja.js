@@ -1,5 +1,6 @@
 const ja = {
   assetView: {
+    dataSource: 'データソース',
     countValue: '{count}件',
     showFindings: '{count}件のFindingの内訳を表示',
     locations: 'イメージ・検出箇所を表示',

@@ -50,6 +50,9 @@
           {{ $t('assetView.countValue', { count: item.raw.finding_count }) }}
         </v-btn>
       </template>
+      <template v-slot:[`item.data_source`]>
+        <span class="text-body-2">google:scc</span>
+      </template>
       <template v-slot:[`item.score`]="{ item }">
         <v-chip variant="flat" :color="scoreColor(item.raw.max_score || 0)">
           {{ formatScore(item.raw.max_score || 0) }}
@@ -196,6 +199,11 @@ export default {
       return [
         { title: this.$t('assetView.type'), key: 'asset_type' },
         { title: this.$t('assetView.name'), key: 'asset_name', width: 352 },
+        {
+          title: this.$t('assetView.dataSource'),
+          key: 'data_source',
+          sortable: false,
+        },
         ...(this.organizationMode
           ? [{ title: this.$t('assetView.project'), key: 'project_id' }]
           : []),
