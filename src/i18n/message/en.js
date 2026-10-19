@@ -1,5 +1,8 @@
 const en = {
   assetView: {
+    countValue: '{count}',
+    showFindings: 'Show {count} Findings',
+    locations: 'Show images and detection locations',
     fixedPackage: 'Fixed package / version',
     assets: 'Asset view',
     scope:

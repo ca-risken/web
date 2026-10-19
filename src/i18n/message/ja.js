@@ -1,5 +1,8 @@
 const ja = {
   assetView: {
+    countValue: '{count}件',
+    showFindings: '{count}件のFindingの内訳を表示',
+    locations: 'イメージ・検出箇所を表示',
     fixedPackage: '修正版パッケージ / バージョン',
     assets: 'アセット別表示',
     scope:

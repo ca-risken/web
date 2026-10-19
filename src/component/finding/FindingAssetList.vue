@@ -26,8 +26,29 @@
       @update:options="refresh"
       @update:expanded="expand"
     >
-      <template v-slot:[`item.asset_name`]="{ item }">
-        <span class="asset-name">{{ item.raw.asset_name }}</span>
+      <template v-slot:[`item.asset_name`]="{ item, isExpanded, toggleExpand }">
+        <button
+          class="asset-name"
+          :title="item.raw.asset_name"
+          :aria-expanded="isExpanded(item)"
+          @click="toggleExpand(item)"
+        >
+          {{ displayName(item.raw) }}
+        </button>
+      </template>
+      <template
+        v-slot:[`item.finding_count`]="{ item, isExpanded, toggleExpand }"
+      >
+        <v-btn
+          variant="text"
+          :aria-label="
+            $t('assetView.showFindings', { count: item.raw.finding_count })
+          "
+          :aria-expanded="isExpanded(item)"
+          @click="toggleExpand(item)"
+        >
+          {{ $t('assetView.countValue', { count: item.raw.finding_count }) }}
+        </v-btn>
       </template>
       <template v-slot:[`item.score`]="{ item }">
         <v-chip variant="flat" :color="scoreColor(item.raw.max_score || 0)">
@@ -35,7 +56,7 @@
         </v-chip>
       </template>
       <template v-slot:expanded-row="{ columns, item }">
-        <tr>
+        <tr class="asset-detail-row">
           <td :colspan="columns.length" class="pa-4">
             <v-progress-linear
               v-if="details[item.raw.rowKey]?.loading"
@@ -50,13 +71,18 @@
             <div
               v-for="finding in details[item.raw.rowKey]?.items || []"
               :key="finding.finding_id"
-              class="mb-4"
+              class="finding-detail mb-4"
             >
-              <div class="d-flex align-center">
-                <strong
-                  >{{ finding.finding_id }} · {{ finding.score || 0 }} ·
-                  {{ finding.status }}</strong
+              <div class="finding-detail-heading d-flex flex-wrap align-center">
+                <strong>#{{ finding.finding_id }}</strong>
+                <v-chip
+                  size="small"
+                  variant="flat"
+                  :color="scoreColor(finding.score || 0)"
                 >
+                  {{ formatScore(finding.score || 0) }}
+                </v-chip>
+                <span class="text-caption">{{ finding.status }}</span>
                 <v-btn
                   variant="text"
                   @click="
@@ -92,7 +118,19 @@
               >
                 {{ line }}
               </div>
-              <v-divider class="mt-3" />
+              <details
+                v-if="vulnerability(finding.data, true).length"
+                class="mt-2 text-body-2"
+              >
+                <summary>{{ $t('assetView.locations') }}</summary>
+                <div
+                  v-for="line in vulnerability(finding.data, true)"
+                  :key="line"
+                  class="wrap mt-1"
+                >
+                  {{ line }}
+                </div>
+              </details>
             </div>
             <div v-if="details[item.raw.rowKey]" class="d-flex align-center">
               <v-btn
@@ -227,7 +265,14 @@ export default {
         entry.loading = false
       }
     },
-    vulnerability(data) {
+    displayName(asset) {
+      if (asset.asset_type !== 'Image') return asset.asset_name
+      return (asset.asset_name || '').replace(
+        /(@sha256:)([a-fA-F0-9]{64})/g,
+        (_, prefix, hash) => prefix + hash.slice(0, 12) + '…'
+      )
+    },
+    vulnerability(data, additional = false) {
       try {
         const report = typeof data === 'string' ? JSON.parse(data) : data
         const f = report?.finding || {}
@@ -250,15 +295,16 @@ export default {
                   .join(' / ')
             )
         }
+        const locations = []
         for (const c of [
           f.container,
           ...(f.kubernetes?.objects || []).flatMap((o) => o.containers || []),
         ]) {
           if (c?.image_id || c?.uri)
-            lines.push(
+            locations.push(
               this.$t('assetView.image') +
                 ': ' +
-                [c.uri, c.image_id].filter(Boolean).join(' / ')
+                [...new Set([c.uri, c.image_id].filter(Boolean))].join(' / ')
             )
         }
         for (const file of [
@@ -266,9 +312,9 @@ export default {
           ...(v.offending_package?.files || []),
         ]) {
           if (file.path)
-            lines.push(this.$t('assetView.files') + ': ' + file.path)
+            locations.push(this.$t('assetView.files') + ': ' + file.path)
         }
-        return [...new Set(lines)]
+        return [...new Set(additional ? locations : lines)]
       } catch {
         return []
       }
@@ -278,7 +324,12 @@ export default {
 </script>
 <style scoped>
 .asset-name {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+  color: inherit;
   text-align: left;
   min-width: 280px;
   max-width: 320px;
@@ -292,5 +343,36 @@ export default {
 }
 .asset-table :deep(td.v-data-table-column--no-padding:last-of-type) {
   padding-inline: 8px 50px;
+}
+.asset-name:hover {
+  text-decoration: underline;
+}
+.asset-name:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
+.asset-table :deep(tr:has(+ .asset-detail-row)) {
+  background: rgba(var(--v-theme-primary), 0.06);
+}
+.asset-detail-row {
+  background: rgb(var(--v-theme-surface));
+}
+.finding-detail {
+  padding: 16px;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 6px;
+}
+.asset-table :deep(.asset-detail-row > td) {
+  white-space: normal;
+}
+.finding-detail-heading {
+  gap: 8px;
+}
+summary {
+  cursor: pointer;
+  color: inherit;
+}
+.wrap {
+  overflow-wrap: anywhere;
 }
 </style>
