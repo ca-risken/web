@@ -290,4 +290,7 @@ export default {
 .asset-table :deep(td:last-of-type) {
   white-space: nowrap;
 }
+.asset-table :deep(td.v-data-table-column--no-padding:last-of-type) {
+  padding-inline: 8px 20px;
+}
 </style>
