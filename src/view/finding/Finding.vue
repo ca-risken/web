@@ -288,6 +288,8 @@
         :load-details="loadAssetDetails"
         :actions="getActionList"
         :score-color="getColorByScore"
+        :data-source-icon="getDataSourceIcon"
+        :data-source-icon-color="getDataSourceIconColor"
         :format-score="formatScore"
         :organization-mode="isOrganizationMode"
       />

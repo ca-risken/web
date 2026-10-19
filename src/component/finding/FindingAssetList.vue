@@ -51,7 +51,14 @@
         </v-btn>
       </template>
       <template v-slot:[`item.data_source`]>
-        <span class="text-body-2">google:scc</span>
+        <v-icon
+          :color="dataSourceIconColor('google:scc')"
+          title="google:scc"
+          aria-label="google:scc"
+          role="img"
+        >
+          {{ dataSourceIcon('google:scc') }}
+        </v-icon>
       </template>
       <template v-slot:[`item.score`]="{ item }">
         <v-chip variant="flat" :color="scoreColor(item.raw.max_score || 0)">
@@ -174,6 +181,8 @@ export default {
   components: { VDataTableServer },
   props: {
     scoreColor: { type: Function, required: true },
+    dataSourceIcon: { type: Function, required: true },
+    dataSourceIconColor: { type: Function, required: true },
     formatScore: { type: Function, required: true },
     loadAssets: { type: Function, required: true },
     loadDetails: { type: Function, required: true },
