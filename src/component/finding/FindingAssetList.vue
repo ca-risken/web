@@ -34,7 +34,6 @@
       v-model:sort-by="sortBy"
       item-value="rowKey"
       v-model:expanded="expanded"
-      show-expand
       @update:options="refresh"
       @update:expanded="expand"
     >
@@ -390,9 +389,6 @@ export default {
 }
 .asset-table :deep(td:last-of-type) {
   white-space: nowrap;
-}
-.asset-table :deep(td.v-data-table-column--no-padding:last-of-type) {
-  padding-inline: 8px 50px;
 }
 .asset-name:hover {
   text-decoration: underline;
