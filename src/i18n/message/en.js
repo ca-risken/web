@@ -8,7 +8,7 @@ const en = {
     fixedPackage: 'Fixed package / version',
     assets: 'Asset view',
     scope:
-      'SCC vulnerability findings grouped by asset. Counts and maximum scores reflect the current search conditions.',
+      'Currently supports SCC vulnerability findings only. Support for other data sources is planned. Counts and maximum scores reflect the current search conditions.',
     type: 'Asset type',
     name: 'Asset name',
     project: 'Project ID',
