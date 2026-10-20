@@ -37,15 +37,28 @@
       @update:options="refresh"
       @update:expanded="expand"
     >
-      <template v-slot:[`item.asset_name`]="{ item, isExpanded, toggleExpand }">
-        <button
-          class="asset-name"
-          :title="item.raw.asset_name"
-          :aria-expanded="isExpanded(item)"
-          @click="toggleExpand(item)"
-        >
-          {{ displayName(item.raw) }}
-        </button>
+      <template v-slot:[`item.asset_name`]="{ item }">
+        <div class="d-flex align-start asset-name-cell">
+          <button
+            class="asset-name"
+            :class="{ 'asset-name-full': fullNames[item.raw.rowKey] }"
+            :aria-expanded="!!fullNames[item.raw.rowKey]"
+            @click="fullNames[item.raw.rowKey] = !fullNames[item.raw.rowKey]"
+          >
+            {{
+              fullNames[item.raw.rowKey]
+                ? item.raw.asset_name
+                : displayName(item.raw)
+            }}
+          </button>
+          <v-btn
+            icon="mdi-content-copy"
+            variant="text"
+            size="x-small"
+            :aria-label="$t('assetView.copyName')"
+            @click="copyName(item.raw.asset_name)"
+          />
+        </div>
       </template>
       <template
         v-slot:[`item.finding_count`]="{ item, isExpanded, toggleExpand }"
@@ -202,12 +215,14 @@
         </tr>
       </template>
     </v-data-table-server>
+    <bottom-snack-bar ref="snackbar" />
   </div>
 </template>
 <script>
+import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
-  components: { VDataTableServer },
+  components: { VDataTableServer, BottomSnackBar },
   props: {
     scoreColor: { type: Function, required: true },
     dataSourceIcon: { type: Function, required: true },
@@ -229,6 +244,7 @@ export default {
     error: false,
     details: {},
     expanded: [],
+    fullNames: {},
     sequence: 0,
     alive: true,
     options: {},
@@ -259,6 +275,14 @@ export default {
     this.sequence++
   },
   methods: {
+    async copyName(name) {
+      try {
+        await navigator.clipboard.writeText(name)
+        this.$refs.snackbar.notifyInfo(this.$t('assetView.nameCopied'))
+      } catch {
+        this.$refs.snackbar.notifyError(this.$t('assetView.copyFailed'))
+      }
+    },
     async refresh(options) {
       this.options = options
       const sequence = ++this.sequence
@@ -268,6 +292,7 @@ export default {
       this.assets = []
       this.details = {}
       this.expanded = []
+      this.fullNames = {}
       try {
         const list = await this.loadAssets(options)
         if (!this.alive || sequence !== this.sequence) return
@@ -380,9 +405,19 @@ export default {
   cursor: pointer;
   color: inherit;
   text-align: left;
-  min-width: 280px;
+  flex: 1;
+  min-width: 0;
   max-width: 320px;
   overflow-wrap: anywhere;
+}
+.asset-name-cell {
+  width: 320px;
+  gap: 4px;
+  padding: 8px 0;
+}
+.asset-name-full {
+  display: block;
+  -webkit-line-clamp: unset;
 }
 .asset-table :deep(th) {
   white-space: nowrap;

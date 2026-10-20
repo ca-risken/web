@@ -638,6 +638,15 @@ export default {
   },
   filters: {},
   watch: {
+    '$route.query.asset_view'(value) {
+      const mode = value === 'true' ? 'asset' : 'finding'
+      if (!this.isInitializing && this.displayMode !== mode) {
+        this.displayMode = mode
+        this.table.selected = []
+        this.listSequence++
+        this.refleshList(true)
+      }
+    },
     assetScope() {
       this.listSequence++
       this.table.selected = []
@@ -850,17 +859,17 @@ export default {
         : this.listFinding(condition)
     },
     async loadList(parse) {
+      if (parse) this.parseQuery()
       if (this.displayMode === 'asset') {
-        if (parse) this.parseQuery()
         this.getSearchCondition()
         this.assetRevision++
         this.loading = false
         return
       }
       if (this.isOrganizationMode) {
-        await this.loadListForOrganization(parse)
+        await this.loadListForOrganization(false)
       } else {
-        await this.loadProjectList(parse)
+        await this.loadProjectList(false)
       }
     },
     async loadProjectList(parse) {
@@ -1103,6 +1112,7 @@ export default {
     parseQuery() {
       if (!this.$route.query) return
       const query = this.$route.query
+      this.displayMode = query.asset_view === 'true' ? 'asset' : 'finding'
       if (query.finding_id && query.finding_id != '') {
         this.searchModel.findingID = query.finding_id
       }
@@ -1137,6 +1147,7 @@ export default {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
+      if (this.displayMode === 'asset') queryNew.asset_view = 'true'
       for (const key of ['project_id', 'organization_id', 'mode']) {
         if (queryOld[key] !== undefined) queryNew[key] = queryOld[key]
       }
