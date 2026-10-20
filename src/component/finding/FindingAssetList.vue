@@ -33,6 +33,7 @@
       ]"
       v-model:sort-by="sortBy"
       item-value="rowKey"
+      show-expand
       v-model:expanded="expanded"
       @update:options="refresh"
       @update:expanded="expand"
@@ -60,19 +61,22 @@
           />
         </div>
       </template>
+      <template v-slot:[`item.finding_count`]="{ item }">
+        {{ $t('assetView.countValue', { count: item.raw.finding_count }) }}
+      </template>
       <template
-        v-slot:[`item.finding_count`]="{ item, isExpanded, toggleExpand }"
+        v-slot:[`item.data-table-expand`]="{ item, isExpanded, toggleExpand }"
       >
         <v-btn
+          :icon="isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
           variant="text"
+          size="small"
           :aria-label="
             $t('assetView.showFindings', { count: item.raw.finding_count })
           "
           :aria-expanded="isExpanded(item)"
           @click="toggleExpand(item)"
-        >
-          {{ $t('assetView.countValue', { count: item.raw.finding_count }) }}
-        </v-btn>
+        />
       </template>
       <template v-slot:[`item.data_source`]="{ item }">
         <span v-if="!item.raw.data_sources?.length">—</span>
