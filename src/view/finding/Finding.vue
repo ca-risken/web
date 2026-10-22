@@ -468,7 +468,8 @@ export default {
   },
   data() {
     return {
-      displayMode: 'finding',
+      displayMode:
+        this.$route.query.asset_view === 'true' ? 'asset' : 'finding',
       assetRevision: 0,
       listSequence: 0,
       loading: false,
@@ -1112,7 +1113,6 @@ export default {
     parseQuery() {
       if (!this.$route.query) return
       const query = this.$route.query
-      this.displayMode = query.asset_view === 'true' ? 'asset' : 'finding'
       if (query.finding_id && query.finding_id != '') {
         this.searchModel.findingID = query.finding_id
       }
