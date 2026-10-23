@@ -8,9 +8,10 @@
     </v-alert>
     <p
       v-if="!loading && !error && totalFindingCount !== null"
-      class="text-body-2 my-3"
+      class="asset-summary"
       role="status"
     >
+      <v-icon size="18" aria-hidden="true">mdi-layers-triple-outline</v-icon>
       {{
         $t('assetView.summary', {
           findings: Number(totalFindingCount).toLocaleString(),
@@ -38,19 +39,39 @@
       @update:options="refresh"
       @update:expanded="expand"
     >
+      <template v-slot:[`item.asset_type`]="{ item }">
+        <span class="asset-type"
+          ><v-icon size="20" aria-hidden="true">{{
+            {
+              Image: 'mdi-docker',
+              VM: 'mdi-server',
+              Workload: 'mdi-kubernetes',
+              Resource: 'mdi-cube-outline',
+              Unknown: 'mdi-help-circle-outline',
+            }[item.raw.asset_type] || 'mdi-cube-outline'
+          }}</v-icon
+          ><span>{{ item.raw.asset_type }}</span></span
+        >
+      </template>
       <template v-slot:[`item.asset_name`]="{ item }">
         <div class="d-flex align-start asset-name-cell">
           <button
             class="asset-name"
             :class="{ 'asset-name-full': fullNames[item.raw.rowKey] }"
+            :aria-label="item.raw.asset_name"
             :aria-expanded="!!fullNames[item.raw.rowKey]"
             @click="fullNames[item.raw.rowKey] = !fullNames[item.raw.rowKey]"
           >
-            {{
-              fullNames[item.raw.rowKey]
-                ? item.raw.asset_name
-                : displayName(item.raw)
-            }}
+            <span class="asset-short-name">{{ shortName(item.raw) }}</span>
+            <span
+              v-if="item.raw.asset_name !== shortName(item.raw)"
+              class="asset-path"
+              >{{
+                fullNames[item.raw.rowKey]
+                  ? item.raw.asset_name
+                  : displayName(item.raw)
+              }}</span
+            >
           </button>
           <v-btn
             icon="mdi-content-copy"
@@ -62,7 +83,9 @@
         </div>
       </template>
       <template v-slot:[`item.finding_count`]="{ item }">
-        {{ $t('assetView.countValue', { count: item.raw.finding_count }) }}
+        <span class="asset-count">{{
+          $t('assetView.countValue', { count: item.raw.finding_count })
+        }}</span>
       </template>
       <template
         v-slot:[`item.data-table-expand`]="{ item, isExpanded, toggleExpand }"
@@ -113,7 +136,26 @@
       </template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr class="asset-detail-row">
-          <td :colspan="columns.length" class="pa-4">
+          <td :colspan="columns.length" class="asset-detail-cell">
+            <div class="candidate-heading">
+              <v-icon size="20" color="primary" aria-hidden="true"
+                >mdi-wrench-outline</v-icon
+              >
+              <h3>{{ $t('assetView.remediationCandidates') }}</h3>
+              <span
+                v-if="
+                  details[item.raw.rowKey] &&
+                  !details[item.raw.rowKey].loading &&
+                  !details[item.raw.rowKey].error
+                "
+                class="candidate-total"
+                >{{
+                  $t('assetView.categoryCount', {
+                    count: details[item.raw.rowKey].total,
+                  })
+                }}</span
+              >
+            </div>
             <v-progress-linear
               v-if="details[item.raw.rowKey]?.loading"
               indeterminate
@@ -301,6 +343,12 @@ export default {
         entry.loading = false
       }
     },
+    shortName(asset) {
+      return (
+        this.displayName(asset)?.split('/').filter(Boolean).pop() ||
+        asset.asset_name
+      )
+    },
     displayName(asset) {
       if (asset.asset_type !== 'Image') return asset.asset_name
       return (asset.asset_name || '').replace(
@@ -360,10 +408,7 @@ export default {
 </script>
 <style scoped>
 .asset-name {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
   cursor: pointer;
   color: inherit;
   text-align: left;
@@ -375,11 +420,68 @@ export default {
 .asset-name-cell {
   width: 320px;
   gap: 4px;
-  padding: 8px 0;
+  padding: 16px 0;
 }
-.asset-name-full {
+.asset-short-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.asset-path {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 5px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgba(var(--v-theme-on-surface), 0.55);
+}
+.asset-name-full .asset-path {
   display: block;
   -webkit-line-clamp: unset;
+}
+.asset-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 12px;
+  font-size: 0.8125rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}
+.asset-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}
+.asset-count {
+  display: inline-block;
+  min-width: 52px;
+  padding: 4px 12px;
+  border-radius: 14px;
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.asset-table {
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  overflow: hidden;
+}
+.asset-table :deep(.v-data-table__thead > tr > th) {
+  background: rgba(var(--v-theme-on-surface), 0.025);
+  font-size: 0.75rem;
+  color: rgba(var(--v-theme-on-surface), 0.65);
+}
+.asset-table :deep(.v-data-table__tbody > tr:not(.asset-detail-row):hover) {
+  background: rgba(var(--v-theme-primary), 0.035);
 }
 .asset-table :deep(th) {
   white-space: nowrap;
@@ -398,7 +500,30 @@ export default {
   background: rgba(var(--v-theme-primary), 0.06);
 }
 .asset-detail-row {
-  background: rgb(var(--v-theme-surface));
+  background: rgba(var(--v-theme-on-surface), 0.025);
+}
+.asset-detail-cell {
+  padding: 24px !important;
+}
+.candidate-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.candidate-heading h3 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.candidate-total {
+  margin-left: auto;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 0.75rem;
+}
+@media (max-width: 600px) {
+  .asset-detail-cell {
+    padding: 16px 12px !important;
+  }
 }
 .finding-detail {
   padding: 16px;

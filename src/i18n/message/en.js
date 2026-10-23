@@ -1,6 +1,8 @@
 const en = {
   assetView: {
     showAISummary: 'Show AI summary: {description}',
+    categoryCount: '{count} categories',
+    remediationCandidates: 'Remediation candidates',
     packageName: 'Package',
     packageType: 'Type',
     multipleVersions: 'Multiple ({count})',
