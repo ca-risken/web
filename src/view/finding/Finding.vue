@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <v-toolbar color="background" flat>
+          <v-toolbar color="background" flat class="finding-heading-toolbar">
             <v-toolbar-title
               class="grey--text text--darken-4"
               style="flex: none"
@@ -27,6 +27,16 @@
               class="asset-view-switch ml-4 flex-grow-0"
               @update:modelValue="changeDisplayMode"
             />
+            <div
+              v-if="displayMode === 'asset'"
+              class="asset-scope-notice"
+              role="note"
+            >
+              <v-icon size="18" aria-hidden="true"
+                >mdi-information-outline</v-icon
+              >
+              <span>{{ $t('assetView.scope') }}</span>
+            </div>
           </v-toolbar>
         </v-col>
       </v-row>
@@ -231,9 +241,6 @@
         </transition>
       </v-form>
 
-      <p v-if="displayMode === 'asset'" class="text-caption mt-2">
-        {{ $t('assetView.scope') }}
-      </p>
       <!-- Popular Search -->
       <v-row>
         <v-col class="pb-10">
@@ -1778,6 +1785,32 @@ export default {
 .wrap {
   word-wrap: break-word;
   white-space: pre-wrap;
+}
+.finding-heading-toolbar .v-toolbar__content {
+  height: auto !important;
+  min-height: 64px;
+  flex-wrap: wrap;
+  gap: 8px 0;
+  padding: 8px 0;
+}
+.asset-scope-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 16px;
+  padding: 8px 12px;
+  max-width: 620px;
+  min-width: 0;
+  border: 1px solid rgba(var(--v-theme-info), 0.25);
+  border-radius: 6px;
+  background: rgba(var(--v-theme-info), 0.08);
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.asset-scope-notice > .v-icon {
+  flex-shrink: 0;
+  color: rgb(var(--v-theme-info));
 }
 .asset-view-switch .v-switch__thumb {
   background-color: rgb(var(--v-theme-surface));
