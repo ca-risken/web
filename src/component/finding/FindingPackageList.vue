@@ -2,14 +2,19 @@
   <div class="work-list">
     <details v-for="work in workGroups" :key="work.key" class="work-group">
       <summary class="work-heading">
-        <span class="work-title"
-          >{{ $t('assetView.workTypes.' + work.type)
-          }}<span
-            v-if="work.location && work.type !== 'os'"
-            class="text-caption ml-2"
-            >{{ work.location }}</span
-          ></span
+        <span class="work-icon"
+          ><v-icon size="20" aria-hidden="true">{{
+            {
+              app: 'mdi-code-braces',
+              os: 'mdi-server',
+              location: 'mdi-package-variant-closed',
+              unknown: 'mdi-help-circle-outline',
+            }[work.type]
+          }}</v-icon></span
         >
+        <span class="work-title">{{
+          $t('assetView.workTypes.' + work.type)
+        }}</span>
         <span class="work-count">{{
           $t('assetView.countValue', { count: work.count })
         }}</span>
@@ -27,7 +32,6 @@
             <tr>
               <th>{{ $t('assetView.packageName') }}</th>
               <th>{{ $t('assetView.packageType') }}</th>
-              <th>{{ $t('assetView.currentVersion') }}</th>
               <th>{{ $t('assetView.fixedVersion') }}</th>
               <th class="text-center">{{ $t('assetView.count') }}</th>
               <th class="expand-column">
@@ -57,10 +61,24 @@
                   {{ group.package_type || '—' }}
                 </td>
                 <td class="version-cell">
-                  {{ versionLabel(group, 'current_version') }}
-                </td>
-                <td class="version-cell">
-                  {{ versionLabel(group, 'fixed_version') }}
+                  <div
+                    v-for="version in fixedVersions(group)"
+                    :key="version.fixed_version"
+                    class="fixed-version"
+                  >
+                    <span>{{
+                      version.fixed_version || $t('assetView.noFixedVersion')
+                    }}</span>
+                    <span
+                      v-if="fixedVersions(group).length > 1"
+                      class="text-caption text-medium-emphasis"
+                      >{{
+                        $t('assetView.countValue', {
+                          count: version.finding_count,
+                        })
+                      }}</span
+                    >
+                  </div>
                 </td>
                 <td class="text-center">{{ group.finding_count }}</td>
                 <td class="expand-column">
@@ -87,46 +105,8 @@
                 v-if="expandedPackages[group.package_key]"
                 class="package-expanded"
               >
-                <td colspan="6" class="pa-0">
+                <td colspan="5" class="pa-0">
                   <div class="package-content">
-                    <v-table density="compact" class="version-table mb-3">
-                      <thead>
-                        <tr>
-                          <th>{{ $t('assetView.currentVersion') }}</th>
-                          <th>{{ $t('assetView.fixedVersion') }}</th>
-                          <th class="text-center">
-                            {{ $t('assetView.count') }}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr
-                          v-for="version in group.versions || []"
-                          :key="
-                            JSON.stringify([
-                              version.current_version,
-                              version.fixed_version,
-                            ])
-                          "
-                        >
-                          <td>
-                            {{
-                              version.current_version ||
-                              $t('assetView.unknownVersion')
-                            }}
-                          </td>
-                          <td>
-                            {{
-                              version.fixed_version ||
-                              $t('assetView.noFixedVersion')
-                            }}
-                          </td>
-                          <td class="text-center">
-                            {{ version.finding_count }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </v-table>
                     <v-progress-linear
                       v-if="entries[group.package_key]?.loading"
                       indeterminate
@@ -382,26 +362,15 @@ export default {
     this.alive = false
   },
   methods: {
-    versionLabel(group, field) {
-      const values = [
-        ...new Set(
-          (group.versions || [])
-            .map((version) => version[field])
-            .filter(Boolean)
-        ),
-      ]
-      const missing = (group.versions || []).some((version) => !version[field])
-      if (!values.length)
-        return this.$t(
-          field === 'fixed_version'
-            ? 'assetView.noFixedVersion'
-            : 'assetView.unknownVersion'
-        )
-      if (values.length > 1 || missing)
-        return this.$t('assetView.multipleVersions', {
-          count: values.length + Number(missing),
-        })
-      return values[0]
+    fixedVersions(group) {
+      const versions = new Map()
+      for (const version of group.versions || []) {
+        const key = version.fixed_version || ''
+        if (!versions.has(key))
+          versions.set(key, { fixed_version: key, finding_count: 0 })
+        versions.get(key).finding_count += Number(version.finding_count || 0)
+      }
+      return [...versions.values()]
     },
     toggle(group) {
       const key = group.package_key
@@ -437,16 +406,22 @@ export default {
 <style scoped>
 .work-list {
   background: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  overflow: hidden;
 }
 .work-group {
   border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
+.work-group:last-child {
+  border-bottom: 0;
+}
 .work-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 100px 32px;
+  grid-template-columns: 36px minmax(0, 1fr) auto 24px;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 16px 20px;
   cursor: pointer;
   list-style: none;
 }
@@ -461,13 +436,28 @@ export default {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: -2px;
 }
+.work-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(var(--v-theme-primary), 0.06);
+  color: rgba(var(--v-theme-on-surface), 0.65);
+}
 .work-title {
   font-size: 0.875rem;
   font-weight: 500;
   overflow-wrap: anywhere;
 }
 .work-count {
-  text-align: right;
+  min-width: 48px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  text-align: center;
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
@@ -481,11 +471,10 @@ export default {
   background: rgba(var(--v-theme-primary), 0.05);
 }
 .work-content {
-  padding: 0 16px 12px;
+  padding: 0 20px 20px 68px;
 }
 .package-table :deep(th),
-.finding-table :deep(th),
-.version-table :deep(th) {
+.finding-table :deep(th) {
   white-space: nowrap;
   font-size: 0.75rem;
   color: rgba(var(--v-theme-on-surface), 0.65);
@@ -513,8 +502,28 @@ export default {
   background: rgba(var(--v-theme-primary), 0.04);
 }
 .package-content {
-  padding: 12px 16px 16px;
+  margin: 12px 12px 20px;
+  padding: 0 0 0 12px;
+  border-left: 2px solid rgba(var(--v-theme-primary), 0.2);
+}
+.package-table :deep(thead),
+.finding-table :deep(thead) {
   background: rgba(var(--v-theme-on-surface), 0.025);
+}
+.fixed-version {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 3px 0;
+}
+@media (max-width: 600px) {
+  .work-heading {
+    padding: 12px;
+    gap: 8px;
+  }
+  .work-content {
+    padding: 0 12px 12px;
+  }
 }
 .finding-row {
   cursor: pointer;

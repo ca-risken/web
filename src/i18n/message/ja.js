@@ -1,6 +1,8 @@
 const ja = {
   assetView: {
     showAISummary: 'AI要約を表示：{description}',
+    categoryCount: '{count}分類',
+    remediationCandidates: '対策候補',
     packageName: 'パッケージ',
     packageType: '種類',
     multipleVersions: '複数（{count}）',
@@ -12,14 +14,14 @@ const ja = {
 
     workLocation: '推定した修正箇所',
     workTypes: {
-      app: 'アプリの依存ライブラリの更新候補',
-      os: 'OS関連パッケージの更新候補',
-      location: 'ライブラリの更新候補',
+      app: 'アプリの依存ライブラリの更新',
+      os: 'OS関連パッケージの更新',
+      location: 'ライブラリの更新',
       unknown: '対応方法の確認が必要',
     },
     unknownPackage: 'パッケージ情報なし',
     currentVersion: '検出バージョン',
-    fixedVersion: 'SCCが示す修正先',
+    fixedVersion: '修正バージョン',
     unknownVersion: '不明',
     noFixedVersion: '修正先情報なし',
 
