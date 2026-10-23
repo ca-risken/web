@@ -21,7 +21,7 @@ const en = {
     },
     unknownPackage: 'Package information unavailable',
     currentVersion: 'Detected version',
-    fixedVersion: 'Fix version reported by SCC',
+    fixedVersion: 'Fixed version',
     unknownVersion: 'Unknown',
     noFixedVersion: 'Fix version unavailable',
 

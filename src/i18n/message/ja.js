@@ -21,7 +21,7 @@ const ja = {
     },
     unknownPackage: 'パッケージ情報なし',
     currentVersion: '検出バージョン',
-    fixedVersion: 'SCCが示す修正先',
+    fixedVersion: '修正バージョン',
     unknownVersion: '不明',
     noFixedVersion: '修正先情報なし',
 
