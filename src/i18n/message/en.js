@@ -1,5 +1,28 @@
 const en = {
   assetView: {
+    showAISummary: 'Show AI summary: {description}',
+    packageName: 'Package',
+    packageType: 'Type',
+    multipleVersions: 'Multiple ({count})',
+    showPackageFindings: 'Show Findings for {package}',
+    status: 'Status',
+    findingScore: 'Score',
+    findingDescription: 'Finding',
+    actions: 'Actions',
+
+    workLocation: 'Inferred change location',
+    workTypes: {
+      app: 'Application dependency update candidates',
+      os: 'OS package update candidates',
+      location: 'Library update candidates',
+      unknown: 'Review required',
+    },
+    unknownPackage: 'Package information unavailable',
+    currentVersion: 'Detected version',
+    fixedVersion: 'Fix version reported by SCC',
+    unknownVersion: 'Unknown',
+    noFixedVersion: 'Fix version unavailable',
+
     copyName: 'Copy asset name',
     nameCopied: 'Asset name copied.',
     copyFailed: 'Could not copy asset name.',

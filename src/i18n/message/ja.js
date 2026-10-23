@@ -1,5 +1,28 @@
 const ja = {
   assetView: {
+    showAISummary: 'AI要約を表示：{description}',
+    packageName: 'パッケージ',
+    packageType: '種類',
+    multipleVersions: '複数（{count}）',
+    showPackageFindings: '{package}のFindingを表示',
+    status: 'ステータス',
+    findingScore: 'スコア',
+    findingDescription: '検出内容',
+    actions: '操作',
+
+    workLocation: '推定した修正箇所',
+    workTypes: {
+      app: 'アプリの依存ライブラリの更新候補',
+      os: 'OS関連パッケージの更新候補',
+      location: 'ライブラリの更新候補',
+      unknown: '対応方法の確認が必要',
+    },
+    unknownPackage: 'パッケージ情報なし',
+    currentVersion: '検出バージョン',
+    fixedVersion: 'SCCが示す修正先',
+    unknownVersion: '不明',
+    noFixedVersion: '修正先情報なし',
+
     copyName: 'アセット名をコピー',
     nameCopied: 'アセット名をコピーしました。',
     copyFailed: 'アセット名をコピーできませんでした。',

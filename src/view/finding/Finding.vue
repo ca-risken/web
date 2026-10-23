@@ -286,6 +286,8 @@
         :key="assetScope + assetRevision"
         :load-assets="loadAssets"
         :load-details="loadAssetDetails"
+        :load-packages="loadAssetPackages"
+        :status-color="getColorByFindingStatus"
         :actions="getActionList"
         :score-color="getColorByScore"
         :data-source-icon="getDataSourceIcon"
@@ -823,7 +825,19 @@ export default {
     async loadAssets(options) {
       return this.loadAssetPage(options, null)
     },
-    async loadAssetDetails(asset, page) {
+    async loadAssetPackages(asset, page) {
+      const list = await this.loadAssetPage(
+        {
+          page,
+          itemsPerPage: 20,
+          sortBy: [{ key: 'finding_id', order: 'asc' }],
+        },
+        asset,
+        true
+      )
+      return { packages: list.packages || [], total: list.total || 0 }
+    },
+    async loadAssetDetails(asset, page, packageKey) {
       const scope = this.assetScope
       const list = await this.loadAssetPage(
         {
@@ -831,7 +845,9 @@ export default {
           itemsPerPage: 20,
           sortBy: [{ key: 'finding_id', order: 'asc' }],
         },
-        asset
+        asset,
+        false,
+        packageKey
       )
       if (scope !== this.assetScope) return { items: [], total: 0 }
       const items = this.isOrganizationMode
@@ -839,13 +855,20 @@ export default {
         : await Promise.all((list.finding_id || []).map(this.getFindingDetail))
       return { items, total: list.total || 0 }
     },
-    async loadAssetPage(options, asset) {
+    async loadAssetPage(
+      options,
+      asset,
+      packageView = false,
+      packageKey = null
+    ) {
       const params = new URLSearchParams(this.getSearchCondition(false))
       params.set('offset', (options.page - 1) * options.itemsPerPage)
       params.set('limit', options.itemsPerPage)
       params.set('sort', options.sortBy?.[0]?.key || 'score')
       params.set('direction', options.sortBy?.[0]?.order || 'desc')
       params.set('asset_view', asset ? 'false' : 'true')
+      if (packageView) params.set('package_view', 'true')
+      if (packageKey) params.set('package_key', packageKey)
       if (asset) {
         params.set('asset_type', asset.asset_type)
         params.set('asset_key', asset.asset_key)
