@@ -124,71 +124,26 @@
                 $t('assetView.retry')
               }}</v-btn>
             </v-alert>
+            <finding-package-list
+              :key="
+                JSON.stringify([
+                  item.raw.rowKey,
+                  details[item.raw.rowKey]?.page,
+                ])
+              "
+              :asset="item.raw"
+              :packages="details[item.raw.rowKey]?.packages || []"
+              :load-details="loadDetails"
+              :actions="actions"
+              :score-color="scoreColor"
+              :format-score="formatScore"
+              :status-color="statusColor"
+              :vulnerability="vulnerability"
+            />
             <div
-              v-for="finding in details[item.raw.rowKey]?.items || []"
-              :key="finding.finding_id"
-              class="finding-detail mb-4"
+              v-if="details[item.raw.rowKey]?.total > 20"
+              class="d-flex justify-end align-center mt-2"
             >
-              <div class="finding-detail-heading d-flex flex-wrap align-center">
-                <strong>#{{ finding.finding_id }}</strong>
-                <v-chip
-                  size="small"
-                  variant="flat"
-                  :color="scoreColor(finding.score || 0)"
-                >
-                  {{ formatScore(finding.score || 0) }}
-                </v-chip>
-                <span class="text-caption">{{ finding.status }}</span>
-                <v-btn
-                  variant="text"
-                  @click="
-                    actions({ value: finding })[0].click({ value: finding })
-                  "
-                  >{{ $t('assetView.open') }}</v-btn
-                >
-                <v-menu
-                  ><template v-slot:activator="{ props }"
-                    ><v-btn
-                      v-bind="props"
-                      icon="mdi-dots-vertical"
-                      variant="text"
-                  /></template>
-                  <v-list
-                    ><v-list-item
-                      v-for="action in actions({ value: finding })"
-                      :key="action.text"
-                      @click="action.click({ value: finding })"
-                    >
-                      <v-list-item-title>{{
-                        $t(`action['${action.text}']`)
-                      }}</v-list-item-title>
-                    </v-list-item></v-list
-                  >
-                </v-menu>
-              </div>
-              <div class="text-body-2 wrap">{{ finding.description }}</div>
-              <div
-                v-for="line in vulnerability(finding.data)"
-                :key="line"
-                class="text-body-2 wrap"
-              >
-                {{ line }}
-              </div>
-              <details
-                v-if="vulnerability(finding.data, true).length"
-                class="mt-2 text-body-2"
-              >
-                <summary>{{ $t('assetView.locations') }}</summary>
-                <div
-                  v-for="line in vulnerability(finding.data, true)"
-                  :key="line"
-                  class="wrap mt-1"
-                >
-                  {{ line }}
-                </div>
-              </details>
-            </div>
-            <div v-if="details[item.raw.rowKey]" class="d-flex align-center">
               <v-btn
                 variant="text"
                 :disabled="
@@ -223,17 +178,20 @@
   </div>
 </template>
 <script>
+import FindingPackageList from './FindingPackageList.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 export default {
-  components: { VDataTableServer, BottomSnackBar },
+  components: { VDataTableServer, BottomSnackBar, FindingPackageList },
   props: {
     scoreColor: { type: Function, required: true },
     dataSourceIcon: { type: Function, required: true },
     dataSourceIconColor: { type: Function, required: true },
     formatScore: { type: Function, required: true },
+    statusColor: { type: Function, required: true },
     loadAssets: { type: Function, required: true },
     loadDetails: { type: Function, required: true },
+    loadPackages: { type: Function, required: true },
     actions: { type: Function, required: true },
     organizationMode: Boolean,
   },
@@ -329,7 +287,7 @@ export default {
       }
       const entry = this.details[asset.rowKey]
       try {
-        const result = await this.loadDetails(asset, page)
+        const result = await this.loadPackages(asset, page)
         if (
           !this.alive ||
           sequence !== this.sequence ||
