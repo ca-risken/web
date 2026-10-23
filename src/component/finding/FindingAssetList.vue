@@ -441,7 +441,8 @@ export default {
   line-height: 1.5;
   color: rgba(var(--v-theme-on-surface), 0.55);
 }
-.asset-name-full .asset-path {
+.asset-name-full .asset-path,
+.asset-name-full .asset-short-name {
   display: block;
   -webkit-line-clamp: unset;
 }

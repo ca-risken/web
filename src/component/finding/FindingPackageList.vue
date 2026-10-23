@@ -467,10 +467,7 @@ export default {
 .work-group[open] > .work-heading .expand-icon {
   transform: rotate(180deg);
 }
-.work-group[open] > .work-group:last-child {
-  border-bottom: 0;
-}
-.work-heading {
+.work-group[open] > .work-heading {
   background: rgba(var(--v-theme-primary), 0.05);
 }
 .work-content {
