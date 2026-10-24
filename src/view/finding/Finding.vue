@@ -159,6 +159,22 @@
             </v-menu>
           </v-col>
         </v-row>
+        <v-row v-if="displayMode === 'asset'">
+          <v-col cols="12" md="6" class="px-1">
+            <v-text-field
+              v-model="searchModel.assetName"
+              :placeholder="$t('assetView.name')"
+              variant="outlined"
+              density="compact"
+              clearable
+              hide-details
+              bg-color="white"
+              maxlength="512"
+              @keydown.enter.prevent="handleSearch"
+              @click:clear="$nextTick(handleSearch)"
+            />
+          </v-col>
+        </v-row>
         <transition name="fade">
           <div v-show="searchMenuDetail">
             <v-row>
@@ -488,6 +504,7 @@ export default {
         alertID: '',
         dataSource: [],
         resourceName: [],
+        assetName: '',
         tag: [],
         scoreFrom: 0.5,
         scoreTo: 1.0,
@@ -1143,6 +1160,9 @@ export default {
     parseQuery() {
       if (!this.$route.query) return
       const query = this.$route.query
+      this.searchModel.assetName = query.asset_name
+        ? String(query.asset_name)
+        : ''
       if (query.finding_id && query.finding_id != '') {
         this.searchModel.findingID = query.finding_id
       }
@@ -1177,7 +1197,14 @@ export default {
       let searchCond = ''
       let queryOld = this.$route.query
       let queryNew = {}
-      if (this.displayMode === 'asset') queryNew.asset_view = 'true'
+      if (this.displayMode === 'asset') {
+        queryNew.asset_view = 'true'
+        if (this.searchModel.assetName) {
+          searchCond +=
+            '&asset_name=' + encodeURIComponent(this.searchModel.assetName)
+          queryNew.asset_name = this.searchModel.assetName
+        }
+      }
       for (const key of ['project_id', 'organization_id', 'mode']) {
         if (queryOld[key] !== undefined) queryNew[key] = queryOld[key]
       }
@@ -1557,6 +1584,8 @@ export default {
         tooltip: this.getSearchHistoryTooltip(),
         search_condition: Object.assign({}, this.searchModel), // copy obj
       }
+      if (this.displayMode !== 'asset')
+        delete currentSearch.search_condition.assetName
       let history = []
       let existsHistory = false
       for (const h of this.getSearchHistory()) {
@@ -1601,6 +1630,8 @@ export default {
           labels.push(rn)
         }
       }
+      if (this.displayMode === 'asset' && this.searchModel.assetName)
+        labels.push('asset:' + this.searchModel.assetName)
       if (this.searchModel.alertID) {
         labels.push('alert:' + this.searchModel.alertID)
       }
@@ -1642,6 +1673,8 @@ export default {
       if (this.searchModel.alertID) {
         tooltip += '- alert_id: ' + this.searchModel.alertID + '\n'
       }
+      if (this.displayMode === 'asset' && this.searchModel.assetName)
+        tooltip += '- asset_name: ' + this.searchModel.assetName + '\n'
       tooltip += '- score: ' + this.searchModel.scoreFrom + '\n'
       return tooltip
     },
