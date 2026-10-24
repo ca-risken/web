@@ -1586,6 +1586,8 @@ export default {
         tooltip: this.getSearchHistoryTooltip(),
         search_condition: Object.assign({}, this.searchModel), // copy obj
       }
+      if (this.displayMode !== 'asset')
+        delete currentSearch.search_condition.assetName
       let history = []
       let existsHistory = false
       for (const h of this.getSearchHistory()) {
