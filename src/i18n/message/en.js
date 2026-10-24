@@ -1,5 +1,6 @@
 const en = {
   assetView: {
+    searchName: 'Enter part of an asset name',
     showAISummary: 'Show AI summary: {description}',
     categoryCount: '{count} categories',
     remediationCandidates: 'Remediation candidates',
