@@ -163,15 +163,13 @@
           <v-col cols="12" md="6" class="px-1">
             <v-text-field
               v-model="searchModel.assetName"
-              :label="$t('assetView.name')"
-              :placeholder="$t('assetView.searchName')"
+              :placeholder="$t('assetView.name')"
               variant="outlined"
               density="compact"
               clearable
               hide-details
               bg-color="white"
               maxlength="512"
-              prepend-inner-icon="mdi-magnify"
               @keydown.enter.prevent="handleSearch"
               @click:clear="$nextTick(handleSearch)"
             />

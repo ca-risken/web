@@ -1,6 +1,5 @@
 const ja = {
   assetView: {
-    searchName: 'アセット名の一部を入力',
     showAISummary: 'AI要約を表示：{description}',
     categoryCount: '{count}分類',
     remediationCandidates: '対策候補',
