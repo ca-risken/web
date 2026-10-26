@@ -351,7 +351,7 @@ export default {
         {
           title: this.$t('assetView.riskInformation'),
           key: 'risk_information',
-          sortable: true,
+          sortable: false,
           width: 112,
         },
         { title: this.$t('assetView.count'), key: 'finding_count' },
