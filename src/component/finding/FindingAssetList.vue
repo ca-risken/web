@@ -96,69 +96,14 @@
           />
         </div>
       </template>
-      <template v-slot:[`item.risk_information`]="{ item }">
-        <div class="risk-icons">
-          <v-menu
-            v-for="risk in riskGroups(item.raw)"
-            :key="risk.kind"
-            :close-on-content-click="true"
-            max-width="440"
-          >
-            <template v-slot:activator="{ props: menuProps }">
-              <v-tooltip :text="risk.label">
-                <template v-slot:activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="mergeProps(menuProps, tooltipProps)"
-                    :icon="risk.icon"
-                    :color="risk.color"
-                    size="24"
-                    variant="tonal"
-                    :aria-label="risk.label"
-                  />
-                </template>
-              </v-tooltip>
-            </template>
-            <v-card>
-              <v-card-title class="text-subtitle-1">{{
-                risk.label
-              }}</v-card-title>
-              <v-card-text>
-                <p class="text-caption mb-2">
-                  {{
-                    $t('assetView.riskCount', { count: risk.evidence.length })
-                  }}
-                </p>
-                <div class="risk-evidence">
-                  <v-btn
-                    v-for="evidence in risk.evidence"
-                    :key="evidence.finding_id"
-                    variant="text"
-                    size="small"
-                    :loading="
-                      openingRisk ===
-                      item.raw.rowKey + ':' + evidence.finding_id
-                    "
-                    :aria-label="
-                      $t('assetView.openRiskFinding', {
-                        id: evidence.finding_id,
-                      })
-                    "
-                    @click="openRiskEvidence(item.raw, evidence.finding_id)"
-                    >{{ evidence.finding_id }}</v-btn
-                  >
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-menu>
-          <span
-            v-if="!riskGroups(item.raw).length"
-            class="risk-empty"
-            :title="$t('assetView.riskUnknown')"
-            :aria-label="$t('assetView.riskUnknown')"
-            tabindex="0"
-            >-</span
-          >
-        </div>
+      <template v-slot:[`item.risk_information`]>
+        <span
+          class="risk-empty"
+          :title="$t('assetView.riskAggregationPaused')"
+          :aria-label="$t('assetView.riskAggregationPaused')"
+          tabindex="0"
+          >-</span
+        >
       </template>
       <template v-slot:[`item.finding_count`]="{ item }">
         <span class="asset-count">{{
