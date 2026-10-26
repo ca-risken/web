@@ -1,5 +1,9 @@
 const ja = {
   assetView: {
+    riskAggregationPaused: 'リスク情報の集計は一時停止しています。',
+    loading: 'アセットを読み込んでいます…',
+    loadingHint:
+      'Findingが多い場合は時間がかかります。スコアを絞り込むと、より早く表示できます。',
     riskInformation: 'リスク情報',
     riskLabels: {
       kev: '悪用情報：KEV 掲載あり',

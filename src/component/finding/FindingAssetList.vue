@@ -25,6 +25,7 @@
       :items="assets"
       :items-length="total"
       :loading="loading"
+      :aria-busy="loading"
       v-model:items-per-page="itemsPerPage"
       v-model:page="page"
       :items-per-page-options="[
@@ -39,6 +40,19 @@
       @update:options="refresh"
       @update:expanded="expand"
     >
+      <template #loading>
+        <div class="asset-loading" role="status" aria-live="polite">
+          <img
+            src="/static/m.png"
+            alt=""
+            width="64"
+            height="64"
+            class="asset-loading-logo"
+          />
+          <p class="asset-loading-title">{{ $t('assetView.loading') }}</p>
+          <p class="asset-loading-hint">{{ $t('assetView.loadingHint') }}</p>
+        </div>
+      </template>
       <template v-slot:[`item.asset_type`]="{ item }">
         <span class="asset-type"
           ><v-icon size="20" aria-hidden="true">{{
@@ -82,69 +96,14 @@
           />
         </div>
       </template>
-      <template v-slot:[`item.risk_information`]="{ item }">
-        <div class="risk-icons">
-          <v-menu
-            v-for="risk in riskGroups(item.raw)"
-            :key="risk.kind"
-            :close-on-content-click="true"
-            max-width="440"
-          >
-            <template v-slot:activator="{ props: menuProps }">
-              <v-tooltip :text="risk.label">
-                <template v-slot:activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="mergeProps(menuProps, tooltipProps)"
-                    :icon="risk.icon"
-                    :color="risk.color"
-                    size="24"
-                    variant="tonal"
-                    :aria-label="risk.label"
-                  />
-                </template>
-              </v-tooltip>
-            </template>
-            <v-card>
-              <v-card-title class="text-subtitle-1">{{
-                risk.label
-              }}</v-card-title>
-              <v-card-text>
-                <p class="text-caption mb-2">
-                  {{
-                    $t('assetView.riskCount', { count: risk.evidence.length })
-                  }}
-                </p>
-                <div class="risk-evidence">
-                  <v-btn
-                    v-for="evidence in risk.evidence"
-                    :key="evidence.finding_id"
-                    variant="text"
-                    size="small"
-                    :loading="
-                      openingRisk ===
-                      item.raw.rowKey + ':' + evidence.finding_id
-                    "
-                    :aria-label="
-                      $t('assetView.openRiskFinding', {
-                        id: evidence.finding_id,
-                      })
-                    "
-                    @click="openRiskEvidence(item.raw, evidence.finding_id)"
-                    >{{ evidence.finding_id }}</v-btn
-                  >
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-menu>
-          <span
-            v-if="!riskGroups(item.raw).length"
-            class="risk-empty"
-            :title="$t('assetView.riskUnknown')"
-            :aria-label="$t('assetView.riskUnknown')"
-            tabindex="0"
-            >-</span
-          >
-        </div>
+      <template v-slot:[`item.risk_information`]>
+        <span
+          class="risk-empty"
+          :title="$t('assetView.riskAggregationPaused')"
+          :aria-label="$t('assetView.riskAggregationPaused')"
+          tabindex="0"
+          >-</span
+        >
       </template>
       <template v-slot:[`item.finding_count`]="{ item }">
         <span class="asset-count">{{
@@ -512,6 +471,38 @@ export default {
 }
 </script>
 <style scoped>
+.asset-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 16px;
+  text-align: center;
+}
+.asset-loading-logo {
+  object-fit: contain;
+  animation: asset-loading-pulse 1.6s ease-in-out infinite;
+}
+.asset-loading-title {
+  margin: 0;
+  font-size: 14px;
+}
+.asset-loading-hint {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+}
+@keyframes asset-loading-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .asset-loading-logo {
+    animation: none;
+  }
+}
+
 .risk-icons {
   display: flex;
   align-items: center;
