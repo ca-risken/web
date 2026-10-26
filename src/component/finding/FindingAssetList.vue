@@ -82,6 +82,70 @@
           />
         </div>
       </template>
+      <template v-slot:[`item.risk_information`]="{ item }">
+        <div class="risk-icons">
+          <v-menu
+            v-for="risk in riskGroups(item.raw)"
+            :key="risk.kind"
+            :close-on-content-click="true"
+            max-width="440"
+          >
+            <template v-slot:activator="{ props: menuProps }">
+              <v-tooltip :text="risk.label">
+                <template v-slot:activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="mergeProps(menuProps, tooltipProps)"
+                    :icon="risk.icon"
+                    :color="risk.color"
+                    size="24"
+                    variant="tonal"
+                    :aria-label="risk.label"
+                  />
+                </template>
+              </v-tooltip>
+            </template>
+            <v-card>
+              <v-card-title class="text-subtitle-1">{{
+                risk.label
+              }}</v-card-title>
+              <v-card-text>
+                <p class="text-caption mb-2">
+                  {{
+                    $t('assetView.riskCount', { count: risk.evidence.length })
+                  }}
+                </p>
+                <div class="risk-evidence">
+                  <v-btn
+                    v-for="evidence in risk.evidence"
+                    :key="evidence.finding_id"
+                    variant="text"
+                    size="small"
+                    :loading="
+                      openingRisk ===
+                      item.raw.rowKey + ':' + evidence.finding_id
+                    "
+                    :aria-label="
+                      $t('assetView.openRiskFinding', {
+                        id: evidence.finding_id,
+                      })
+                    "
+                    @click="openRiskEvidence(item.raw, evidence.finding_id)"
+                    >{{ evidence.finding_id }}</v-btn
+                  >
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-menu>
+          <span
+            v-if="!riskGroups(item.raw).length"
+            class="risk-empty"
+            :title="$t('assetView.riskUnknown')"
+            :aria-label="$t('assetView.riskUnknown')"
+            tabindex="0"
+            >-</span
+          >
+        </div>
+      </template>
       <template v-slot:[`item.finding_count`]="{ item }">
         <span class="asset-count">{{
           $t('assetView.countValue', { count: item.raw.finding_count })
@@ -220,6 +284,7 @@
   </div>
 </template>
 <script>
+import { mergeProps } from 'vue'
 import FindingPackageList from './FindingPackageList.vue'
 import BottomSnackBar from '@/component/widget/snackbar/BottomSnackBar.vue'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
@@ -232,12 +297,14 @@ export default {
     formatScore: { type: Function, required: true },
     statusColor: { type: Function, required: true },
     loadAssets: { type: Function, required: true },
+    openFinding: { type: Function, required: true },
     loadDetails: { type: Function, required: true },
     loadPackages: { type: Function, required: true },
     actions: { type: Function, required: true },
     organizationMode: Boolean,
   },
   data: () => ({
+    openingRisk: null,
     page: 1,
     itemsPerPage: 20,
     sortBy: [{ key: 'score', order: 'desc' }],
@@ -267,6 +334,12 @@ export default {
           ? [{ title: this.$t('assetView.project'), key: 'project_id' }]
           : []),
         { title: this.$t('assetView.score'), key: 'score' },
+        {
+          title: this.$t('assetView.riskInformation'),
+          key: 'risk_information',
+          sortable: false,
+          width: 112,
+        },
         { title: this.$t('assetView.count'), key: 'finding_count' },
       ].map((header) => ({
         ...header,
@@ -279,6 +352,38 @@ export default {
     this.sequence++
   },
   methods: {
+    mergeProps,
+    riskGroups(asset) {
+      return [
+        { kind: 'internet', icon: 'mdi-earth', color: 'orange-darken-3' },
+        { kind: 'exploit', icon: 'mdi-code-tags', color: 'orange-darken-3' },
+      ]
+        .map((risk) => {
+          const evidence = (asset.risk_information || []).filter(
+            (item) => item.kind === risk.kind
+          )
+          const hasKEV = evidence.some((item) => item.detail === 'KEV')
+          return {
+            ...risk,
+            color: hasKEV ? 'red-darken-2' : risk.color,
+            label: this.$t(
+              'assetView.riskLabels.' + (hasKEV ? 'kev' : risk.kind)
+            ),
+            evidence,
+          }
+        })
+        .filter((risk) => risk.evidence.length)
+    },
+    async openRiskEvidence(asset, id) {
+      this.openingRisk = asset.rowKey + ':' + id
+      try {
+        await this.openFinding(asset, id)
+      } catch {
+        this.$refs.snackbar.notifyError(this.$t('assetView.error'))
+      } finally {
+        this.openingRisk = null
+      }
+    },
     async copyName(name) {
       try {
         await navigator.clipboard.writeText(name)
@@ -407,6 +512,29 @@ export default {
 }
 </script>
 <style scoped>
+.risk-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 52px;
+}
+.risk-icons :deep(.v-icon) {
+  font-size: 14px;
+}
+.risk-empty {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgba(var(--v-theme-on-surface), 0.28);
+}
+.risk-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
 .asset-name {
   display: block;
   cursor: pointer;

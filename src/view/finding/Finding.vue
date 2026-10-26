@@ -308,6 +308,7 @@
         v-if="displayMode === 'asset' && !isInitializing"
         :key="assetScope + assetRevision"
         :load-assets="loadAssets"
+        :open-finding="openRiskFinding"
         :load-details="loadAssetDetails"
         :load-packages="loadAssetPackages"
         :status-color="getColorByFindingStatus"
@@ -845,6 +846,28 @@ export default {
       this.table.selected = []
       this.listSequence++
       this.refleshList()
+    },
+    async openRiskFinding(asset, id) {
+      const scope = this.assetScope
+      let item
+      if (this.isOrganizationMode) {
+        const result = await this.listFindingForOrganization(
+          this.getCurrentOrganizationID(),
+          '&finding_id=' +
+            encodeURIComponent(id) +
+            '&from_score=0&to_score=1&status=0&limit=1'
+        )
+        const detail = result.findings?.[0]
+        if (!detail || detail.finding.project_id !== asset.project_id)
+          throw new Error('Finding unavailable')
+        item = this.organizationFindingModel(detail)
+      } else {
+        item = await this.getFindingDetail(id)
+        if (item.project_id !== asset.project_id)
+          throw new Error('Finding unavailable')
+      }
+      if (scope !== this.assetScope) return
+      await this.handleViewItem({ value: item })
     },
     async loadAssets(options) {
       return this.loadAssetPage(options, null)

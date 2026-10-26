@@ -1,5 +1,16 @@
 const en = {
   assetView: {
+    riskInformation: 'Risk information',
+    riskLabels: {
+      kev: 'Exploitation: listed in KEV',
+      internet: 'Public access settings detected',
+      exploit: 'Exploitation: public exploit / PoC available',
+    },
+    riskUnknown:
+      'No SCC evidence of public access or exploits. This does not establish that the asset is private or safe.',
+    riskCount: 'Evidence: {count} Findings',
+    openRiskFinding: 'Open Finding {id}',
+
     showAISummary: 'Show AI summary: {description}',
     categoryCount: '{count} categories',
     remediationCandidates: 'Remediation candidates',

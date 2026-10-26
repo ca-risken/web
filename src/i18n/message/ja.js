@@ -1,5 +1,16 @@
 const ja = {
   assetView: {
+    riskInformation: 'リスク情報',
+    riskLabels: {
+      kev: '悪用情報：KEV 掲載あり',
+      internet: 'インターネット公開設定あり',
+      exploit: '悪用情報：公開 Exploit／PoC あり',
+    },
+    riskUnknown:
+      'SCC に公開・Exploit を示す根拠がありません。非公開・安全を意味しません。',
+    riskCount: '根拠：{count}件',
+    openRiskFinding: 'Finding {id} を開く',
+
     showAISummary: 'AI要約を表示：{description}',
     categoryCount: '{count}分類',
     remediationCandidates: '対策候補',
