@@ -87,7 +87,7 @@
           <v-menu
             v-for="risk in riskGroups(item.raw)"
             :key="risk.kind"
-            :close-on-content-click="false"
+            :close-on-content-click="true"
             max-width="440"
           >
             <template v-slot:activator="{ props: menuProps }">
@@ -109,39 +109,28 @@
                 risk.label
               }}</v-card-title>
               <v-card-text>
-                <p class="text-caption mb-3">
-                  {{ $t('assetView.riskExplanation') }}
+                <p class="text-caption mb-2">
+                  {{
+                    $t('assetView.riskCount', { count: risk.evidence.length })
+                  }}
                 </p>
-                <div
-                  v-for="evidence in risk.evidence"
-                  :key="evidence.finding_id + ':' + evidence.detail"
-                  class="risk-evidence"
-                >
-                  <strong>{{ evidence.cve_id || evidence.category }}</strong>
-                  <div>
-                    {{ evidence.category }} · Finding {{ evidence.finding_id }}
-                  </div>
-                  <div class="text-caption">
-                    {{ $t('assetView.riskReasons.' + evidence.detail) }}
-                  </div>
-                  <div class="text-caption">
-                    {{ $t('assetView.riskObserved') }}:
-                    {{ new Date(evidence.updated_at * 1000).toLocaleString() }}
-                  </div>
-                  <a
-                    v-if="evidence.detail === 'KEV'"
-                    href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="d-block"
-                    >{{ $t('assetView.riskKEVSource') }}</a
-                  >
-                  <a
-                    v-if="sccRiskURL(evidence.scc_detail_url)"
-                    :href="sccRiskURL(evidence.scc_detail_url)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >{{ $t('assetView.riskSource') }}</a
+                <div class="risk-evidence">
+                  <v-btn
+                    v-for="evidence in risk.evidence"
+                    :key="evidence.finding_id"
+                    variant="text"
+                    size="small"
+                    :loading="
+                      openingRisk ===
+                      item.raw.rowKey + ':' + evidence.finding_id
+                    "
+                    :aria-label="
+                      $t('assetView.openRiskFinding', {
+                        id: evidence.finding_id,
+                      })
+                    "
+                    @click="openRiskEvidence(item.raw, evidence.finding_id)"
+                    >{{ evidence.finding_id }}</v-btn
                   >
                 </div>
               </v-card-text>
@@ -307,12 +296,14 @@ export default {
     formatScore: { type: Function, required: true },
     statusColor: { type: Function, required: true },
     loadAssets: { type: Function, required: true },
+    openFinding: { type: Function, required: true },
     loadDetails: { type: Function, required: true },
     loadPackages: { type: Function, required: true },
     actions: { type: Function, required: true },
     organizationMode: Boolean,
   },
   data: () => ({
+    openingRisk: null,
     page: 1,
     itemsPerPage: 20,
     sortBy: [{ key: 'score', order: 'desc' }],
@@ -382,15 +373,14 @@ export default {
         })
         .filter((risk) => risk.evidence.length)
     },
-    sccRiskURL(value) {
+    async openRiskEvidence(asset, id) {
+      this.openingRisk = asset.rowKey + ':' + id
       try {
-        const url = new URL(value)
-        return url.protocol === 'https:' &&
-          url.hostname === 'console.cloud.google.com'
-          ? url.href
-          : null
+        await this.openFinding(asset, id)
       } catch {
-        return null
+        this.$refs.snackbar.notifyError(this.$t('assetView.error'))
+      } finally {
+        this.openingRisk = null
       }
     },
     async copyName(name) {
@@ -532,9 +522,11 @@ export default {
   font-size: 14px;
 }
 .risk-evidence {
-  overflow-wrap: anywhere;
-  padding: 10px 0;
-  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
 }
 .asset-name {
   display: block;

@@ -7,7 +7,7 @@ const source = fs.readFileSync(
 )
 const body = source
   .split('    riskGroups(asset) {')[1]
-  .split('\n    sccRiskURL(')[0]
+  .split('\n    async openRiskEvidence(')[0]
   .replace(/},\s*$/, '')
 const riskGroups = new Function('asset', body)
 const context = { $t: (key) => key }

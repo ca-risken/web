@@ -8,21 +8,8 @@ const en = {
     },
     riskUnknown:
       'No SCC evidence of public access or exploits. This does not establish that the asset is private or safe.',
-    riskExplanation:
-      'SCC findings for this asset. These do not establish that the vulnerability can be exploited through the public access path.',
-    riskObserved: 'Evidence updated',
-    riskKEVSource: 'Open KEV catalog',
-    riskSource: 'Open evidence in SCC',
-    riskReasons: {
-      KEV: 'The stored vulnerability data includes a KEV entry for this CVE.',
-      PUBLIC_BUCKET_ACL: 'The bucket has public access settings.',
-      PUBLIC_LOG_BUCKET: 'The log bucket has public access settings.',
-      PUBLIC_DATASET: 'The dataset has public access settings.',
-      PUBLIC_SQL_INSTANCE:
-        'Cloud SQL allows connections from all IP addresses.',
-      AVAILABLE: 'SCC reports a publicly available exploit.',
-      exploit_release_date: 'SCC provides an exploit / PoC release date.',
-    },
+    riskCount: 'Evidence: {count} Findings',
+    openRiskFinding: 'Open Finding {id}',
 
     showAISummary: 'Show AI summary: {description}',
     categoryCount: '{count} categories',
