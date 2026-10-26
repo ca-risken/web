@@ -1,5 +1,29 @@
 const ja = {
   assetView: {
+    riskInformation: 'リスク情報',
+    riskLabels: {
+      kev: '悪用情報：KEV 掲載あり',
+      internet: 'インターネット公開設定あり',
+      exploit: '悪用情報：公開 Exploit／PoC あり',
+    },
+    riskUnknown:
+      'SCC に公開・Exploit を示す根拠がありません。非公開・安全を意味しません。',
+    riskExplanation:
+      '同じアセットの SCC 検出を表示しています。公開経路から当該脆弱性を攻撃できることを確認したものではありません。',
+    riskObserved: '根拠の更新日時',
+    riskKEVSource: 'KEV カタログを開く',
+    riskSource: 'SCC で根拠を開く',
+    riskReasons: {
+      KEV: '保存済みの脆弱性情報に、同じ CVE の KEV 掲載情報があります。',
+      PUBLIC_BUCKET_ACL: 'バケットに公開アクセス設定があります。',
+      PUBLIC_LOG_BUCKET: 'ログバケットに公開アクセス設定があります。',
+      PUBLIC_DATASET: 'データセットに公開アクセス設定があります。',
+      PUBLIC_SQL_INSTANCE:
+        'Cloud SQL に全 IP からの接続を許可する設定があります。',
+      AVAILABLE: 'SCC が Exploit の公開を報告しています。',
+      exploit_release_date: 'SCC に Exploit／PoC の公開日が登録されています。',
+    },
+
     showAISummary: 'AI要約を表示：{description}',
     categoryCount: '{count}分類',
     remediationCandidates: '対策候補',
