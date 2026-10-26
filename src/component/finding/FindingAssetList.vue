@@ -25,6 +25,7 @@
       :items="assets"
       :items-length="total"
       :loading="loading"
+      :aria-busy="loading"
       v-model:items-per-page="itemsPerPage"
       v-model:page="page"
       :items-per-page-options="[
@@ -39,6 +40,19 @@
       @update:options="refresh"
       @update:expanded="expand"
     >
+      <template #loading>
+        <div class="asset-loading" role="status" aria-live="polite">
+          <img
+            src="/static/m.png"
+            alt=""
+            width="64"
+            height="64"
+            class="asset-loading-logo"
+          />
+          <p class="asset-loading-title">{{ $t('assetView.loading') }}</p>
+          <p class="asset-loading-hint">{{ $t('assetView.loadingHint') }}</p>
+        </div>
+      </template>
       <template v-slot:[`item.asset_type`]="{ item }">
         <span class="asset-type"
           ><v-icon size="20" aria-hidden="true">{{
@@ -512,6 +526,38 @@ export default {
 }
 </script>
 <style scoped>
+.asset-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 16px;
+  text-align: center;
+}
+.asset-loading-logo {
+  object-fit: contain;
+  animation: asset-loading-pulse 1.6s ease-in-out infinite;
+}
+.asset-loading-title {
+  margin: 0;
+  font-size: 14px;
+}
+.asset-loading-hint {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+}
+@keyframes asset-loading-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .asset-loading-logo {
+    animation: none;
+  }
+}
+
 .risk-icons {
   display: flex;
   align-items: center;

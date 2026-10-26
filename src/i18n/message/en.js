@@ -1,5 +1,8 @@
 const en = {
   assetView: {
+    loading: 'Loading assets…',
+    loadingHint:
+      'Loading may take longer with many findings. Narrow the score range to load results faster.',
     riskInformation: 'Risk information',
     riskLabels: {
       kev: 'Exploitation: listed in KEV',
