@@ -138,10 +138,11 @@
           </v-menu>
           <span
             v-if="!riskGroups(item.raw).length"
+            class="risk-empty"
             :title="$t('assetView.riskUnknown')"
             :aria-label="$t('assetView.riskUnknown')"
             tabindex="0"
-            >—</span
+            >-</span
           >
         </div>
       </template>
@@ -520,6 +521,12 @@ export default {
 }
 .risk-icons :deep(.v-icon) {
   font-size: 14px;
+}
+.risk-empty {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgba(var(--v-theme-on-surface), 0.28);
 }
 .risk-evidence {
   display: flex;
