@@ -69,6 +69,16 @@ const en = {
     previous: 'Previous',
     next: 'Next',
   },
+  findingRemediation: {
+    generate: 'Generate AI remediation proposal',
+    title: 'AI remediation proposal',
+    currentState: 'Verified current state',
+    steps: 'Remediation steps',
+    verify: 'Verification command',
+    failed: 'Could not generate a remediation proposal.',
+    timeout:
+      'Generation timed out. Reopen the finding later to check the proposal.',
+  },
   btn: {
     SIGNIN: 'SIGNIN',
     'REQUEST PROJECT ROLE': 'REQUEST PROJECT ROLE',
