@@ -84,12 +84,13 @@ const aws = {
       return res
     },
 
-    async invokeAWSScanAPI(aws_id, aws_data_source_id) {
+    async invokeAWSScanAPI(aws_id, aws_data_source_id, fullScan = false) {
       const param = {
         project_id: this.getCurrentProjectID(),
         aws_id: aws_id,
         aws_data_source_id: aws_data_source_id,
         scan_only: false, // optional
+        full_scan: fullScan,
       }
       const res = await this.$axios
         .post('/aws/invoke-scan/', param)

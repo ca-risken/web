@@ -425,17 +425,30 @@
             ></v-checkbox>
 
             <v-divider class="mt-3 mb-3"></v-divider>
-            <v-card-actions>
+            <v-card-actions class="flex-wrap">
               <v-btn
                 text
                 variant="outlined"
                 color="blue-darken-1"
                 v-if="awsForm.readOnly"
                 :loading="loading"
-                @click="handleScan"
+                @click="handleScan(false)"
               >
                 <v-icon left>mdi-magnify-scan</v-icon>
                 {{ $t(`btn['SCAN']`) }}
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                color="blue-darken-1"
+                v-if="
+                  awsForm.readOnly &&
+                  awsModel.data_source === 'aws:access-analyzer'
+                "
+                :loading="loading"
+                @click="handleScan(true)"
+              >
+                <v-icon left>mdi-magnify-scan</v-icon>
+                {{ $t(`btn['FULL SCAN']`) }}
               </v-btn>
               <v-btn
                 variant="outlined"
@@ -867,10 +880,11 @@ export default {
         return Promise.reject(err)
       })
     },
-    async scanDataSource() {
+    async scanDataSource(fullScan = false) {
       await this.invokeAWSScanAPI(
         this.awsModel.aws_id,
-        this.awsModel.aws_data_source_id
+        this.awsModel.aws_data_source_id,
+        fullScan
       ).catch((err) => {
         this.finishError(err.response.data)
         return Promise.reject(err)
@@ -969,8 +983,12 @@ export default {
       this.loading = true
       this.detachDataSource()
     },
-    handleScan() {
-      this.scanDataSource()
+    handleScan(fullScan) {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
+      return this.scanDataSource(fullScan)
     },
     handleScanByAction(item) {
       this.loading = true
