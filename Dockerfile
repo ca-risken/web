@@ -1,7 +1,7 @@
-FROM node:lts-alpine as builder
+FROM node:22-alpine as builder
 WORKDIR /app
+RUN npm install --global pnpm@10.34.9
 COPY ./ ./
-RUN corepack enable
 RUN pnpm install --frozen-lockfile
 RUN NODE_OPTIONS=--openssl-legacy-provider pnpm run build-prd
 
