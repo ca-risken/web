@@ -357,6 +357,7 @@ export default {
           scan_public: '',
           scan_internal: '',
           scan_private: '',
+          ai_scan: false,
           status: '',
           status_detail: '',
           scan_at: '',
@@ -579,6 +580,7 @@ export default {
             scan_public: github_setting.gitleaks_setting.scan_public,
             scan_internal: github_setting.gitleaks_setting.scan_internal,
             scan_private: github_setting.gitleaks_setting.scan_private,
+            ai_scan: github_setting.gitleaks_setting.ai_scan === true,
             status: github_setting.gitleaks_setting.status,
             status_detail: github_setting.gitleaks_setting.status_detail,
             scan_at: github_setting.gitleaks_setting.scan_at,
@@ -831,6 +833,7 @@ export default {
         scan_public: true,
         scan_internal: true,
         scan_private: false,
+        ai_scan: false,
       }
       this.gitHubModel.isEnabledGitleaks = true
     },

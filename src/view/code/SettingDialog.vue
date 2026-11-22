@@ -578,6 +578,18 @@
                           ></v-switch>
                         </v-col>
                       </v-row>
+                      <v-row class="mt-0">
+                        <v-col cols="12" class="py-0">
+                          <v-switch
+                            v-model="gitleaksSetting.ai_scan"
+                            :label="$t(`item['AI Scan']`)"
+                            :hint="$t(`item['Gitleaks AI Scan Hint']`)"
+                            persistent-hint
+                            color="info"
+                            :disabled="isReadOnly || loading"
+                          ></v-switch>
+                        </v-col>
+                      </v-row>
                     </v-form>
                   </v-card-text>
                 </v-card>
@@ -1343,7 +1355,8 @@ export default {
           ),
         }
       ),
-      gitleaksSetting: this.gitHubModel.gitleaksSetting,
+      gitleaksSetting: { ...this.gitHubModel.gitleaksSetting },
+      savedGitleaksAiScan: this.gitHubModel.gitleaksSetting?.ai_scan === true,
       dependencySetting: this.gitHubModel.dependencySetting,
       codeScanSetting: this.gitHubModel.codeScanSetting,
       isEnabledGitleaks: this.gitHubModel.isEnabledGitleaks,
@@ -1672,7 +1685,8 @@ export default {
         this.$emit('edit-notify', '', 'github_setting is not found.')
         return
       }
-      this.gitleaksSetting = github_setting[0].gitleaks_setting
+      this.gitleaksSetting = github_setting[0].gitleaks_setting || {}
+      this.savedGitleaksAiScan = this.gitleaksSetting.ai_scan === true
       this.dependencySetting = github_setting[0].dependency_setting
       this.codeScanSetting = github_setting[0].code_scan_setting
     },
@@ -1767,11 +1781,18 @@ export default {
           'Configured at: ' + Util.formatDate(new Date(), 'yyyy/MM/dd HH:mm'),
         scan_at: scan_at,
       }
+      const aiScan = this.gitleaksSetting.ai_scan === true
+      const aiScanChanged = aiScan !== this.savedGitleaksAiScan
+      if (aiScanChanged) {
+        paramGitleaksSetting.ai_scan = aiScan
+      }
       const gitleaksSetting = await this.putGitleaksSettingAPI(
         paramGitleaksSetting
-      ).catch((err) => {
-        return Promise.reject(err)
-      })
+      )
+      if (aiScanChanged && gitleaksSetting?.ai_scan !== aiScan) {
+        throw new Error(this.$t(`item['Gitleaks AI Scan Save Error']`))
+      }
+      this.savedGitleaksAiScan = gitleaksSetting?.ai_scan === true
       return gitleaksSetting
     },
     async editDependencySetting(gitHubSettingID) {
@@ -1956,24 +1977,26 @@ export default {
       this.$emit('edit-notify', 'Success: Resynced GitHub App repositories.')
     },
     async handleGitleaksEditSubmit() {
-      if (this.isEnabledGitleaks && !this.$refs.formGitleaks.validate()) {
-        return
+      if (this.isEnabledGitleaks) {
+        const { valid } = await this.$refs.formGitleaks.validate()
+        if (!valid) {
+          return
+        }
       }
       this.loading = true
-      const gitleaksSetting = await this.editGitleaksSetting(
-        this.gitHubSetting.github_setting_id
-      )
-        .catch((err) => {
-          this.$emit('edit-notify', err)
-          return
-        })
-        .finally(() => {
-          this.loading = false
-        })
-      if (gitleaksSetting) {
-        this.gitleaksSetting = gitleaksSetting
+      try {
+        const gitleaksSetting = await this.editGitleaksSetting(
+          this.gitHubSetting.github_setting_id
+        )
+        if (gitleaksSetting) {
+          this.gitleaksSetting = gitleaksSetting
+        }
+        this.e6 = 3
+      } catch (err) {
+        this.$emit('edit-notify', '', this.getErrorMessage(err))
+      } finally {
+        this.loading = false
       }
-      this.e6 = 3
     },
     async handleDependencyEditSubmit() {
       this.loading = true
@@ -2078,6 +2101,7 @@ export default {
         scan_public: true,
         scan_internal: true,
         scan_private: false,
+        ai_scan: false,
       }
     },
     newDependencySetting() {
