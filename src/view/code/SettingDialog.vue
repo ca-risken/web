@@ -601,12 +601,20 @@
                             :disabled="isReadOnly || loading"
                           ></v-switch>
                         </v-col>
-                        <v-col cols="12" sm class="py-0">
+                        <v-col cols="12" sm class="py-0 ps-sm-3">
                           <p
                             id="gitleaks-ai-scan-description"
-                            class="text-body-2"
+                            class="gitleaks-ai-scan-description d-inline-flex align-center rounded px-2 py-1 text-caption text-medium-emphasis"
                           >
-                            {{ $t(`item['Gitleaks AI Scan Hint']`) }}
+                            <v-icon
+                              icon="mdi-lightbulb-outline"
+                              size="16"
+                              class="me-1 flex-shrink-0"
+                              aria-hidden="true"
+                            />
+                            <span>{{
+                              $t(`item['Gitleaks AI Scan Hint']`)
+                            }}</span>
                           </p>
                         </v-col>
                       </v-row>
@@ -1150,6 +1158,10 @@
 <style lang="scss">
 .wrap-text {
   white-space: normal;
+}
+
+.gitleaks-ai-scan-description {
+  background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
 </style>
 
