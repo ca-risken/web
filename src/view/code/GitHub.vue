@@ -821,21 +821,12 @@ export default {
       this.gitHubModel = {
         auth_mode: 'GITHUB_APP',
         github_app_setting_repository: [],
+        isEnabledGitleaks: true,
       }
-      this.newGitleaksSetting()
       this.newDependencySetting()
       this.newCodeScanSetting()
       this.isReadOnlyForm = false
       this.settingDialog = true
-    },
-    newGitleaksSetting() {
-      this.gitHubModel.gitleaksSetting = {
-        scan_public: true,
-        scan_internal: true,
-        scan_private: false,
-        ai_scan: false,
-      }
-      this.gitHubModel.isEnabledGitleaks = true
     },
     newDependencySetting() {
       this.gitHubModel.dependencySetting = {}
@@ -900,14 +891,6 @@ export default {
     assignDataModel(item) {
       this.gitHubModel = {}
       this.gitHubModel = Object.assign(this.gitHubModel, item)
-      if (item.gitleaksSetting) {
-        this.gitHubModel.gitleaksSetting = Object.assign(
-          this.gitHubModel.gitleaksSetting,
-          item.gitleaksSetting
-        )
-      } else {
-        this.gitHubModel.gitleaksSetting = {}
-      }
       if (item.dependencySetting) {
         this.gitHubModel.dependencySetting = Object.assign(
           this.gitHubModel.dependencySetting,

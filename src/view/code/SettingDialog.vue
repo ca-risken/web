@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <v-dialog v-model="showDialog" max-width="70%">
+    <v-dialog
+      v-model="showDialog"
+      :max-width="$vuetify.display.xs ? undefined : '70%'"
+    >
       <v-card>
         <v-card-title class="text-h5 grey-lighten-2">
           <v-icon large color="black">mdi-github</v-icon>
@@ -36,7 +39,7 @@
             >{{ $t(`item['CodeScan Setting']`) }}</v-tab
           >
         </v-tabs>
-        <v-window v-model="e6">
+        <v-window v-model="e6" class="flex-shrink-0">
           <v-window-item :value="1">
             <v-card variant="flat" class="pb-4">
               <v-card-text>
@@ -508,12 +511,14 @@
                       v-model="isEnabledGitleaks"
                       :label="$t(`action['Enable Gitleaks']`)"
                       color="info"
+                      density="compact"
+                      hide-details
                       :disabled="isReadOnly"
                     ></v-switch>
                   </v-col>
                 </v-row>
-                <v-card variant="flat" class="mb-4" v-if="isEnabledGitleaks">
-                  <v-card-text class="pb-0">
+                <v-card variant="flat" v-if="isEnabledGitleaks">
+                  <v-card-text class="pb-2">
                     <v-form v-model="gitleaksForm.valid" ref="formGitleaks">
                       <v-row>
                         <v-col cols="4" class="mb-0 pb-0">
@@ -536,8 +541,8 @@
                           ></v-text-field>
                         </v-col>
                       </v-row>
-                      <v-row class="my-0">
-                        <v-col cols="3" class="py-0">
+                      <v-row dense class="my-0">
+                        <v-col cols="auto" class="py-0">
                           <v-switch
                             v-model="gitleaksSetting.scan_public"
                             :label="
@@ -546,10 +551,12 @@
                               )
                             "
                             color="info"
+                            density="compact"
+                            hide-details
                             :disabled="isReadOnly"
                           ></v-switch>
                         </v-col>
-                        <v-col cols="3" class="py-0">
+                        <v-col cols="auto" class="py-0">
                           <v-switch
                             v-model="gitleaksSetting.scan_internal"
                             :label="
@@ -560,10 +567,12 @@
                               )
                             "
                             color="info"
+                            density="compact"
+                            hide-details
                             :disabled="isReadOnly"
                           ></v-switch>
                         </v-col>
-                        <v-col cols="3" class="py-0">
+                        <v-col cols="auto" class="py-0">
                           <v-switch
                             v-model="gitleaksSetting.scan_private"
                             :label="
@@ -574,20 +583,31 @@
                               )
                             "
                             color="info"
+                            density="compact"
+                            hide-details
                             :disabled="isReadOnly"
                           ></v-switch>
                         </v-col>
                       </v-row>
-                      <v-row class="mt-0">
-                        <v-col cols="12" class="py-0">
+                      <v-row dense align="center" class="mt-2 mb-0">
+                        <v-col cols="auto" class="py-0">
                           <v-switch
                             v-model="gitleaksSetting.ai_scan"
                             :label="$t(`item['AI Scan']`)"
-                            :hint="$t(`item['Gitleaks AI Scan Hint']`)"
-                            persistent-hint
+                            aria-describedby="gitleaks-ai-scan-description"
                             color="info"
+                            density="compact"
+                            hide-details
                             :disabled="isReadOnly || loading"
                           ></v-switch>
+                        </v-col>
+                        <v-col cols="12" sm class="py-0">
+                          <p
+                            id="gitleaks-ai-scan-description"
+                            class="text-body-2"
+                          >
+                            {{ $t(`item['Gitleaks AI Scan Hint']`) }}
+                          </p>
                         </v-col>
                       </v-row>
                     </v-form>
@@ -1311,15 +1331,6 @@ export default {
     this.refreshGitHubAppInstallationStatusForConfiguredSetting()
   },
   watch: {
-    isEnabledGitleaks: function () {
-      if (this.isEnabledGitleaks) {
-        this.newGitleaksSetting()
-        this.isDeleteGitleaks = false
-        return
-      }
-      this.isDeleteGitleaks = true
-      return
-    },
     isEnabledDependency: function () {
       if (this.isEnabledDependency) {
         this.newDependencySetting()
@@ -1340,6 +1351,7 @@ export default {
     },
   },
   data() {
+    const gitleaksSetting = this.gitHubModel.gitleaksSetting
     return {
       e6: 1,
       gitHubSetting: Object.assign(
@@ -1355,14 +1367,17 @@ export default {
           ),
         }
       ),
-      gitleaksSetting: { ...this.gitHubModel.gitleaksSetting },
-      savedGitleaksAiScan: this.gitHubModel.gitleaksSetting?.ai_scan === true,
+      gitleaksSetting: gitleaksSetting
+        ? { ...gitleaksSetting, ai_scan: gitleaksSetting.ai_scan === true }
+        : this.newGitleaksSetting(),
+      savedGitleaksAiScan: gitleaksSetting
+        ? gitleaksSetting.ai_scan === true
+        : null,
       dependencySetting: this.gitHubModel.dependencySetting,
       codeScanSetting: this.gitHubModel.codeScanSetting,
-      isEnabledGitleaks: this.gitHubModel.isEnabledGitleaks,
+      isEnabledGitleaks: Boolean(this.gitHubModel.isEnabledGitleaks),
       isEnabledDependency: this.gitHubModel.isEnabledDependency,
       isEnabledCodeScan: this.gitHubModel.isEnabledCodeScan,
-      isDeleteGitleaks: false,
       isDeleteDependency: false,
       isDeleteCodeScan: false,
       hasCompletedGitHubAppSettingFlow: false,
@@ -1681,12 +1696,16 @@ export default {
         .finally(() => {
           this.loading = false
         })
-      if (!github_setting) {
+      if (!github_setting?.length) {
         this.$emit('edit-notify', '', 'github_setting is not found.')
         return
       }
-      this.gitleaksSetting = github_setting[0].gitleaks_setting || {}
-      this.savedGitleaksAiScan = this.gitleaksSetting.ai_scan === true
+      const gitleaksSetting = github_setting[0].gitleaks_setting
+      this.gitleaksSetting = gitleaksSetting || this.newGitleaksSetting()
+      this.savedGitleaksAiScan = gitleaksSetting
+        ? gitleaksSetting.ai_scan === true
+        : null
+      this.isEnabledGitleaks = Boolean(gitleaksSetting)
       this.dependencySetting = github_setting[0].dependency_setting
       this.codeScanSetting = github_setting[0].code_scan_setting
     },
@@ -1755,13 +1774,12 @@ export default {
       await this.refreshGitHubAppInstallationStatus()
     },
     async editGitleaksSetting(gitHubSettingID) {
-      if (this.isDeleteGitleaks) {
-        await this.deleteGitleaksSettingAPI(gitHubSettingID).catch((err) => {
-          return Promise.reject(err)
-        })
-        return
-      }
       if (!this.isEnabledGitleaks) {
+        if (this.savedGitleaksAiScan !== null) {
+          await this.deleteGitleaksSettingAPI(gitHubSettingID)
+          this.gitleaksSetting = this.newGitleaksSetting()
+          this.savedGitleaksAiScan = null
+        }
         return
       }
       let scan_at = 0
@@ -2097,11 +2115,11 @@ export default {
     },
 
     newGitleaksSetting() {
-      this.gitleaksSetting = {
+      return {
         scan_public: true,
         scan_internal: true,
         scan_private: false,
-        ai_scan: false,
+        ai_scan: true,
       }
     },
     newDependencySetting() {

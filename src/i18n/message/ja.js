@@ -318,7 +318,7 @@ const ja = {
     'Gitleaks Setting': 'Gitleaks設定',
     'AI Scan': 'AI判定',
     'Gitleaks AI Scan Hint':
-      'ONにすると、ファイル名と、検出した値を含むコード（ファイル全体または一部）をAIに送信します。',
+      'AI判定を有効化します。誤検知やダミー値などの判定が可能になります',
     'Gitleaks AI Scan Save Error':
       'AI判定の設定が保存されたことを確認できません。',
     'CodeScan Setting': 'CodeScan設定',
