@@ -316,6 +316,11 @@ const ja = {
     'GitHub App Install Before Open Note':
       'インストールページはGitHubの画面で開きます。',
     'Gitleaks Setting': 'Gitleaks設定',
+    'AI Scan': 'AI判定',
+    'Gitleaks AI Scan Hint':
+      'AI判定を有効化します。誤検知やダミー値などの判定が可能になります',
+    'Gitleaks AI Scan Save Error':
+      'AI判定の設定が保存されたことを確認できません。',
     'CodeScan Setting': 'CodeScan設定',
     'Google Data Source': 'Google データソース',
     'Google Data Source ID': 'Google データソースID',

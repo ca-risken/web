@@ -316,6 +316,11 @@ const en = {
     'GitHub App Install Before Open Note':
       'The installation page opens on GitHub.',
     'Gitleaks Setting': 'Gitleaks Setting',
+    'AI Scan': 'AI scan',
+    'Gitleaks AI Scan Hint':
+      'Enable AI classification to identify false positives and dummy values.',
+    'Gitleaks AI Scan Save Error':
+      'Could not confirm the AI scan setting was saved.',
     'Gitleaks Status': 'Gitleaks Status',
     'CodeScan Setting': 'CodeScan Setting',
     'CodeScan Status': 'CodeScan Status',
