@@ -68,6 +68,15 @@ const ja = {
     previous: '前へ',
     next: '次へ',
   },
+  findingRemediation: {
+    generate: 'AI修復提案を生成',
+    title: 'AI修復提案',
+    currentState: '確認した現在の状態',
+    steps: '修復手順',
+    verify: '確認コマンド',
+    failed: '修復提案を生成できませんでした。',
+    timeout: '生成がタイムアウトしました。時間をおいて提案を確認してください。',
+  },
   btn: {
     SIGNIN: 'サインイン',
     'REQUEST PROJECT ROLE': '権限をリクエストする',

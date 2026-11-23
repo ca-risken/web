@@ -204,6 +204,19 @@
                 </template>
                 {{ $t(`btn['Chat with AI']`) }}
               </v-btn>
+              <v-btn
+                v-if="!isOrganizationMode && canGenerateRemediation"
+                color="deep-purple"
+                variant="outlined"
+                class="mx-2"
+                :loading="remediationLoading"
+                @click="generateRemediation"
+              >
+                <template v-slot:prepend>
+                  <v-icon>mdi-auto-fix</v-icon>
+                </template>
+                {{ $t('findingRemediation.generate') }}
+              </v-btn>
             </v-list-item-title>
           </v-col>
         </v-row>
@@ -409,10 +422,76 @@
   </v-dialog>
 
   <FindingTriageDialog v-model="triageDialog" :triage-data="getTriageData" />
+  <v-dialog v-model="remediationDialog" max-width="900">
+    <v-card>
+      <v-card-title>{{ $t('findingRemediation.title') }}</v-card-title>
+      <v-card-text>
+        <v-progress-linear
+          v-if="remediationLoading"
+          indeterminate
+          color="deep-purple"
+        />
+        <v-alert v-if="remediationError" type="error" variant="tonal">{{
+          remediationError
+        }}</v-alert>
+        <template
+          v-if="remediationProposal?.status === 'SUCCEEDED' && remediationPlan"
+        >
+          <h3 class="text-h6 mb-2">{{ remediationPlan.summary }}</h3>
+          <h4 class="text-subtitle-1 mt-4">
+            {{ $t('findingRemediation.currentState') }}
+          </h4>
+          <ul>
+            <li
+              v-for="(state, index) in remediationPlan.current_state"
+              :key="index"
+            >
+              {{ state }}
+            </li>
+          </ul>
+          <h4 class="text-subtitle-1 mt-4">
+            {{ $t('findingRemediation.steps') }}
+          </h4>
+          <v-card
+            v-for="(step, index) in remediationPlan.steps"
+            :key="index"
+            variant="outlined"
+            class="my-2 pa-3"
+          >
+            <div class="text-subtitle-2">{{ index + 1 }}. {{ step.title }}</div>
+            <pre class="text-body-2 text-wrap mt-2">{{ step.command }}</pre>
+            <div class="text-caption mt-2">
+              {{ $t('findingRemediation.verify') }}:
+              {{ step.verification_command }}
+            </div>
+          </v-card>
+          <div class="text-caption mt-3">
+            {{ remediationPlan.metadata?.model }} ·
+            {{ formatRemediationDate(remediationPlan.metadata?.generated_at) }}
+          </div>
+        </template>
+        <v-alert
+          v-else-if="remediationProposal?.status === 'FAILED'"
+          type="error"
+          variant="tonal"
+        >
+          {{
+            remediationProposal.status_detail || $t('findingRemediation.failed')
+          }}
+        </v-alert>
+      </v-card-text>
+      <v-card-actions
+        ><v-spacer /><v-btn @click="remediationDialog = false">{{
+          $t(`btn['CANCEL']`)
+        }}</v-btn></v-card-actions
+      >
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
 import mixin from '@/mixin'
+import ai from '@/mixin/api/ai'
 import organization_helper from '@/mixin/helper/organization_helper'
 import ClipBoard from '@/component/widget/clipboard/ClipBoard.vue'
 import JsonView from '@/component/text/JsonView.vue'
@@ -431,7 +510,7 @@ export default {
     CopyLink,
     Markdown,
   },
-  mixins: [mixin, organization_helper],
+  mixins: [mixin, organization_helper, ai],
   props: {
     modelValue: {
       type: Boolean,
@@ -457,9 +536,31 @@ export default {
   data() {
     return {
       triageDialog: false,
+      remediationDialog: false,
+      remediationLoading: false,
+      remediationProposal: null,
+      remediationError: '',
     }
   },
   computed: {
+    canGenerateRemediation() {
+      return [
+        'aws:cloudsploit',
+        'aws:access-analyzer',
+        'aws:portscan',
+        'aws:admin-checker',
+      ].includes(this.findingModel.data_source)
+    },
+    remediationPlan() {
+      if (!this.remediationProposal?.remediation_plan) return null
+      try {
+        return typeof this.remediationProposal.remediation_plan === 'string'
+          ? JSON.parse(this.remediationProposal.remediation_plan)
+          : this.remediationProposal.remediation_plan
+      } catch (error) {
+        return null
+      }
+    },
     formatScore() {
       return (score) => {
         if (!Number.isInteger(score)) {
@@ -485,6 +586,49 @@ export default {
     },
   },
   methods: {
+    async generateRemediation() {
+      this.remediationDialog = true
+      this.remediationLoading = true
+      this.remediationError = ''
+      this.remediationProposal = null
+      const projectId =
+        this.findingModel.project_id || this.getCurrentProjectID()
+      try {
+        const result = await this.generateRemediationProposal(
+          projectId,
+          this.findingModel.finding_id
+        )
+        const proposalId = result?.remediation_proposal_id
+        if (!proposalId) throw new Error(this.$t('findingRemediation.failed'))
+        const deadline = Date.now() + 5 * 60 * 1000
+        while (Date.now() < deadline) {
+          const proposal = await this.getRemediationProposal(
+            projectId,
+            proposalId
+          )
+          if (
+            proposal?.status === 'SUCCEEDED' ||
+            proposal?.status === 'FAILED'
+          ) {
+            this.remediationProposal = proposal
+            return
+          }
+          await new Promise((resolve) => setTimeout(resolve, 3000))
+        }
+        this.remediationError = this.$t('findingRemediation.timeout')
+      } catch (error) {
+        this.remediationError =
+          error.response?.data?.error?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          this.$t('findingRemediation.failed')
+      } finally {
+        this.remediationLoading = false
+      }
+    },
+    formatRemediationDate(timestamp) {
+      return timestamp ? new Date(timestamp * 1000).toLocaleString() : ''
+    },
     close() {
       this.$emit('update:modelValue', false)
     },

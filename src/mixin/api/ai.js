@@ -47,6 +47,25 @@ const ai = {
       }
       return res.data.data
     },
+    async generateRemediationProposal(projectId, findingId) {
+      const res = await longAxios.post(
+        '/remediation/generate-remediation-proposal',
+        {
+          project_id: projectId,
+          finding_id: findingId,
+        }
+      )
+      return res.data.data
+    },
+    async getRemediationProposal(projectId, remediationProposalId) {
+      const res = await longAxios.get('/ai/get-remediation-proposal', {
+        params: {
+          project_id: projectId,
+          remediation_proposal_id: remediationProposalId,
+        },
+      })
+      return res.data.data?.remediation_proposal || null
+    },
   },
 }
 
