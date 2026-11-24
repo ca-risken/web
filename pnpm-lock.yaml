@@ -55,9 +55,48 @@ importers:
       jspdf:
         specifier: ^4.2.1
         version: 4.2.1
+      markdown-it:
+        specifier: 14.3.3
+        version: 14.3.3
+      markdown-it-abbr:
+        specifier: 1.0.4
+        version: 1.0.4
+      markdown-it-anchor:
+        specifier: 8.6.7
+        version: 8.6.7(@types/markdown-it@14.1.2)(markdown-it@14.3.3)
+      markdown-it-deflist:
+        specifier: 2.1.0
+        version: 2.1.0
+      markdown-it-emoji:
+        specifier: 2.0.2
+        version: 2.0.2
+      markdown-it-footnote:
+        specifier: 3.0.3
+        version: 3.0.3
+      markdown-it-highlightjs:
+        specifier: 3.6.0
+        version: 3.6.0
+      markdown-it-ins:
+        specifier: 3.0.1
+        version: 3.0.1
+      markdown-it-mark:
+        specifier: 3.0.1
+        version: 3.0.1
       markdown-it-mermaid-plugin:
         specifier: ^0.1.0
         version: 0.1.0
+      markdown-it-sub:
+        specifier: 1.0.0
+        version: 1.0.0
+      markdown-it-sup:
+        specifier: 1.0.0
+        version: 1.0.0
+      markdown-it-task-lists:
+        specifier: 2.1.1
+        version: 2.1.1
+      markdown-it-toc-done-right:
+        specifier: 4.2.0
+        version: 4.2.0
       mermaid:
         specifier: 11.16.1
         version: 11.16.1
@@ -82,9 +121,6 @@ importers:
       vue-router:
         specifier: 4.1.6
         version: 4.1.6(vue@3.2.47)
-      vue3-markdown-it:
-        specifier: ^1.0.10
-        version: 1.0.10(@types/markdown-it@14.1.2)
       vuetify:
         specifier: 3.2.4
         version: 3.2.4(vite-plugin-vuetify@1.0.2)(vue-i18n@9.2.2(vue@3.2.47))(vue@3.2.47)
@@ -1096,8 +1132,9 @@ packages:
     resolution: {integrity: sha512-Qohcme7V1inbAfvjItgw0EaxVX5q2rdVEZHRBrEQdRZTssLDGsL8Lwrznl8oQ/6kuTJONLaDcGjkNP247XEhcA==}
     engines: {node: '>=10.13.0'}
 
-  entities@2.1.0:
-    resolution: {integrity: sha512-hCx1oky9PFrJ611mf0ifBLBRW8lUUVRlFolb5gWRfIELabBlbp9xZvrqZLZAs+NxFnbfQoeGd8wDkygjg7U85w==}
+  entities@4.5.0:
+    resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
+    engines: {node: '>=0.12'}
 
   es-define-property@1.0.1:
     resolution: {integrity: sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==}
@@ -1474,8 +1511,8 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
-  linkify-it@3.0.3:
-    resolution: {integrity: sha512-ynTsyrFSdE5oZ/O9GEf00kPngmOfVwazR5GKDq6EYfhlpFug3J2zybX56a2PRRpc9P+FuSoGNAwjlbDs9jJBPQ==}
+  linkify-it@5.0.2:
+    resolution: {integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==}
 
   loader-runner@4.3.1:
     resolution: {integrity: sha512-IWqP2SCPhyVFTBtRcgMHdzlf9ul25NwaFx4wCEH/KjAXuuHY4yNjvPXsBokp8jCB936PyWRaPKUNh8NvylLp2Q==}
@@ -1561,8 +1598,8 @@ packages:
   markdown-it-toc-done-right@4.2.0:
     resolution: {integrity: sha512-UB/IbzjWazwTlNAX0pvWNlJS8NKsOQ4syrXZQ/C72j+jirrsjVRT627lCaylrKJFBQWfRsPmIVQie8x38DEhAQ==}
 
-  markdown-it@12.3.2:
-    resolution: {integrity: sha512-TchMembfxfNVpHkbtriWltGWc+m3xszaRD0CZup7GFFhzIgQqxIfn3eGj1yZpfuflzPvfkt611B2Q/Bsk1YnGg==}
+  markdown-it@14.3.3:
+    resolution: {integrity: sha512-L//tDAkjTjJCU6pBUSBTgs3Kg4InVaZuUZog/b6V12UKhcDQ7S78877ibbCanRExwPuYP1CZD7Gd2dxSy1GXRg==}
     hasBin: true
 
   marked@16.4.2:
@@ -1574,8 +1611,8 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  mdurl@1.0.1:
-    resolution: {integrity: sha512-/sKlQJCBYVY9Ers9hqzKou4H6V5UWc/M59TH2dvkt+84itfnq7uFOMLpOiOS4ujvHP4etln18fmIxA5R5fll0g==}
+  mdurl@2.1.0:
+    resolution: {integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==}
 
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -1751,6 +1788,10 @@ packages:
 
   proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+
+  punycode.js@2.3.1:
+    resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
+    engines: {node: '>=6'}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -1949,8 +1990,8 @@ packages:
     resolution: {integrity: sha512-Ne+eE4r0/iWnpAxD852z3A+N0Bt5RN//NjJwRd2VFHEmrywxf5vsZlh4R6lixl6B+wz/8d+maTSAkN1FIkI3LQ==}
     engines: {node: '>=10'}
 
-  uc.micro@1.0.6:
-    resolution: {integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==}
+  uc.micro@2.1.0:
+    resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
 
   ufo@1.6.3:
     resolution: {integrity: sha512-yDJTmhydvl5lJzBmy/hyOAA0d+aqCBuwl818haVdYCRrWV84o7YyeVm4QlVHStqNrrJSTb6jKuFAVqAFsr+K3Q==}
@@ -2088,9 +2129,6 @@ packages:
     resolution: {integrity: sha512-DYWYwsG6xNPmLq/FmZn8Ip+qrhFEzA14EI12MsMgVxvHFDYvlr4NXpVF5hrRH1wVcDP8fGi5F4rxuJSl8/r+EQ==}
     peerDependencies:
       vue: ^3.2.0
-
-  vue3-markdown-it@1.0.10:
-    resolution: {integrity: sha512-mTvHu0zl7jrh7ojgaZ+tTpCLiS4CVg4bTgTu4KGhw/cRRY5YgIG8QgFAPu6kCzSW6Znc9a52Beb6hFvF4hSMkQ==}
 
   vue@3.2.47:
     resolution: {integrity: sha512-60188y/9Dc9WVrAZeUVSDxRQOZ+z+y5nO2ts9jWXSTkMvayiWxCWOWtBQoYjLeccfXkiiPZWAHcV+WTPhkqJHQ==}
@@ -3175,7 +3213,7 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.3.2
 
-  entities@2.1.0: {}
+  entities@4.5.0: {}
 
   es-define-property@1.0.1: {}
 
@@ -3585,9 +3623,9 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  linkify-it@3.0.3:
+  linkify-it@5.0.2:
     dependencies:
-      uc.micro: 1.0.6
+      uc.micro: 2.1.0
 
   loader-runner@4.3.1: {}
 
@@ -3629,10 +3667,10 @@ snapshots:
 
   markdown-it-abbr@1.0.4: {}
 
-  markdown-it-anchor@8.6.7(@types/markdown-it@14.1.2)(markdown-it@12.3.2):
+  markdown-it-anchor@8.6.7(@types/markdown-it@14.1.2)(markdown-it@14.3.3):
     dependencies:
       '@types/markdown-it': 14.1.2
-      markdown-it: 12.3.2
+      markdown-it: 14.3.3
 
   markdown-it-deflist@2.1.0: {}
 
@@ -3659,19 +3697,20 @@ snapshots:
 
   markdown-it-toc-done-right@4.2.0: {}
 
-  markdown-it@12.3.2:
+  markdown-it@14.3.3:
     dependencies:
       argparse: 2.0.1
-      entities: 2.1.0
-      linkify-it: 3.0.3
-      mdurl: 1.0.1
-      uc.micro: 1.0.6
+      entities: 4.5.0
+      linkify-it: 5.0.2
+      mdurl: 2.1.0
+      punycode.js: 2.3.1
+      uc.micro: 2.1.0
 
   marked@16.4.2: {}
 
   math-intrinsics@1.1.0: {}
 
-  mdurl@1.0.1: {}
+  mdurl@2.1.0: {}
 
   merge-stream@2.0.0: {}
 
@@ -3852,6 +3891,8 @@ snapshots:
 
   proxy-from-env@1.1.0: {}
 
+  punycode.js@2.3.1: {}
+
   punycode@2.3.1: {}
 
   queue-microtask@1.2.3: {}
@@ -4009,7 +4050,7 @@ snapshots:
 
   type-fest@0.20.2: {}
 
-  uc.micro@1.0.6: {}
+  uc.micro@2.1.0: {}
 
   ufo@1.6.3: {}
 
@@ -4137,24 +4178,6 @@ snapshots:
     dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.2.47
-
-  vue3-markdown-it@1.0.10(@types/markdown-it@14.1.2):
-    dependencies:
-      markdown-it: 12.3.2
-      markdown-it-abbr: 1.0.4
-      markdown-it-anchor: 8.6.7(@types/markdown-it@14.1.2)(markdown-it@12.3.2)
-      markdown-it-deflist: 2.1.0
-      markdown-it-emoji: 2.0.2
-      markdown-it-footnote: 3.0.3
-      markdown-it-highlightjs: 3.6.0
-      markdown-it-ins: 3.0.1
-      markdown-it-mark: 3.0.1
-      markdown-it-sub: 1.0.0
-      markdown-it-sup: 1.0.0
-      markdown-it-task-lists: 2.1.1
-      markdown-it-toc-done-right: 4.2.0
-    transitivePeerDependencies:
-      - '@types/markdown-it'
 
   vue@3.2.47:
     dependencies:

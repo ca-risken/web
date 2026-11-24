@@ -6,17 +6,24 @@
     :class="compact ? 'pa-0' : 'pa-8'"
     rounded
   >
-    <vue-markdown-it
-      :source="source"
-      :html="false"
-      :plugins="markdownPlugins"
-      v-bind="$attrs"
-    />
+    <div v-bind="$attrs" v-html="renderedMarkdown"></div>
   </v-sheet>
 </template>
 
 <script>
-import VueMarkdownIt from 'vue3-markdown-it'
+import MarkdownIt from 'markdown-it'
+import MarkdownItAbbr from 'markdown-it-abbr'
+import MarkdownItAnchor from 'markdown-it-anchor'
+import MarkdownItDeflist from 'markdown-it-deflist'
+import MarkdownItEmoji from 'markdown-it-emoji'
+import MarkdownItFootnote from 'markdown-it-footnote'
+import MarkdownItHighlightjs from 'markdown-it-highlightjs'
+import MarkdownItIns from 'markdown-it-ins'
+import MarkdownItMark from 'markdown-it-mark'
+import MarkdownItSub from 'markdown-it-sub'
+import MarkdownItSup from 'markdown-it-sup'
+import MarkdownItTasklists from 'markdown-it-task-lists'
+import MarkdownItTOC from 'markdown-it-toc-done-right'
 import mermaid from 'mermaid'
 
 function SafeMermaidPlugin(md) {
@@ -38,13 +45,18 @@ function SafeMermaidPlugin(md) {
 
 export default {
   name: 'MarkdownDisplay',
-  components: {
-    VueMarkdownIt,
-  },
   props: {
     source: {
       type: String,
       default: '',
+    },
+    breaks: {
+      type: Boolean,
+      default: false,
+    },
+    linkify: {
+      type: Boolean,
+      default: false,
     },
     compact: {
       type: Boolean,
@@ -63,14 +75,30 @@ export default {
       default: '800px',
     },
   },
-  data() {
-    return {
-      markdownPlugins: [
-        {
-          plugin: SafeMermaidPlugin,
-        },
-      ],
-    }
+  computed: {
+    markdownParser() {
+      return new MarkdownIt({
+        breaks: this.breaks,
+        html: false,
+        linkify: this.linkify,
+      })
+        .use(MarkdownItAbbr)
+        .use(MarkdownItAnchor)
+        .use(MarkdownItDeflist)
+        .use(MarkdownItEmoji)
+        .use(MarkdownItFootnote)
+        .use(MarkdownItHighlightjs)
+        .use(MarkdownItIns)
+        .use(MarkdownItMark)
+        .use(MarkdownItSub)
+        .use(MarkdownItSup)
+        .use(MarkdownItTasklists)
+        .use(MarkdownItTOC)
+        .use(SafeMermaidPlugin)
+    },
+    renderedMarkdown() {
+      return this.markdownParser.render(this.source)
+    },
   },
   mounted() {
     this.initMermaid()
