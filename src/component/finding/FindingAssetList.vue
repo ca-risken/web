@@ -59,12 +59,18 @@
             {
               Image: 'mdi-docker',
               VM: 'mdi-server',
+              EC2Instance: 'mdi-server',
+              IAMUser: 'mdi-account',
+              IAMRole: 'mdi-account-key',
+              S3Bucket: 'mdi-bucket-outline',
+              EC2SecurityGroup: 'mdi-shield-outline',
+              LambdaFunction: 'mdi-function-variant',
               Workload: 'mdi-kubernetes',
               Resource: 'mdi-cube-outline',
               Unknown: 'mdi-help-circle-outline',
             }[item.raw.asset_type] || 'mdi-cube-outline'
           }}</v-icon
-          ><span>{{ item.raw.asset_type }}</span></span
+          ><span>{{ assetTypeLabel(item.raw.asset_type) }}</span></span
         >
       </template>
       <template v-slot:[`item.asset_name`]="{ item }">
@@ -127,29 +133,29 @@
       <template v-slot:[`item.data_source`]="{ item }">
         <span v-if="!item.raw.data_sources?.length">—</span>
         <v-tooltip
-          v-for="source in item.raw.data_sources || []"
-          :key="source"
-          :text="source"
+          v-for="source in sourceIcons(item.raw.data_sources)"
+          :key="source.key"
         >
           <template v-slot:activator="{ props }">
             <v-avatar
-              v-if="source === 'RISKEN'"
+              v-if="source.key === 'RISKEN'"
               v-bind="props"
               size="30"
               class="mx-1"
             >
-              <img src="/static/m.png" :alt="source" />
+              <img src="/static/m.png" :alt="source.label" />
             </v-avatar>
             <v-icon
               v-else
               v-bind="props"
-              :color="dataSourceIconColor(source)"
-              :aria-label="source"
+              :color="dataSourceIconColor(source.source)"
+              :aria-label="source.label"
               class="mx-1"
             >
-              {{ dataSourceIcon(source) }}
+              {{ dataSourceIcon(source.source) }}
             </v-icon>
           </template>
+          <div v-for="name in source.sources" :key="name">{{ name }}</div>
         </v-tooltip>
       </template>
       <template v-slot:[`item.score`]="{ item }">
@@ -312,6 +318,41 @@ export default {
   },
   methods: {
     mergeProps,
+    sourceIcons(sources = []) {
+      const icons = new Map()
+      for (const source of sources || []) {
+        const key = source.startsWith('aws:')
+          ? 'aws'
+          : source.startsWith('google:')
+          ? 'google'
+          : source
+        if (!icons.has(key)) icons.set(key, { key, source, sources: [] })
+        const group = icons.get(key)
+        if (!group.sources.includes(source)) group.sources.push(source)
+      }
+      return [...icons.values()].map((group) => ({
+        ...group,
+        label: group.sources.join(', '),
+      }))
+    },
+    assetTypeLabel(type) {
+      return (
+        {
+          EC2Instance: 'EC2',
+          IAMUser: 'IAM User',
+          IAMRole: 'IAM Role',
+          S3Bucket: 'S3',
+          EC2SecurityGroup: 'EC2 Security Group',
+          LambdaFunction: 'Lambda Function',
+          RDSInstance: 'RDS Instance',
+          EKSCluster: 'EKS Cluster',
+          KMSKey: 'KMS Key',
+          SNSTopic: 'SNS Topic',
+          SQSQueue: 'SQS Queue',
+          SecretsManagerSecret: 'Secrets Manager Secret',
+        }[type] || type
+      )
+    },
     riskGroups(asset) {
       return [
         { kind: 'internet', icon: 'mdi-earth', color: 'orange-darken-3' },

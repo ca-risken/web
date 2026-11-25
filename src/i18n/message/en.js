@@ -30,6 +30,20 @@ const en = {
 
     workLocation: 'Inferred change location',
     workTypes: {
+      os_update: 'Update OS packages',
+      app_dependency_update: 'Update application dependencies',
+      library_update: 'Update libraries',
+
+      vulnerability: 'Review vulnerability remediation',
+      public_access: 'Review public access',
+      admin_permissions: 'Review administrator permissions',
+      unused_permissions: 'Review unused permissions',
+      key_rotation: 'Rotate keys',
+
+      access_policy: 'Review access policies',
+      threat: 'Investigate and respond to threats',
+      security_setting: 'Review security settings',
+      permissions: 'Review permissions',
       app: 'Application dependency update candidates',
       os: 'OS package update candidates',
       location: 'Library update candidates',
@@ -53,7 +67,7 @@ const en = {
     fixedPackage: 'Fixed package / version',
     assets: 'Asset view',
     scope:
-      'Currently supports SCC vulnerability findings only. Support for other data sources is planned.',
+      'Supports Google SCC, Asset Inventory, CloudSploit and AWS Access Analyzer, GuardDuty, CloudSploit, Admin Checker.',
     type: 'Asset type',
     name: 'Asset name',
     project: 'Project ID',
