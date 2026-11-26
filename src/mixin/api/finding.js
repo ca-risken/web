@@ -48,10 +48,10 @@ const finding = {
       }
       return res.data.data
     },
-    async listFindingCnt(searchCond) {
+    async getFindingCountAPI(searchCond) {
       const res = await this.$axios
         .get(
-          '/finding/list-finding/?project_id=' +
+          '/finding/get-finding-count/?project_id=' +
             this.getCurrentProjectID() +
             searchCond
         )

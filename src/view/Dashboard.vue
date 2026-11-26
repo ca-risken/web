@@ -138,6 +138,7 @@
 <script>
 import mixin from '@/mixin'
 import finding from '@/mixin/api/finding'
+import organization_helper from '@/mixin/helper/organization_helper'
 import alert from '@/mixin/api/alert'
 import iam from '@/mixin/api/iam'
 import StatusStatistic from '@/component/widget/statistic/StatusStatistic.vue'
@@ -145,7 +146,7 @@ import MiniStatistic from '@/component/widget/statistic/MiniStatistic.vue'
 import CategoryStatistic from '@/component/widget/statistic/CategoryStatistic.vue'
 export default {
   name: 'PageDashboard',
-  mixins: [mixin, finding, alert, iam],
+  mixins: [organization_helper, mixin, finding, alert, iam],
   components: {
     StatusStatistic,
     MiniStatistic,
@@ -220,7 +221,7 @@ export default {
     }
   },
   async mounted() {
-    if (!this.$store.state.project.project_id) {
+    if (this.isOrganizationMode || !this.$store.state.project.project_id) {
       return false
     }
     await this.setRawData()
@@ -248,12 +249,12 @@ export default {
     // Findings
     async setHighScoreFinding() {
       const [all, aws, diagnosis, osint, code, google] = await Promise.all([
-        this.getFindingCount(0.8, '', 200),
-        this.getFindingCount(0.8, 'aws:', 200),
-        this.getFindingCount(0.8, 'diagnosis:', 200),
-        this.getFindingCount(0.8, 'osint:', 200),
-        this.getFindingCount(0.8, 'code:', 200),
-        this.getFindingCount(0.8, 'google:', 200),
+        this.getFindingCount(0.8, ''),
+        this.getFindingCount(0.8, 'aws:'),
+        this.getFindingCount(0.8, 'diagnosis:'),
+        this.getFindingCount(0.8, 'osint:'),
+        this.getFindingCount(0.8, 'code:'),
+        this.getFindingCount(0.8, 'google:'),
       ])
       this.raw.highScoreFinding = all
       this.raw.highScoreFindingAWS = aws
@@ -263,18 +264,17 @@ export default {
       this.raw.highScoreFindingGoogle = google
     },
     async setStoreFinding() {
-      const storeFindings = await this.getFindingCount(0, '', 1)
+      const storeFindings = await this.getFindingCount(0, '')
       this.status.tutorial.storeFindings = storeFindings > 0
     },
-    async getFindingCount(fromScore, dataSource, limit) {
+    async getFindingCount(fromScore, dataSource) {
       const searceCondition =
         '&from_score=' +
         fromScore +
         '&data_source=' +
         dataSource +
-        '&status=1&offset=0&limit=' +
-        limit
-      const count = await this.listFindingCnt(searceCondition)
+        '&status=1'
+      const count = await this.getFindingCountAPI(searceCondition)
       return count
     },
 
