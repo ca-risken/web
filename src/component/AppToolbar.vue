@@ -404,12 +404,9 @@ export default {
     },
     async handleProjectSelected(project) {
       await this.setProjectQueryParam(project.project_id)
-      await store.commit('updateProject', project)
-      this.reload()
     },
     async setProjectQueryParam(project_id) {
-      let query = await Object.assign({}, this.$router.query)
-      query.project_id = project_id
+      const query = { project_id }
       await this.$router.push({ query: query })
     },
     handleNewProject() {
@@ -421,11 +418,6 @@ export default {
     async handleOrganizationSelected(organization) {
       const query = { organization_id: organization.organization_id }
       await this.$router.push({ query: query })
-      await store.commit('updateOrganization', organization)
-      await this.$router.go({
-        path: '/organization/project',
-        force: true,
-      })
     },
     async handleModeToggle() {
       const newMode = this.isProjectMode ? MODE.ORGANIZATION : MODE.PROJECT

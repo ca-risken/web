@@ -1239,16 +1239,16 @@ export default {
         searchCond += '&alert_id=' + this.searchModel.alertID
         queryNew.alert_id = this.searchModel.alertID
       }
-      if (this.searchModel.dataSource) {
+      if (this.searchModel.dataSource?.length) {
         searchCond +=
           '&data_source=' + encodeURIComponent(this.searchModel.dataSource)
         queryNew.data_source = this.searchModel.dataSource
       }
-      if (!this.isOrganizationMode && this.searchModel.tag) {
+      if (!this.isOrganizationMode && this.searchModel.tag?.length) {
         searchCond += '&tag=' + encodeURIComponent(this.searchModel.tag)
         queryNew.tag = this.searchModel.tag
       }
-      if (!this.isOrganizationMode && this.searchModel.resourceName) {
+      if (!this.isOrganizationMode && this.searchModel.resourceName?.length) {
         searchCond +=
           '&resource_name=' + encodeURIComponent(this.searchModel.resourceName)
         queryNew.resource_name = this.searchModel.resourceName
@@ -1276,8 +1276,15 @@ export default {
         sort +
         '&direction=' +
         direction
+      const scopeKey = this.isOrganizationMode
+        ? 'organization_id'
+        : 'project_id'
+      const scopeID = this.isOrganizationMode
+        ? this.getCurrentOrganizationID()
+        : this.getCurrentProjectID()
       if (
         updateRoute &&
+        String(queryOld[scopeKey]) === String(scopeID) &&
         Object.entries(queryNew).sort().toString() !=
           Object.entries(queryOld).sort().toString()
       ) {
