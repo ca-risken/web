@@ -29,6 +29,20 @@ const ja = {
 
     workLocation: '推定した修正箇所',
     workTypes: {
+      os_update: 'OS関連パッケージの更新',
+      app_dependency_update: 'アプリの依存ライブラリの更新',
+      library_update: 'ライブラリの更新',
+
+      vulnerability: '脆弱性の対策確認',
+      public_access: '公開アクセスの見直し',
+      admin_permissions: '管理者権限の見直し',
+      unused_permissions: '未使用権限の見直し',
+      key_rotation: 'キーのローテーション',
+
+      access_policy: 'アクセスポリシーの見直し',
+      threat: '脅威の調査・対処',
+      security_setting: 'セキュリティ設定の見直し',
+      permissions: '権限の見直し',
       app: 'アプリの依存ライブラリの更新',
       os: 'OS関連パッケージの更新',
       location: 'ライブラリの更新',
@@ -52,7 +66,7 @@ const ja = {
     fixedPackage: '修正版パッケージ / バージョン',
     assets: 'アセット別表示',
     scope:
-      '現在はSCCの脆弱性Findingのみ対応しています。各種データソースにも順次対応予定です。',
+      'GoogleのSCC・Asset Inventory・CloudSploitとAWSのAccess Analyzer・GuardDuty・CloudSploit・Admin Checkerに対応しています。',
     type: 'アセット種別',
     name: 'アセット名',
     project: 'プロジェクトID',

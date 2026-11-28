@@ -5,34 +5,40 @@
         <span class="work-icon"
           ><v-icon size="20" aria-hidden="true">{{
             {
-              app: 'mdi-code-braces',
-              os: 'mdi-server',
-              location: 'mdi-package-variant-closed',
+              vulnerability: 'mdi-shield-search',
+              os_update: 'mdi-server',
+              app_dependency_update: 'mdi-code-braces',
+              library_update: 'mdi-package-variant-closed',
+              public_access: 'mdi-earth',
+              admin_permissions: 'mdi-account-key',
+              unused_permissions: 'mdi-account-minus',
+              key_rotation: 'mdi-key-change',
               unknown: 'mdi-help-circle-outline',
+              access_policy: 'mdi-account-lock',
+              threat: 'mdi-shield-alert-outline',
+              security_setting: 'mdi-cog-outline',
+              permissions: 'mdi-account-key',
             }[work.type]
           }}</v-icon></span
         >
-        <span class="work-title">{{
-          $t('assetView.workTypes.' + work.type)
-        }}</span>
+        <span class="work-title"
+          >{{ $t('assetView.workTypes.' + work.type) }}
+          <span class="text-caption text-medium-emphasis ml-2">{{
+            work.location
+          }}</span></span
+        >
         <span class="work-count">{{
           $t('assetView.countValue', { count: work.count })
         }}</span>
         <v-icon class="expand-icon" size="small">mdi-chevron-down</v-icon>
       </summary>
       <div class="work-content">
-        <p
-          v-if="work.type === 'os' && work.location"
-          class="text-caption px-4 py-2 mb-0 wrap"
-        >
-          {{ work.location }}
-        </p>
         <v-table density="comfortable" class="package-table">
           <thead>
             <tr>
-              <th>{{ $t('assetView.packageName') }}</th>
-              <th>{{ $t('assetView.packageType') }}</th>
-              <th>{{ $t('assetView.fixedVersion') }}</th>
+              <th>
+                {{ $t('assetView.remediationCandidates') }}
+              </th>
               <th class="text-center">{{ $t('assetView.count') }}</th>
               <th class="expand-column">
                 <span class="sr-only">{{ $t('assetView.details') }}</span>
@@ -48,37 +54,8 @@
               >
                 <td class="package-name">
                   <span class="font-weight-medium">{{
-                    group.package_name || $t('assetView.unknownPackage')
+                    $t('assetView.workTypes.' + work.type)
                   }}</span>
-                  <div
-                    v-if="work.type === 'location'"
-                    class="text-caption text-medium-emphasis wrap"
-                  >
-                    {{ group.work_location }}
-                  </div>
-                </td>
-                <td class="text-medium-emphasis">
-                  {{ group.package_type || '—' }}
-                </td>
-                <td class="version-cell">
-                  <div
-                    v-for="version in fixedVersions(group)"
-                    :key="version.fixed_version"
-                    class="fixed-version"
-                  >
-                    <span>{{
-                      version.fixed_version || $t('assetView.noFixedVersion')
-                    }}</span>
-                    <span
-                      v-if="fixedVersions(group).length > 1"
-                      class="text-caption text-medium-emphasis"
-                      >{{
-                        $t('assetView.countValue', {
-                          count: version.finding_count,
-                        })
-                      }}</span
-                    >
-                  </div>
                 </td>
                 <td class="text-center">{{ group.finding_count }}</td>
                 <td class="expand-column">
@@ -92,8 +69,7 @@
                     variant="text"
                     :aria-label="
                       $t('assetView.showPackageFindings', {
-                        package:
-                          group.package_name || $t('assetView.unknownPackage'),
+                        package: $t('assetView.workTypes.' + work.type),
                       })
                     "
                     :aria-expanded="!!expandedPackages[group.package_key]"
@@ -105,7 +81,7 @@
                 v-if="expandedPackages[group.package_key]"
                 class="package-expanded"
               >
-                <td colspan="5" class="pa-0">
+                <td colspan="3" class="pa-0">
                   <div class="package-content">
                     <v-progress-linear
                       v-if="entries[group.package_key]?.loading"
@@ -337,10 +313,23 @@ export default {
     workGroups() {
       const groups = new Map()
       for (const pkg of this.packages) {
-        const type = ['app', 'os', 'location'].includes(pkg.work_type)
+        const type = [
+          'access_policy',
+          'threat',
+          'security_setting',
+          'permissions',
+          'public_access',
+          'admin_permissions',
+          'unused_permissions',
+          'vulnerability',
+          'os_update',
+          'app_dependency_update',
+          'library_update',
+          'key_rotation',
+        ].includes(pkg.work_type)
           ? pkg.work_type
           : 'unknown'
-        const location = type === 'location' ? '' : pkg.work_location || ''
+        const location = pkg.work_location || ''
         const key = JSON.stringify([type, location])
         if (!groups.has(key))
           groups.set(key, {
@@ -362,16 +351,6 @@ export default {
     this.alive = false
   },
   methods: {
-    fixedVersions(group) {
-      const versions = new Map()
-      for (const version of group.versions || []) {
-        const key = version.fixed_version || ''
-        if (!versions.has(key))
-          versions.set(key, { fixed_version: key, finding_count: 0 })
-        versions.get(key).finding_count += Number(version.finding_count || 0)
-      }
-      return [...versions.values()]
-    },
     toggle(group) {
       const key = group.package_key
       this.expandedPackages[key] = !this.expandedPackages[key]
